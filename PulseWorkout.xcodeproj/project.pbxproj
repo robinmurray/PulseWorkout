@@ -15,6 +15,12 @@
 		E46EF09529537CA3006FA603 /* PulseWorkout_Watch_AppTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF09429537CA3006FA603 /* PulseWorkout_Watch_AppTests.swift */; };
 		E46EF09F29537CA3006FA603 /* PulseWorkout_Watch_AppUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF09E29537CA3006FA603 /* PulseWorkout_Watch_AppUITests.swift */; };
 		E46EF0A129537CA3006FA603 /* PulseWorkout_Watch_AppUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0A029537CA3006FA603 /* PulseWorkout_Watch_AppUITestsLaunchTests.swift */; };
+		E46EF0B229537D1D006FA603 /* HelpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B129537D1D006FA603 /* HelpView.swift */; };
+		E46EF0B429537D63006FA603 /* ActiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B329537D63006FA603 /* ActiveView.swift */; };
+		E46EF0B629537D93006FA603 /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B529537D93006FA603 /* ProfileView.swift */; };
+		E46EF0B829537DF6006FA603 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B729537DF6006FA603 /* SummaryView.swift */; };
+		E46EF0BA29537E24006FA603 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B929537E24006FA603 /* StartView.swift */; };
+		E46EF0BC29537E4D006FA603 /* InitialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0BB29537E4D006FA603 /* InitialView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +73,12 @@
 		E46EF09A29537CA3006FA603 /* PulseWorkout Watch AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PulseWorkout Watch AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46EF09E29537CA3006FA603 /* PulseWorkout_Watch_AppUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseWorkout_Watch_AppUITests.swift; sourceTree = "<group>"; };
 		E46EF0A029537CA3006FA603 /* PulseWorkout_Watch_AppUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseWorkout_Watch_AppUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		E46EF0B129537D1D006FA603 /* HelpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpView.swift; sourceTree = "<group>"; };
+		E46EF0B329537D63006FA603 /* ActiveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveView.swift; sourceTree = "<group>"; };
+		E46EF0B529537D93006FA603 /* ProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileView.swift; sourceTree = "<group>"; };
+		E46EF0B729537DF6006FA603 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
+		E46EF0B929537E24006FA603 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
+		E46EF0BB29537E4D006FA603 /* InitialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -120,6 +132,12 @@
 			children = (
 				E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */,
 				E46EF08529537CA1006FA603 /* ContentView.swift */,
+				E46EF0B129537D1D006FA603 /* HelpView.swift */,
+				E46EF0B329537D63006FA603 /* ActiveView.swift */,
+				E46EF0B529537D93006FA603 /* ProfileView.swift */,
+				E46EF0B729537DF6006FA603 /* SummaryView.swift */,
+				E46EF0B929537E24006FA603 /* StartView.swift */,
+				E46EF0BB29537E4D006FA603 /* InitialView.swift */,
 				E46EF08729537CA3006FA603 /* Assets.xcassets */,
 				E46EF08929537CA3006FA603 /* Preview Content */,
 			);
@@ -310,7 +328,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				E46EF08629537CA1006FA603 /* ContentView.swift in Sources */,
+				E46EF0BC29537E4D006FA603 /* InitialView.swift in Sources */,
+				E46EF0B229537D1D006FA603 /* HelpView.swift in Sources */,
+				E46EF0B629537D93006FA603 /* ProfileView.swift in Sources */,
+				E46EF0B429537D63006FA603 /* ActiveView.swift in Sources */,
 				E46EF08429537CA1006FA603 /* PulseWorkoutApp.swift in Sources */,
+				E46EF0B829537DF6006FA603 /* SummaryView.swift in Sources */,
+				E46EF0BA29537E24006FA603 /* StartView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
