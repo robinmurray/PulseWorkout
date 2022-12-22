@@ -55,53 +55,61 @@ struct StartView: View {
     
     var body: some View {
         VStack {
+            Text("Outdoor Cycling")
+                    .font(.system(size: 15))
+                
+            Spacer().frame(maxWidth: .infinity)
+                
+                
             Button(action: profileData.startStopHRMonitor) {
-                playButtonStyle[profileData.HRMonitorActive]!.image
-            }
-            .foregroundColor(playButtonStyle[profileData.HRMonitorActive]?.colour)
-//            .frame(width: 20, height: 20)
-            .scaleEffect(3)
-            .background(Color.clear)
-            .padding()
-
+                    playButtonStyle[profileData.HRMonitorActive]!.image
+                }
+                .foregroundColor(playButtonStyle[profileData.HRMonitorActive]?.colour)
+                //            .frame(width: 20, height: 20)
+                .scaleEffect(3)
+                .background(Color.clear)
+                //     .padding(30)
+                
+            Spacer().frame(maxWidth: .infinity)
+                
             Text("Profile: " + profileData.profileName)
                 .foregroundColor(Color.gray)
-                .frame(height: 10)
+          //      .frame(height: 10)
                 .font(.system(size: 15))
-
-
+                
+                
             HStack {
-                    Image(systemName: "arrow.down.to.line.circle.fill")
-                        .foregroundColor(loAlarmDisplay[profileData.loLimitAlarmActive]?.colour)
-                        .frame(height: 20)
+                Image(systemName: "arrow.down.to.line.circle.fill")
+                    .foregroundColor(loAlarmDisplay[profileData.loLimitAlarmActive]?.colour)
+                    .frame(height: 20)
                     
-                    Text(loAlarmDisplay[profileData.loLimitAlarmActive]?.alarmLevelText ?? String(profileData.loLimitAlarm))
-                        .foregroundColor(loAlarmDisplay[profileData.loLimitAlarmActive]?.colour)
+                Text(loAlarmDisplay[profileData.loLimitAlarmActive]?.alarmLevelText ?? String(profileData.loLimitAlarm))
+                    .foregroundColor(loAlarmDisplay[profileData.loLimitAlarmActive]?.colour)
                         .font(.system(size: 15))
                     
-                    Image(systemName: "arrow.up.to.line.circle.fill")
+                Image(systemName: "arrow.up.to.line.circle.fill")
                         .foregroundColor(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.colour)
-                        .frame(height: 20)
+                    .frame(height: 20)
                     
-                    Text(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.alarmLevelText ?? String(profileData.hiLimitAlarm))
-                        .foregroundColor(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.colour)
-                        .font(.system(size: 15))
+                Text(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.alarmLevelText ?? String(profileData.hiLimitAlarm))
+                    .foregroundColor(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.colour)
+                    .font(.system(size: 15))
                 }
-                HStack {
+            HStack {
                     
-                    soundImage[profileData.playSound]
-                        .foregroundColor(Color.gray)
-                    hapticImage[profileData.playHaptic]
-                        .foregroundColor(Color.gray)
+                soundImage[profileData.playSound]
+                    .foregroundColor(Color.gray)
+                
+                hapticImage[profileData.playHaptic]
+                    .foregroundColor(Color.gray)
                     
-                    Image(systemName: "repeat")
-                        .foregroundColor(repeatColour[profileData.constantRepeat])
+                Image(systemName: "repeat")
+                    .foregroundColor(repeatColour[profileData.constantRepeat])
                 }
                 
             }
-        .padding()
-    }
-
+            .padding()
+        }
 }
 
 struct StartView_Previews: PreviewProvider {

@@ -23,9 +23,11 @@ struct InitialView: View {
     var body: some View {
         TabView(selection: $selection) {
 
+            Text("Workout type").tag(Tab.workoutType)
+            
             StartView(profileData: profileData)
                 .tag(Tab.start)
-            
+
             ProfileView(profileData: profileData)
                 .tag(Tab.profile)
             

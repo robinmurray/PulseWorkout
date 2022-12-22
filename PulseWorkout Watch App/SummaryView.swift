@@ -20,11 +20,13 @@ struct SummaryView: View {
     }
 
 
-    @State private var selection: Tab = .summary
+    @State private var selection: Tab = .summaryStats
     
     var body: some View {
         TabView(selection: $selection) {
-            Text("Summary Stats View").tag(Tab.summary)
+
+            SummaryStatsView(profileData: profileData)
+                .tag(Tab.summaryStats)
             
             Text("Now playing").tag(Tab.nowPlaying)
             

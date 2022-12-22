@@ -21,6 +21,9 @@
 		E46EF0B829537DF6006FA603 /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B729537DF6006FA603 /* SummaryView.swift */; };
 		E46EF0BA29537E24006FA603 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B929537E24006FA603 /* StartView.swift */; };
 		E46EF0BC29537E4D006FA603 /* InitialView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0BB29537E4D006FA603 /* InitialView.swift */; };
+		E46EF0BE29538378006FA603 /* SummaryStatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0BD29538378006FA603 /* SummaryStatsView.swift */; };
+		E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0BF29538811006FA603 /* LiveMetricsView.swift */; };
+		E46EF0C229543FEA006FA603 /* StopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C129543FEA006FA603 /* StopView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -79,6 +82,9 @@
 		E46EF0B729537DF6006FA603 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
 		E46EF0B929537E24006FA603 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
 		E46EF0BB29537E4D006FA603 /* InitialView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InitialView.swift; sourceTree = "<group>"; };
+		E46EF0BD29538378006FA603 /* SummaryStatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryStatsView.swift; sourceTree = "<group>"; };
+		E46EF0BF29538811006FA603 /* LiveMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsView.swift; sourceTree = "<group>"; };
+		E46EF0C129543FEA006FA603 /* StopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -134,8 +140,11 @@
 				E46EF08529537CA1006FA603 /* ContentView.swift */,
 				E46EF0B129537D1D006FA603 /* HelpView.swift */,
 				E46EF0B329537D63006FA603 /* ActiveView.swift */,
+				E46EF0BF29538811006FA603 /* LiveMetricsView.swift */,
+				E46EF0C129543FEA006FA603 /* StopView.swift */,
 				E46EF0B529537D93006FA603 /* ProfileView.swift */,
 				E46EF0B729537DF6006FA603 /* SummaryView.swift */,
+				E46EF0BD29538378006FA603 /* SummaryStatsView.swift */,
 				E46EF0B929537E24006FA603 /* StartView.swift */,
 				E46EF0BB29537E4D006FA603 /* InitialView.swift */,
 				E46EF08729537CA3006FA603 /* Assets.xcassets */,
@@ -330,10 +339,13 @@
 				E46EF08629537CA1006FA603 /* ContentView.swift in Sources */,
 				E46EF0BC29537E4D006FA603 /* InitialView.swift in Sources */,
 				E46EF0B229537D1D006FA603 /* HelpView.swift in Sources */,
+				E46EF0BE29538378006FA603 /* SummaryStatsView.swift in Sources */,
+				E46EF0C229543FEA006FA603 /* StopView.swift in Sources */,
 				E46EF0B629537D93006FA603 /* ProfileView.swift in Sources */,
 				E46EF0B429537D63006FA603 /* ActiveView.swift in Sources */,
 				E46EF08429537CA1006FA603 /* PulseWorkoutApp.swift in Sources */,
 				E46EF0B829537DF6006FA603 /* SummaryView.swift in Sources */,
+				E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */,
 				E46EF0BA29537E24006FA603 /* StartView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

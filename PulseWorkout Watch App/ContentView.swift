@@ -8,7 +8,7 @@
 import SwiftUI
 
 enum Tab {
-    case start, active, stop, profile, nowPlaying, help, summary
+    case start, active, monitor, stop, profile, nowPlaying, help, summary, summaryStats, workoutType
 }
 
 enum AppState {
@@ -34,26 +34,7 @@ struct ContentView: View {
             return AnyView(InitialView(profileData: profileData))
             
         case .active:
-            
-            return AnyView(TabView(selection: $selection) {
-//                Text("Start View").tag(Tab.start)
-                
-                ActiveView(profileData: profileData)
-                    .tag(Tab.active)
-                
-//                Text("Stop View").tag(Tab.stop)
-                
- //               ProfileView(profileData: profileData)
- //                   .tag(Tab.profile)
-                
-                Text("Now playing").tag(Tab.nowPlaying)
-                
-//                HelpView()
-//                    .tag(Tab.help)
-                
-            }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .indexViewStyle(.page(backgroundDisplayMode: .automatic)))
+            return AnyView(ActiveView(profileData: profileData))
             
         case .summary:
             return AnyView(SummaryView(profileData: profileData))
