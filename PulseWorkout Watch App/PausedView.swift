@@ -1,13 +1,13 @@
 //
-//  StopView.swift
+//  PausedView.swift
 //  PulseWorkout Watch App
 //
-//  Created by Robin Murray on 22/12/2022.
+//  Created by Robin Murray on 23/12/2022.
 //
 
 import SwiftUI
 
-struct StopView: View {
+struct PausedView: View {
 
     @ObservedObject var profileData: ProfileData
 
@@ -36,17 +36,17 @@ struct StopView: View {
 
                 VStack{
 
-                        Button(action: profileData.PauseHRMonitor) {
-                            Image(systemName: "pause.circle")
+                        Button(action: profileData.RestartHRMonitor) {
+                            Image(systemName: "playpause.circle.fill")
                         }
-                        .foregroundColor(Color.yellow)
+                        .foregroundColor(Color.green)
                         .frame(width: 40, height: 40)
                         .font(.title)
                         .background(Color.clear)
                         .clipShape(Circle())
                         
-                        Text("Pause")
-                            .foregroundColor(Color.yellow)
+                        Text("Resume")
+                            .foregroundColor(Color.green)
                     }
 
                 Spacer()
@@ -75,11 +75,11 @@ struct StopView: View {
     
 }
 
-struct StopView_Previews: PreviewProvider {
+struct PausedView_Previews: PreviewProvider {
     
     static var profileData = ProfileData()
 
     static var previews: some View {
-        StopView(profileData: profileData)
+        PausedView(profileData: profileData)
     }
 }

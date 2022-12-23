@@ -1,35 +1,36 @@
 //
-//  SummaryView.swift
+//  PausedTabView.swift
 //  PulseWorkout Watch App
 //
-//  Created by Robin Murray on 21/12/2022.
+//  Created by Robin Murray on 23/12/2022.
 //
 
 import Foundation
-
-
+import WatchKit
 import SwiftUI
 
-struct SummaryView: View {
+struct PausedTabView: View {
+
+    enum Tab {
+        case paused, nowPlaying, help
+    }
 
     @ObservedObject var profileData: ProfileData
-    
+    @State private var selection: Tab = .paused
     
     init(profileData: ProfileData) {
         self.profileData = profileData
     }
 
 
-    @State private var selection: Tab = .summaryStats
-    
     var body: some View {
         TabView(selection: $selection) {
 
-            SummaryStatsView(profileData: profileData)
-                .tag(Tab.summaryStats)
+            PausedView(profileData: profileData)
+                .tag(Tab.paused)
             
-            Text("Now playing").tag(Tab.nowPlaying)
-            
+            NowPlayingView().tag(Tab.nowPlaying)
+
             HelpView()
                 .tag(Tab.help)
             
@@ -39,11 +40,11 @@ struct SummaryView: View {
     }
 }
 
-struct SummaryView_Previews: PreviewProvider {
+struct PausedTabView_Previews: PreviewProvider {
     static var profileData = ProfileData()
 
     static var previews: some View {
-        SummaryView(profileData: profileData)
+        PausedTabView(profileData: profileData)
     }
 }
 

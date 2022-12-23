@@ -127,7 +127,15 @@ class ProfileData: ObservableObject {
         ReadFromUserDefaults(profileName: self.profileName)
 
     }
+   
+    func PauseHRMonitor() {
+        self.appState = .paused
+    }
     
+    func RestartHRMonitor() {
+        self.appState = .live
+    }
+
     
     func startStopHRMonitor() {
         
@@ -142,7 +150,7 @@ class ProfileData: ObservableObject {
             if lockScreen {
                 WKInterfaceDevice.current().enableWaterLock()
             }
-            self.appState = .active
+            self.appState = .live
         } else {
             self.timer?.invalidate()
             HRMonitorActive = false

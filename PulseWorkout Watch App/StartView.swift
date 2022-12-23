@@ -57,25 +57,37 @@ struct StartView: View {
         VStack {
             Text("Outdoor Cycling")
                     .font(.system(size: 15))
+                    .frame(height: 0)
                 
             Spacer().frame(maxWidth: .infinity)
+            
+            VStack{
+                Button(action: profileData.startStopHRMonitor) {
+                        playButtonStyle[profileData.HRMonitorActive]!.image
+                    }
+                    .foregroundColor(playButtonStyle[profileData.HRMonitorActive]?.colour)
+                    .font(.title)
+                    .frame(width: 40, height: 40)
+                    .background(Color.clear)
+                    .clipShape(Circle())
                 
-                
-            Button(action: profileData.startStopHRMonitor) {
-                    playButtonStyle[profileData.HRMonitorActive]!.image
-                }
-                .foregroundColor(playButtonStyle[profileData.HRMonitorActive]?.colour)
-                //            .frame(width: 20, height: 20)
-                .scaleEffect(3)
-                .background(Color.clear)
-                //     .padding(30)
-                
+                Text("Start")
+                    .foregroundColor(Color.green)
+
+            }
+
+                 
             Spacer().frame(maxWidth: .infinity)
-                
-            Text("Profile: " + profileData.profileName)
-                .foregroundColor(Color.gray)
-          //      .frame(height: 10)
-                .font(.system(size: 15))
+       
+            HStack {
+                Image(systemName:"heart.fill")
+                    .foregroundColor(Color.red)
+
+                Text("Profile: " + profileData.profileName)
+                    .foregroundColor(Color.gray)
+                    .font(.system(size: 15))
+            }
+
                 
                 
             HStack {

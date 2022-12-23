@@ -1,38 +1,36 @@
 //
-//  InitialView.swift
+//  SummaryTabView.swift
 //  PulseWorkout Watch App
 //
 //  Created by Robin Murray on 21/12/2022.
 //
 
 import Foundation
+import WatchKit
 import SwiftUI
 
-struct InitialView: View {
+struct SummaryTabView: View {
+
+    enum Tab {
+        case summaryMetrics, nowPlaying, help
+    }
 
     @ObservedObject var profileData: ProfileData
-    
+    @State private var selection: Tab = .summaryMetrics
     
     init(profileData: ProfileData) {
         self.profileData = profileData
     }
 
 
-    @State private var selection: Tab = .start
-    
     var body: some View {
         TabView(selection: $selection) {
 
-            Text("Workout type").tag(Tab.workoutType)
+            SummaryMetricsView(profileData: profileData)
+                .tag(Tab.summaryMetrics)
             
-            StartView(profileData: profileData)
-                .tag(Tab.start)
+            NowPlayingView().tag(Tab.nowPlaying)
 
-            ProfileView(profileData: profileData)
-                .tag(Tab.profile)
-            
-            Text("Now playing").tag(Tab.nowPlaying)
-            
             HelpView()
                 .tag(Tab.help)
             
@@ -42,10 +40,11 @@ struct InitialView: View {
     }
 }
 
-struct InitialView_Previews: PreviewProvider {
+struct SummaryTabView_Previews: PreviewProvider {
     static var profileData = ProfileData()
 
     static var previews: some View {
-        InitialView(profileData: profileData)
+        SummaryTabView(profileData: profileData)
     }
 }
+

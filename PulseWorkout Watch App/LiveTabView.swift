@@ -1,5 +1,5 @@
 //
-//  ActiveView.swift
+//  LiveTabView.swift
 //  PulsePace Watch App
 //
 //  Created by Robin Murray on 18/12/2022.
@@ -7,12 +7,16 @@
 
 //import Foundation
 import SwiftUI
+import WatchKit
 
-
-struct ActiveView: View {
+struct LiveTabView: View {
     
+    enum Tab {
+        case stop, liveMetrics, nowPlaying
+    }
+
     @ObservedObject var profileData: ProfileData
-    @State private var selection: Tab = .monitor
+    @State private var selection: Tab = .liveMetrics
     
 
     init(profileData: ProfileData) {
@@ -25,10 +29,10 @@ struct ActiveView: View {
             StopView(profileData: profileData).tag(Tab.stop)
             
             LiveMetricsView(profileData: profileData)
-                .tag(Tab.monitor)
+                .tag(Tab.liveMetrics)
             
-            Text("Now playing").tag(Tab.nowPlaying)
-            
+            NowPlayingView().tag(Tab.nowPlaying)
+
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))
@@ -39,12 +43,12 @@ struct ActiveView: View {
 
 
 
-struct ActiveView_Previews: PreviewProvider {
+struct LIveTabView_Previews: PreviewProvider {
     
     static var profileData = ProfileData()
 
     static var previews: some View {
-        ActiveView(profileData: profileData)
+        LiveTabView(profileData: profileData)
     }
 }
 

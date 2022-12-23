@@ -1,5 +1,5 @@
 //
-//  SummaryStatsView.swift
+//  SummaryMetricsView.swift
 //  PulseWorkout Watch App
 //
 //  Created by Robin Murray on 21/12/2022.
@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct SummaryStatsView: View {
+struct SummaryMetricsView: View {
     
     @ObservedObject var profileData: ProfileData
     
@@ -20,14 +20,14 @@ struct SummaryStatsView: View {
     var body: some View {
         VStack {
 
-            Text("Summary Stats View").tag(Tab.summary)
+            Text("Summary Metrics")
 
             Spacer().frame(maxWidth: .infinity)
 
             Button(action: {
                 profileData.appState = .initial
             }) {
-            Text("Dismiss")
+            Text("Done")
             }
             
         }
@@ -35,11 +35,11 @@ struct SummaryStatsView: View {
 
 }
 
-struct SummaryStatsView_Previews: PreviewProvider {
+struct SummaryMetricsView_Previews: PreviewProvider {
 
     static var profileData = ProfileData()
 
     static var previews: some View {
-        SummaryStatsView(profileData: profileData)
+        SummaryMetricsView(profileData: profileData)
     }
 }

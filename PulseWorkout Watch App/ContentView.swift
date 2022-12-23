@@ -7,20 +7,15 @@
 
 import SwiftUI
 
-enum Tab {
-    case start, active, monitor, stop, profile, nowPlaying, help, summary, summaryStats, workoutType
-}
 
 enum AppState {
-    case initial, active, summary
+    case initial, live, paused, summary
 }
 
 struct ContentView: View {
 
     @ObservedObject var profileData = ProfileData()
-    
-    @State private var selection: Tab = .active
-    
+        
     var body: some View {
         
         containedView()
@@ -31,13 +26,16 @@ struct ContentView: View {
         switch profileData.appState {
             
         case .initial:
-            return AnyView(InitialView(profileData: profileData))
+            return AnyView(StartTabView(profileData: profileData))
             
-        case .active:
-            return AnyView(ActiveView(profileData: profileData))
+        case .live:
+            return AnyView(LiveTabView(profileData: profileData))
+            
+        case .paused:
+            return AnyView(PausedTabView(profileData: profileData))
             
         case .summary:
-            return AnyView(SummaryView(profileData: profileData))
+            return AnyView(SummaryTabView(profileData: profileData))
             
         }
     }
