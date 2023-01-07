@@ -15,9 +15,10 @@ struct PausedView: View {
         self.profileData = profileData
     }
 
+
     var body: some View {
         VStack{
-             Button(action: profileData.startStopHRMonitor) {
+             Button(action: WKInterfaceDevice.current().enableWaterLock) {
                 Image(systemName: "drop.circle")
             }
             .foregroundColor(Color.blue)
@@ -36,7 +37,7 @@ struct PausedView: View {
 
                 VStack{
 
-                        Button(action: profileData.RestartHRMonitor) {
+                        Button(action: profileData.resumeWorkout) {
                             Image(systemName: "playpause.circle.fill")
                         }
                         .foregroundColor(Color.green)
@@ -52,7 +53,7 @@ struct PausedView: View {
                 Spacer()
 
                 VStack{
-                    Button(action: profileData.startStopHRMonitor) {
+                    Button(action: profileData.endWorkout) {
                         Image(systemName: "stop.circle")
                     }
                     .foregroundColor(Color.red)

@@ -93,6 +93,8 @@
 		E46EF0C52955C836006FA603 /* PausedTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PausedTabView.swift; sourceTree = "<group>"; };
 		E46EF0C72955C8E9006FA603 /* PausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PausedView.swift; sourceTree = "<group>"; };
 		E46EF0C92955F615006FA603 /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
+		E46EF0CB29560A1F006FA603 /* PulseWorkout Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "PulseWorkout Watch App.entitlements"; sourceTree = "<group>"; };
+		E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "PulseWorkout-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -144,6 +146,8 @@
 		E46EF08229537CA1006FA603 /* PulseWorkout Watch App */ = {
 			isa = PBXGroup;
 			children = (
+				E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */,
+				E46EF0CB29560A1F006FA603 /* PulseWorkout Watch App.entitlements */,
 				E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */,
 				E46EF08529537CA1006FA603 /* ContentView.swift */,
 				E46EF0B129537D1D006FA603 /* HelpView.swift */,
@@ -518,13 +522,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "PulseWorkout-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Read data from Healthkit to monitor workouts";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Write data collected during workouts to Healthkit";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -534,6 +543,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = MurrayNet.PulseWorkout.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -548,13 +558,18 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "PulseWorkout-Watch-App-Info.plist";
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Read data from Healthkit to monitor workouts";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Write data collected during workouts to Healthkit";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				INFOPLIST_KEY_WKWatchOnly = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -564,6 +579,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = MurrayNet.PulseWorkout.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -658,6 +674,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Watch-AppUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -678,6 +695,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Watch-AppUITests";
 				PRODUCT_NAME = "$(TARGET_NAME)";

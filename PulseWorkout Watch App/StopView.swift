@@ -10,14 +10,15 @@ import SwiftUI
 struct StopView: View {
 
     @ObservedObject var profileData: ProfileData
-
+    
     init(profileData: ProfileData) {
         self.profileData = profileData
     }
 
+    
     var body: some View {
         VStack{
-             Button(action: profileData.startStopHRMonitor) {
+             Button(action: WKInterfaceDevice.current().enableWaterLock) {
                 Image(systemName: "drop.circle")
             }
             .foregroundColor(Color.blue)
@@ -29,14 +30,13 @@ struct StopView: View {
             Text("Lock")
                 .foregroundColor(Color.blue)
 
-
             HStack{
 
                 Spacer()
 
                 VStack{
 
-                        Button(action: profileData.PauseHRMonitor) {
+                    Button(action: profileData.pauseWorkout) {
                             Image(systemName: "pause.circle")
                         }
                         .foregroundColor(Color.yellow)
@@ -52,7 +52,7 @@ struct StopView: View {
                 Spacer()
 
                 VStack{
-                    Button(action: profileData.startStopHRMonitor) {
+                    Button(action: profileData.endWorkout) {
                         Image(systemName: "stop.circle")
                     }
                     .foregroundColor(Color.red)

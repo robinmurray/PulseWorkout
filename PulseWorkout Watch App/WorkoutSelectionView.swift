@@ -9,7 +9,8 @@ import SwiftUI
 import HealthKit
 
 struct WorkoutSelectionView: View {
-    @EnvironmentObject var workoutManager: WorkoutManager
+
+    @ObservedObject var profileData: ProfileData
     
     var workoutTypes: [HKWorkoutActivityType] = [.crossTraining, .cycling, .mixedCardio, .paddleSports, .rowing, .running, .walking]
     
@@ -17,9 +18,7 @@ struct WorkoutSelectionView: View {
 
     @State private var currentWorkoutType: HKWorkoutActivityType = HKWorkoutActivityType.cycling
     @State private var currentWorkoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
-    
-    @ObservedObject var profileData: ProfileData
-        
+
     init(profileData: ProfileData) {
         self.profileData = profileData
     }
@@ -29,13 +28,16 @@ struct WorkoutSelectionView: View {
         VStack{
             Form() {
                 
-                Picker("Workout Type", selection: $currentWorkoutType) {
+                Picker("Workout Type", selection: $profileData.currentWorkoutType) {
                     ForEach(workoutTypes) { workoutType in
                         Text(workoutType.name).tag(workoutType.self)
                     }
                 }
-                .onChange(of: currentWorkoutType) { _ in
-                    workoutTypeChanged(newSelectedWorkoutType: currentWorkoutType )
+//                .onChange(of: profileData.currentWorkoutType) { _ in
+//                    workoutTypeChanged(newSelectedWorkoutType: currentWorkoutType )
+//                }
+                .onChange(of: profileData.currentWorkoutType) { _ in
+                    self.profileData.WriteToUserDefaults(profileName: profileData.profileName)
                 }
                 .font(.headline)
                 .foregroundColor(Color.blue)
@@ -63,7 +65,7 @@ struct WorkoutSelectionView: View {
         print("picker changed! to \(newSelectedWorkoutType)")
         
         self.currentWorkoutType = newSelectedWorkoutType
-        workoutManager.selectedWorkout = newSelectedWorkoutType
+        profileData.selectedWorkout = newSelectedWorkoutType
     }
 
 }

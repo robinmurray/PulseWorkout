@@ -15,7 +15,7 @@ struct StartTabView: View {
         case workoutType, start, profile, nowPlaying, help
     }
 
-    @EnvironmentObject var workoutManager: WorkoutManager
+//    @EnvironmentObject var workoutManager: WorkoutManager
     @ObservedObject var profileData: ProfileData
     @State private var selection: Tab = .start
     
@@ -43,7 +43,8 @@ struct StartTabView: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))
-        .onAppear { workoutManager.requestAuthorization() }
+        .onAppear(perform: profileData.requestAuthorization)
+
     }
 }
 

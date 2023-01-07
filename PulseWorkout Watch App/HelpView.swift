@@ -17,8 +17,7 @@ struct HelpView: View {
                 .fontWeight(.bold)
                 .foregroundColor(Color.blue)
                 .frame(height: 10)
-            
-            
+
         }
     }
 }

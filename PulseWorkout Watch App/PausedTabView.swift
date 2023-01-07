@@ -16,6 +16,7 @@ struct PausedTabView: View {
     }
 
     @ObservedObject var profileData: ProfileData
+
     @State private var selection: Tab = .paused
     
     init(profileData: ProfileData) {

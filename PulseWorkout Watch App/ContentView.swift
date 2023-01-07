@@ -15,7 +15,7 @@ enum AppState {
 struct ContentView: View {
 
     @ObservedObject var profileData = ProfileData()
-        
+
     var body: some View {
         
         containedView()
@@ -29,7 +29,8 @@ struct ContentView: View {
             return AnyView(StartTabView(profileData: profileData))
             
         case .live:
-            return AnyView(LiveTabView(profileData: profileData))
+            return AnyView(LiveTabView(profileData: profileData)
+                )
             
         case .paused:
             return AnyView(PausedTabView(profileData: profileData))

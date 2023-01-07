@@ -20,16 +20,59 @@ struct SummaryMetricsView: View {
     var body: some View {
         VStack {
 
-            Text("Summary Metrics")
-
-            Spacer().frame(maxWidth: .infinity)
-
-            Button(action: {
-                profileData.appState = .initial
-            }) {
-            Text("Done")
+            Text("Workout Summary")
+            Form {
+                HStack {
+                    Image(systemName: "heart.fill").foregroundColor(Color.red)
+                    Text("Ave.").foregroundColor(Color.yellow)
+                    Spacer().frame(maxWidth: .infinity)
+                    Text(profileData.averageHeartRate
+                        .formatted(.number.precision(.fractionLength(0))) + " bpm")
+                }
+                HStack {
+                    //                    Image(systemName: "heart.fill").foregroundColor(Color.red)
+                    Text("Recovery").foregroundColor(Color.yellow)
+                    
+                    Spacer().frame(maxWidth: .infinity)
+                    Text(profileData.heartRateRecovery
+                        .formatted(.number.precision(.fractionLength(0))) )
+                }
+                
+                HStack {
+                    
+                    Text("Energy").foregroundColor(Color.yellow)
+                    
+                    Spacer().frame(maxWidth: .infinity)
+                    
+                    Text(Measurement(value: profileData.activeEnergy,
+                                     unit: UnitEnergy.kilocalories).formatted(.measurement(
+                                        width: .abbreviated,
+                                        usage: .workout
+                                        //                                        numberFormat: .numeric(precision: .fractionLength(0))
+                                     ))
+                    )
+                }
+                HStack {
+                    
+                    Text("Dist.").foregroundColor(Color.yellow)
+                    Spacer().frame(maxWidth: .infinity)
+                    Text(Measurement(value: profileData.distance,
+                                     unit: UnitLength.kilometers)
+                        .formatted(.measurement(width: .abbreviated,
+                                                usage: .asProvided
+                                               )
+                        )
+                    )
+                }
+                
+                Button(action: {
+                    profileData.appState = .initial
+                }) {
+                    Text("Done").padding([.leading, .trailing], 60)
+                }
+                
             }
-            
+
         }
     }
 

@@ -16,9 +16,9 @@ struct LiveTabView: View {
     }
 
     @ObservedObject var profileData: ProfileData
+
     @State private var selection: Tab = .liveMetrics
     
-
     init(profileData: ProfileData) {
         self.profileData = profileData
     }
@@ -26,7 +26,8 @@ struct LiveTabView: View {
     var body: some View {
         TabView(selection: $selection) {
 
-            StopView(profileData: profileData).tag(Tab.stop)
+            StopView(profileData: profileData)
+                .tag(Tab.stop)
             
             LiveMetricsView(profileData: profileData)
                 .tag(Tab.liveMetrics)
@@ -36,7 +37,9 @@ struct LiveTabView: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+
     }
+    
 }
     
 

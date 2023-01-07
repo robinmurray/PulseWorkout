@@ -14,7 +14,8 @@ import SwiftUI
 struct StartView: View {
 
     @ObservedObject var profileData: ProfileData
-    
+//    @EnvironmentObject var workoutManager: WorkoutManager
+
     
     init(profileData: ProfileData) {
         self.profileData = profileData
@@ -48,9 +49,12 @@ struct StartView: View {
     [false: Color.clear,
      true: Color.gray]
     
-    let playButtonStyle: [Bool: ButtonStyling] =
-    [true: ButtonStyling(image: Image(systemName: "stop.circle"), colour: Color.red),
-     false: ButtonStyling(image: Image(systemName: "play.circle"), colour: Color.green)]
+
+//    func startWorkout() {
+//        workoutManager.startWorkout(workoutType: .cycling)
+//        profileData.startWorkout()
+//        profileData.startStopHRMonitor()
+//    }
 
     
     var body: some View {
@@ -62,10 +66,10 @@ struct StartView: View {
             Spacer().frame(maxWidth: .infinity)
             
             VStack{
-                Button(action: profileData.startStopHRMonitor) {
-                        playButtonStyle[profileData.HRMonitorActive]!.image
+                Button(action: profileData.startWorkout) {
+                    Image(systemName: "play.circle")
                     }
-                    .foregroundColor(playButtonStyle[profileData.HRMonitorActive]?.colour)
+                    .foregroundColor(Color.green)
                     .font(.title)
                     .frame(width: 40, height: 40)
                     .background(Color.clear)
