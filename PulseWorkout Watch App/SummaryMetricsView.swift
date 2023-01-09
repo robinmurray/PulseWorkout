@@ -30,7 +30,6 @@ struct SummaryMetricsView: View {
                         .formatted(.number.precision(.fractionLength(0))) + " bpm")
                 }
                 HStack {
-                    //                    Image(systemName: "heart.fill").foregroundColor(Color.red)
                     Text("Recovery").foregroundColor(Color.yellow)
                     
                     Spacer().frame(maxWidth: .infinity)

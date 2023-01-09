@@ -16,9 +16,6 @@ struct WorkoutSelectionView: View {
     
     var workoutLocations: [HKWorkoutSessionLocationType] = [.indoor, .outdoor, .unknown]
 
-    @State private var currentWorkoutType: HKWorkoutActivityType = HKWorkoutActivityType.cycling
-    @State private var currentWorkoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
-
     init(profileData: ProfileData) {
         self.profileData = profileData
     }
@@ -28,15 +25,12 @@ struct WorkoutSelectionView: View {
         VStack{
             Form() {
                 
-                Picker("Workout Type", selection: $profileData.currentWorkoutType) {
+                Picker("Workout Type", selection: $profileData.workoutType) {
                     ForEach(workoutTypes) { workoutType in
                         Text(workoutType.name).tag(workoutType.self)
                     }
                 }
-//                .onChange(of: profileData.currentWorkoutType) { _ in
-//                    workoutTypeChanged(newSelectedWorkoutType: currentWorkoutType )
-//                }
-                .onChange(of: profileData.currentWorkoutType) { _ in
+                .onChange(of: profileData.workoutType) { _ in
                     self.profileData.WriteToUserDefaults(profileName: profileData.profileName)
                 }
                 .font(.headline)
@@ -44,14 +38,14 @@ struct WorkoutSelectionView: View {
                 .fontWeight(.bold)
                 .listStyle(.carousel)
 
-                Picker("Workout Location", selection: $currentWorkoutLocation) {
+                Picker("Workout Location", selection: $profileData.workoutLocation) {
                     ForEach(workoutLocations) { workoutLocation in
                         Text(workoutLocation.name).tag(workoutLocation.self)
                     }
                 }
-//                .onChange(of: currentWorkoutType) { _ in
-//                    workoutTypeChanged(newSelectedWorkoutType: currentWorkoutType )
-//                }
+                .onChange(of: profileData.workoutType) { _ in
+                    self.profileData.WriteToUserDefaults(profileName: profileData.profileName)
+                }
                 .font(.headline)
                 .foregroundColor(Color.blue)
                 .fontWeight(.bold)
@@ -59,13 +53,6 @@ struct WorkoutSelectionView: View {
 
             }
         }
-    }
-    
-    func workoutTypeChanged(newSelectedWorkoutType: HKWorkoutActivityType){
-        print("picker changed! to \(newSelectedWorkoutType)")
-        
-        self.currentWorkoutType = newSelectedWorkoutType
-        profileData.selectedWorkout = newSelectedWorkoutType
     }
 
 }
