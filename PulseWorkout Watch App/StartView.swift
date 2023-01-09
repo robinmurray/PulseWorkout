@@ -59,7 +59,7 @@ struct StartView: View {
     
     var body: some View {
         VStack {
-            Text("Outdoor Cycling")
+            Text("Outdoor" + " " + "Cycling")
                     .font(.system(size: 15))
                     .frame(height: 0)
                 
