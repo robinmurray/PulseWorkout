@@ -98,6 +98,7 @@ class ProfileData: ObservableObject {
         self.constantRepeat = (profileDict["constantRepeat"] ?? false) as! Bool
         self.lockScreen = (profileDict["lockScreen"] ?? false) as! Bool
         self.workoutLocation = HKWorkoutSessionLocationType(rawValue: (profileDict["workoutLocation"] ?? HKWorkoutSessionLocationType.outdoor.rawValue) as! Int)!
+        self.workoutType = HKWorkoutActivityType(rawValue: (profileDict["workoutType"] ?? HKWorkoutActivityType.cycling.rawValue) as! UInt)!
     }
 
     func WriteToUserDefaults(profileName: String){
@@ -111,6 +112,7 @@ class ProfileData: ObservableObject {
             var playHaptic: Bool
             var constantRepeat: Bool
             var lockScreen: Bool
+            var workoutType: UInt
             var workoutLocation: Int
         }
 
@@ -125,6 +127,7 @@ class ProfileData: ObservableObject {
                 playHaptic: playHaptic,
                 constantRepeat: constantRepeat,
                 lockScreen: lockScreen,
+                workoutType: workoutType.rawValue,
                 workoutLocation: workoutLocation.rawValue)
 
             
