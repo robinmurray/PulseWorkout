@@ -103,6 +103,15 @@ extension HKWorkoutSessionLocationType: Identifiable {
             return ""
         }
     }
+    
+    var label: String {
+        switch self {
+        case .unknown:
+            return ""
+        default:
+            return self.name
+        }
+    }
 }
 
 

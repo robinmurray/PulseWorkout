@@ -59,7 +59,7 @@ struct StartView: View {
     
     var body: some View {
         VStack {
-            Text("Outdoor" + " " + "Cycling")
+            Text(profileData.workoutLocation.label + " " + profileData.workoutType.name)
                     .font(.system(size: 15))
                     .frame(height: 0)
                 
