@@ -43,7 +43,7 @@ struct WorkoutSelectionView: View {
                         Text(workoutLocation.name).tag(workoutLocation.self)
                     }
                 }
-                .onChange(of: profileData.workoutType) { _ in
+                .onChange(of: profileData.workoutLocation) { _ in
                     self.profileData.WriteToUserDefaults(profileName: profileData.profileName)
                 }
                 .font(.headline)

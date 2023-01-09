@@ -97,6 +97,7 @@ class ProfileData: ObservableObject {
         self.playHaptic = (profileDict["playHaptic"] ?? false) as! Bool
         self.constantRepeat = (profileDict["constantRepeat"] ?? false) as! Bool
         self.lockScreen = (profileDict["lockScreen"] ?? false) as! Bool
+        self.workoutLocation = HKWorkoutSessionLocationType(rawValue: (profileDict["workoutLocation"] ?? HKWorkoutSessionLocationType.outdoor.rawValue) as! Int)!
     }
 
     func WriteToUserDefaults(profileName: String){
@@ -110,6 +111,7 @@ class ProfileData: ObservableObject {
             var playHaptic: Bool
             var constantRepeat: Bool
             var lockScreen: Bool
+            var workoutLocation: Int
         }
 
 
@@ -122,7 +124,8 @@ class ProfileData: ObservableObject {
                 playSound: playSound,
                 playHaptic: playHaptic,
                 constantRepeat: constantRepeat,
-                lockScreen: lockScreen)
+                lockScreen: lockScreen,
+                workoutLocation: workoutLocation.rawValue)
 
             
             let data = try JSONEncoder().encode(storedProfile)
