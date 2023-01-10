@@ -8,7 +8,7 @@
 import Foundation
 import HealthKit
 import AVFoundation
-
+import WatchKit
 
 
 enum Profile: String, CaseIterable, Identifiable {
@@ -157,14 +157,14 @@ class ProfileData: ObservableObject {
     }
 
     func startWorkout() {
-        
+        startStopHRMonitor()
         // FILL OUT!!
         
     }
 
     
     func endWorkout() {
-        
+        startStopHRMonitor()
         // FILL OUT!!
         
     }
@@ -192,7 +192,7 @@ class ProfileData: ObservableObject {
             self.hrState = HRState.normal
             
             if lockScreen {
-//                WKInterfaceDevice.current().enableWaterLock()
+                WKInterfaceDevice.current().enableWaterLock()
             }
             self.appState = .live
         } else {
@@ -223,10 +223,10 @@ class ProfileData: ObservableObject {
             
             if (constantRepeat || !playedAlarm) {
                 if playSound {
- //                   WKInterfaceDevice.current().play(.failure)
+                    WKInterfaceDevice.current().play(.failure)
                 }
                 if playHaptic {
- //                   WKInterfaceDevice.current().play(.directionUp)
+                    WKInterfaceDevice.current().play(.directionUp)
                 }
 
                 playedAlarm = true
@@ -239,17 +239,13 @@ class ProfileData: ObservableObject {
             self.hrState = HRState.loAlarm
             
             if playSound && (constantRepeat || !playedAlarm) {
- //               WKInterfaceDevice.current().play(.failure)
+                WKInterfaceDevice.current().play(.failure)
                 playedAlarm = true
             }
             
         } else {
             self.hrState = HRState.normal
             playedAlarm = false
-        }
-        
-        if self.runCount >= self.runLimit {
-            self.startStopHRMonitor()
         }
         
     }
