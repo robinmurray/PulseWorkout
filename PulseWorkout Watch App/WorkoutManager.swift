@@ -19,7 +19,7 @@ enum Profile: String, CaseIterable, Identifiable {
 var profileNames: [String] = ["Race", "VO2 Max", "Threshold", "Aerobic"]
 
 
-class ProfileData: ObservableObject {
+class ProfileData: NSObject, ObservableObject {
     @Published var hiLimitAlarmActive: Bool
     @Published var hiLimitAlarm: Int
     @Published var loLimitAlarmActive: Bool
@@ -41,6 +41,9 @@ class ProfileData: ObservableObject {
     @Published var averageHeartRate: Double = 0
     @Published var heartRateRecovery: Double = 0
     @Published var activeEnergy: Double = 0
+   
+    @Published var workout: HKWorkout?
+    @Published var running = false
     
     var playedAlarm: Bool = false
     
@@ -48,6 +51,12 @@ class ProfileData: ObservableObject {
     var timer: Timer?
     var HRchange: Int = 10
     var runLimit: Int = 50
+
+    var selectedWorkout: HKWorkoutActivityType?
+    
+    let healthStore = HKHealthStore()
+    var session: HKWorkoutSession?
+    var builder: HKLiveWorkoutBuilder?
 
     
     init(profileName: String = ""){
@@ -68,6 +77,8 @@ class ProfileData: ObservableObject {
         self.playHaptic = false
         self.constantRepeat = false
         self.lockScreen = false
+        
+        super.init()
         
         readProfileFromUserDefaults(profileName: self.profileName)
         readWorkoutConfFromUserDefaults()
@@ -198,27 +209,52 @@ class ProfileData: ObservableObject {
     func startWorkout() {
         startStopHRMonitor()
         // FILL OUT!!
+     
         
+        let configuration = HKWorkoutConfiguration()
+        configuration.activityType = workoutType
+        configuration.locationType = workoutLocation
+        
+        do {
+            session = try HKWorkoutSession( healthStore: healthStore, configuration: configuration)
+            builder = session?.associatedWorkoutBuilder()
+        } catch {
+            print("Failed to start Workout Session")
+            return
+        }
+        
+        // Setup session and builder.
+        session?.delegate = self
+        builder?.delegate = self
+
+        // Set the workout builder's data source.
+        builder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore,
+                                                     workoutConfiguration: configuration)
+
+        // Start the workout session and begin data collection.
+        let startDate = Date()
+        session?.startActivity(with: startDate)
+        builder?.beginCollection(withStart: startDate) { (success, error) in
+            // The workout has started.
+        }
+
     }
 
     
     func endWorkout() {
+        session?.end()
         startStopHRMonitor()
-        // FILL OUT!!
         
     }
     
     func resumeWorkout() {
-        
+        session?.resume()
     }
     
     func pauseWorkout() {
-        
+        session?.pause()
     }
     
-    func requestAuthorization() {
-        
-    }
     
     func startStopHRMonitor() {
         
@@ -289,42 +325,6 @@ class ProfileData: ObservableObject {
         
     }
 
-}
-
-
-class WorkoutManager: NSObject, ObservableObject {
-    
-    var selectedWorkout: HKWorkoutActivityType?
-    
-    let healthStore = HKHealthStore()
-    var session: HKWorkoutSession?
-    var builder: HKLiveWorkoutBuilder?
-    
-    
-    func startWorkout(workoutType: HKWorkoutActivityType) {
-        let configuration = HKWorkoutConfiguration()
-        configuration.activityType = workoutType
-        configuration.locationType = .outdoor
-        
-        do {
-            session = try HKWorkoutSession( healthStore: healthStore, configuration: configuration)
-            builder = session?.associatedWorkoutBuilder()
-        } catch {
-            print("Failed to start Workout Session")
-            return
-        }
-        
-        builder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore, workoutConfiguration: configuration)
-     
-        // Start the session and collect data
-        let startDate = Date()
-        session?.startActivity(with: startDate)
-        builder?.beginCollection(withStart: startDate) { (success, error) in
-            // workout started
-        }
-        
-    }
-    
     func requestAuthorization() {
         // the quantity type to write to healthStore
         let typesToShare: Set = [HKWorkoutType.workoutType()]
@@ -334,7 +334,8 @@ class WorkoutManager: NSObject, ObservableObject {
             HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)!,
             HKObjectType.quantityType(forIdentifier: .distanceCycling)!,
             HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
-            HKObjectType.quantityType(forIdentifier: .heartRate)!
+            HKObjectType.quantityType(forIdentifier: .heartRate)!,
+            HKObjectType.quantityType(forIdentifier: .heartRateRecoveryOneMinute)!
         ]
 
         
@@ -343,6 +344,79 @@ class WorkoutManager: NSObject, ObservableObject {
                 // Handle the error here.
                 print("Authorisation Failed")
             }
+        }
+    }
+
+    
+    // MARK: - Workout Metrics
+    func updateForStatistics(_ statistics: HKStatistics?) {
+        guard let statistics = statistics else { return }
+
+        DispatchQueue.main.async {
+            switch statistics.quantityType {
+            case HKQuantityType.quantityType(forIdentifier: .heartRate):
+                let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
+                self.heartRate = statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0
+                self.averageHeartRate = statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0
+            case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
+                let energyUnit = HKUnit.kilocalorie()
+                self.activeEnergy = statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0
+            case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning), HKQuantityType.quantityType(forIdentifier: .distanceCycling):
+                let meterUnit = HKUnit.meter()
+                self.distance = statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0
+            default:
+                return
+            }
+        }
+    }
+
+    
+}
+
+
+
+
+// MARK: - HKWorkoutSessionDelegate
+extension ProfileData: HKWorkoutSessionDelegate {
+    func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState,
+                        from fromState: HKWorkoutSessionState, date: Date) {
+        DispatchQueue.main.async {
+            self.running = toState == .running
+        }
+
+        // Wait for the session to transition states before ending the builder.
+        if toState == .ended {
+            builder?.endCollection(withEnd: date) { (success, error) in
+                self.builder?.finishWorkout { (workout, error) in
+                    DispatchQueue.main.async {
+                        self.workout = workout
+                    }
+                }
+            }
+        }
+    }
+
+    func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
+
+    }
+}
+
+// MARK: - HKLiveWorkoutBuilderDelegate
+extension ProfileData: HKLiveWorkoutBuilderDelegate {
+    func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
+
+    }
+
+    func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
+        for type in collectedTypes {
+            guard let quantityType = type as? HKQuantityType else {
+                return // Nothing to do.
+            }
+
+            let statistics = workoutBuilder.statistics(for: quantityType)
+
+            // Update the published values.
+            updateForStatistics(statistics)
         }
     }
 }
