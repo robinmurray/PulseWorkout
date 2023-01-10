@@ -236,6 +236,7 @@ class ProfileData: NSObject, ObservableObject {
         session?.startActivity(with: startDate)
         builder?.beginCollection(withStart: startDate) { (success, error) in
             // The workout has started.
+            print("The workout has started")
         }
 
     }
@@ -299,10 +300,11 @@ class ProfileData: NSObject, ObservableObject {
             if (constantRepeat || !playedAlarm) {
                 if playSound {
                     WKInterfaceDevice.current().play(.failure)
+                    print("playing sound 1")
                 }
                 if playHaptic {
                     WKInterfaceDevice.current().play(.directionUp)
-                }
+                    print("playing sound 2")                }
 
                 playedAlarm = true
             }
@@ -315,6 +317,7 @@ class ProfileData: NSObject, ObservableObject {
             
             if playSound && (constantRepeat || !playedAlarm) {
                 WKInterfaceDevice.current().play(.failure)
+                print("playing sound 3")
                 playedAlarm = true
             }
             
@@ -351,8 +354,10 @@ class ProfileData: NSObject, ObservableObject {
     // MARK: - Workout Metrics
     func updateForStatistics(_ statistics: HKStatistics?) {
         guard let statistics = statistics else { return }
-
+        print("In Update for Statistyics")
+        
         DispatchQueue.main.async {
+            print("in DespatchQueue")
             switch statistics.quantityType {
             case HKQuantityType.quantityType(forIdentifier: .heartRate):
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
@@ -408,6 +413,8 @@ extension ProfileData: HKLiveWorkoutBuilderDelegate {
     }
 
     func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
+        
+        print("In workoutBuilder")
         for type in collectedTypes {
             guard let quantityType = type as? HKQuantityType else {
                 return // Nothing to do.
@@ -417,6 +424,8 @@ extension ProfileData: HKLiveWorkoutBuilderDelegate {
 
             // Update the published values.
             updateForStatistics(statistics)
+            
+            print("Updating statistics")
         }
     }
 }
