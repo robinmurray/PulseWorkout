@@ -31,7 +31,7 @@ struct WorkoutSelectionView: View {
                     }
                 }
                 .onChange(of: profileData.workoutType) { _ in
-                    self.profileData.WriteToUserDefaults(profileName: profileData.profileName)
+                    self.profileData.writeWorkoutConfToUserDefaults()
                 }
                 .font(.headline)
                 .foregroundColor(Color.blue)
@@ -44,7 +44,7 @@ struct WorkoutSelectionView: View {
                     }
                 }
                 .onChange(of: profileData.workoutLocation) { _ in
-                    self.profileData.WriteToUserDefaults(profileName: profileData.profileName)
+                    self.profileData.writeWorkoutConfToUserDefaults()
                 }
                 .font(.headline)
                 .foregroundColor(Color.blue)

@@ -44,14 +44,14 @@ struct ProfileView: View {
                     Text("Lock Screen")
                 }
                 .onChange(of: profileData.lockScreen) { value in
-                    self.profileData.WriteToUserDefaults(profileName: currentProfileName)
+                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
                 
                 Toggle(isOn: $profileData.hiLimitAlarmActive) {
                     Text("High Limit Alarm")
                 }
                 .onChange(of: profileData.hiLimitAlarmActive) { value in
-                    self.profileData.WriteToUserDefaults(profileName: currentProfileName)
+                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
                 
                 
@@ -67,14 +67,14 @@ struct ProfileView: View {
                 .minimumScaleFactor(0.20)
                 .frame(width:160, height: 40, alignment: .topLeading)
                 .onChange(of: profileData.hiLimitAlarm) { value in
-                    self.profileData.WriteToUserDefaults(profileName: currentProfileName)
+                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
                 Toggle(isOn: $profileData.loLimitAlarmActive) {
                     Text("Low Limit Alarm")
                 }
                 .onChange(of: profileData.loLimitAlarmActive) { value in
-                    self.profileData.WriteToUserDefaults(profileName: currentProfileName)
+                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
                 
                 
@@ -90,7 +90,7 @@ struct ProfileView: View {
                 .minimumScaleFactor(0.20)
                 .frame(width:160, height: 40, alignment: .topLeading)
                 .onChange(of: profileData.loLimitAlarm) { value in
-                    self.profileData.WriteToUserDefaults(profileName: currentProfileName)
+                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
                 
@@ -99,7 +99,7 @@ struct ProfileView: View {
                 }
                 .disabled(!(profileData.hiLimitAlarmActive || profileData.loLimitAlarmActive))
                 .onChange(of: profileData.playSound) { value in
-                    self.profileData.WriteToUserDefaults(profileName: currentProfileName)
+                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
                 Toggle(isOn: $profileData.playHaptic) {
@@ -107,7 +107,7 @@ struct ProfileView: View {
                 }
                 .disabled(!(profileData.hiLimitAlarmActive || profileData.loLimitAlarmActive))
                 .onChange(of: profileData.playHaptic) { value in
-                    self.profileData.WriteToUserDefaults(profileName: currentProfileName)
+                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
                 Toggle(isOn: $profileData.constantRepeat) {
@@ -115,7 +115,7 @@ struct ProfileView: View {
                 }
                 .disabled(!(profileData.hiLimitAlarmActive || profileData.loLimitAlarmActive))
                 .onChange(of: profileData.constantRepeat) { value in
-                    self.profileData.WriteToUserDefaults(profileName: currentProfileName)
+                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
 
@@ -126,7 +126,7 @@ struct ProfileView: View {
     func pickerChanged(newSelectedProfileName: String){
         print("picker changed! to \(currentProfileName)")
         
-        self.profileData.ChangeProfile(newProfileName: newSelectedProfileName)
+        self.profileData.changeProfile(newProfileName: newSelectedProfileName)
 
         self.currentProfileName = newSelectedProfileName
 

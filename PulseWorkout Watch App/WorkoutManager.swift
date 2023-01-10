@@ -69,11 +69,12 @@ class ProfileData: ObservableObject {
         self.constantRepeat = false
         self.lockScreen = false
         
-        ReadFromUserDefaults(profileName: self.profileName)
+        readProfileFromUserDefaults(profileName: self.profileName)
+        readWorkoutConfFromUserDefaults()
     }
     
-    func ReadFromUserDefaults(profileName: String){
-        print("Trying decode")
+    func readProfileFromUserDefaults(profileName: String){
+        print("Trying decode profile")
         
         // Initialise empty dictionary
         // try to read from userDefaults in to this - if fails then use defaults
@@ -97,11 +98,9 @@ class ProfileData: ObservableObject {
         self.playHaptic = (profileDict["playHaptic"] ?? false) as! Bool
         self.constantRepeat = (profileDict["constantRepeat"] ?? false) as! Bool
         self.lockScreen = (profileDict["lockScreen"] ?? false) as! Bool
-        self.workoutLocation = HKWorkoutSessionLocationType(rawValue: (profileDict["workoutLocation"] ?? HKWorkoutSessionLocationType.outdoor.rawValue) as! Int)!
-        self.workoutType = HKWorkoutActivityType(rawValue: (profileDict["workoutType"] ?? HKWorkoutActivityType.cycling.rawValue) as! UInt)!
     }
 
-    func WriteToUserDefaults(profileName: String){
+    func writeProfileToUserDefaults(profileName: String){
 
         struct StoredProfile: Codable {
             var hiLimitAlarmActive: Bool
@@ -112,8 +111,6 @@ class ProfileData: ObservableObject {
             var playHaptic: Bool
             var constantRepeat: Bool
             var lockScreen: Bool
-            var workoutType: UInt
-            var workoutLocation: Int
         }
 
 
@@ -126,11 +123,8 @@ class ProfileData: ObservableObject {
                 playSound: playSound,
                 playHaptic: playHaptic,
                 constantRepeat: constantRepeat,
-                lockScreen: lockScreen,
-                workoutType: workoutType.rawValue,
-                workoutLocation: workoutLocation.rawValue)
+                lockScreen: lockScreen)
 
-            
             let data = try JSONEncoder().encode(storedProfile)
             let jsonString = String(data: data, encoding: .utf8)
             print("JSON : \(String(describing: jsonString))")
@@ -140,14 +134,59 @@ class ProfileData: ObservableObject {
         }
     }
     
-    func ChangeProfile(newProfileName: String){
+    func changeProfile(newProfileName: String){
 
         UserDefaults.standard.set(newProfileName, forKey: "CurrentProfile")
         self.profileName = newProfileName
-        ReadFromUserDefaults(profileName: self.profileName)
+        readProfileFromUserDefaults(profileName: self.profileName)
 
     }
-   
+
+    
+    func writeWorkoutConfToUserDefaults(){
+
+        struct StoredWorkoutConf: Codable {
+            var workoutType: UInt
+            var workoutLocation: Int
+        }
+
+
+        do {
+            let storedWorkoutConf = StoredWorkoutConf(
+                workoutType: workoutType.rawValue,
+                workoutLocation: workoutLocation.rawValue)
+
+            
+            let data = try JSONEncoder().encode(storedWorkoutConf)
+            let jsonString = String(data: data, encoding: .utf8)
+            print("JSON : \(String(describing: jsonString))")
+            UserDefaults.standard.set(data, forKey: "WorkoutConf")
+        } catch {
+            print("Error enconding Workout Configuration")
+        }
+    }
+
+    func readWorkoutConfFromUserDefaults(){
+        print("Trying decode Workout Configuration")
+        
+        // Initialise empty dictionary
+        // try to read from userDefaults in to this - if fails then use defaults
+        var workoutConfDict: [String: Any] = [:]
+        
+        let workoutConfJSON: Data =  UserDefaults.standard.object(forKey: "WorkoutConf") as? Data ?? Data()
+        let jsonString = String(data: workoutConfJSON, encoding: .utf8)
+        print("Returned Workout Configuration data : \(String(describing: jsonString))")
+        do {
+            workoutConfDict = try JSONSerialization.jsonObject(with: workoutConfJSON, options: []) as! [String: Any]
+        } catch {
+            print("No valid dictionary stored")
+        }
+
+        // Read Dictionary or set default values
+        self.workoutLocation = HKWorkoutSessionLocationType(rawValue: (workoutConfDict["workoutLocation"] ?? HKWorkoutSessionLocationType.outdoor.rawValue) as! Int)!
+        self.workoutType = HKWorkoutActivityType(rawValue: (workoutConfDict["workoutType"] ?? HKWorkoutActivityType.cycling.rawValue) as! UInt)!
+    }
+
     func PauseHRMonitor() {
         self.appState = .paused
     }
