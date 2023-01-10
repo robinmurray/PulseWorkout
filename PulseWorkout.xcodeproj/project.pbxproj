@@ -28,6 +28,7 @@
 		E46EF0C62955C836006FA603 /* PausedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C52955C836006FA603 /* PausedTabView.swift */; };
 		E46EF0C82955C8E9006FA603 /* PausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C72955C8E9006FA603 /* PausedView.swift */; };
 		E46EF0CA2955F615006FA603 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C92955F615006FA603 /* WorkoutManager.swift */; };
+		E4968AD8296D710100DE0082 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4968AD7296D710000DE0082 /* HealthKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -95,6 +96,7 @@
 		E46EF0C92955F615006FA603 /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
 		E46EF0CB29560A1F006FA603 /* PulseWorkout Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "PulseWorkout Watch App.entitlements"; sourceTree = "<group>"; };
 		E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "PulseWorkout-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
+		E4968AD7296D710000DE0082 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS9.1.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -102,6 +104,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4968AD8296D710100DE0082 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -129,6 +132,7 @@
 				E46EF09329537CA3006FA603 /* PulseWorkout Watch AppTests */,
 				E46EF09D29537CA3006FA603 /* PulseWorkout Watch AppUITests */,
 				E46EF07929537CA1006FA603 /* Products */,
+				E4968AD6296D710000DE0082 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -192,6 +196,14 @@
 				E46EF0A029537CA3006FA603 /* PulseWorkout_Watch_AppUITestsLaunchTests.swift */,
 			);
 			path = "PulseWorkout Watch AppUITests";
+			sourceTree = "<group>";
+		};
+		E4968AD6296D710000DE0082 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				E4968AD7296D710000DE0082 /* HealthKit.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
