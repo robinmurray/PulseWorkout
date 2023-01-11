@@ -250,10 +250,12 @@ class ProfileData: NSObject, ObservableObject {
     
     func resumeWorkout() {
         session?.resume()
+        appState = .live
     }
     
     func pauseWorkout() {
         session?.pause()
+        appState = .paused
     }
     
     

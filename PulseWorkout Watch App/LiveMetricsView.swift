@@ -57,26 +57,26 @@ struct LiveMetricsView: View {
                 
                 ElapsedTimeView(elapsedTime: profileData.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
                     .foregroundStyle(.yellow)
-                
-                HStack {
+            }
+            HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
                     Spacer().frame(maxWidth: .infinity)
                     Text(profileData.heartRate
                         .formatted(.number.precision(.fractionLength(0))) + " bpm")
                 }
-                HStack {
-                    Text("Dist.").foregroundColor(Color.yellow)
-                    Spacer().frame(maxWidth: .infinity)
-                    Text(Measurement(value: profileData.distance,
-                                     unit: UnitLength.kilometers)
-                        .formatted(.measurement(width: .abbreviated,
-                                                usage: .asProvided
-                                               )
-                        )
+            HStack {
+                Text("Dist.").foregroundColor(Color.yellow)
+                Spacer().frame(maxWidth: .infinity)
+                Text(Measurement(value: profileData.distance,
+                                 unit: UnitLength.kilometers)
+                    .formatted(.measurement(width: .abbreviated,
+                                            usage: .asProvided
+                                           )
                     )
-                }
-                
+                )
             }
+                
+            
 
             Text(HRDisplay[profileData.hrState]?.HRText ?? String(profileData.HR))
                 .fontWeight(.bold)
