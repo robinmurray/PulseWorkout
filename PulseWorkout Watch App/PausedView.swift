@@ -18,7 +18,7 @@ struct PausedView: View {
 
     var body: some View {
         VStack{
-             Button(action: WKInterfaceDevice.current().enableWaterLock) {
+             Button(action: lockAndResumeWorkout) {
                 Image(systemName: "drop.circle")
             }
             .foregroundColor(Color.blue)
@@ -74,6 +74,10 @@ struct PausedView: View {
 
     }
     
+    func lockAndResumeWorkout() {
+        WKInterfaceDevice.current().enableWaterLock()
+        profileData.resumeWorkout()
+    }
 }
 
 struct PausedView_Previews: PreviewProvider {
