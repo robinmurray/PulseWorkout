@@ -10,7 +10,12 @@ import SwiftUI
 struct SummaryMetricsView: View {
     
     @ObservedObject var profileData: ProfileData
-    
+    @State private var durationFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
     
     init(profileData: ProfileData) {
         self.profileData = profileData
@@ -22,6 +27,13 @@ struct SummaryMetricsView: View {
 
             Text("Workout Summary")
             Form {
+                HStack {
+                    Text("Total Time")
+                        .foregroundColor(Color.yellow)
+                    Spacer().frame(maxWidth: .infinity)
+                    Text(durationFormatter.string(from: profileData.workout?.duration ?? 0.0) ?? "")
+                        .foregroundStyle(.yellow)
+                }
                 HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
                     Text("Ave.").foregroundColor(Color.yellow)
