@@ -50,12 +50,6 @@ struct StartView: View {
      true: Color.gray]
     
 
-//    func startWorkout() {
-//        workoutManager.startWorkout(workoutType: .cycling)
-//        profileData.startWorkout()
-//        profileData.startStopHRMonitor()
-//    }
-
     
     var body: some View {
         VStack {
