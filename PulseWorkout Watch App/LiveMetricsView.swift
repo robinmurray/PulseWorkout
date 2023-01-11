@@ -52,25 +52,31 @@ struct LiveMetricsView: View {
     var body: some View {
         VStack {
 
-            HStack {
-                Image(systemName: "heart.fill").foregroundColor(Color.red)
-                Spacer().frame(maxWidth: .infinity)
-                Text(profileData.heartRate
-                    .formatted(.number.precision(.fractionLength(0))) + " bpm")
-            }
-            HStack {
-                Text("Dist.").foregroundColor(Color.yellow)
-                Spacer().frame(maxWidth: .infinity)
-                Text(Measurement(value: profileData.distance,
-                                 unit: UnitLength.kilometers)
-                    .formatted(.measurement(width: .abbreviated,
-                                            usage: .asProvided
-                                           )
+            TimelineView(MetricsTimelineSchedule(from: profileData.builder?.startDate ?? Date(),
+                                                 isPaused: profileData.session?.state == .paused)) { context in
+                
+                ElapsedTimeView(elapsedTime: profileData.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
+                    .foregroundStyle(.yellow)
+                
+                HStack {
+                    Image(systemName: "heart.fill").foregroundColor(Color.red)
+                    Spacer().frame(maxWidth: .infinity)
+                    Text(profileData.heartRate
+                        .formatted(.number.precision(.fractionLength(0))) + " bpm")
+                }
+                HStack {
+                    Text("Dist.").foregroundColor(Color.yellow)
+                    Spacer().frame(maxWidth: .infinity)
+                    Text(Measurement(value: profileData.distance,
+                                     unit: UnitLength.kilometers)
+                        .formatted(.measurement(width: .abbreviated,
+                                                usage: .asProvided
+                                               )
+                        )
                     )
-                )
+                }
+                
             }
-
-            
 
             Text(HRDisplay[profileData.hrState]?.HRText ?? String(profileData.HR))
                 .fontWeight(.bold)
@@ -116,3 +122,24 @@ struct LiveMetricsView_Previews: PreviewProvider {
     }
 }
 
+
+private struct MetricsTimelineSchedule: TimelineSchedule {
+    var startDate: Date
+    var isPaused: Bool
+
+    init(from startDate: Date, isPaused: Bool) {
+        self.startDate = startDate
+        self.isPaused = isPaused
+    }
+
+    func entries(from startDate: Date, mode: TimelineScheduleMode) -> AnyIterator<Date> {
+        var baseSchedule = PeriodicTimelineSchedule(from: self.startDate,
+                                                    by: (mode == .lowFrequency ? 1.0 : 1.0 / 30.0))
+            .entries(from: startDate, mode: mode)
+        
+        return AnyIterator<Date> {
+            guard !isPaused else { return nil }
+            return baseSchedule.next()
+        }
+    }
+}
