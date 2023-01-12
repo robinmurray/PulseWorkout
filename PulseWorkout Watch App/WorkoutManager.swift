@@ -237,7 +237,6 @@ class ProfileData: NSObject, ObservableObject {
         builder?.beginCollection(withStart: startDate) { (success, error) in
             // The workout has started.
             print("The workout has started")
-
         }
 
     }
@@ -283,9 +282,9 @@ class ProfileData: NSObject, ObservableObject {
     @objc func fireTimer() {
         self.runCount += 1
 
-        if self.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
-            WKInterfaceDevice.current().enableWaterLock()
-        }
+//        if self.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
+ //           WKInterfaceDevice.current().enableWaterLock()
+  //      }
 
         if self.HR > 180 {
             self.HRchange = -10
@@ -349,7 +348,7 @@ class ProfileData: NSObject, ObservableObject {
         healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead)  { (success, error) in
             if !success {
                 // Handle the error here.
-                print("Authorisation Failed")
+                print("Authorisation Failed with error: \(String(describing: error))")
             }
         }
     }
@@ -360,7 +359,6 @@ class ProfileData: NSObject, ObservableObject {
         guard let statistics = statistics else { return }
         print("In Update for Statistics")
         
-
         DispatchQueue.main.async {
             print("in DespatchQueue")
                         
@@ -394,6 +392,8 @@ extension ProfileData: HKWorkoutSessionDelegate {
         DispatchQueue.main.async {
             self.running = toState == .running
         }
+        
+        
         // Wait for the session to transition states before ending the builder.
         if toState == .ended {
             builder?.endCollection(withEnd: date) { (success, error) in
