@@ -236,12 +236,20 @@ class ProfileData: NSObject, ObservableObject {
         session?.startActivity(with: startDate)
         builder?.beginCollection(withStart: startDate) { (success, error) in
             // The workout has started.
-            print("The workout has started")
+            if !success {
+                            // Handle the error here.
+                print("Workout start Failed with error: \(String(describing: error))")
+            } else {
+                print("Workout Started")
+            }
+        }
+        
+        if self.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
+            Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(delayedEnableWaterLock), userInfo: nil, repeats: false)
         }
 
     }
 
-    
     func endWorkout() {
         session?.end()
         startStopHRMonitor()
@@ -278,6 +286,13 @@ class ProfileData: NSObject, ObservableObject {
         }
         
     }
+    
+    @objc func delayedEnableWaterLock() {
+        
+        WKInterfaceDevice.current().enableWaterLock()
+        
+    }
+    
     
     @objc func fireTimer() {
         self.runCount += 1
