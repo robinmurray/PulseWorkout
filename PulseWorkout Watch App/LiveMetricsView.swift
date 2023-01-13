@@ -58,33 +58,36 @@ struct LiveMetricsView: View {
                 ElapsedTimeView(elapsedTime: profileData.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
                     .foregroundStyle(.yellow)
             }
+                
+            
+
+ //           Text(HRDisplay[profileData.hrState]?.HRText ?? String(profileData.HR))
+//                .fontWeight(.bold)
+//                .foregroundColor(HRDisplay[profileData.hrState]?.colour)
+//                .frame(height: 80)
+//                .padding()
+//                .font(.system(size: 80))
+
             HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
                     Spacer().frame(maxWidth: .infinity)
                     Text(profileData.heartRate
-                        .formatted(.number.precision(.fractionLength(0))) + " bpm")
+                        .formatted(.number.precision(.fractionLength(0))))
+                    .fontWeight(.bold)
+                    .foregroundColor(HRDisplay[profileData.hrState]?.colour)
+//                    .multilineTextAlignment(.trailing)
+                    .frame(width: 140.0, height: 80)
+ //                   .padding()
+                    .font(.system(size: 80))
                 }
+
             HStack {
                 Text("Dist.").foregroundColor(Color.yellow)
                 Spacer().frame(maxWidth: .infinity)
-                Text(Measurement(value: profileData.distance,
-                                 unit: UnitLength.kilometers)
-                    .formatted(.measurement(width: .abbreviated,
-                                            usage: .asProvided
-                                           )
-                    )
-                )
+                Text(distanceFormatter(distance: profileData.distance))
+                    .frame(maxWidth: .infinity, alignment: .trailing)
+                        .padding(.trailing, 8)
             }
-                
-            
-
-            Text(HRDisplay[profileData.hrState]?.HRText ?? String(profileData.HR))
-                .fontWeight(.bold)
-                .foregroundColor(HRDisplay[profileData.hrState]?.colour)
-                .frame(height: 80)
-                .padding()
-                .font(.system(size: 80))
-
 
             HStack {
                     Image(systemName: "arrow.down.to.line.circle.fill")
@@ -109,6 +112,30 @@ struct LiveMetricsView: View {
     
 }
     
+func distanceFormatter (distance: Double) -> String {
+    var unit = UnitLength.meters
+    var displayDistance: Double = distance.rounded()
+    if distance > 1000 {
+        unit = UnitLength.kilometers
+        displayDistance = distance / 1000
+        if displayDistance > 100 {
+            displayDistance = (displayDistance * 10).rounded() / 10
+        } else if displayDistance > 10 {
+            displayDistance = (displayDistance * 100).rounded() / 100
+        } else {
+            displayDistance = (displayDistance * 10).rounded() / 10
+        }
+
+    }
+    
+    return  Measurement(value: displayDistance,
+                       unit: unit)
+    .formatted(.measurement(width: .abbreviated,
+                            usage: .asProvided
+                           )
+    )
+
+}
 
 
 

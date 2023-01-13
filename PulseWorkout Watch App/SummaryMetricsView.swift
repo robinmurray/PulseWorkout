@@ -67,13 +67,8 @@ struct SummaryMetricsView: View {
                     
                     Text("Dist.").foregroundColor(Color.yellow)
                     Spacer().frame(maxWidth: .infinity)
-                    Text(Measurement(value: profileData.distance,
-                                     unit: UnitLength.kilometers)
-                        .formatted(.measurement(width: .abbreviated,
-                                                usage: .asProvided
-                                               )
+                    Text(distanceFormatter(distance: profileData.distance)
                         )
-                    )
                 }
                 
                 Button(action: {

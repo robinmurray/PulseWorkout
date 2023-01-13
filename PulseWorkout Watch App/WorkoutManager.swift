@@ -31,7 +31,6 @@ class ProfileData: NSObject, ObservableObject {
     @Published var profileName: String
     @Published var hrState: HRState = HRState.inactive
     @Published var HRMonitorActive: Bool = false
-    @Published var HR: Int = 60
     @Published var appState: AppState = .initial
     @Published var workoutType: HKWorkoutActivityType = HKWorkoutActivityType.cycling
     @Published var workoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
@@ -272,7 +271,7 @@ class ProfileData: NSObject, ObservableObject {
         if !(HRMonitorActive) {
             print("Initialising timer")
             self.runCount = 0
-            self.timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+            self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
             print("Timer initialised")
             HRMonitorActive = true
             self.hrState = HRState.normal
@@ -297,21 +296,8 @@ class ProfileData: NSObject, ObservableObject {
     @objc func fireTimer() {
         self.runCount += 1
 
-//        if self.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
- //           WKInterfaceDevice.current().enableWaterLock()
-  //      }
-
-        if self.HR > 180 {
-            self.HRchange = -10
-        }
-        if self.HR < 60 {
-            self.HRchange = 10
-        }
-        
-        self.HR += self.HRchange
-        
         if (self.hiLimitAlarmActive) &&
-           (self.HR >= self.hiLimitAlarm) {
+           (Int(self.heartRate) >= self.hiLimitAlarm) {
             
             self.hrState = HRState.hiAlarm
             
@@ -329,7 +315,7 @@ class ProfileData: NSObject, ObservableObject {
 
             
         } else if (self.loLimitAlarmActive) &&
-                    (self.HR <= self.loLimitAlarm) {
+                    (Int(self.heartRate) <= self.loLimitAlarm) {
             
             self.hrState = HRState.loAlarm
             
