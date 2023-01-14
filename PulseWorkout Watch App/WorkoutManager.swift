@@ -11,6 +11,15 @@ import AVFoundation
 import WatchKit
 
 
+struct SummaryMetrics: Codable {
+    var duration: Double
+    var averageHeartRate: Double
+    var heartRateRecovery: Double
+    var activeEnergy: Double
+    var distance: Double
+}
+
+
 enum Profile: String, CaseIterable, Identifiable {
     case race, vo2, threshold, aerobic
     var id: Self { self }
@@ -37,9 +46,6 @@ class ProfileData: NSObject, ObservableObject {
 
     @Published var heartRate: Double = 0
     @Published var distance: Double = 0
-    @Published var averageHeartRate: Double = 0
-    @Published var heartRateRecovery: Double = 0
-    @Published var activeEnergy: Double = 0
    
     @Published var workout: HKWorkout?
     @Published var running = false
@@ -57,6 +63,13 @@ class ProfileData: NSObject, ObservableObject {
     var session: HKWorkoutSession?
     var builder: HKLiveWorkoutBuilder?
 
+    @Published var summaryMetrics = SummaryMetrics(
+        duration: 0,
+        averageHeartRate: 0,
+        heartRateRecovery: 0,
+        activeEnergy: 0,
+        distance: 0
+        )
     
     init(profileName: String = ""){
     
@@ -367,13 +380,13 @@ class ProfileData: NSObject, ObservableObject {
             case HKQuantityType.quantityType(forIdentifier: .heartRate):
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
                 self.heartRate = statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0
-                self.averageHeartRate = statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0
+                self.summaryMetrics.averageHeartRate = statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0
             case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
                 let energyUnit = HKUnit.kilocalorie()
-                self.activeEnergy = statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0
+                self.summaryMetrics.activeEnergy = statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0
             case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning), HKQuantityType.quantityType(forIdentifier: .distanceCycling):
                 let meterUnit = HKUnit.meter()
-                self.distance = statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0
+                self.summaryMetrics.distance = statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0
             default:
                 return
             }

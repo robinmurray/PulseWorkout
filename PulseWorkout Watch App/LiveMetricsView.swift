@@ -84,7 +84,7 @@ struct LiveMetricsView: View {
             HStack {
                 Text("Dist.").foregroundColor(Color.yellow)
                 Spacer().frame(maxWidth: .infinity)
-                Text(distanceFormatter(distance: profileData.distance))
+                Text(distanceFormatter(distance: profileData.summaryMetrics.distance))
                     .frame(maxWidth: .infinity, alignment: .trailing)
                         .padding(.trailing, 8)
             }

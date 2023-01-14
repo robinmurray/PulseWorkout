@@ -1,13 +1,13 @@
 //
-//  SummaryMetricsView.swift
+//  SummaryMetricsSubView.swift
 //  PulseWorkout Watch App
 //
-//  Created by Robin Murray on 21/12/2022.
+//  Created by Robin Murray on 14/01/2023.
 //
 
 import SwiftUI
 
-struct SummaryMetricsView: View {
+struct SummaryMetricsSubView: View {
     
     @ObservedObject var profileData: ProfileData
     @State private var durationFormatter: DateComponentsFormatter = {
@@ -21,11 +21,10 @@ struct SummaryMetricsView: View {
         self.profileData = profileData
     }
 
-
+    
     var body: some View {
         VStack {
 
-            Text("Workout Summary")
             Form {
                 HStack {
                     Text("Total Time")
@@ -70,34 +69,19 @@ struct SummaryMetricsView: View {
                     Text(distanceFormatter(distance: profileData.summaryMetrics.distance)
                         )
                 }
-                
-                Button(action: SaveWorkout) {
-                    Text("Done").padding([.leading, .trailing], 60)
-                }
-                
+                                
             }
 
         }
-    }
 
-    func SaveWorkout() {
-        profileData.summaryMetrics.duration = profileData.workout?.duration ?? 0.0
-        
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(profileData.summaryMetrics) {
-            let defaults = UserDefaults.standard
-            defaults.set(encoded, forKey: "LastSession")
-        }
-        
-        profileData.appState = .initial
     }
 }
 
-struct SummaryMetricsView_Previews: PreviewProvider {
+struct SummaryMetricsSubView_Previews: PreviewProvider {
 
     static var profileData = ProfileData()
 
     static var previews: some View {
-        SummaryMetricsView(profileData: profileData)
+        SummaryMetricsSubView(profileData: profileData)
     }
 }
