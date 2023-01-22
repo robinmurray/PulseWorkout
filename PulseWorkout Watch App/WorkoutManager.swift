@@ -17,6 +17,48 @@ struct SummaryMetrics: Codable {
     var heartRateRecovery: Double
     var activeEnergy: Double
     var distance: Double
+    
+    func put(tag: String){
+        let encoder = JSONEncoder()
+        if let encoded = try? encoder.encode(self) {
+            let defaults = UserDefaults.standard
+            defaults.set(encoded, forKey: tag)
+        }
+
+    }
+
+    mutating func get(tag: String){
+        print("Trying decode SummaryMetrics")
+        
+        // Initialise empty dictionary
+        // try to read from userDefaults in to this - if fails then use defaults
+        var metricsDict: [String: Any] = [:]
+        
+        let metricsJSON: Data =  UserDefaults.standard.object(forKey: tag) as? Data ?? Data()
+        let jsonString = String(data: metricsJSON, encoding: .utf8)
+        print("Returned data : \(String(describing: jsonString))")
+        do {
+            metricsDict = try JSONSerialization.jsonObject(with: metricsJSON, options: []) as! [String: Any]
+        } catch {
+            print("No valid dictionary stored")
+        }
+
+        // Read Dictionary or set default values
+        duration = (metricsDict["duration"] ?? 0) as! Double
+        averageHeartRate = (metricsDict["averageHeartRate"] ?? 0) as! Double
+        heartRateRecovery = (metricsDict["heartRateRecovery"] ?? 0) as! Double
+        activeEnergy = (metricsDict["activeEnergy"] ?? 0) as! Double
+        distance = (metricsDict["distance"] ?? 0) as! Double
+    }
+
+    mutating func reset() {
+        duration = 0
+        averageHeartRate = 0
+        heartRateRecovery = 0
+        activeEnergy = 0
+        distance = 0
+
+    }
 }
 
 
@@ -70,7 +112,16 @@ class ProfileData: NSObject, ObservableObject {
         activeEnergy: 0,
         distance: 0
         )
-    
+
+    @Published var lastSummaryMetrics = SummaryMetrics(
+        duration: 0,
+        averageHeartRate: 0,
+        heartRateRecovery: 0,
+        activeEnergy: 0,
+        distance: 0
+        )
+
+
     init(profileName: String = ""){
     
         // Read profile name from user defaults if nothing passed in
@@ -94,6 +145,7 @@ class ProfileData: NSObject, ObservableObject {
         
         readProfileFromUserDefaults(profileName: self.profileName)
         readWorkoutConfFromUserDefaults()
+        lastSummaryMetrics.get(tag: "LastSession")
     }
     
     func readProfileFromUserDefaults(profileName: String){
@@ -263,9 +315,11 @@ class ProfileData: NSObject, ObservableObject {
     }
 
     func endWorkout() {
+        self.summaryMetrics.duration = self.builder?.elapsedTime(at: Date()) ?? 0
         session?.end()
-        startStopHRMonitor()
         
+        startStopHRMonitor()
+//        self.summaryMetrics.duration = self.workout?.duration ?? 0.0
     }
     
     func resumeWorkout() {
@@ -285,6 +339,7 @@ class ProfileData: NSObject, ObservableObject {
             print("Initialising timer")
             self.runCount = 0
             self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+            self.timer!.tolerance = 0.2
             print("Timer initialised")
             HRMonitorActive = true
             self.hrState = HRState.normal

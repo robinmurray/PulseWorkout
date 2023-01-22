@@ -26,7 +26,10 @@ struct SummaryTabView: View {
     var body: some View {
         TabView(selection: $selection) {
 
-            SummaryMetricsView(profileData: profileData)
+            SummaryMetricsView(profileData: profileData,
+                               viewTitleText: "Summary Metrics",
+                               displayDone: true,
+                               metrics: profileData.summaryMetrics)
                 .tag(Tab.summaryMetrics)
             
             NowPlayingView().tag(Tab.nowPlaying)

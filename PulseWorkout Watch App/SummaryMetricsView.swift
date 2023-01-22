@@ -10,6 +10,10 @@ import SwiftUI
 struct SummaryMetricsView: View {
     
     @ObservedObject var profileData: ProfileData
+    var viewTitleText: String
+    var displayDone: Bool
+    var metrics: SummaryMetrics
+    
     @State private var durationFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
@@ -17,35 +21,42 @@ struct SummaryMetricsView: View {
         return formatter
     }()
     
-    init(profileData: ProfileData) {
+    init(profileData: ProfileData, viewTitleText: String, displayDone: Bool, metrics: SummaryMetrics) {
         self.profileData = profileData
+        self.viewTitleText = viewTitleText
+        self.displayDone = displayDone
+        self.metrics = metrics
     }
 
 
     var body: some View {
         VStack {
 
-            Text("Workout Summary")
+            Text(viewTitleText)
+            
+//            SummaryMetricsSubView(profileData: profileData)
+
             Form {
+
                 HStack {
                     Text("Total Time")
                         .foregroundColor(Color.yellow)
                     Spacer().frame(maxWidth: .infinity)
-                    Text(durationFormatter.string(from: profileData.workout?.duration ?? 0.0) ?? "")
+                    Text(durationFormatter.string(from: metrics.duration) ?? "")
                         .foregroundStyle(.yellow)
                 }
                 HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
                     Text("Ave.").foregroundColor(Color.yellow)
                     Spacer().frame(maxWidth: .infinity)
-                    Text(profileData.summaryMetrics.averageHeartRate
+                    Text(metrics.averageHeartRate
                         .formatted(.number.precision(.fractionLength(0))) + " bpm")
                 }
                 HStack {
                     Text("Recovery").foregroundColor(Color.yellow)
                     
                     Spacer().frame(maxWidth: .infinity)
-                    Text(profileData.summaryMetrics.heartRateRecovery
+                    Text(metrics.heartRateRecovery
                         .formatted(.number.precision(.fractionLength(0))) )
                 }
                 
@@ -55,7 +66,7 @@ struct SummaryMetricsView: View {
                     
                     Spacer().frame(maxWidth: .infinity)
                     
-                    Text(Measurement(value: profileData.summaryMetrics.activeEnergy,
+                    Text(Measurement(value: metrics.activeEnergy,
                                      unit: UnitEnergy.kilocalories).formatted(.measurement(
                                         width: .abbreviated,
                                         usage: .workout
@@ -67,12 +78,15 @@ struct SummaryMetricsView: View {
                     
                     Text("Dist.").foregroundColor(Color.yellow)
                     Spacer().frame(maxWidth: .infinity)
-                    Text(distanceFormatter(distance: profileData.summaryMetrics.distance)
+                    Text(distanceFormatter(distance: metrics.distance)
                         )
                 }
-                
-                Button(action: SaveWorkout) {
-                    Text("Done").padding([.leading, .trailing], 60)
+
+                if displayDone {
+                    Button(action: SaveWorkout) {
+                        Text("Done").padding([.leading, .trailing], 60)
+                    }
+
                 }
                 
             }
@@ -81,13 +95,11 @@ struct SummaryMetricsView: View {
     }
 
     func SaveWorkout() {
-        profileData.summaryMetrics.duration = profileData.workout?.duration ?? 0.0
+//        profileData.summaryMetrics.duration = profileData.workout?.duration ?? 0.0
         
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(profileData.summaryMetrics) {
-            let defaults = UserDefaults.standard
-            defaults.set(encoded, forKey: "LastSession")
-        }
+        profileData.summaryMetrics.put(tag: "LastSession")
+        profileData.lastSummaryMetrics.get(tag: "LastSession")
+        profileData.summaryMetrics.reset()
         
         profileData.appState = .initial
     }
@@ -96,8 +108,18 @@ struct SummaryMetricsView: View {
 struct SummaryMetricsView_Previews: PreviewProvider {
 
     static var profileData = ProfileData()
+    static var summaryMetrics = SummaryMetrics(
+        duration: 0,
+        averageHeartRate: 0,
+        heartRateRecovery: 0,
+        activeEnergy: 0,
+        distance: 0
+        )
 
     static var previews: some View {
-        SummaryMetricsView(profileData: profileData)
+        SummaryMetricsView(profileData: profileData,
+                           viewTitleText: "Hello World",
+                           displayDone: true,
+                           metrics: summaryMetrics)
     }
 }
