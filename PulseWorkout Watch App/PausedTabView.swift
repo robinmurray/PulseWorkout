@@ -30,8 +30,9 @@ struct PausedTabView: View {
             PausedView(profileData: profileData)
                 .tag(Tab.paused)
             
-            NowPlayingView().tag(Tab.nowPlaying)
-
+            NowPlayingView()
+                .tag(Tab.nowPlaying)
+            
             HelpView()
                 .tag(Tab.help)
             

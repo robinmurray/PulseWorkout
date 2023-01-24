@@ -18,7 +18,7 @@ struct StopView: View {
     
     var body: some View {
         VStack{
-             Button(action: WKInterfaceDevice.current().enableWaterLock) {
+             Button(action: lockScreen) {
                 Image(systemName: "drop.circle")
             }
             .foregroundColor(Color.blue)
@@ -68,11 +68,15 @@ struct StopView: View {
 
                 Spacer()
             }
-
+            .navigationTitle("Workout Control")
+            .navigationBarTitleDisplayMode(.inline)
         }
-
     }
     
+    func lockScreen() {
+        WKInterfaceDevice.current().enableWaterLock()
+        profileData.liveTabSelection = LiveScreenTab.liveMetrics
+    }
 }
 
 struct StopView_Previews: PreviewProvider {

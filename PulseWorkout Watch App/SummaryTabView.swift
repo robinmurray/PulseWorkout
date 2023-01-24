@@ -31,12 +31,14 @@ struct SummaryTabView: View {
                                displayDone: true,
                                metrics: profileData.summaryMetrics)
                 .tag(Tab.summaryMetrics)
+
             
-            NowPlayingView().tag(Tab.nowPlaying)
+            NowPlayingView()
+                .tag(Tab.nowPlaying)
 
             HelpView()
                 .tag(Tab.help)
-            
+
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))

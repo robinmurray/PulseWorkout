@@ -55,7 +55,7 @@ struct StartView: View {
         VStack {
             Text(profileData.workoutLocation.label + " " + profileData.workoutType.name)
                     .font(.system(size: 15))
-                    .frame(height: 0)
+                    .frame(height: 5)
                 
             Spacer().frame(maxWidth: .infinity)
             
@@ -119,6 +119,8 @@ struct StartView: View {
                 
             }
             .padding()
+            .navigationTitle("Start Workout")
+            .navigationBarTitleDisplayMode(.inline)
         }
 }
 

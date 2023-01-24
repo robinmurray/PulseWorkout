@@ -9,30 +9,32 @@
 import SwiftUI
 import WatchKit
 
+enum LiveScreenTab {
+    case stop, liveMetrics, nowPlaying
+}
+
 struct LiveTabView: View {
     
-    enum Tab {
-        case stop, liveMetrics, nowPlaying
-    }
-
     @ObservedObject var profileData: ProfileData
 
-    @State private var selection: Tab = .liveMetrics
+//    @State private var selection: LiveScreenTab = .liveMetrics
     
     init(profileData: ProfileData) {
         self.profileData = profileData
     }
     
     var body: some View {
-        TabView(selection: $selection) {
+        TabView(selection: $profileData.liveTabSelection) {
 
             StopView(profileData: profileData)
-                .tag(Tab.stop)
+                .tag(LiveScreenTab.stop)
             
             LiveMetricsView(profileData: profileData)
-                .tag(Tab.liveMetrics)
+                .tag(LiveScreenTab.liveMetrics)
+
             
-            NowPlayingView().tag(Tab.nowPlaying)
+            NowPlayingView()
+                .tag(LiveScreenTab.nowPlaying)
 
         }
         .tabViewStyle(.page(indexDisplayMode: .always))

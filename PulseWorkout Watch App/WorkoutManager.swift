@@ -92,6 +92,8 @@ class ProfileData: NSObject, ObservableObject {
     @Published var workout: HKWorkout?
     @Published var running = false
     
+    @Published var liveTabSelection: LiveScreenTab = .liveMetrics
+
     var playedAlarm: Bool = false
     
     var runCount = 0
@@ -271,6 +273,9 @@ class ProfileData: NSObject, ObservableObject {
     }
 
     func startWorkout() {
+        
+        liveTabSelection = LiveScreenTab.liveMetrics
+        
         startStopHRMonitor()
         // FILL OUT!!
      

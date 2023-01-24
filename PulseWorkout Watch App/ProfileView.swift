@@ -120,6 +120,8 @@ struct ProfileView: View {
 
 
             }
+            .navigationTitle("Alarm Profile")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     

@@ -27,11 +27,12 @@ struct StartTabView: View {
     var body: some View {
         TabView(selection: $selection) {
 
-            WorkoutSelectionView(profileData: profileData).tag(Tab.workoutType)
+            WorkoutSelectionView(profileData: profileData)
+                .tag(Tab.workoutType)
             
             StartView(profileData: profileData)
                 .tag(Tab.start)
-
+            
             SummaryMetricsView(profileData: profileData,
                                viewTitleText: "Last Workout",
                                displayDone: false,
@@ -40,12 +41,13 @@ struct StartTabView: View {
 
             ProfileView(profileData: profileData)
                 .tag(Tab.profile)
+
             
             NowPlayingView().tag(Tab.nowPlaying)
             
             HelpView()
                 .tag(Tab.help)
-            
+
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))

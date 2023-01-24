@@ -71,14 +71,17 @@ struct PausedView: View {
             }
 
         }
-
+        .navigationTitle("Workout Paused")
+        .navigationBarTitleDisplayMode(.inline)
     }
+
     
     func lockAndResumeWorkout() {
         WKInterfaceDevice.current().enableWaterLock()
         profileData.resumeWorkout()
     }
 }
+
 
 struct PausedView_Previews: PreviewProvider {
     

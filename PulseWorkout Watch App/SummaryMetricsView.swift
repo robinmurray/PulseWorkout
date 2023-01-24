@@ -30,68 +30,48 @@ struct SummaryMetricsView: View {
 
 
     var body: some View {
-        VStack {
+        
+        ScrollView {
+            VStack(alignment: .leading) {
+ //               Text(viewTitleText)
 
-            Text(viewTitleText)
-            
-//            SummaryMetricsSubView(profileData: profileData)
+                SummaryMetricView(title: "Total Time",
+                                  value: durationFormatter.string(from: metrics.duration) ?? "")
+                .foregroundStyle(.yellow)
 
-            Form {
+                SummaryMetricView(title: "Ave. HR",
+                                  value: metrics.averageHeartRate
+                    .formatted(.number.precision(.fractionLength(0))) + " bpm")
+                .foregroundStyle(.yellow)
 
-                HStack {
-                    Text("Total Time")
-                        .foregroundColor(Color.yellow)
-                    Spacer().frame(maxWidth: .infinity)
-                    Text(durationFormatter.string(from: metrics.duration) ?? "")
-                        .foregroundStyle(.yellow)
-                }
-                HStack {
-                    Image(systemName: "heart.fill").foregroundColor(Color.red)
-                    Text("Ave.").foregroundColor(Color.yellow)
-                    Spacer().frame(maxWidth: .infinity)
-                    Text(metrics.averageHeartRate
-                        .formatted(.number.precision(.fractionLength(0))) + " bpm")
-                }
-                HStack {
-                    Text("Recovery").foregroundColor(Color.yellow)
-                    
-                    Spacer().frame(maxWidth: .infinity)
-                    Text(metrics.heartRateRecovery
-                        .formatted(.number.precision(.fractionLength(0))) )
-                }
-                
-                HStack {
-                    
-                    Text("Energy").foregroundColor(Color.yellow)
-                    
-                    Spacer().frame(maxWidth: .infinity)
-                    
-                    Text(Measurement(value: metrics.activeEnergy,
-                                     unit: UnitEnergy.kilocalories).formatted(.measurement(
-                                        width: .abbreviated,
-                                        usage: .workout
-                                        //                                        numberFormat: .numeric(precision: .fractionLength(0))
-                                     ))
-                    )
-                }
-                HStack {
-                    
-                    Text("Dist.").foregroundColor(Color.yellow)
-                    Spacer().frame(maxWidth: .infinity)
-                    Text(distanceFormatter(distance: metrics.distance)
-                        )
-                }
+                SummaryMetricView(title: "Recovery",
+                                  value: metrics.heartRateRecovery
+                    .formatted(.number.precision(.fractionLength(0))))
+                .foregroundStyle(.yellow)
+
+                SummaryMetricView(title: "Energy",
+                                  value: Measurement(value: metrics.activeEnergy,
+                                                     unit: UnitEnergy.kilocalories).formatted(.measurement(
+                                                        width: .abbreviated,
+                                                        usage: .workout)))
+                .foregroundStyle(.yellow)
+
+                SummaryMetricView(title: "Dist.",
+                                  value: distanceFormatter(distance: metrics.distance))
+                .foregroundStyle(.yellow)
 
                 if displayDone {
                     Button(action: SaveWorkout) {
-                        Text("Done").padding([.leading, .trailing], 60)
+                        Text("Done").padding([.leading, .trailing], 40)
                     }
-
                 }
-                
-            }
 
+            }
+            .scenePadding()
         }
+        .navigationTitle(viewTitleText)
+        .navigationBarTitleDisplayMode(.inline)
+        
     }
 
     func SaveWorkout() {
@@ -104,6 +84,21 @@ struct SummaryMetricsView: View {
         profileData.appState = .initial
     }
 }
+
+
+struct SummaryMetricView: View {
+    var title: String
+    var value: String
+
+    var body: some View {
+        Text(title)
+            .foregroundStyle(.foreground)
+        Text(value)
+            .font(.system(.title2, design: .rounded).lowercaseSmallCaps())
+        Divider()
+    }
+}
+
 
 struct SummaryMetricsView_Previews: PreviewProvider {
 

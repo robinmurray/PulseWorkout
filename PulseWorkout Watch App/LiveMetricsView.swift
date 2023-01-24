@@ -108,6 +108,8 @@ struct LiveMetricsView: View {
                 }
             }
         .padding()
+        .navigationTitle("Workout")
+        .navigationBarTitleDisplayMode(.inline)
     }
     
 }

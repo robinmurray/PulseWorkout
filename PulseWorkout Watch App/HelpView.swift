@@ -19,6 +19,9 @@ struct HelpView: View {
                 .frame(height: 10)
 
         }
+        .navigationTitle("Help")
+        .navigationBarTitleDisplayMode(.inline)
+        
     }
 }
 

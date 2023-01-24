@@ -53,8 +53,9 @@ struct WorkoutSelectionView: View {
 
             }
         }
+        .navigationTitle("Workout Type")
+        .navigationBarTitleDisplayMode(.inline)
     }
-
 }
 
 
