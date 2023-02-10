@@ -14,7 +14,11 @@ enum AppState {
 
 struct ContentView: View {
 
-    @ObservedObject var profileData = ProfileData()
+    @ObservedObject var profileData: ProfileData
+    
+    init(profileData: ProfileData) {
+        self.profileData = profileData
+    }
 
     var body: some View {
         
@@ -46,7 +50,9 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    static var profileData = ProfileData()
+
     static var previews: some View {
-        ContentView()
+        ContentView(profileData: profileData)
     }
 }
