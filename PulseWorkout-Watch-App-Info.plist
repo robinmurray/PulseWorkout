@@ -21,9 +21,9 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
-	<key>WKWatchOnly</key>
-	<true/>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>Connect to bluetooth workout devices</string>
+	<key>NSBluetoothAlwaysUsageDescription</key>
+	<string>Connect to bluetooth workout devices for workout measurements</string>
 </dict>
 </plist>
-
-

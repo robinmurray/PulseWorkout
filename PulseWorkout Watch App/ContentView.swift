@@ -9,7 +9,7 @@ import SwiftUI
 
 
 enum AppState {
-    case initial, live, paused, summary
+    case initial, live, paused, summary, discoverDevices
 }
 
 struct ContentView: View {
@@ -37,7 +37,10 @@ struct ContentView: View {
             
         case .summary:
             return AnyView(SummaryTabView(profileData: profileData))
-            
+
+        case .discoverDevices:
+            return AnyView(BTDeviceDiscoverView(profileData: profileData))
+
         }
     }
 }

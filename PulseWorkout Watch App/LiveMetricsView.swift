@@ -106,6 +106,15 @@ struct LiveMetricsView: View {
                         .foregroundColor(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.colour)
                         .font(.system(size: 15))
                 }
+            Spacer().frame(maxWidth: .infinity, maxHeight: .infinity)
+       
+            HStack {
+                Image(systemName:"heart.fill")
+                    .foregroundColor(BTconnectedColour[profileData.BTHRMConnected])
+                Spacer().frame(maxWidth: .infinity)
+                }
+
+
             }
         .padding()
         .navigationTitle("Workout")

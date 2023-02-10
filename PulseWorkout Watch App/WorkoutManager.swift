@@ -10,6 +10,10 @@ import HealthKit
 import AVFoundation
 import WatchKit
 
+enum HRSource {
+    case healthkit, bluetooth
+}
+
 
 struct SummaryMetrics: Codable {
     var duration: Double
@@ -17,6 +21,8 @@ struct SummaryMetrics: Codable {
     var heartRateRecovery: Double
     var activeEnergy: Double
     var distance: Double
+    var timeOverHiAlarm: Double
+    var timeUnderLoAlarm: Double
     
     func put(tag: String){
         let encoder = JSONEncoder()
@@ -44,11 +50,13 @@ struct SummaryMetrics: Codable {
         }
 
         // Read Dictionary or set default values
-        duration = (metricsDict["duration"] ?? 0) as! Double
-        averageHeartRate = (metricsDict["averageHeartRate"] ?? 0) as! Double
-        heartRateRecovery = (metricsDict["heartRateRecovery"] ?? 0) as! Double
-        activeEnergy = (metricsDict["activeEnergy"] ?? 0) as! Double
-        distance = (metricsDict["distance"] ?? 0) as! Double
+        duration = (metricsDict["duration"] ?? Double(0)) as! Double
+        averageHeartRate = (metricsDict["averageHeartRate"] ?? Double(0)) as! Double
+        heartRateRecovery = (metricsDict["heartRateRecovery"] ?? Double(0)) as! Double
+        activeEnergy = (metricsDict["activeEnergy"] ?? Double(0)) as! Double
+        distance = (metricsDict["distance"] ?? Double(0)) as! Double
+        timeOverHiAlarm = (metricsDict["timeOverHiAlarm"] ?? Double(0)) as! Double
+        timeUnderLoAlarm = (metricsDict["timeUnderLoAlarm"] ?? Double(0)) as! Double
     }
 
     mutating func reset() {
@@ -57,6 +65,8 @@ struct SummaryMetrics: Codable {
         heartRateRecovery = 0
         activeEnergy = 0
         distance = 0
+        timeOverHiAlarm = 0
+        timeUnderLoAlarm = 0
 
     }
 }
@@ -92,6 +102,8 @@ class ProfileData: NSObject, ObservableObject {
     @Published var workout: HKWorkout?
     @Published var running = false
     
+    @Published var BTHRMConnected: Bool = false
+    
     @Published var liveTabSelection: LiveScreenTab = .liveMetrics
 
     var playedAlarm: Bool = false
@@ -102,6 +114,8 @@ class ProfileData: NSObject, ObservableObject {
     var runLimit: Int = 50
 
     var selectedWorkout: HKWorkoutActivityType?
+
+    var bluetoothManager: HRMViewController?
     
     let healthStore = HKHealthStore()
     var session: HKWorkoutSession?
@@ -112,7 +126,9 @@ class ProfileData: NSObject, ObservableObject {
         averageHeartRate: 0,
         heartRateRecovery: 0,
         activeEnergy: 0,
-        distance: 0
+        distance: 0,
+        timeOverHiAlarm : 0,
+        timeUnderLoAlarm: 0
         )
 
     @Published var lastSummaryMetrics = SummaryMetrics(
@@ -120,7 +136,9 @@ class ProfileData: NSObject, ObservableObject {
         averageHeartRate: 0,
         heartRateRecovery: 0,
         activeEnergy: 0,
-        distance: 0
+        distance: 0,
+        timeOverHiAlarm : 0,
+        timeUnderLoAlarm: 0
         )
 
 
@@ -148,6 +166,8 @@ class ProfileData: NSObject, ObservableObject {
         readProfileFromUserDefaults(profileName: self.profileName)
         readWorkoutConfFromUserDefaults()
         lastSummaryMetrics.get(tag: "LastSession")
+        self.bluetoothManager = HRMViewController(profileData: self)
+        
     }
     
     func readProfileFromUserDefaults(profileName: String){
@@ -337,6 +357,18 @@ class ProfileData: NSObject, ObservableObject {
         appState = .paused
     }
     
+    func setHeartRate(heartRate: Double, hrSource: HRSource) {
+             
+        if BTHRMConnected {
+            if hrSource == .bluetooth {
+                self.heartRate = heartRate
+                
+            }
+        } else {
+            self.heartRate = heartRate
+
+        }
+    }
     
     func startStopHRMonitor() {
         
@@ -372,6 +404,7 @@ class ProfileData: NSObject, ObservableObject {
         if (self.hiLimitAlarmActive) &&
            (Int(self.heartRate) >= self.hiLimitAlarm) {
             
+            self.summaryMetrics.timeOverHiAlarm += 2
             self.hrState = HRState.hiAlarm
             
             if (constantRepeat || !playedAlarm) {
@@ -389,7 +422,8 @@ class ProfileData: NSObject, ObservableObject {
             
         } else if (self.loLimitAlarmActive) &&
                     (Int(self.heartRate) <= self.loLimitAlarm) {
-            
+ 
+            self.summaryMetrics.timeUnderLoAlarm += 2
             self.hrState = HRState.loAlarm
             
             if playSound && (constantRepeat || !playedAlarm) {
@@ -439,7 +473,8 @@ class ProfileData: NSObject, ObservableObject {
             switch statistics.quantityType {
             case HKQuantityType.quantityType(forIdentifier: .heartRate):
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
-                self.heartRate = statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0
+                self.setHeartRate( heartRate: statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0,
+                                   hrSource: .healthkit )
                 self.summaryMetrics.averageHeartRate = statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0
             case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
                 let energyUnit = HKUnit.kilocalorie()

@@ -39,6 +39,14 @@ struct SummaryMetricsView: View {
                                   value: durationFormatter.string(from: metrics.duration) ?? "")
                 .foregroundStyle(.yellow)
 
+                SummaryMetricView(title: "Time Over High Limit",
+                                  value: durationFormatter.string(from: metrics.timeOverHiAlarm) ?? "0")
+                .foregroundStyle(.yellow)
+
+                SummaryMetricView(title: "Time Under Low Limit",
+                                  value: durationFormatter.string(from: metrics.timeUnderLoAlarm) ?? "0")
+                .foregroundStyle(.yellow)
+                
                 SummaryMetricView(title: "Ave. HR",
                                   value: metrics.averageHeartRate
                     .formatted(.number.precision(.fractionLength(0))) + " bpm")
@@ -108,7 +116,9 @@ struct SummaryMetricsView_Previews: PreviewProvider {
         averageHeartRate: 0,
         heartRateRecovery: 0,
         activeEnergy: 0,
-        distance: 0
+        distance: 0,
+        timeOverHiAlarm: 0,
+        timeUnderLoAlarm: 0
         )
 
     static var previews: some View {

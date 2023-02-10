@@ -9,13 +9,26 @@ import SwiftUI
 
 @main
 struct PulseWorkout_Watch_AppApp: App {
-        
+    @Environment(\.scenePhase) private var scenePhase
+    
     var body: some Scene {
         WindowGroup {
             NavigationView {
                 ContentView()
             }
 
+        }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+                case .active:
+                    print(">> your code here on scene become active")
+                case .inactive:
+                    print(">> your code here on scene become inactive")
+                case .background:
+                    print(">> your code here on scene go background")
+                default:
+                    print(">> do something else in future")
+            }
         }
     }
 }

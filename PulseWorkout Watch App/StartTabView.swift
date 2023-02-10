@@ -12,7 +12,7 @@ import WatchKit
 struct StartTabView: View {
 
     enum Tab {
-        case workoutType, start, summaryMetrics, profile, nowPlaying, help
+        case workoutType, start, summaryMetrics, profile, nowPlaying, help, btDevices
     }
 
 //    @EnvironmentObject var workoutManager: WorkoutManager
@@ -48,6 +48,7 @@ struct StartTabView: View {
             HelpView()
                 .tag(Tab.help)
 
+            DevicesView(profileData: profileData).tag(Tab.btDevices)
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))

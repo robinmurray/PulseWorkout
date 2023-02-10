@@ -11,6 +11,12 @@ import Foundation
 
 import SwiftUI
 
+let BTconnectedColour: [Bool: Color] =
+[false: Color.gray,
+ true: Color.blue]
+
+
+
 struct StartView: View {
 
     @ObservedObject var profileData: ProfileData
@@ -48,7 +54,7 @@ struct StartView: View {
     let repeatColour: [Bool: Color] =
     [false: Color.clear,
      true: Color.gray]
-    
+
 
     
     var body: some View {
@@ -105,16 +111,13 @@ struct StartView: View {
                     .foregroundColor(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.colour)
                     .font(.system(size: 15))
                 }
+
+            Spacer().frame(maxWidth: .infinity)
+       
             HStack {
-                    
-                soundImage[profileData.playSound]
-                    .foregroundColor(Color.gray)
-                
-                hapticImage[profileData.playHaptic]
-                    .foregroundColor(Color.gray)
-                    
-                Image(systemName: "repeat")
-                    .foregroundColor(repeatColour[profileData.constantRepeat])
+                Image(systemName:"heart.fill")
+                    .foregroundColor(BTconnectedColour[profileData.BTHRMConnected])
+                Spacer().frame(maxWidth: .infinity)
                 }
                 
             }
