@@ -34,7 +34,7 @@ class HRMViewController: NSObject, ObservableObject {
     @Published var discoveredBTDevices: [BTDevice] = []
     @Published var bpm: Int = 0
 
-    var profileData: ProfileData
+    var workoutManager: WorkoutManager
     
     var heartRateLabel: String = ""
     var bodySensorLocationLabel: String = ""
@@ -44,9 +44,9 @@ class HRMViewController: NSObject, ObservableObject {
     var autoConnect: Bool = true
    
         
-    init(profileData: ProfileData) {
+    init(workoutManager: WorkoutManager) {
         
-        self.profileData = profileData
+        self.workoutManager = workoutManager
         super.init()
         self.centralManager = CBCentralManager(delegate: self, queue: nil)
         
@@ -63,7 +63,7 @@ class HRMViewController: NSObject, ObservableObject {
   func onHeartRateReceived(_ heartRate: Int) {
       heartRateLabel = String(heartRate)
       print("BPM: \(heartRate)")
-      profileData.setHeartRate(heartRate: Double(heartRate), hrSource: .bluetooth)
+      workoutManager.setHeartRate(heartRate: Double(heartRate), hrSource: .bluetooth)
       
   }
     
@@ -80,14 +80,14 @@ extension HRMViewController: CBCentralManagerDelegate {
             print("central.state is .unknown")
         case .resetting:
             print("central.state is .resetting")
-            profileData.BTHRMConnected = false
+            workoutManager.BTHRMConnected = false
         case .unsupported:
             print("central.state is .unsupported")
         case .unauthorized:
             print("central.state is .unauthorized")
         case .poweredOff:
             print("central.state is .poweredOff")
-            profileData.BTHRMConnected = false
+            workoutManager.BTHRMConnected = false
         case .poweredOn:
             print("central.state is .poweredOn")
             centralManager.scanForPeripherals(withServices: nil)
@@ -133,7 +133,7 @@ extension HRMViewController: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         print("Connected!")
-        profileData.BTHRMConnected = true
+        workoutManager.BTHRMConnected = true
 //        heartRatePeripheral.discoverServices(nil)
         heartRatePeripheral.discoverServices([heartRateServiceCBUUID])
     }
@@ -145,7 +145,7 @@ extension HRMViewController: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("Disconnected with error \(String(describing: error))")
-        profileData.BTHRMConnected = false
+        workoutManager.BTHRMConnected = false
         centralManager.scanForPeripherals(withServices: nil)
     }
 }
@@ -190,7 +190,7 @@ extension HRMViewController: CBPeripheralDelegate {
       case heartRateMeasurementCharacteristicCBUUID:
           bpm = heartRate(from: characteristic)
           print("bpm = \(bpm)")
-          profileData.setHeartRate(heartRate: Double(bpm), hrSource: .bluetooth)
+          workoutManager.setHeartRate(heartRate: Double(bpm), hrSource: .bluetooth)
 
           
         default:

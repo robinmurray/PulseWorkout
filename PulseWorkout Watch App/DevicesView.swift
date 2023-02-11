@@ -9,10 +9,10 @@ import SwiftUI
 
 struct DevicesView: View {
     
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
     
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
 
     var body: some View {
@@ -30,15 +30,15 @@ struct DevicesView: View {
     func discoverDevices() {
 //        profileData.bluetoothManager?.resetDiscoveredDevices()
 //        profileData.bluetoothManager?.centralManager.scanForPeripherals(withServices: nil)
-        profileData.appState = .discoverDevices
+        workoutManager.appState = .discoverDevices
     }
 }
 
 struct DevicesView_Previews: PreviewProvider {
     
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        DevicesView(profileData: profileData)
+        DevicesView(workoutManager: workoutManager)
     }
 }

@@ -16,30 +16,30 @@ struct StartTabView: View {
     }
 
 //    @EnvironmentObject var workoutManager: WorkoutManager
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
     @State private var selection: Tab = .start
     
     
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
 
     var body: some View {
         TabView(selection: $selection) {
 
-            WorkoutSelectionView(profileData: profileData)
+            WorkoutSelectionView(workoutManager: workoutManager)
                 .tag(Tab.workoutType)
             
-            StartView(profileData: profileData)
+            StartView(workoutManager: workoutManager)
                 .tag(Tab.start)
             
-            SummaryMetricsView(profileData: profileData,
+            SummaryMetricsView(workoutManager: workoutManager,
                                viewTitleText: "Last Workout",
                                displayDone: false,
-                               metrics: profileData.lastSummaryMetrics)
+                               metrics: workoutManager.lastSummaryMetrics)
                 .tag(Tab.summaryMetrics)
 
-            ProfileView(profileData: profileData)
+            ProfileView(workoutManager: workoutManager)
                 .tag(Tab.profile)
 
             
@@ -48,19 +48,19 @@ struct StartTabView: View {
             HelpView()
                 .tag(Tab.help)
 
-            DevicesView(profileData: profileData).tag(Tab.btDevices)
+            DevicesView(workoutManager: workoutManager).tag(Tab.btDevices)
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))
-        .onAppear(perform: profileData.requestAuthorization)
+        .onAppear(perform: workoutManager.requestAuthorization)
 
     }
 }
 
 struct StartTabView_Previews: PreviewProvider {
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        StartTabView(profileData: profileData)
+        StartTabView(workoutManager: workoutManager)
     }
 }

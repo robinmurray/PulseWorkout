@@ -15,21 +15,21 @@ struct SummaryTabView: View {
         case summaryMetrics, nowPlaying, help
     }
 
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
     @State private var selection: Tab = .summaryMetrics
     
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
 
 
     var body: some View {
         TabView(selection: $selection) {
 
-            SummaryMetricsView(profileData: profileData,
+            SummaryMetricsView(workoutManager: workoutManager,
                                viewTitleText: "Summary Metrics",
                                displayDone: true,
-                               metrics: profileData.summaryMetrics)
+                               metrics: workoutManager.summaryMetrics)
                 .tag(Tab.summaryMetrics)
 
             
@@ -46,10 +46,10 @@ struct SummaryTabView: View {
 }
 
 struct SummaryTabView_Previews: PreviewProvider {
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        SummaryTabView(profileData: profileData)
+        SummaryTabView(workoutManager: workoutManager)
     }
 }
 

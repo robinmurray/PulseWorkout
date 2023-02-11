@@ -19,12 +19,12 @@ let BTconnectedColour: [Bool: Color] =
 
 struct StartView: View {
 
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
 //    @EnvironmentObject var workoutManager: WorkoutManager
 
     
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
 
     let hiAlarmDisplay: [Bool: AlarmStyling] =
@@ -59,14 +59,14 @@ struct StartView: View {
     
     var body: some View {
         VStack {
-            Text(profileData.workoutLocation.label + " " + profileData.workoutType.name)
+            Text(workoutManager.workoutLocation.label + " " + workoutManager.workoutType.name)
                     .font(.system(size: 15))
                     .frame(height: 5)
                 
             Spacer().frame(maxWidth: .infinity)
             
             VStack{
-                Button(action: profileData.startWorkout) {
+                Button(action: workoutManager.startWorkout) {
                     Image(systemName: "play.circle")
                     }
                     .foregroundColor(Color.green)
@@ -87,7 +87,7 @@ struct StartView: View {
                 Image(systemName:"heart.fill")
                     .foregroundColor(Color.red)
 
-                Text("Profile: " + profileData.profileName)
+                Text("Profile: " + workoutManager.profileName)
                     .foregroundColor(Color.gray)
                     .font(.system(size: 15))
             }
@@ -96,19 +96,19 @@ struct StartView: View {
                 
             HStack {
                 Image(systemName: "arrow.down.to.line.circle.fill")
-                    .foregroundColor(loAlarmDisplay[profileData.loLimitAlarmActive]?.colour)
+                    .foregroundColor(loAlarmDisplay[workoutManager.loLimitAlarmActive]?.colour)
                     .frame(height: 20)
                     
-                Text(loAlarmDisplay[profileData.loLimitAlarmActive]?.alarmLevelText ?? String(profileData.loLimitAlarm))
-                    .foregroundColor(loAlarmDisplay[profileData.loLimitAlarmActive]?.colour)
+                Text(loAlarmDisplay[workoutManager.loLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.loLimitAlarm))
+                    .foregroundColor(loAlarmDisplay[workoutManager.loLimitAlarmActive]?.colour)
                         .font(.system(size: 15))
                     
                 Image(systemName: "arrow.up.to.line.circle.fill")
-                        .foregroundColor(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.colour)
+                        .foregroundColor(hiAlarmDisplay[workoutManager.hiLimitAlarmActive]?.colour)
                     .frame(height: 20)
                     
-                Text(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.alarmLevelText ?? String(profileData.hiLimitAlarm))
-                    .foregroundColor(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.colour)
+                Text(hiAlarmDisplay[workoutManager.hiLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.hiLimitAlarm))
+                    .foregroundColor(hiAlarmDisplay[workoutManager.hiLimitAlarmActive]?.colour)
                     .font(.system(size: 15))
                 }
 
@@ -116,7 +116,7 @@ struct StartView: View {
        
             HStack {
                 Image(systemName:"heart.fill")
-                    .foregroundColor(BTconnectedColour[profileData.BTHRMConnected])
+                    .foregroundColor(BTconnectedColour[workoutManager.BTHRMConnected])
                 Spacer().frame(maxWidth: .infinity)
                 }
                 
@@ -128,9 +128,9 @@ struct StartView: View {
 }
 
 struct StartView_Previews: PreviewProvider {
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        StartView(profileData: profileData)
+        StartView(workoutManager: workoutManager)
     }
 }

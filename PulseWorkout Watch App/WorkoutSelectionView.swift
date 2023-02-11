@@ -10,14 +10,14 @@ import HealthKit
 
 struct WorkoutSelectionView: View {
 
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
     
     var workoutTypes: [HKWorkoutActivityType] = [.crossTraining, .cycling, .mixedCardio, .paddleSports, .rowing, .running, .walking]
     
     var workoutLocations: [HKWorkoutSessionLocationType] = [.indoor, .outdoor, .unknown]
 
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
 
 
@@ -25,26 +25,26 @@ struct WorkoutSelectionView: View {
         VStack{
             Form() {
                 
-                Picker("Workout Type", selection: $profileData.workoutType) {
+                Picker("Workout Type", selection: $workoutManager.workoutType) {
                     ForEach(workoutTypes) { workoutType in
                         Text(workoutType.name).tag(workoutType.self)
                     }
                 }
-                .onChange(of: profileData.workoutType) { _ in
-                    self.profileData.writeWorkoutConfToUserDefaults()
+                .onChange(of: workoutManager.workoutType) { _ in
+                    self.workoutManager.writeWorkoutConfToUserDefaults()
                 }
                 .font(.headline)
                 .foregroundColor(Color.blue)
                 .fontWeight(.bold)
                 .listStyle(.carousel)
 
-                Picker("Workout Location", selection: $profileData.workoutLocation) {
+                Picker("Workout Location", selection: $workoutManager.workoutLocation) {
                     ForEach(workoutLocations) { workoutLocation in
                         Text(workoutLocation.name).tag(workoutLocation.self)
                     }
                 }
-                .onChange(of: profileData.workoutLocation) { _ in
-                    self.profileData.writeWorkoutConfToUserDefaults()
+                .onChange(of: workoutManager.workoutLocation) { _ in
+                    self.workoutManager.writeWorkoutConfToUserDefaults()
                 }
                 .font(.headline)
                 .foregroundColor(Color.blue)
@@ -117,9 +117,9 @@ extension HKWorkoutSessionLocationType: Identifiable {
 
 
 struct WorkoutSelectionView_Previews: PreviewProvider {
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        WorkoutSelectionView(profileData: profileData)
+        WorkoutSelectionView(workoutManager: workoutManager)
     }
 }

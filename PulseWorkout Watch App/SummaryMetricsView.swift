@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SummaryMetricsView: View {
     
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
     var viewTitleText: String
     var displayDone: Bool
     var metrics: SummaryMetrics
@@ -21,8 +21,8 @@ struct SummaryMetricsView: View {
         return formatter
     }()
     
-    init(profileData: ProfileData, viewTitleText: String, displayDone: Bool, metrics: SummaryMetrics) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager, viewTitleText: String, displayDone: Bool, metrics: SummaryMetrics) {
+        self.workoutManager = workoutManager
         self.viewTitleText = viewTitleText
         self.displayDone = displayDone
         self.metrics = metrics
@@ -85,11 +85,11 @@ struct SummaryMetricsView: View {
     func SaveWorkout() {
 //        profileData.summaryMetrics.duration = profileData.workout?.duration ?? 0.0
         
-        profileData.summaryMetrics.put(tag: "LastSession")
-        profileData.lastSummaryMetrics.get(tag: "LastSession")
-        profileData.summaryMetrics.reset()
+        workoutManager.summaryMetrics.put(tag: "LastSession")
+        workoutManager.lastSummaryMetrics.get(tag: "LastSession")
+        workoutManager.summaryMetrics.reset()
         
-        profileData.appState = .initial
+        workoutManager.appState = .initial
     }
 }
 
@@ -110,7 +110,7 @@ struct SummaryMetricView: View {
 
 struct SummaryMetricsView_Previews: PreviewProvider {
 
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
     static var summaryMetrics = SummaryMetrics(
         duration: 0,
         averageHeartRate: 0,
@@ -122,7 +122,7 @@ struct SummaryMetricsView_Previews: PreviewProvider {
         )
 
     static var previews: some View {
-        SummaryMetricsView(profileData: profileData,
+        SummaryMetricsView(workoutManager: workoutManager,
                            viewTitleText: "Hello World",
                            displayDone: true,
                            metrics: summaryMetrics)

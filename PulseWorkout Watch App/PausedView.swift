@@ -9,10 +9,10 @@ import SwiftUI
 
 struct PausedView: View {
 
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
 
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
 
 
@@ -37,7 +37,7 @@ struct PausedView: View {
 
                 VStack{
 
-                        Button(action: profileData.resumeWorkout) {
+                        Button(action: workoutManager.resumeWorkout) {
                             Image(systemName: "playpause.circle.fill")
                         }
                         .foregroundColor(Color.green)
@@ -53,7 +53,7 @@ struct PausedView: View {
                 Spacer()
 
                 VStack{
-                    Button(action: profileData.endWorkout) {
+                    Button(action: workoutManager.endWorkout) {
                         Image(systemName: "stop.circle")
                     }
                     .foregroundColor(Color.red)
@@ -78,16 +78,16 @@ struct PausedView: View {
     
     func lockAndResumeWorkout() {
         WKInterfaceDevice.current().enableWaterLock()
-        profileData.resumeWorkout()
+        workoutManager.resumeWorkout()
     }
 }
 
 
 struct PausedView_Previews: PreviewProvider {
     
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        PausedView(profileData: profileData)
+        PausedView(workoutManager: workoutManager)
     }
 }

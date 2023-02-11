@@ -80,7 +80,7 @@ enum Profile: String, CaseIterable, Identifiable {
 var profileNames: [String] = ["Race", "VO2 Max", "Threshold", "Aerobic"]
 
 
-class ProfileData: NSObject, ObservableObject {
+class WorkoutManager: NSObject, ObservableObject {
     @Published var hiLimitAlarmActive: Bool
     @Published var hiLimitAlarm: Int
     @Published var loLimitAlarmActive: Bool
@@ -166,7 +166,7 @@ class ProfileData: NSObject, ObservableObject {
         readProfileFromUserDefaults(profileName: self.profileName)
         readWorkoutConfFromUserDefaults()
         lastSummaryMetrics.get(tag: "LastSession")
-        self.bluetoothManager = HRMViewController(profileData: self)
+        self.bluetoothManager = HRMViewController(workoutManager: self)
         
     }
     
@@ -495,7 +495,7 @@ class ProfileData: NSObject, ObservableObject {
 
 
 // MARK: - HKWorkoutSessionDelegate
-extension ProfileData: HKWorkoutSessionDelegate {
+extension WorkoutManager: HKWorkoutSessionDelegate {
     func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState,
                         from fromState: HKWorkoutSessionState, date: Date) {
         DispatchQueue.main.async {
@@ -521,7 +521,7 @@ extension ProfileData: HKWorkoutSessionDelegate {
 }
 
 // MARK: - HKLiveWorkoutBuilderDelegate
-extension ProfileData: HKLiveWorkoutBuilderDelegate {
+extension WorkoutManager: HKLiveWorkoutBuilderDelegate {
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
 
     }

@@ -14,14 +14,14 @@ struct ProfileView: View {
     @State private var currentProfileName: String
     @State private var profileNames: [String] = ["Race", "VO2 Max", "Threshold", "Aerobic"]
 
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
         
 
-    init(profileData: ProfileData) {
+    init(workoutManager: WorkoutManager) {
 
-        currentProfileName = profileData.profileName
+        currentProfileName = workoutManager.profileName
         
-        self.profileData = profileData
+        self.workoutManager = workoutManager
 
     }
     
@@ -40,82 +40,82 @@ struct ProfileView: View {
                 .foregroundColor(Color.blue)
                 .fontWeight(.bold)
 
-                Toggle(isOn: $profileData.lockScreen) {
+                Toggle(isOn: $workoutManager.lockScreen) {
                     Text("Lock Screen")
                 }
-                .onChange(of: profileData.lockScreen) { value in
-                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
+                .onChange(of: workoutManager.lockScreen) { value in
+                    self.workoutManager.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
                 
-                Toggle(isOn: $profileData.hiLimitAlarmActive) {
+                Toggle(isOn: $workoutManager.hiLimitAlarmActive) {
                     Text("High Limit Alarm")
                 }
-                .onChange(of: profileData.hiLimitAlarmActive) { value in
-                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
+                .onChange(of: workoutManager.hiLimitAlarmActive) { value in
+                    self.workoutManager.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
                 
                 
-                Stepper(value: $profileData.hiLimitAlarm,
+                Stepper(value: $workoutManager.hiLimitAlarm,
                         in: 1...220,
                         step: 1) {
-                    Text("\(profileData.hiLimitAlarm)")
+                    Text("\(workoutManager.hiLimitAlarm)")
                 }
-                .disabled(!profileData.hiLimitAlarmActive)
+                .disabled(!workoutManager.hiLimitAlarmActive)
                 .font(.headline)
                 .fontWeight(.light)
                 .multilineTextAlignment(.leading)
                 .minimumScaleFactor(0.20)
                 .frame(width:160, height: 40, alignment: .topLeading)
-                .onChange(of: profileData.hiLimitAlarm) { value in
-                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
+                .onChange(of: workoutManager.hiLimitAlarm) { value in
+                    self.workoutManager.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
-                Toggle(isOn: $profileData.loLimitAlarmActive) {
+                Toggle(isOn: $workoutManager.loLimitAlarmActive) {
                     Text("Low Limit Alarm")
                 }
-                .onChange(of: profileData.loLimitAlarmActive) { value in
-                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
+                .onChange(of: workoutManager.loLimitAlarmActive) { value in
+                    self.workoutManager.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
                 
                 
-                Stepper(value: $profileData.loLimitAlarm,
+                Stepper(value: $workoutManager.loLimitAlarm,
                         in: 1...220,
                         step: 1) {
-                    Text("\(profileData.loLimitAlarm)")
+                    Text("\(workoutManager.loLimitAlarm)")
                 }
-                .disabled(!profileData.loLimitAlarmActive)
+                .disabled(!workoutManager.loLimitAlarmActive)
                 .font(.headline)
                 .fontWeight(.light)
                 .multilineTextAlignment(.leading)
                 .minimumScaleFactor(0.20)
                 .frame(width:160, height: 40, alignment: .topLeading)
-                .onChange(of: profileData.loLimitAlarm) { value in
-                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
+                .onChange(of: workoutManager.loLimitAlarm) { value in
+                    self.workoutManager.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
                 
-                Toggle(isOn: $profileData.playSound) {
+                Toggle(isOn: $workoutManager.playSound) {
                     Text("Play Sound")
                 }
-                .disabled(!(profileData.hiLimitAlarmActive || profileData.loLimitAlarmActive))
-                .onChange(of: profileData.playSound) { value in
-                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
+                .disabled(!(workoutManager.hiLimitAlarmActive || workoutManager.loLimitAlarmActive))
+                .onChange(of: workoutManager.playSound) { value in
+                    self.workoutManager.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
-                Toggle(isOn: $profileData.playHaptic) {
+                Toggle(isOn: $workoutManager.playHaptic) {
                     Text("Play Haptic")
                 }
-                .disabled(!(profileData.hiLimitAlarmActive || profileData.loLimitAlarmActive))
-                .onChange(of: profileData.playHaptic) { value in
-                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
+                .disabled(!(workoutManager.hiLimitAlarmActive || workoutManager.loLimitAlarmActive))
+                .onChange(of: workoutManager.playHaptic) { value in
+                    self.workoutManager.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
-                Toggle(isOn: $profileData.constantRepeat) {
+                Toggle(isOn: $workoutManager.constantRepeat) {
                     Text("Repeat Alarm")
                 }
-                .disabled(!(profileData.hiLimitAlarmActive || profileData.loLimitAlarmActive))
-                .onChange(of: profileData.constantRepeat) { value in
-                    self.profileData.writeProfileToUserDefaults(profileName: currentProfileName)
+                .disabled(!(workoutManager.hiLimitAlarmActive || workoutManager.loLimitAlarmActive))
+                .onChange(of: workoutManager.constantRepeat) { value in
+                    self.workoutManager.writeProfileToUserDefaults(profileName: currentProfileName)
                 }
 
 
@@ -128,7 +128,7 @@ struct ProfileView: View {
     func pickerChanged(newSelectedProfileName: String){
         print("picker changed! to \(currentProfileName)")
         
-        self.profileData.changeProfile(newProfileName: newSelectedProfileName)
+        self.workoutManager.changeProfile(newProfileName: newSelectedProfileName)
 
         self.currentProfileName = newSelectedProfileName
 
@@ -142,10 +142,10 @@ struct ProfileView: View {
 
 struct ProfileView_Previews: PreviewProvider {
     
-    static var profileData = ProfileData(profileName: "Race")
+    static var workoutManager = WorkoutManager(profileName: "Race")
     
     static var previews: some View {
-        ProfileView(profileData: profileData)
+        ProfileView(workoutManager: workoutManager)
     }
 }
 

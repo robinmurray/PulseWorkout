@@ -9,10 +9,10 @@ import SwiftUI
 
 struct BTDeviceDiscoverView: View {
 
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
     
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
 
     @State private var selectedDevice: String?
@@ -21,7 +21,7 @@ struct BTDeviceDiscoverView: View {
         
         VStack {
             // if still `[String]` then \.self will work, otherwise make `Device` `Identifiable`
-            List(profileData.bluetoothManager!.discoveredDevices, id: \.self) { device in
+            List(workoutManager.bluetoothManager!.discoveredDevices, id: \.self) { device in
                 Text(verbatim: device)
                 
             }.listStyle(.carousel)
@@ -37,16 +37,16 @@ struct BTDeviceDiscoverView: View {
     
     func dismissView() {
        
-        profileData.appState = .initial
+        workoutManager.appState = .initial
     }
 
 }
 
 struct BTDeviceDiscoverView_Previews: PreviewProvider {
     
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        BTDeviceDiscoverView(profileData: profileData)
+        BTDeviceDiscoverView(workoutManager: workoutManager)
     }
 }

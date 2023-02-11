@@ -14,10 +14,10 @@ enum AppState {
 
 struct ContentView: View {
 
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
     
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
 
     var body: some View {
@@ -27,32 +27,32 @@ struct ContentView: View {
         
     func containedView() -> AnyView {
         
-        switch profileData.appState {
+        switch workoutManager.appState {
             
         case .initial:
-            return AnyView(StartTabView(profileData: profileData))
+            return AnyView(StartTabView(workoutManager: workoutManager))
             
         case .live:
-            return AnyView(LiveTabView(profileData: profileData)
+            return AnyView(LiveTabView(workoutManager: workoutManager)
                 )
             
         case .paused:
-            return AnyView(PausedTabView(profileData: profileData))
+            return AnyView(PausedTabView(workoutManager: workoutManager))
             
         case .summary:
-            return AnyView(SummaryTabView(profileData: profileData))
+            return AnyView(SummaryTabView(workoutManager: workoutManager))
 
         case .discoverDevices:
-            return AnyView(BTDeviceDiscoverView(profileData: profileData))
+            return AnyView(BTDeviceDiscoverView(workoutManager: workoutManager))
 
         }
     }
 }
 
 struct ContentView_Previews: PreviewProvider {
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        ContentView(profileData: profileData)
+        ContentView(workoutManager: workoutManager)
     }
 }

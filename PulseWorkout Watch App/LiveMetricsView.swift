@@ -28,7 +28,7 @@ struct AlarmStyling {
 
 struct LiveMetricsView: View {
     
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
 
     let HRDisplay: [HRState: HRStyling] =
     [HRState.inactive: HRStyling(HRText: "___", colour: Color.gray),
@@ -45,17 +45,17 @@ struct LiveMetricsView: View {
      true: AlarmStyling(colour: Color.orange)]
     
     
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
     
     var body: some View {
         VStack {
 
-            TimelineView(MetricsTimelineSchedule(from: profileData.builder?.startDate ?? Date(),
-                                                 isPaused: profileData.session?.state == .paused)) { context in
+            TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
+                                                 isPaused: workoutManager.session?.state == .paused)) { context in
                 
-                ElapsedTimeView(elapsedTime: profileData.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
+                ElapsedTimeView(elapsedTime: workoutManager.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
                     .foregroundStyle(.yellow)
             }
                 
@@ -71,10 +71,10 @@ struct LiveMetricsView: View {
             HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
                     Spacer().frame(maxWidth: .infinity)
-                    Text(profileData.heartRate
+                    Text(workoutManager.heartRate
                         .formatted(.number.precision(.fractionLength(0))))
                     .fontWeight(.bold)
-                    .foregroundColor(HRDisplay[profileData.hrState]?.colour)
+                    .foregroundColor(HRDisplay[workoutManager.hrState]?.colour)
 //                    .multilineTextAlignment(.trailing)
                     .frame(width: 140.0, height: 80)
  //                   .padding()
@@ -84,33 +84,33 @@ struct LiveMetricsView: View {
             HStack {
                 Text("Dist.").foregroundColor(Color.yellow)
                 Spacer().frame(maxWidth: .infinity)
-                Text(distanceFormatter(distance: profileData.summaryMetrics.distance))
+                Text(distanceFormatter(distance: workoutManager.summaryMetrics.distance))
                     .frame(maxWidth: .infinity, alignment: .trailing)
                         .padding(.trailing, 8)
             }
 
             HStack {
                     Image(systemName: "arrow.down.to.line.circle.fill")
-                        .foregroundColor(loAlarmDisplay[profileData.loLimitAlarmActive]?.colour)
+                        .foregroundColor(loAlarmDisplay[workoutManager.loLimitAlarmActive]?.colour)
                         .frame(height: 20)
                     
-                    Text(loAlarmDisplay[profileData.loLimitAlarmActive]?.alarmLevelText ?? String(profileData.loLimitAlarm))
-                        .foregroundColor(loAlarmDisplay[profileData.loLimitAlarmActive]?.colour)
+                    Text(loAlarmDisplay[workoutManager.loLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.loLimitAlarm))
+                        .foregroundColor(loAlarmDisplay[workoutManager.loLimitAlarmActive]?.colour)
                         .font(.system(size: 15))
                     
                     Image(systemName: "arrow.up.to.line.circle.fill")
-                        .foregroundColor(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.colour)
+                        .foregroundColor(hiAlarmDisplay[workoutManager.hiLimitAlarmActive]?.colour)
                         .frame(height: 20)
                     
-                    Text(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.alarmLevelText ?? String(profileData.hiLimitAlarm))
-                        .foregroundColor(hiAlarmDisplay[profileData.hiLimitAlarmActive]?.colour)
+                    Text(hiAlarmDisplay[workoutManager.hiLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.hiLimitAlarm))
+                        .foregroundColor(hiAlarmDisplay[workoutManager.hiLimitAlarmActive]?.colour)
                         .font(.system(size: 15))
                 }
             Spacer().frame(maxWidth: .infinity, maxHeight: .infinity)
        
             HStack {
                 Image(systemName:"heart.fill")
-                    .foregroundColor(BTconnectedColour[profileData.BTHRMConnected])
+                    .foregroundColor(BTconnectedColour[workoutManager.BTHRMConnected])
                 Spacer().frame(maxWidth: .infinity)
                 }
 
@@ -153,10 +153,10 @@ func distanceFormatter (distance: Double) -> String {
 
 struct LiveMetricsView_Previews: PreviewProvider {
     
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        LiveMetricsView(profileData: profileData)
+        LiveMetricsView(workoutManager: workoutManager)
     }
 }
 

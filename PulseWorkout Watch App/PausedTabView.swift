@@ -15,19 +15,19 @@ struct PausedTabView: View {
         case paused, nowPlaying, help
     }
 
-    @ObservedObject var profileData: ProfileData
+    @ObservedObject var workoutManager: WorkoutManager
 
     @State private var selection: Tab = .paused
     
-    init(profileData: ProfileData) {
-        self.profileData = profileData
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
     }
 
 
     var body: some View {
         TabView(selection: $selection) {
 
-            PausedView(profileData: profileData)
+            PausedView(workoutManager: workoutManager)
                 .tag(Tab.paused)
             
             NowPlayingView()
@@ -43,10 +43,10 @@ struct PausedTabView: View {
 }
 
 struct PausedTabView_Previews: PreviewProvider {
-    static var profileData = ProfileData()
+    static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        PausedTabView(profileData: profileData)
+        PausedTabView(workoutManager: workoutManager)
     }
 }
 
