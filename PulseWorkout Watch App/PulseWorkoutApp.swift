@@ -25,11 +25,11 @@ struct PulseWorkout_Watch_AppApp: App {
         .onChange(of: scenePhase) { phase in
             switch phase {
                 case .active:
-                    print(">> your code here on scene become active")
+                    workoutManager.appActive()
                 case .inactive:
-                    print(">> your code here on scene become inactive")
+                    workoutManager.appInactive()
                 case .background:
-                    print(">> your code here on scene go background")
+                    workoutManager.appBackground()
                 default:
                     print(">> do something else in future")
             }

@@ -11,11 +11,6 @@ import Foundation
 
 import SwiftUI
 
-let BTconnectedColour: [Bool: Color] =
-[false: Color.gray,
- true: Color.blue]
-
-
 
 struct StartView: View {
 
@@ -81,8 +76,6 @@ struct StartView: View {
             }
 
                  
-            Spacer().frame(maxWidth: .infinity)
-       
             HStack {
                 Image(systemName:"heart.fill")
                     .foregroundColor(Color.red)
@@ -114,14 +107,10 @@ struct StartView: View {
 
             Spacer().frame(maxWidth: .infinity)
        
-            HStack {
-                Image(systemName:"heart.fill")
-                    .foregroundColor(BTconnectedColour[workoutManager.BTHRMConnected])
-                Spacer().frame(maxWidth: .infinity)
-                }
-                
+            BTDevicesView(workoutManager: workoutManager)
+
             }
-            .padding()
+            .padding(.horizontal)
             .navigationTitle("Start Workout")
             .navigationBarTitleDisplayMode(.inline)
         }

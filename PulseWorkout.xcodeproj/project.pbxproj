@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */; };
 		E421295A298EC383001B8AA9 /* DevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212959298EC383001B8AA9 /* DevicesView.swift */; };
+		E421295C299D4D91001B8AA9 /* BTDevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295B299D4D91001B8AA9 /* BTDevicesView.swift */; };
 		E46EF07F29537CA1006FA603 /* PulseWorkout Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = E46EF07E29537CA1006FA603 /* PulseWorkout Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E46EF08429537CA1006FA603 /* PulseWorkoutApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */; };
 		E46EF08629537CA1006FA603 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF08529537CA1006FA603 /* ContentView.swift */; };
@@ -76,6 +77,7 @@
 /* Begin PBXFileReference section */
 		E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceDiscoverView.swift; sourceTree = "<group>"; };
 		E4212959298EC383001B8AA9 /* DevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DevicesView.swift; sourceTree = "<group>"; };
+		E421295B299D4D91001B8AA9 /* BTDevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDevicesView.swift; sourceTree = "<group>"; };
 		E46EF07829537CA1006FA603 /* PulseWorkout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PulseWorkout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46EF07E29537CA1006FA603 /* PulseWorkout Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PulseWorkout Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseWorkoutApp.swift; sourceTree = "<group>"; };
@@ -175,6 +177,7 @@
 				E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */,
 				E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */,
 				E4212959298EC383001B8AA9 /* DevicesView.swift */,
+				E421295B299D4D91001B8AA9 /* BTDevicesView.swift */,
 				E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */,
 				E46EF0B929537E24006FA603 /* StartView.swift */,
 				E46EF0BB29537E4D006FA603 /* StartTabView.swift */,
@@ -394,6 +397,7 @@
 				E46EF08429537CA1006FA603 /* PulseWorkoutApp.swift in Sources */,
 				E46EF0B829537DF6006FA603 /* SummaryTabView.swift in Sources */,
 				E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */,
+				E421295C299D4D91001B8AA9 /* BTDevicesView.swift in Sources */,
 				E46EF0BA29537E24006FA603 /* StartView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

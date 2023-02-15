@@ -17,8 +17,6 @@ struct LiveTabView: View {
     
     @ObservedObject var workoutManager: WorkoutManager
 
-//    @State private var selection: LiveScreenTab = .liveMetrics
-    
     init(workoutManager: WorkoutManager) {
         self.workoutManager = workoutManager
     }

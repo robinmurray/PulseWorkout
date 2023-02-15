@@ -59,15 +59,6 @@ struct LiveMetricsView: View {
                     .foregroundStyle(.yellow)
             }
                 
-            
-
- //           Text(HRDisplay[profileData.hrState]?.HRText ?? String(profileData.HR))
-//                .fontWeight(.bold)
-//                .foregroundColor(HRDisplay[profileData.hrState]?.colour)
-//                .frame(height: 80)
-//                .padding()
-//                .font(.system(size: 80))
-
             HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
                     Spacer().frame(maxWidth: .infinity)
@@ -106,17 +97,13 @@ struct LiveMetricsView: View {
                         .foregroundColor(hiAlarmDisplay[workoutManager.hiLimitAlarmActive]?.colour)
                         .font(.system(size: 15))
                 }
-            Spacer().frame(maxWidth: .infinity, maxHeight: .infinity)
+
+            Spacer().frame(maxWidth: .infinity)
        
-            HStack {
-                Image(systemName:"heart.fill")
-                    .foregroundColor(BTconnectedColour[workoutManager.BTHRMConnected])
-                Spacer().frame(maxWidth: .infinity)
-                }
+            BTDevicesView(workoutManager: workoutManager)
 
-
-            }
-        .padding()
+        }
+        .padding(.horizontal)
         .navigationTitle("Workout")
         .navigationBarTitleDisplayMode(.inline)
     }

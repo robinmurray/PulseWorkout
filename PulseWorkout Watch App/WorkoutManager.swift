@@ -169,6 +169,19 @@ class WorkoutManager: NSObject, ObservableObject {
         self.bluetoothManager = HRMViewController(workoutManager: self)
         
     }
+
+    func appActive() {
+        print("App becoming active")
+    }
+    
+    func appInactive() {
+        print("App becoming Inactive")
+    }
+    
+    func appBackground() {
+        print("App becoming Background")
+    }
+   
     
     func readProfileFromUserDefaults(profileName: String){
         print("Trying decode profile")
