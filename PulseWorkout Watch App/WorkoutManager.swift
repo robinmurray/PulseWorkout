@@ -108,6 +108,8 @@ class WorkoutManager: NSObject, ObservableObject {
 
     var playedAlarm: Bool = false
     
+    var appInBackground = false
+    
     var runCount = 0
     var timer: Timer?
     var HRchange: Int = 10
@@ -172,6 +174,10 @@ class WorkoutManager: NSObject, ObservableObject {
 
     func appActive() {
         print("App becoming active")
+        if (appInBackground && (appState != .live)) {
+            bluetoothManager!.connectKnownDevices()
+        }
+        appInBackground = false
     }
     
     func appInactive() {
@@ -180,6 +186,10 @@ class WorkoutManager: NSObject, ObservableObject {
     
     func appBackground() {
         print("App becoming Background")
+        if appState != .live {
+            bluetoothManager!.disconnectKnownDevices()
+        }
+        appInBackground = true
     }
    
     

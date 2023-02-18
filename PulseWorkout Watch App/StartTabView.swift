@@ -48,7 +48,7 @@ struct StartTabView: View {
             HelpView()
                 .tag(Tab.help)
 
-            DevicesView(workoutManager: workoutManager).tag(Tab.btDevices)
+            BTStartDiscoverView(workoutManager: workoutManager).tag(Tab.btDevices)
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))

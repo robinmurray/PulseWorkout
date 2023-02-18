@@ -15,6 +15,9 @@ let heartRateServiceCBUUID = CBUUID(string: "0x180D")
 let heartRateMeasurementCharacteristicCBUUID = CBUUID(string: "2A37")
 let bodySensorLocationCharacteristicCBUUID = CBUUID(string: "2A38")
 
+let batteryServiceCBUUID = CBUUID(string: "0x180F")
+let batteryLevelCharacteristicCBUUID = CBUUID(string: "0x2A19")
+
 let cyclePowerMeterCBUUID = CBUUID(string: "0x1818")
 
 struct BTDevice: Identifiable {
@@ -36,6 +39,7 @@ class HRMViewController: NSObject, ObservableObject {
 
     var workoutManager: WorkoutManager
     
+    var desiredConnectedDevices: Bool = true
     var heartRateLabel: String = ""
     var bodySensorLocationLabel: String = ""
     var centralManager: CBCentralManager!
@@ -52,6 +56,24 @@ class HRMViewController: NSObject, ObservableObject {
         
     }
     
+    func connectKnownDevices() {
+        desiredConnectedDevices = true
+        if self.centralManager.state == .poweredOn {
+            self.centralManager.scanForPeripherals(withServices: nil)
+        }
+    }
+    
+    func disconnectKnownDevices() {
+        desiredConnectedDevices = false
+        if self.centralManager.state == .poweredOn {
+            self.centralManager.stopScan()
+            if heartRatePeripheral != nil {
+                self.centralManager.cancelPeripheralConnection(heartRatePeripheral)
+                heartRatePeripheral = nil
+            }
+
+        }
+    }
     func resetDiscoveredDevices () {
         
         discoveredDevices = []
@@ -146,7 +168,11 @@ extension HRMViewController: CBCentralManagerDelegate {
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("Disconnected with error \(String(describing: error))")
         workoutManager.BTHRMConnected = false
-        centralManager.scanForPeripherals(withServices: nil)
+        
+//        work out if deliberate disconnect or error disconnect
+        if desiredConnectedDevices {
+            centralManager.scanForPeripherals(withServices: nil)
+        }
     }
 }
 
@@ -183,18 +209,20 @@ extension HRMViewController: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
                     error: Error?) {
       switch characteristic.uuid {
-        case bodySensorLocationCharacteristicCBUUID:
-          let bodySensorLocation = bodyLocation(from: characteristic)
-          print("bodySensorLocation \(bodySensorLocation)")
+          case bodySensorLocationCharacteristicCBUUID:
+              let bodySensorLocation = bodyLocation(from: characteristic)
+              print("bodySensorLocation \(bodySensorLocation)")
           
-      case heartRateMeasurementCharacteristicCBUUID:
-          bpm = heartRate(from: characteristic)
-          print("bpm = \(bpm)")
-          workoutManager.setHeartRate(heartRate: Double(bpm), hrSource: .bluetooth)
+          case heartRateMeasurementCharacteristicCBUUID:
+              bpm = heartRate(from: characteristic)
+              print("bpm = \(bpm)")
+              workoutManager.setHeartRate(heartRate: Double(bpm), hrSource: .bluetooth)
 
-          
-        default:
-          print("Unhandled Characteristic UUID: \(characteristic.uuid)")
+          case batteryLevelCharacteristicCBUUID:
+              print( "battery level characteristic \(characteristic) for peripheral \(peripheral)")
+
+          default:
+              print("Unhandled Characteristic UUID: \(characteristic.uuid)")
       }
     }
     

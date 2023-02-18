@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct DevicesView: View {
+struct BTStartDiscoverView: View {
     
     @ObservedObject var workoutManager: WorkoutManager
     
@@ -34,11 +34,11 @@ struct DevicesView: View {
     }
 }
 
-struct DevicesView_Previews: PreviewProvider {
+struct BTStartDiscoverView_Previews: PreviewProvider {
     
     static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        DevicesView(workoutManager: workoutManager)
+        BTStartDiscoverView(workoutManager: workoutManager)
     }
 }
