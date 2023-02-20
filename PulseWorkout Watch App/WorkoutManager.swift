@@ -81,14 +81,6 @@ var profileNames: [String] = ["Race", "VO2 Max", "Threshold", "Aerobic"]
 
 
 class WorkoutManager: NSObject, ObservableObject {
-    @Published var hiLimitAlarmActive: Bool
-    @Published var hiLimitAlarm: Int
-    @Published var loLimitAlarmActive: Bool
-    @Published var loLimitAlarm: Int
-    @Published var playSound: Bool
-    @Published var playHaptic: Bool
-    @Published var constantRepeat: Bool
-    @Published var lockScreen: Bool
     @Published var profileName: String
     @Published var hrState: HRState = HRState.inactive
     @Published var HRMonitorActive: Bool = false
@@ -123,6 +115,11 @@ class WorkoutManager: NSObject, ObservableObject {
     var session: HKWorkoutSession?
     var builder: HKLiveWorkoutBuilder?
 
+
+    var activityProfiles = ActivityProfiles()
+    var liveActivityProfile: ActivityProfile
+
+    
     @Published var summaryMetrics = SummaryMetrics(
         duration: 0,
         averageHeartRate: 0,
@@ -151,25 +148,16 @@ class WorkoutManager: NSObject, ObservableObject {
         if profileName == "" {
             self.profileName = UserDefaults.standard.string(forKey: "CurrentProfile") ?? "Race"
         }
-        
-        // Set default values - these will be overwritten by
-        // ReadFromUserDefaults
-        self.hiLimitAlarmActive = true
-        self.hiLimitAlarm = 140
-        self.loLimitAlarmActive = false
-        self.loLimitAlarm = 100
-        self.playSound = false
-        self.playHaptic = false
-        self.constantRepeat = false
-        self.lockScreen = false
+
+        self.liveActivityProfile = activityProfiles.getDefault()
         
         super.init()
         
-        readProfileFromUserDefaults(profileName: self.profileName)
         readWorkoutConfFromUserDefaults()
         lastSummaryMetrics.get(tag: "LastSession")
         self.bluetoothManager = HRMViewController(workoutManager: self)
-        
+
+
     }
 
     func appActive() {
@@ -193,72 +181,14 @@ class WorkoutManager: NSObject, ObservableObject {
     }
    
     
-    func readProfileFromUserDefaults(profileName: String){
-        print("Trying decode profile")
-        
-        // Initialise empty dictionary
-        // try to read from userDefaults in to this - if fails then use defaults
-        var profileDict: [String: Any] = [:]
-        
-        let profileJSON: Data =  UserDefaults.standard.object(forKey: "Profile_" + profileName) as? Data ?? Data()
-        let jsonString = String(data: profileJSON, encoding: .utf8)
-        print("Returned profile data : \(String(describing: jsonString))")
-        do {
-            profileDict = try JSONSerialization.jsonObject(with: profileJSON, options: []) as! [String: Any]
-        } catch {
-            print("No valid dictionary stored")
-        }
-
-        // Read Dictionary or set default values
-        self.hiLimitAlarmActive = (profileDict["hiLimitAlarmActive"] ?? true) as! Bool
-        self.hiLimitAlarm = (profileDict["hiLimitAlarm"] ?? 140) as! Int
-        self.loLimitAlarmActive = (profileDict["loLimitAlarmActive"] ?? false) as! Bool
-        self.loLimitAlarm = (profileDict["loLimitAlarm"] ?? 100) as! Int
-        self.playSound = (profileDict["playSound"] ?? false) as! Bool
-        self.playHaptic = (profileDict["playHaptic"] ?? false) as! Bool
-        self.constantRepeat = (profileDict["constantRepeat"] ?? false) as! Bool
-        self.lockScreen = (profileDict["lockScreen"] ?? false) as! Bool
-    }
-
     func writeProfileToUserDefaults(profileName: String){
 
-        struct StoredProfile: Codable {
-            var hiLimitAlarmActive: Bool
-            var hiLimitAlarm: Int
-            var loLimitAlarmActive: Bool
-            var loLimitAlarm: Int
-            var playSound: Bool
-            var playHaptic: Bool
-            var constantRepeat: Bool
-            var lockScreen: Bool
-        }
-
-
-        do {
-            let storedProfile = StoredProfile(
-                hiLimitAlarmActive: hiLimitAlarmActive,
-                hiLimitAlarm: hiLimitAlarm,
-                loLimitAlarmActive: loLimitAlarmActive,
-                loLimitAlarm: loLimitAlarm,
-                playSound: playSound,
-                playHaptic: playHaptic,
-                constantRepeat: constantRepeat,
-                lockScreen: lockScreen)
-
-            let data = try JSONEncoder().encode(storedProfile)
-            let jsonString = String(data: data, encoding: .utf8)
-            print("JSON : \(String(describing: jsonString))")
-            UserDefaults.standard.set(data, forKey: "Profile_" + profileName)
-        } catch {
-            print("Error enconding")
-        }
     }
     
     func changeProfile(newProfileName: String){
 
         UserDefaults.standard.set(newProfileName, forKey: "CurrentProfile")
         self.profileName = newProfileName
-        readProfileFromUserDefaults(profileName: self.profileName)
 
     }
 
@@ -315,7 +245,9 @@ class WorkoutManager: NSObject, ObservableObject {
         self.appState = .live
     }
 
-    func startWorkout() {
+    func startWorkout(activityProfile: ActivityProfile) {
+        
+        liveActivityProfile = activityProfile
         
         liveTabSelection = LiveScreenTab.liveMetrics
         
@@ -356,7 +288,7 @@ class WorkoutManager: NSObject, ObservableObject {
             }
         }
         
-        if self.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
+        if self.liveActivityProfile.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
             Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(delayedEnableWaterLock), userInfo: nil, repeats: false)
         }
 
@@ -424,18 +356,18 @@ class WorkoutManager: NSObject, ObservableObject {
     @objc func fireTimer() {
         self.runCount += 1
 
-        if (self.hiLimitAlarmActive) &&
-           (Int(self.heartRate) >= self.hiLimitAlarm) {
+        if (self.liveActivityProfile.hiLimitAlarmActive) &&
+           (Int(self.heartRate) >= self.liveActivityProfile.hiLimitAlarm) {
             
             self.summaryMetrics.timeOverHiAlarm += 2
             self.hrState = HRState.hiAlarm
             
-            if (constantRepeat || !playedAlarm) {
-                if playSound {
+            if (liveActivityProfile.constantRepeat || !playedAlarm) {
+                if liveActivityProfile.playSound {
                     WKInterfaceDevice.current().play(.failure)
                     print("playing sound 1")
                 }
-                if playHaptic {
+                if liveActivityProfile.playHaptic {
                     WKInterfaceDevice.current().play(.directionUp)
                     print("playing sound 2")                }
 
@@ -443,13 +375,13 @@ class WorkoutManager: NSObject, ObservableObject {
             }
 
             
-        } else if (self.loLimitAlarmActive) &&
-                    (Int(self.heartRate) <= self.loLimitAlarm) {
+        } else if (self.liveActivityProfile.loLimitAlarmActive) &&
+                    (Int(self.heartRate) <= self.liveActivityProfile.loLimitAlarm) {
  
             self.summaryMetrics.timeUnderLoAlarm += 2
             self.hrState = HRState.loAlarm
             
-            if playSound && (constantRepeat || !playedAlarm) {
+            if liveActivityProfile.playSound && (liveActivityProfile.constantRepeat || !playedAlarm) {
                 WKInterfaceDevice.current().play(.failure)
                 print("playing sound 3")
                 playedAlarm = true

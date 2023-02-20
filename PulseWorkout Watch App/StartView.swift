@@ -31,9 +31,22 @@ struct StartView: View {
  //               }
  //           }
 
-            ActivityProfileView(workoutManager: workoutManager)
+            List(workoutManager.activityProfiles.profiles) { activityProfile in
+                ActivityProfileView(workoutManager: workoutManager, activityProfile: activityProfile)
+            }
+            .listStyle(.carousel)
 
-            Spacer().frame(maxWidth: .infinity)
+//            List {
+//                ActivityProfileView(workoutManager: workoutManager)
+//                ActivityProfileView(workoutManager: workoutManager)
+//                Text("New")
+//            }
+//            .listStyle(.carousel)
+//            .edgesIgnoringSafeArea(.bottom)
+            
+//            ActivityProfileView(workoutManager: workoutManager)
+
+//            Spacer().frame(maxWidth: .infinity)
        
             BTDevicesView(workoutManager: workoutManager)
 

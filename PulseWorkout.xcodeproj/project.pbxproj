@@ -11,6 +11,7 @@
 		E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */; };
 		E421295C299D4D91001B8AA9 /* BTDevicesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295B299D4D91001B8AA9 /* BTDevicesView.swift */; };
 		E421295E299D513B001B8AA9 /* ActivityProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295D299D513B001B8AA9 /* ActivityProfileView.swift */; };
+		E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295F29A21922001B8AA9 /* ActivityProfile.swift */; };
 		E46EF07F29537CA1006FA603 /* PulseWorkout Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = E46EF07E29537CA1006FA603 /* PulseWorkout Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E46EF08429537CA1006FA603 /* PulseWorkoutApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */; };
 		E46EF08629537CA1006FA603 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF08529537CA1006FA603 /* ContentView.swift */; };
@@ -80,6 +81,7 @@
 		E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTStartDiscoverView.swift; sourceTree = "<group>"; };
 		E421295B299D4D91001B8AA9 /* BTDevicesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDevicesView.swift; sourceTree = "<group>"; };
 		E421295D299D513B001B8AA9 /* ActivityProfileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityProfileView.swift; sourceTree = "<group>"; };
+		E421295F29A21922001B8AA9 /* ActivityProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityProfile.swift; sourceTree = "<group>"; };
 		E46EF07829537CA1006FA603 /* PulseWorkout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PulseWorkout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46EF07E29537CA1006FA603 /* PulseWorkout Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PulseWorkout Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseWorkoutApp.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				E46EF0C52955C836006FA603 /* PausedTabView.swift */,
 				E46EF0BD29538378006FA603 /* SummaryMetricsView.swift */,
 				E46EF0C92955F615006FA603 /* WorkoutManager.swift */,
+				E421295F29A21922001B8AA9 /* ActivityProfile.swift */,
 				E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */,
 				E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */,
 				E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */,
@@ -390,6 +393,7 @@
 				E46EF0C62955C836006FA603 /* PausedTabView.swift in Sources */,
 				E46EF0BE29538378006FA603 /* SummaryMetricsView.swift in Sources */,
 				E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */,
+				E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */,
 				E46EF0C229543FEA006FA603 /* StopView.swift in Sources */,
 				E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */,
 				E46EF0C42954B080006FA603 /* WorkoutSelectionView.swift in Sources */,
