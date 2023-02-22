@@ -71,7 +71,10 @@ struct SummaryMetricsView: View {
                 if displayDone {
                     Button(action: SaveWorkout) {
                         Text("Done").padding([.leading, .trailing], 40)
+
                     }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color.blue)
                 }
 
             }

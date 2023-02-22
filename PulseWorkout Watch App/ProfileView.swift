@@ -25,12 +25,31 @@ struct ProfileView: View {
 
     }
     
+    func done() {
+        workoutManager.writeLiveActivityProfile()
+
+        workoutManager.appState = .initial
+    }
+    
+    func dismiss() {
+        workoutManager.appState = .initial
+    }
+    
+    func delete() {
+        workoutManager.appState = .initial
+    }
+    
     var body: some View {
         VStack{
             Form {
-                Text(workoutManager.liveActivityProfile.name)
-                    .fontWeight(/*@START_MENU_TOKEN@*/.bold/*@END_MENU_TOKEN@*/)
-                
+                TextField(
+                    "Profile",
+                    text: $workoutManager.liveActivityProfile.name
+                )
+                .font(.system(size: 15))
+                .fontWeight(.bold)
+                .foregroundStyle(.yellow)
+
                 Toggle(isOn: $workoutManager.liveActivityProfile.lockScreen) {
                     Text("Lock Screen")
                 }
@@ -84,9 +103,38 @@ struct ProfileView: View {
                 }
                 .disabled(!(workoutManager.liveActivityProfile.hiLimitAlarmActive || workoutManager.liveActivityProfile.loLimitAlarmActive))
 
+                VStack {
+                    Button("Done", action: { done() } )
+                        .buttonStyle(.borderedProminent)
+                        .tint(Color.blue)
+
+                    Button("Dismiss", action: { dismiss() })
+                        .buttonStyle(.borderedProminent)
+                        .tint(Color.gray)
+
+
+                    Button(action: delete) {
+                        Text("Delete")
+//                        Image(systemName: "xmark.bin.circle.fill")
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color.red)
+                    .buttonStyle(PlainButtonStyle())
+
+                }
+
+
+//                Spacer()
+                
+
+
+
             }
+//            .padding()
             .navigationTitle("Alarm Profile")
             .navigationBarTitleDisplayMode(.inline)
+            
+
         }
     }
     

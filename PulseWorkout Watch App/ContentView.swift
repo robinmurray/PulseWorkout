@@ -9,7 +9,7 @@ import SwiftUI
 
 
 enum AppState {
-    case initial, live, paused, summary, discoverDevices
+    case initial, live, paused, summary, editProfile, discoverDevices
 }
 
 struct ContentView: View {
@@ -41,6 +41,9 @@ struct ContentView: View {
             
         case .summary:
             return AnyView(SummaryTabView(workoutManager: workoutManager))
+
+        case .editProfile:
+            return AnyView(ProfileView(workoutManager: workoutManager))
 
         case .discoverDevices:
             return AnyView(BTDeviceDiscoverView(workoutManager: workoutManager))

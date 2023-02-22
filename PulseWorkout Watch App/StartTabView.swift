@@ -12,7 +12,7 @@ import WatchKit
 struct StartTabView: View {
 
     enum Tab {
-        case workoutType, start, summaryMetrics, profile, nowPlaying, help, btDevices
+        case workoutType, start, summaryMetrics, nowPlaying, help, btDevices
     }
 
 //    @EnvironmentObject var workoutManager: WorkoutManager
@@ -39,10 +39,6 @@ struct StartTabView: View {
                                metrics: workoutManager.lastSummaryMetrics)
                 .tag(Tab.summaryMetrics)
 
-            ProfileView(workoutManager: workoutManager)
-                .tag(Tab.profile)
-
-            
             NowPlayingView().tag(Tab.nowPlaying)
             
             HelpView()

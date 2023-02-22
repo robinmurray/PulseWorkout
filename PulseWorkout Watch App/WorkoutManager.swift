@@ -117,7 +117,7 @@ class WorkoutManager: NSObject, ObservableObject {
 
 
     var activityProfiles = ActivityProfiles()
-    var liveActivityProfile: ActivityProfile
+    @Published var liveActivityProfile: ActivityProfile
 
     
     @Published var summaryMetrics = SummaryMetrics(
@@ -245,6 +245,20 @@ class WorkoutManager: NSObject, ObservableObject {
         self.appState = .live
     }
 
+    func editProfile(activityProfile: ActivityProfile) {
+
+        liveActivityProfile = activityProfile
+        
+        appState = .editProfile
+
+    }
+
+    func writeLiveActivityProfile() {
+        
+        activityProfiles.update(activityProfile: liveActivityProfile)
+        
+    }
+    
     func startWorkout(activityProfile: ActivityProfile) {
         
         liveActivityProfile = activityProfile

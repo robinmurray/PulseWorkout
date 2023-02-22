@@ -31,7 +31,7 @@ struct ActivityProfileView: View {
     }
     
     func editProfile() {
-        workoutManager.startWorkout(activityProfile: activityProfile)
+        workoutManager.editProfile(activityProfile: activityProfile)
 
     }
     var body: some View {
