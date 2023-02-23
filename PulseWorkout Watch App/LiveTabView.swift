@@ -22,21 +22,23 @@ struct LiveTabView: View {
     }
     
     var body: some View {
-        TabView(selection: $workoutManager.liveTabSelection) {
 
-            StopView(workoutManager: workoutManager)
-                .tag(LiveScreenTab.stop)
-            
-            LiveMetricsView(workoutManager: workoutManager)
-                .tag(LiveScreenTab.liveMetrics)
-
-            
-            NowPlayingView()
-                .tag(LiveScreenTab.nowPlaying)
-
-        }
-        .tabViewStyle(.page(indexDisplayMode: .always))
-        .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+            TabView(selection: $workoutManager.liveTabSelection) {
+                
+                StopView(workoutManager: workoutManager)
+                    .tag(LiveScreenTab.stop)
+                
+                LiveMetricsView(workoutManager: workoutManager)
+                    .tag(LiveScreenTab.liveMetrics)
+                
+                
+                NowPlayingView()
+                    .tag(LiveScreenTab.nowPlaying)
+                
+            }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+//            .padding(.all)
 
     }
     

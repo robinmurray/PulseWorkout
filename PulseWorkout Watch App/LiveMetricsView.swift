@@ -50,24 +50,16 @@ struct LiveMetricsView: View {
     }
     
     var body: some View {
+        NavigationView {
+
         VStack {
 
-            Spacer().frame(maxWidth: .infinity)
-       
-
-                Text(workoutManager.liveActivityProfile.name
-                )
-                .font(.system(size: 15))
-                .fontWeight(.bold)
-                .foregroundStyle(.yellow)
-                
-                
-                TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
+            TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
                                                      isPaused: workoutManager.session?.state == .paused)) { context in
-                    
+                
                     ElapsedTimeView(elapsedTime: workoutManager.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
                         .foregroundStyle(.yellow)
-                }
+            }
 
             HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
@@ -77,7 +69,7 @@ struct LiveMetricsView: View {
                     .fontWeight(.bold)
                     .foregroundColor(HRDisplay[workoutManager.hrState]?.colour)
 //                    .multilineTextAlignment(.trailing)
-                    .frame(width: 140.0, height: 80)
+                    .frame(width: 140.0, height: 70.0)
  //                   .padding()
                     .font(.system(size: 80))
                 }
@@ -113,9 +105,12 @@ struct LiveMetricsView: View {
             BTDevicesView(workoutManager: workoutManager)
 
         }
+            
+        }
         .padding(.horizontal)
-        .navigationTitle("Workout")
-        .navigationBarTitleDisplayMode(.inline)
+//        .navigationTitle(workoutManager.liveActivityProfile.name)
+//        .navigationBarTitleDisplayMode(.inline)
+
     }
 
 }

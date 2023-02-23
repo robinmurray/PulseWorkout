@@ -17,6 +17,7 @@ struct BTDevicesView: View {
     
     @ObservedObject var workoutManager: WorkoutManager
 
+    let screenWidth = WKInterfaceDevice.current().screenBounds.width
     
     init(workoutManager: WorkoutManager) {
         self.workoutManager = workoutManager
@@ -38,7 +39,7 @@ struct BTDevicesView: View {
                 .foregroundColor(Color.gray)
 
             Spacer().frame(maxWidth: .infinity)
-            }
+        }.imageScale(screenWidth > 190 ? .medium: .small)
     }
 }
 
