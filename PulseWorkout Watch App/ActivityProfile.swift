@@ -45,6 +45,7 @@ class ActivityProfiles: NSObject {
             self.write()
         }
     }
+    
     func addNew() {
         add(activityProfile: ActivityProfile ( name: "New",
                                                workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
@@ -59,6 +60,25 @@ class ActivityProfiles: NSObject {
                                                lockScreen: false))
     }
 
+    func UIProfileList() -> [ActivityProfile] {
+        
+        let  newActivityProfile = ActivityProfile ( name: "New Profile",
+                                                       workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
+                                                       workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
+                                                       hiLimitAlarmActive: false,
+                                                       hiLimitAlarm: 140,
+                                                       loLimitAlarmActive: false,
+                                                       loLimitAlarm: 100,
+                                                       playSound: false,
+                                                       playHaptic: false,
+                                                       constantRepeat: false,
+                                                       lockScreen: false)
+        var ret: [ActivityProfile] = profiles
+        ret.append(newActivityProfile)
+        return ret
+        
+    }
+    
     func getDefault() -> ActivityProfile {
         return ActivityProfile ( name: "Default",
                                  workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
@@ -127,7 +147,7 @@ class ActivityProfiles: NSObject {
         self.write()
     }
     
-    func remove(id: UUID) {
+    func remove(activityProfile: ActivityProfile) {
         /* delete an activity profile from profiles and
          write profiles back to userDefaults */
         
@@ -137,7 +157,7 @@ class ActivityProfiles: NSObject {
         }
         
         for (index, profile) in profiles.enumerated() {
-            if profile.id == id {
+            if profile.id == activityProfile.id {
                 profiles.remove(at: index)
                 
                 self.write()
@@ -146,9 +166,22 @@ class ActivityProfiles: NSObject {
         }
     }
 
+    func updateOrAdd(activityProfile: ActivityProfile) {
+        /* Update activity profile and write to userDefaults.
+           If activityProfile has no id then is a new profile - add it... */
+
+        if activityProfile.id == nil {
+            add(activityProfile: activityProfile)
+        } else {
+            update(activityProfile: activityProfile)
+        }
+        
+    }
+
     func update(activityProfile: ActivityProfile) {
         /* Update activity profile and write to userDefaults */
 
+        
         for (index, profile) in profiles.enumerated() {
             if profile.id == activityProfile.id {
                 profiles[index] = activityProfile
@@ -160,6 +193,7 @@ class ActivityProfiles: NSObject {
 
         
     }
+
     
     func get(id: UUID) -> ActivityProfile? {
         // return activity profile for a profile id

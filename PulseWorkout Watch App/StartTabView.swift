@@ -12,7 +12,7 @@ import WatchKit
 struct StartTabView: View {
 
     enum Tab {
-        case workoutType, start, summaryMetrics, nowPlaying, help, btDevices
+        case start, summaryMetrics, nowPlaying, help, btDevices
     }
 
 //    @EnvironmentObject var workoutManager: WorkoutManager
@@ -27,9 +27,6 @@ struct StartTabView: View {
     var body: some View {
         TabView(selection: $selection) {
 
-            WorkoutSelectionView(workoutManager: workoutManager)
-                .tag(Tab.workoutType)
-            
             StartView(workoutManager: workoutManager)
                 .tag(Tab.start)
             

@@ -30,78 +30,167 @@ struct ActivityProfileView: View {
         workoutManager.startWorkout(activityProfile: activityProfile)
     }
     
-    func editProfile() {
-        workoutManager.editProfile(activityProfile: activityProfile)
+    func editOrAddProfile() {
+        workoutManager.editOrAddProfile(activityProfile: activityProfile)
 
     }
-    var body: some View {
-        VStack {
-            Text(activityProfile.name)
-                .font(.system(size: 15))
-                .fontWeight(.bold)
-                .foregroundStyle(.yellow)
-
-            HStack {
-                VStack{
-                    Button(action: editProfile) {
-                    Image(systemName: "pencil.circle")
+    
+    func existingOrNewView(activityProfile: ActivityProfile) -> AnyView {
+        
+        var returnView: any View
+        returnView =
+            VStack {
+                Text(activityProfile.name)
+                    .font(.system(size: 15))
+                    .fontWeight(.bold)
+                    .foregroundStyle(.yellow)
+                
+                HStack {
+                    VStack{
+                        Button(action: editOrAddProfile) {
+                            Image(systemName: "pencil.circle")
+                            
+                        }
+                        .foregroundColor(Color.green)
+                        .font(.title)
+                        .frame(width: 40, height: 40)
+                        .background(Color.clear)
+                        .clipShape(Circle())
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        Text("Edit")
+                            .foregroundColor(Color.green)
                         
                     }
-                    .foregroundColor(Color.green)
-                    .font(.title)
-                    .frame(width: 40, height: 40)
-                    .background(Color.clear)
-                    .clipShape(Circle())
-                    .buttonStyle(PlainButtonStyle())
-                
-                    Text("Edit")
-                        .foregroundColor(Color.green)
                     
-                }
-
-                Spacer().frame(maxWidth: .infinity)
-
-                VStack{
-                    Button(action: startWorkout) {
-                        Image(systemName: "play.circle")
+                    Spacer().frame(maxWidth: .infinity)
+                    
+                    VStack{
+                        Button(action: startWorkout) {
+                            Image(systemName: "play.circle")
+                        }
+                        .foregroundColor(Color.green)
+                        .font(.title)
+                        .frame(width: 40, height: 40)
+                        .background(Color.clear)
+                        .clipShape(Circle())
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        Text("Start")
+                            .foregroundColor(Color.green)
+                        
                     }
-                    .foregroundColor(Color.green)
-                    .font(.title)
-                    .frame(width: 40, height: 40)
-                    .background(Color.clear)
-                    .clipShape(Circle())
-                    .buttonStyle(PlainButtonStyle())
-                    
-                    Text("Start")
-                        .foregroundColor(Color.green)
                     
                 }
                 
+                HStack {
+                    Image(systemName:"heart.fill")
+                        .foregroundColor(Color.red)
+                    
+                    Image(systemName: "arrow.down.to.line.circle.fill")
+                        .foregroundColor(loAlarmDisplay[activityProfile.loLimitAlarmActive]?.colour)
+                        .frame(height: 20)
+                    
+                    Text(loAlarmDisplay[activityProfile.loLimitAlarmActive]?.alarmLevelText ?? String(activityProfile.loLimitAlarm))
+                        .foregroundColor(loAlarmDisplay[activityProfile.loLimitAlarmActive]?.colour)
+                        .font(.system(size: 15))
+                    
+                    Image(systemName: "arrow.up.to.line.circle.fill")
+                        .foregroundColor(hiAlarmDisplay[activityProfile.hiLimitAlarmActive]?.colour)
+                        .frame(height: 20)
+                    
+                    Text(hiAlarmDisplay[activityProfile.hiLimitAlarmActive]?.alarmLevelText ?? String(activityProfile.hiLimitAlarm))
+                        .foregroundColor(hiAlarmDisplay[activityProfile.hiLimitAlarmActive]?.colour)
+                        .font(.system(size: 15))
+                    
+                }
             }
-            
-            HStack {
-                Image(systemName:"heart.fill")
-                    .foregroundColor(Color.red)
 
-                Image(systemName: "arrow.down.to.line.circle.fill")
-                    .foregroundColor(loAlarmDisplay[activityProfile.loLimitAlarmActive]?.colour)
-                    .frame(height: 20)
-                
-                Text(loAlarmDisplay[activityProfile.loLimitAlarmActive]?.alarmLevelText ?? String(activityProfile.loLimitAlarm))
-                    .foregroundColor(loAlarmDisplay[activityProfile.loLimitAlarmActive]?.colour)
-                    .font(.system(size: 15))
-                
-                Image(systemName: "arrow.up.to.line.circle.fill")
-                    .foregroundColor(hiAlarmDisplay[activityProfile.hiLimitAlarmActive]?.colour)
-                    .frame(height: 20)
-                
-                Text(hiAlarmDisplay[workoutManager.liveActivityProfile.hiLimitAlarmActive]?.alarmLevelText ?? String(activityProfile.hiLimitAlarm))
-                    .foregroundColor(hiAlarmDisplay[activityProfile.hiLimitAlarmActive]?.colour)
-                    .font(.system(size: 15))
-
+        if activityProfile.id == nil {
+            returnView = VStack {
+                Button("New Profile", action: editOrAddProfile)
+                .buttonStyle(.borderedProminent)
+                .tint(Color.green)
+                .buttonStyle(PlainButtonStyle())
             }
         }
+        return AnyView(returnView)
     }
+    
+    var body: some View {
+        
+        existingOrNewView(activityProfile: activityProfile)
+        /*
+            VStack {
+                Text(activityProfile.name)
+                    .font(.system(size: 15))
+                    .fontWeight(.bold)
+                    .foregroundStyle(.yellow)
+                
+                HStack {
+                    VStack{
+                        Button(action: editProfile) {
+                            Image(systemName: "pencil.circle")
+                            
+                        }
+                        .foregroundColor(Color.green)
+                        .font(.title)
+                        .frame(width: 40, height: 40)
+                        .background(Color.clear)
+                        .clipShape(Circle())
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        Text("Edit")
+                            .foregroundColor(Color.green)
+                        
+                    }
+                    
+                    Spacer().frame(maxWidth: .infinity)
+                    
+                    VStack{
+                        Button(action: startWorkout) {
+                            Image(systemName: "play.circle")
+                        }
+                        .foregroundColor(Color.green)
+                        .font(.title)
+                        .frame(width: 40, height: 40)
+                        .background(Color.clear)
+                        .clipShape(Circle())
+                        .buttonStyle(PlainButtonStyle())
+                        
+                        Text("Start")
+                            .foregroundColor(Color.green)
+                        
+                    }
+                    
+                }
+                
+                HStack {
+                    Image(systemName:"heart.fill")
+                        .foregroundColor(Color.red)
+                    
+                    Image(systemName: "arrow.down.to.line.circle.fill")
+                        .foregroundColor(loAlarmDisplay[activityProfile.loLimitAlarmActive]?.colour)
+                        .frame(height: 20)
+                    
+                    Text(loAlarmDisplay[activityProfile.loLimitAlarmActive]?.alarmLevelText ?? String(activityProfile.loLimitAlarm))
+                        .foregroundColor(loAlarmDisplay[activityProfile.loLimitAlarmActive]?.colour)
+                        .font(.system(size: 15))
+                    
+                    Image(systemName: "arrow.up.to.line.circle.fill")
+                        .foregroundColor(hiAlarmDisplay[activityProfile.hiLimitAlarmActive]?.colour)
+                        .frame(height: 20)
+                    
+                    Text(hiAlarmDisplay[workoutManager.liveActivityProfile.hiLimitAlarmActive]?.alarmLevelText ?? String(activityProfile.hiLimitAlarm))
+                        .foregroundColor(hiAlarmDisplay[activityProfile.hiLimitAlarmActive]?.colour)
+                        .font(.system(size: 15))
+                    
+                }
+            }
+         */
+        
+    }
+
 }
 
 struct ActivityProfileView_Previews: PreviewProvider {

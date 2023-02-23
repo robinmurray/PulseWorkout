@@ -11,6 +11,12 @@ import Foundation
 
 import SwiftUI
 
+struct NewView: View {
+    var body: some View {
+        Text("New")
+    }
+    
+}
 
 struct StartView: View {
 
@@ -25,29 +31,11 @@ struct StartView: View {
     
     var body: some View {
         VStack {
- //           Picker("Profile", selection: $workoutManager.profileName) {
- //               ForEach(profileNames, id: \.self) { status in
- //                   ActivityProfileView(workoutManager: workoutManager)
- //               }
- //           }
-
-            List(workoutManager.activityProfiles.profiles) { activityProfile in
+            List(workoutManager.activityProfiles.UIProfileList()) { activityProfile in
                 ActivityProfileView(workoutManager: workoutManager, activityProfile: activityProfile)
             }
             .listStyle(.carousel)
 
-//            List {
-//                ActivityProfileView(workoutManager: workoutManager)
-//                ActivityProfileView(workoutManager: workoutManager)
-//                Text("New")
-//            }
-//            .listStyle(.carousel)
-//            .edgesIgnoringSafeArea(.bottom)
-            
-//            ActivityProfileView(workoutManager: workoutManager)
-
-//            Spacer().frame(maxWidth: .infinity)
-       
             BTDevicesView(workoutManager: workoutManager)
 
             }

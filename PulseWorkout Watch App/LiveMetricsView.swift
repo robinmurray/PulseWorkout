@@ -52,13 +52,23 @@ struct LiveMetricsView: View {
     var body: some View {
         VStack {
 
-            TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
-                                                 isPaused: workoutManager.session?.state == .paused)) { context in
+            Spacer().frame(maxWidth: .infinity)
+       
+
+                Text(workoutManager.liveActivityProfile.name
+                )
+                .font(.system(size: 15))
+                .fontWeight(.bold)
+                .foregroundStyle(.yellow)
                 
-                ElapsedTimeView(elapsedTime: workoutManager.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
-                    .foregroundStyle(.yellow)
-            }
                 
+                TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
+                                                     isPaused: workoutManager.session?.state == .paused)) { context in
+                    
+                    ElapsedTimeView(elapsedTime: workoutManager.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
+                        .foregroundStyle(.yellow)
+                }
+
             HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
                     Spacer().frame(maxWidth: .infinity)
@@ -107,7 +117,7 @@ struct LiveMetricsView: View {
         .navigationTitle("Workout")
         .navigationBarTitleDisplayMode(.inline)
     }
-    
+
 }
     
 func distanceFormatter (distance: Double) -> String {

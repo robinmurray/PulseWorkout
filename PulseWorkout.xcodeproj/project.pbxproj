@@ -29,7 +29,6 @@
 		E46EF0BE29538378006FA603 /* SummaryMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0BD29538378006FA603 /* SummaryMetricsView.swift */; };
 		E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0BF29538811006FA603 /* LiveMetricsView.swift */; };
 		E46EF0C229543FEA006FA603 /* StopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C129543FEA006FA603 /* StopView.swift */; };
-		E46EF0C42954B080006FA603 /* WorkoutSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C32954B080006FA603 /* WorkoutSelectionView.swift */; };
 		E46EF0C62955C836006FA603 /* PausedTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C52955C836006FA603 /* PausedTabView.swift */; };
 		E46EF0C82955C8E9006FA603 /* PausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C72955C8E9006FA603 /* PausedView.swift */; };
 		E46EF0CA2955F615006FA603 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C92955F615006FA603 /* WorkoutManager.swift */; };
@@ -102,7 +101,6 @@
 		E46EF0BD29538378006FA603 /* SummaryMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryMetricsView.swift; sourceTree = "<group>"; };
 		E46EF0BF29538811006FA603 /* LiveMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsView.swift; sourceTree = "<group>"; };
 		E46EF0C129543FEA006FA603 /* StopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopView.swift; sourceTree = "<group>"; };
-		E46EF0C32954B080006FA603 /* WorkoutSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutSelectionView.swift; sourceTree = "<group>"; };
 		E46EF0C52955C836006FA603 /* PausedTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PausedTabView.swift; sourceTree = "<group>"; };
 		E46EF0C72955C8E9006FA603 /* PausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PausedView.swift; sourceTree = "<group>"; };
 		E46EF0C92955F615006FA603 /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
@@ -187,7 +185,6 @@
 				E46EF0B929537E24006FA603 /* StartView.swift */,
 				E421295D299D513B001B8AA9 /* ActivityProfileView.swift */,
 				E46EF0BB29537E4D006FA603 /* StartTabView.swift */,
-				E46EF0C32954B080006FA603 /* WorkoutSelectionView.swift */,
 				E46EF08729537CA3006FA603 /* Assets.xcassets */,
 				E46EF08929537CA3006FA603 /* Preview Content */,
 			);
@@ -396,7 +393,6 @@
 				E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */,
 				E46EF0C229543FEA006FA603 /* StopView.swift in Sources */,
 				E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */,
-				E46EF0C42954B080006FA603 /* WorkoutSelectionView.swift in Sources */,
 				E46EF0B629537D93006FA603 /* ProfileView.swift in Sources */,
 				E46EF0B429537D63006FA603 /* LiveTabView.swift in Sources */,
 				E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */,

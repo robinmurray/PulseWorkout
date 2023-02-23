@@ -245,7 +245,7 @@ class WorkoutManager: NSObject, ObservableObject {
         self.appState = .live
     }
 
-    func editProfile(activityProfile: ActivityProfile) {
+    func editOrAddProfile(activityProfile: ActivityProfile) {
 
         liveActivityProfile = activityProfile
         
@@ -255,8 +255,13 @@ class WorkoutManager: NSObject, ObservableObject {
 
     func writeLiveActivityProfile() {
         
-        activityProfiles.update(activityProfile: liveActivityProfile)
+        activityProfiles.updateOrAdd(activityProfile: liveActivityProfile)
         
+    }
+
+    func deleteLiveActivityProfile() {
+        activityProfiles.remove(activityProfile: liveActivityProfile)
+
     }
     
     func startWorkout(activityProfile: ActivityProfile) {
