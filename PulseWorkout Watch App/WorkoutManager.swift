@@ -81,7 +81,7 @@ var profileNames: [String] = ["Race", "VO2 Max", "Threshold", "Aerobic"]
 
 
 class WorkoutManager: NSObject, ObservableObject {
-    @Published var profileName: String
+
     @Published var hrState: HRState = HRState.inactive
     @Published var HRMonitorActive: Bool = false
     @Published var appState: AppState = .initial
@@ -143,17 +143,10 @@ class WorkoutManager: NSObject, ObservableObject {
 
     init(profileName: String = ""){
     
-        // Read profile name from user defaults if nothing passed in
-        self.profileName = profileName
-        if profileName == "" {
-            self.profileName = UserDefaults.standard.string(forKey: "CurrentProfile") ?? "Race"
-        }
-
         self.liveActivityProfile = activityProfiles.getDefault()
         
         super.init()
         
-        readWorkoutConfFromUserDefaults()
         lastSummaryMetrics.get(tag: "LastSession")
         self.bluetoothManager = HRMViewController(workoutManager: self)
 
@@ -181,62 +174,6 @@ class WorkoutManager: NSObject, ObservableObject {
     }
    
     
-    func writeProfileToUserDefaults(profileName: String){
-
-    }
-    
-    func changeProfile(newProfileName: String){
-
-        UserDefaults.standard.set(newProfileName, forKey: "CurrentProfile")
-        self.profileName = newProfileName
-
-    }
-
-    
-    func writeWorkoutConfToUserDefaults(){
-
-        struct StoredWorkoutConf: Codable {
-            var workoutType: UInt
-            var workoutLocation: Int
-        }
-
-
-        do {
-            let storedWorkoutConf = StoredWorkoutConf(
-                workoutType: workoutType.rawValue,
-                workoutLocation: workoutLocation.rawValue)
-
-            
-            let data = try JSONEncoder().encode(storedWorkoutConf)
-            let jsonString = String(data: data, encoding: .utf8)
-            print("JSON : \(String(describing: jsonString))")
-            UserDefaults.standard.set(data, forKey: "WorkoutConf")
-        } catch {
-            print("Error enconding Workout Configuration")
-        }
-    }
-
-    func readWorkoutConfFromUserDefaults(){
-        print("Trying decode Workout Configuration")
-        
-        // Initialise empty dictionary
-        // try to read from userDefaults in to this - if fails then use defaults
-        var workoutConfDict: [String: Any] = [:]
-        
-        let workoutConfJSON: Data =  UserDefaults.standard.object(forKey: "WorkoutConf") as? Data ?? Data()
-        let jsonString = String(data: workoutConfJSON, encoding: .utf8)
-        print("Returned Workout Configuration data : \(String(describing: jsonString))")
-        do {
-            workoutConfDict = try JSONSerialization.jsonObject(with: workoutConfJSON, options: []) as! [String: Any]
-        } catch {
-            print("No valid dictionary stored")
-        }
-
-        // Read Dictionary or set default values
-        self.workoutLocation = HKWorkoutSessionLocationType(rawValue: (workoutConfDict["workoutLocation"] ?? HKWorkoutSessionLocationType.outdoor.rawValue) as! Int)!
-        self.workoutType = HKWorkoutActivityType(rawValue: (workoutConfDict["workoutType"] ?? HKWorkoutActivityType.cycling.rawValue) as! UInt)!
-    }
-
     func PauseHRMonitor() {
         self.appState = .paused
     }
@@ -267,6 +204,7 @@ class WorkoutManager: NSObject, ObservableObject {
     func startWorkout(activityProfile: ActivityProfile) {
         
         liveActivityProfile = activityProfile
+        activityProfiles.update(activityProfile: liveActivityProfile)
         
         liveTabSelection = LiveScreenTab.liveMetrics
         

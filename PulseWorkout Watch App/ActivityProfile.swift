@@ -22,6 +22,7 @@ struct ActivityProfile: Codable, Identifiable {
     var constantRepeat: Bool
     var lockScreen: Bool
     var id: UUID?
+    var lastUsed: Date?
     
 }
 
@@ -73,9 +74,11 @@ class ActivityProfiles: NSObject {
                                                        playHaptic: false,
                                                        constantRepeat: false,
                                                        lockScreen: false)
-        var ret: [ActivityProfile] = profiles
-        ret.append(newActivityProfile)
-        return ret
+
+        let epochDate = NSDate(timeIntervalSince1970: 0) as Date
+        var profileList = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
+        profileList.append(newActivityProfile)
+        return profileList
         
     }
     
@@ -143,6 +146,8 @@ class ActivityProfiles: NSObject {
         if newActivityProfile.id == nil {
             newActivityProfile.id = UUID()
         }
+        newActivityProfile.lastUsed = Date()
+        
         profiles.append(newActivityProfile)
         self.write()
     }
@@ -178,20 +183,22 @@ class ActivityProfiles: NSObject {
         
     }
 
+    
     func update(activityProfile: ActivityProfile) {
         /* Update activity profile and write to userDefaults */
 
-        
+        var updatedActivityProfile = activityProfile
+
+        updatedActivityProfile.lastUsed = Date()
+
         for (index, profile) in profiles.enumerated() {
-            if profile.id == activityProfile.id {
-                profiles[index] = activityProfile
+            if profile.id == updatedActivityProfile.id {
+                profiles[index] = updatedActivityProfile
                 
                 self.write()
                 return
             }
         }
-
-        
     }
 
     

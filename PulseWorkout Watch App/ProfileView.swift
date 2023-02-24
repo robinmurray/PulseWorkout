@@ -11,9 +11,6 @@ import HealthKit
 
 struct ProfileView: View {
     
-    @State private var currentProfileName: String
-    @State private var profileNames: [String] = ["Race", "VO2 Max", "Threshold", "Aerobic"]
-
     @ObservedObject var workoutManager: WorkoutManager
 
     var workoutTypes: [HKWorkoutActivityType] = [.crossTraining, .cycling, .mixedCardio, .paddleSports, .rowing, .running, .walking]
@@ -24,8 +21,6 @@ struct ProfileView: View {
 
     init(workoutManager: WorkoutManager) {
 
-        currentProfileName = workoutManager.profileName
-        
         self.workoutManager = workoutManager
 
     }
@@ -49,8 +44,6 @@ struct ProfileView: View {
     var body: some View {
         VStack{
 
-                            
-            
             Form {
                 
                 Section(header: Text("Profile Name")) {
@@ -161,14 +154,6 @@ struct ProfileView: View {
                     .buttonStyle(PlainButtonStyle())
 
                 }
-
-                    
-                
-//                Spacer()
-                
-
-
-
             }
 //            .padding()
             .navigationTitle("Alarm Profile")

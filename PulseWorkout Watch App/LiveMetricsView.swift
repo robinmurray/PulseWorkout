@@ -68,9 +68,7 @@ struct LiveMetricsView: View {
                         .formatted(.number.precision(.fractionLength(0))))
                     .fontWeight(.bold)
                     .foregroundColor(HRDisplay[workoutManager.hrState]?.colour)
-//                    .multilineTextAlignment(.trailing)
                     .frame(width: 140.0, height: 70.0)
- //                   .padding()
                     .font(.system(size: 80))
                 }
 
