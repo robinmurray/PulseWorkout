@@ -100,7 +100,7 @@ struct LiveMetricsView: View {
 
             Spacer().frame(maxWidth: .infinity)
        
-            BTDevicesView(workoutManager: workoutManager)
+            BTDeviceBarView(workoutManager: workoutManager)
 
         }
             

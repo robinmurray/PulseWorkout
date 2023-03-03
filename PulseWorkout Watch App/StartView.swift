@@ -36,7 +36,7 @@ struct StartView: View {
             }
             .listStyle(.carousel)
 
-            BTDevicesView(workoutManager: workoutManager)
+            BTDeviceBarView(workoutManager: workoutManager)
 
             }
             .padding(.horizontal)

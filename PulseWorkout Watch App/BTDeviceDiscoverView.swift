@@ -19,20 +19,24 @@ struct BTDeviceDiscoverView: View {
     
     var body: some View {
         
-        VStack {
-            // if still `[String]` then \.self will work, otherwise make `Device` `Identifiable`
-            List(workoutManager.bluetoothManager!.discoveredDevices, id: \.self) { device in
-                Text(verbatim: device)
-                
-            }.listStyle(.carousel)
-        
-                Button(action: dismissView) {
-                    Text("Dismiss")
+        VStack{
+
+            Group {
+                List(workoutManager.bluetoothManager!.discoveredDevices) { device in
+                    BTDiscoveredDeviceView(btDevice: device)
                 }
+                .listStyle(.carousel)
+
+                Button(action: dismissView) {
+                        Text("Dismiss")
+                }
+
+            }
             
         }
         .navigationTitle("Discover Devices")
         .navigationBarTitleDisplayMode(.inline)
+               
     }
     
     func dismissView() {

@@ -13,7 +13,7 @@ let BTconnectedColour: [Bool: Color] =
 
 
 
-struct BTDevicesView: View {
+struct BTDeviceBarView: View {
     
     @ObservedObject var workoutManager: WorkoutManager
 
@@ -48,6 +48,6 @@ struct BTDevicesView_Previews: PreviewProvider {
     static var workoutManager = WorkoutManager()
 
     static var previews: some View {
-        BTDevicesView(workoutManager: workoutManager)
+        BTDeviceBarView(workoutManager: workoutManager)
     }
 }

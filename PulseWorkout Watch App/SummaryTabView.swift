@@ -12,7 +12,7 @@ import SwiftUI
 struct SummaryTabView: View {
 
     enum Tab {
-        case summaryMetrics, nowPlaying, help
+        case summaryMetrics, nowPlaying
     }
 
     @ObservedObject var workoutManager: WorkoutManager
@@ -35,9 +35,6 @@ struct SummaryTabView: View {
             
             NowPlayingView()
                 .tag(Tab.nowPlaying)
-
-            HelpView()
-                .tag(Tab.help)
 
         }
         .tabViewStyle(.page(indexDisplayMode: .always))

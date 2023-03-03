@@ -12,7 +12,7 @@ import SwiftUI
 struct PausedTabView: View {
 
     enum Tab {
-        case paused, nowPlaying, help
+        case paused, nowPlaying
     }
 
     @ObservedObject var workoutManager: WorkoutManager
@@ -32,9 +32,6 @@ struct PausedTabView: View {
             
             NowPlayingView()
                 .tag(Tab.nowPlaying)
-            
-            HelpView()
-                .tag(Tab.help)
             
         }
         .tabViewStyle(.page(indexDisplayMode: .always))

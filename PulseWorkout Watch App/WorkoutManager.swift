@@ -109,7 +109,7 @@ class WorkoutManager: NSObject, ObservableObject {
 
     var selectedWorkout: HKWorkoutActivityType?
 
-    var bluetoothManager: HRMViewController?
+    var bluetoothManager: BTDevicesController?
     
     let healthStore = HKHealthStore()
     var session: HKWorkoutSession?
@@ -148,7 +148,7 @@ class WorkoutManager: NSObject, ObservableObject {
         super.init()
         
         lastSummaryMetrics.get(tag: "LastSession")
-        self.bluetoothManager = HRMViewController(workoutManager: self)
+        self.bluetoothManager = BTDevicesController(workoutManager: self)
 
 
     }
