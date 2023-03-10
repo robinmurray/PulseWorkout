@@ -40,6 +40,19 @@ struct BTDevice: Identifiable, Codable {
         }
         return returnVal
     }
+    
+    func connected(bluetoothManager: BTDevicesController) -> Bool {
+        
+        for peripheral in bluetoothManager.activePeripherals {
+            
+            if peripheral.identifier == id {
+                
+                return peripheral.state == CBPeripheralState.connected
+
+            }
+        }
+        return false
+    }
 }
 
 var knownBTDevices: [BTDevice] = [BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: [])]
@@ -48,22 +61,21 @@ class BTDevicesController: NSObject, ObservableObject {
 
     @Published var discoveredDevices: [BTDevice] = []
     @Published var knownDevices: [BTDevice] = []
-    @Published var connectedDevices: [BTDevice] = []
+//    @Published var connectedDevices: [BTDevice] = []
+    var connectableDevices: [BTDevice] = []
+    
     var activePeripherals: [CBPeripheral] = []
     
     @Published var bpm: Int = 0
 
     var workoutManager: WorkoutManager
 
-    var desiredConnectedDevices: Bool = true
     var heartRateLabel: String = ""
     var bodySensorLocationLabel: String = ""
+    
     var centralManager: CBCentralManager!
     //var heartRatePeripheral: CBPeripheral!
     
-    var autoConnect: Bool = true
-   
-        
     init(workoutManager: WorkoutManager) {
         
         self.workoutManager = workoutManager
@@ -77,6 +89,10 @@ class BTDevicesController: NSObject, ObservableObject {
             knownDevices = knownBTDevices
             self.writeKnownDevices()
         }
+        
+        // connectableDevices is list of devices to connect to if seen
+        connectableDevices = knownDevices
+        
         self.centralManager = CBCentralManager(delegate: self, queue: nil)        
     }
     
@@ -107,11 +123,103 @@ class BTDevicesController: NSObject, ObservableObject {
 
     }
 
-    func disconnectDevice(btDevice: BTDevice) {
+    func deviceFromPeripheral(peripheral: CBPeripheral) -> BTDevice {
+    
+        return BTDevice(id: peripheral.identifier, name: peripheral.name ?? "Unknown", services: [])
+    }
+    
+    func addConnectableDevice(device: BTDevice) {
+        
+        if let _ = connectableDevices.firstIndex(where: { $0.id == device.id }) {
+            return
+        }
+        connectableDevices.append(device)
+    }
+
+    func addConnectableDevice(peripheral: CBPeripheral) {
+        
+        if let _ = connectableDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            return
+        }
+        connectableDevices.append(deviceFromPeripheral(peripheral: peripheral))
+    }
+
+    func removeConnectableDevice(device: BTDevice) {
+        
+        if let index = connectableDevices.firstIndex(where: { $0.id == device.id }) {
+            connectableDevices.remove(at: index)
+        }
+    }
+
+    func removeConnectableDevice(peripheral: CBPeripheral) {
+        
+        if let index = connectableDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            connectableDevices.remove(at: index)
+        }
+    }
+
+    func addKnownDevice(device: BTDevice) {
+        
+        if let _ = knownDevices.firstIndex(where: { $0.id == device.id }) {
+            return
+        }
+        knownDevices.append(device)
+    }
+
+    func addKnownDevice(peripheral: CBPeripheral) {
+
+        if knownDevices.map({ $0.id }).contains(peripheral.identifier) {
+            return
+        }
+
+        knownDevices.append(deviceFromPeripheral(peripheral: peripheral))
+    
+    }
+
+    func removeKnownDevice(device: BTDevice) {
+        
+        if let index = knownDevices.firstIndex(where: { $0.id == device.id }) {
+            knownDevices.remove(at: index)
+        }
+    }
+    
+    func isKnownDevice(device: BTDevice) -> Bool {
+    
+        if let _ = knownDevices.firstIndex(where: { $0.id == device.id }) {
+            return true
+        }
+        return false
+    }
+
+    func isKnownDevice(peripheral: CBPeripheral) -> Bool {
+    
+        if let _ = knownDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            return true
+        }
+        return false
+    }
+
+    func isConnectableDevice(device: BTDevice) -> Bool {
+    
+        if let _ = connectableDevices.firstIndex(where: { $0.id == device.id }) {
+            return true
+        }
+        return false
+    }
+
+    func isConnectableDevice(peripheral: CBPeripheral) -> Bool {
+    
+        if let _ = connectableDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            return true
+        }
+        return false
+    }
+
+    func disconnectDevice(device: BTDevice) {
         
         for peripheral in activePeripherals {
             
-            if peripheral.identifier == btDevice.id {
+            if peripheral.identifier == device.id {
                 
                 if peripheral.state == CBPeripheralState.connected {
                     self.centralManager.cancelPeripheralConnection(peripheral)
@@ -121,19 +229,12 @@ class BTDevicesController: NSObject, ObservableObject {
     }
     
     
-    func forgetDevice(btDevice: BTDevice) {
+    func forgetDevice(device: BTDevice) {
         
-        disconnectDevice(btDevice: btDevice)
-        
-        for (index, device) in knownDevices.enumerated() {
-            if device.id == btDevice.id {
-                knownDevices.remove(at: index)
-                
-                self.writeKnownDevices()
-                return
-            }
-        }
-
+        disconnectDevice(device: device)
+        removeConnectableDevice(device: device)
+        removeKnownDevice(device: device)
+        writeKnownDevices()
     }
 
     func addServiceToKnownDevice(peripheral: CBPeripheral, service: String) {
@@ -144,37 +245,24 @@ class BTDevicesController: NSObject, ObservableObject {
                 writeKnownDevices()
             }
         }
-
-        if let index = connectedDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
-            if !connectedDevices[index].services.contains(service) {
-                connectedDevices[index].services.append(service)
-            }
-        }
-
         
-    }
-    func addKnownDevice(btDevice: BTDevice) {
-        
-        knownDevices.append(btDevice)
-        self.writeKnownDevices()
-
     }
     
     func addActivePeripheral(peripheral: CBPeripheral) -> Int {
 
-        // CHANGE THIS TO NOT REMOVE THEN ADD< BUT TO TEST FOR EXISTENCE AND THEN DO NOTHING
-        removeActivePeripheral(peripheral: peripheral)
+        if let index = activePeripheralIndex(peripheral: peripheral) {
+            return index
+        }
         
         activePeripherals.append(peripheral)
         
-        print("Add active : \(activePeripherals)")
         // return index of new item
         return activePeripherals.count - 1
     }
 
     func removeActivePeripheral(peripheral: CBPeripheral) {
 
-        print("removing ative peripheral \(peripheral)")
+        print("removing active peripheral \(peripheral)")
         if let index = activePeripherals.firstIndex(where: { $0.identifier == peripheral.identifier }) {
             activePeripherals.remove(at: index)
         }
@@ -182,34 +270,12 @@ class BTDevicesController: NSObject, ObservableObject {
 
     func activePeripheralIndex(peripheral: CBPeripheral) -> Int? {
 
-        print("TEST!!")
-        print("activePeripherals : \(activePeripherals)")
-        print("peripheral: \(peripheral)")
         return activePeripherals.firstIndex(where: { $0.identifier == peripheral.identifier })
 
     }
 
-    func addConnectedDevice(peripheral: CBPeripheral) {
-
-        // CHANGE THIS TO NOT REMOVE THEN ADD< BUT TO TEST FOR EXISTENCE AND THEN DO NOTHING
-
-        removeConnectedDevice(peripheral: peripheral)
+    func connectDevices() {
         
-        connectedDevices.append(BTDevice(id: peripheral.identifier, name: peripheral.name ?? "Unknown", services:[]))
-       
-    }
-
-    func removeConnectedDevice(peripheral: CBPeripheral) {
-
-        if let index = connectedDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
-            connectedDevices.remove(at: index)
-        }
-        
-    }
-
-    func connectKnownDevices() {
-        
-        desiredConnectedDevices = true
         if self.centralManager.state == .poweredOn {
             self.centralManager.scanForPeripherals(withServices: nil)
         }
@@ -219,14 +285,16 @@ class BTDevicesController: NSObject, ObservableObject {
         
         print("Disconnecting known devices")
         print("Active peripherals : \(activePeripherals)")
-        desiredConnectedDevices = false
+
         if self.centralManager.state == .poweredOn {
             self.centralManager.stopScan()
             
             for peripheral in activePeripherals {
                 self.centralManager.cancelPeripheralConnection(peripheral)
-                removeConnectedDevice(peripheral: peripheral)
 
+                if isKnownDevice(peripheral: peripheral) {
+                    addConnectableDevice(peripheral: peripheral)
+                }
             }
         }
     }
@@ -234,18 +302,17 @@ class BTDevicesController: NSObject, ObservableObject {
     func addDiscoveredDevice(peripheral: CBPeripheral) {
  
         if discoveredDevices.firstIndex(where: { $0.id == peripheral.identifier }) == nil {
-            discoveredDevices.append(BTDevice(id: peripheral.identifier, name: peripheral.name ?? "", services: []))
+            discoveredDevices.append(deviceFromPeripheral(peripheral: peripheral))
         }
     }
     
     func resetDiscoveredDevices() {
         
-        discoveredDevices = []
+//        discoveredDevices = []
         
     }
     
 
-    
   func onHeartRateReceived(_ heartRate: Int) {
       heartRateLabel = String(heartRate)
       print("BPM: \(heartRate)")
@@ -273,7 +340,7 @@ extension BTDevicesController: CBCentralManagerDelegate {
             workoutManager.BTHRMConnected = false
         case .poweredOn:
             print("central.state is .poweredOn")
-            centralManager.scanForPeripherals(withServices: nil)
+            scanForDevices()
 //            centralManager.scanForPeripherals(withServices: [heartRateServiceCBUUID])
             
         @unknown default:
@@ -281,47 +348,72 @@ extension BTDevicesController: CBCentralManagerDelegate {
         }
     }
     
-    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+    func scanForDevices() {
+        resetDiscoveredDevices()
+        if connectableDevices.count > 0 {
+            centralManager.scanForPeripherals(withServices: nil)
+        }
+    }
+    
+    func connectIfKnown(peripheral: CBPeripheral) {
         
-        addDiscoveredDevice(peripheral: peripheral)
-
-        print("discoveredBTDevices = \(discoveredDevices)")
-
-        if knownDevices.map({ $0.id }).contains(peripheral.identifier) {
+        if isConnectableDevice(peripheral: peripheral) {
             
             print("found device \(peripheral) in known devices - attempt to connect!!")
 
-// ****            heartRatePeripheral = peripheral
-// ****            heartRatePeripheral.delegate = self
-            
             let index = addActivePeripheral(peripheral: peripheral)
             print("peripheral index = \(index)")
             activePeripherals[index].delegate = self
             centralManager.connect(activePeripherals[index])
-// ****            centralManager.connect(heartRatePeripheral)
-
-            // Stop scanning in this example - not going to do this later!!
-            centralManager.stopScan()
         }
+
+    }
+
+    func connectDevice(device: BTDevice) {
+        print("attempting to connect device \(device)")
+        print("Active peripherals \(activePeripherals)")
+        
+        addConnectableDevice(device: device)
+        print("Connectable devices \(connectableDevices)")
+        if let index = activePeripherals.firstIndex(where: { $0.identifier == device.id }) {
+            activePeripherals[index].delegate = self
+            print("connecting...")
+            centralManager.connect(activePeripherals[index])
+        }
+    }
+    
+    
+    func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
+        
+        let _ = addActivePeripheral(peripheral: peripheral)
+        addDiscoveredDevice(peripheral: peripheral)
+        
+        print("discoveredBTDevices = \(discoveredDevices)")
+
+        connectIfKnown(peripheral: peripheral)
 
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
 
         print("Connected!")
-        addConnectedDevice(peripheral: peripheral)
-        print("connected devices : \(connectedDevices)")
+        addKnownDevice(peripheral: peripheral)
+        writeKnownDevices()
 
-        print("Services \(String(describing: peripheral.services))")
+        // Remove from Connecrtable Device list
+        removeConnectableDevice(peripheral: peripheral)
         
+        if connectableDevices.count == 0 {
+            centralManager.stopScan()
+        }
+
+        // TO DO : CHANGE BELOW!!
         workoutManager.BTHRMConnected = true
-//        heartRatePeripheral.discoverServices(nil)
         let index = activePeripheralIndex(peripheral: peripheral)
         print(" connected index : \(index ?? -1)")
         if index != nil {
             activePeripherals[index!].discoverServices([heartRateServiceCBUUID])
         }
-// ***        heartRatePeripheral.discoverServices([heartRateServiceCBUUID])
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -335,13 +427,16 @@ extension BTDevicesController: CBCentralManagerDelegate {
         print("peripheral : \(peripheral)")
         print("Active Peripherals : \(activePeripherals)")
         
-        removeConnectedDevice(peripheral: peripheral)
-        workoutManager.BTHRMConnected = false
-        
-//        work out if deliberate disconnect or error disconnect
-        if desiredConnectedDevices {
-            centralManager.scanForPeripherals(withServices: nil)
+        // Add back to connecrtable devices
+        if isKnownDevice(peripheral: peripheral) {
+            addConnectableDevice(peripheral: peripheral)
         }
+
+        scanForDevices()
+        
+        // TO DO: STUFF BELOW HERE TO BE CHANGED!!
+        workoutManager.BTHRMConnected = false
+
     }
 }
 

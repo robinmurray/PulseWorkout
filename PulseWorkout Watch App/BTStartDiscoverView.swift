@@ -42,6 +42,7 @@ struct BTStartDiscoverView: View {
 //        profileData.bluetoothManager?.resetDiscoveredDevices()
 //        profileData.bluetoothManager?.centralManager.scanForPeripherals(withServices: nil)
         workoutManager.appState = .discoverDevices
+        workoutManager.bluetoothManager?.scanForDevices()
     }
 }
 

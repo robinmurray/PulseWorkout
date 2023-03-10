@@ -156,7 +156,7 @@ class WorkoutManager: NSObject, ObservableObject {
     func appActive() {
         print("App becoming active")
         if (appInBackground && (appState != .live)) {
-            bluetoothManager!.connectKnownDevices()
+            bluetoothManager!.connectDevices()
         }
         appInBackground = false
     }

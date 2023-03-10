@@ -23,7 +23,7 @@ struct BTDeviceDiscoverView: View {
 
             Group {
                 List(workoutManager.bluetoothManager!.discoveredDevices) { device in
-                    BTDiscoveredDeviceView(btDevice: device)
+                    BTDiscoveredDeviceView(btDevice: device, bluetoothManager: workoutManager.bluetoothManager!)
                 }
                 .listStyle(.carousel)
 
