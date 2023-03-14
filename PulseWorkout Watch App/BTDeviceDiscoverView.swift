@@ -22,8 +22,8 @@ struct BTDeviceDiscoverView: View {
         VStack{
 
             Group {
-                List(workoutManager.bluetoothManager!.discoveredDevices) { device in
-                    BTDiscoveredDeviceView(btDevice: device, bluetoothManager: workoutManager.bluetoothManager!)
+                List(workoutManager.bluetoothManager!.discoveredDevices.devices) { device in
+                    BTDiscoveredDeviceView(btDevice: device, btManager: workoutManager.bluetoothManager!)
                 }
                 .listStyle(.carousel)
 
@@ -40,7 +40,7 @@ struct BTDeviceDiscoverView: View {
     }
     
     func dismissView() {
-       
+        workoutManager.bluetoothManager?.stopDiscoverDevices()
         workoutManager.appState = .initial
     }
 

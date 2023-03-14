@@ -95,7 +95,8 @@ class WorkoutManager: NSObject, ObservableObject {
     @Published var running = false
     
     @Published var BTHRMConnected: Bool = false
-    
+    @Published var BTHRMBatteryLevel: Int?
+
     @Published var liveTabSelection: LiveScreenTab = .liveMetrics
 
     var playedAlarm: Bool = false
@@ -148,8 +149,19 @@ class WorkoutManager: NSObject, ObservableObject {
         super.init()
         
         lastSummaryMetrics.get(tag: "LastSession")
-        self.bluetoothManager = BTDevicesController(workoutManager: self)
+        self.bluetoothManager = BTDevicesController(requestedServices: nil)
 
+        // Set up call back functions for when required characteristics are read.
+        bluetoothManager!.setCharacteristicCallback(characteristicCBUUID: heartRateMeasurementCharacteristicCBUUID,
+                                                    callback: setBTHeartRate)
+ 
+        // Set up call back functions for when services connect / disconnect.
+        bluetoothManager!.setServiceConnectCallback(serviceCBUUID: heartRateServiceCBUUID,
+                                                    callback: BTHRMServiceConnected)
+
+        // Set up call back functions for when services connect / disconnect.
+        bluetoothManager!.setBatteryLevelCallback(serviceCBUUID: heartRateServiceCBUUID,
+                                                  callback: setBTHRMBatteryLevel)
 
     }
 
@@ -280,6 +292,28 @@ class WorkoutManager: NSObject, ObservableObject {
             self.heartRate = heartRate
 
         }
+    }
+    
+    func setBTHeartRate(value: Any) {
+        guard let heartRate = value as? Double else {
+            print("API misuse - callback should return value that can be cast to Double")
+            return
+        }
+        
+        setHeartRate(heartRate: heartRate, hrSource: .bluetooth)
+    }
+
+    func BTHRMServiceConnected(connected: Bool) {
+        
+        print("Setting BTHRMConnected to \(connected)")
+        // Callback function provided to bluetooth manager to notify when HRM service connects/disconnects
+        BTHRMConnected = connected
+    }
+    
+    func setBTHRMBatteryLevel(batteryLevel: Int) {
+        print("Setting battery level to \(batteryLevel)")
+        
+        BTHRMBatteryLevel = batteryLevel
     }
     
     func startStopHRMonitor() {

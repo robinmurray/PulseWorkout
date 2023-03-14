@@ -21,7 +21,7 @@ struct BTStartDiscoverView: View {
         Group {
 
         VStack {
-            List(workoutManager.bluetoothManager!.knownDevices) { device in
+            List(workoutManager.bluetoothManager!.knownDevices.devices) { device in
                 BTKnownDeviceView(btDevice: device, btManager: workoutManager.bluetoothManager!)
             }
             .listStyle(.carousel)
@@ -31,6 +31,7 @@ struct BTStartDiscoverView: View {
             }
             .buttonStyle(.borderedProminent)
             .tint(Color.blue)
+            .disabled(workoutManager.bluetoothManager?.centralManager.state != .poweredOn)
         }
         .navigationTitle("Devices")
         .navigationBarTitleDisplayMode(.inline)
@@ -39,17 +40,14 @@ struct BTStartDiscoverView: View {
     }
     
     func discoverDevices() {
-//        profileData.bluetoothManager?.resetDiscoveredDevices()
-//        profileData.bluetoothManager?.centralManager.scanForPeripherals(withServices: nil)
         workoutManager.appState = .discoverDevices
-        workoutManager.bluetoothManager?.scanForDevices()
+        workoutManager.bluetoothManager?.discoverDevices()
     }
 }
 
 struct BTStartDiscoverView_Previews: PreviewProvider {
     
     static var workoutManager = WorkoutManager()
-    static var bluetoothManager = BTDevicesController(workoutManager: workoutManager)
 
     static var previews: some View {
         BTStartDiscoverView(workoutManager: workoutManager)

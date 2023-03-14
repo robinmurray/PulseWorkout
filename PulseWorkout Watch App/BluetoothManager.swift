@@ -10,7 +10,12 @@ import CoreBluetooth
 import WatchKit
 import UIKit
 
+// User Defaults Key
+let knownDeviceKey: String = "KnownBTDevices"
+
 // Heart Rate Monitor Bluetooth ID
+let currentTimeServiceCBUUID = CBUUID(string: "0x1805")
+let deviceInfoServiceCBUUID = CBUUID(string: "0x180A")
 let heartRateServiceCBUUID = CBUUID(string: "0x180D")
 let heartRateMeasurementCharacteristicCBUUID = CBUUID(string: "2A37")
 let bodySensorLocationCharacteristicCBUUID = CBUUID(string: "2A38")
@@ -21,16 +26,32 @@ let batteryLevelCharacteristicCBUUID = CBUUID(string: "0x2A19")
 let cyclePowerMeterCBUUID = CBUUID(string: "0x1818")
 
 let BTServices: [String: String] =
-[heartRateServiceCBUUID.uuidString: "Heart Rate Monitor",
+[currentTimeServiceCBUUID.uuidString: "Current Time",
+ deviceInfoServiceCBUUID.uuidString: "Device Info",
+ heartRateServiceCBUUID.uuidString: "Heart Rate Monitor",
  batteryServiceCBUUID.uuidString: "Battery Level",
  cyclePowerMeterCBUUID.uuidString: "Power Meter"]
 
 // use as BTServices[uuidString, default: "Unknown"]
 
+let defaultBTDevices: [BTDevice] = [BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: [])]
+
+
+enum DeviceConnectionState {
+    case disconnected, connecting, connected
+}
+
+
 struct BTDevice: Identifiable, Codable {
     var id: UUID
     var name: String
     var services: [String]
+    var connectionState: DeviceConnectionState?
+    
+    // set CodingKeys to exclude connectionState from coding/decoding
+    private enum CodingKeys: String, CodingKey {
+        case id, name, services
+    }
 
     func serviceDescriptions() -> [String] {
         
@@ -55,164 +76,217 @@ struct BTDevice: Identifiable, Codable {
     }
 }
 
-var knownBTDevices: [BTDevice] = [BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: [])]
-
-class BTDevicesController: NSObject, ObservableObject {
-
-    @Published var discoveredDevices: [BTDevice] = []
-    @Published var knownDevices: [BTDevice] = []
-//    @Published var connectedDevices: [BTDevice] = []
-    var connectableDevices: [BTDevice] = []
+struct DeviceList {
+    var devices: [BTDevice]
     
-    var activePeripherals: [CBPeripheral] = []
-    
-    @Published var bpm: Int = 0
-
-    var workoutManager: WorkoutManager
-
-    var heartRateLabel: String = ""
-    var bodySensorLocationLabel: String = ""
-    
-    var centralManager: CBCentralManager!
-    //var heartRatePeripheral: CBPeripheral!
-    
-    init(workoutManager: WorkoutManager) {
+    func deviceFromPeripheral(peripheral: CBPeripheral) -> BTDevice {
         
-        self.workoutManager = workoutManager
-        
-        super.init()
-        
-        // Read list of known devices
-        self.readKnownDevices()
-
-        if knownDevices.count == 0 {
-            knownDevices = knownBTDevices
-            self.writeKnownDevices()
-        }
-        
-        // connectableDevices is list of devices to connect to if seen
-        connectableDevices = knownDevices
-        
-        self.centralManager = CBCentralManager(delegate: self, queue: nil)        
+        return BTDevice(id: peripheral.identifier, name: peripheral.name ?? "Unknown", services: [])
     }
     
-    func readKnownDevices() {
-        print("Trying decode known BT Devices")
+    func empty() -> Bool {
+        return devices.count == 0
+    }
+    
+    mutating func setDefault() {
+        devices = defaultBTDevices
+    }
+    mutating func add(device: BTDevice) {
         
-        if let savedDevices = UserDefaults.standard.object(forKey: "KnownBTDevices") as? Data {
-            print("Read KnownBTDevices")
+        if let _ = devices.firstIndex(where: { $0.id == device.id }) {
+            return
+        }
+        devices.append(device)
+    }
+    
+    mutating func add(peripheral: CBPeripheral) {
+        
+        if let _ = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            return
+        }
+        devices.append(deviceFromPeripheral(peripheral: peripheral))
+    }
+    
+    mutating func remove(device: BTDevice) {
+        
+        if let index = devices.firstIndex(where: { $0.id == device.id }) {
+            devices.remove(at: index)
+        }
+    }
+    
+    mutating func remove(peripheral: CBPeripheral) {
+        
+        if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            devices.remove(at: index)
+        }
+    }
+    
+    func contains(device: BTDevice) -> Bool {
+        
+        if let _ = devices.firstIndex(where: { $0.id == device.id }) {
+            return true
+        }
+        return false
+    }
+    
+    func contains(peripheral: CBPeripheral) -> Bool {
+        
+        if let _ = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            return true
+        }
+        return false
+    }
+    
+    mutating func setConnectionState(device: BTDevice, connectionState: DeviceConnectionState) {
+        
+        if let index = devices.firstIndex(where: { $0.id == device.id }) {
+            devices[index].connectionState = connectionState
+            
+        }
+    }
+    
+    mutating func setConnectionState(peripheral: CBPeripheral, connectionState: DeviceConnectionState) {
+        
+        if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            devices[index].connectionState = connectionState
+            
+        }
+        
+    }
+    
+    mutating func reset() {
+        devices = []
+    }
+    
+    mutating func addService(peripheral: CBPeripheral, service: String) {
+    
+        if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            if !devices[index].services.contains(service) {
+                devices[index].services.append(service)
+            }
+        }
+        
+    }
+
+    func servicesAsCBUUID(services: [String]) -> [CBUUID] {
+
+        var serviceCBUUIDs: [CBUUID] = []
+        for service in services {
+            serviceCBUUIDs.append(CBUUID(string: service))
+        }
+        return serviceCBUUIDs
+
+    }
+    func services(device: BTDevice) -> [CBUUID] {
+        
+        if let index = devices.firstIndex(where: { $0.id == device.id }) {
+            return servicesAsCBUUID(services: devices[index].services)
+        }
+        return []
+    }
+    
+    func services(peripheral: CBPeripheral) -> [CBUUID] {
+        
+        if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            return servicesAsCBUUID(services: devices[index].services)
+        }
+        return []
+    }
+    
+
+    mutating func read(key: String) {
+        print("Trying decode BT Devices")
+        
+        if let savedDevices = UserDefaults.standard.object(forKey: key) as? Data {
+            print("Read BTDevices")
             let decoder = JSONDecoder()
-            if let loadedBTDevices = try? decoder.decode(type(of: knownDevices), from: savedDevices) {
+            if let loadedBTDevices = try? decoder.decode(type(of: devices), from: savedDevices) {
                 print(loadedBTDevices)
-                knownDevices = loadedBTDevices
+                devices = loadedBTDevices
             }
         }
     }
 
-    func writeKnownDevices() {
+    func write(key: String) {
         
-        print("Writing known BT Devices")
+        print("Writing BT Devices")
         do {
-            let data = try JSONEncoder().encode(knownDevices)
+            let data = try JSONEncoder().encode(devices)
             let jsonString = String(data: data, encoding: .utf8)
             print("JSON : \(String(describing: jsonString))")
-            UserDefaults.standard.set(data, forKey: "KnownBTDevices")
+            UserDefaults.standard.set(data, forKey: key)
         } catch {
-            print("Error enconding Known Devices")
+            print("Error enconding Devices")
         }
 
     }
 
-    func deviceFromPeripheral(peripheral: CBPeripheral) -> BTDevice {
+}
+
+
+class BTDevicesController: NSObject, ObservableObject {
+
+    @Published var knownDevices: DeviceList = DeviceList(devices: [])
+    @Published var discoveredDevices: DeviceList = DeviceList(devices: [])
+    @Published var connectableDevices: DeviceList = DeviceList(devices: [])
     
-        return BTDevice(id: peripheral.identifier, name: peripheral.name ?? "Unknown", services: [])
-    }
+    var activePeripherals: [CBPeripheral] = []
     
-    func addConnectableDevice(device: BTDevice) {
+    var discoveringDevices: Bool = false
+    
+    @Published var bpm: Int = 0
+   
+    var bodySensorLocationLabel: String = ""
+    
+    var centralManager: CBCentralManager!
+    var requestedServices: [CBUUID]?
+    
+    var characteristicCallback: [CBUUID: (Any) -> Void] = [:]
+    var serviceConnectCallback: [CBUUID: (Bool) -> Void] = [:]
+    var batteryLevelCallback: [CBUUID: (Int) -> Void] = [:]
+
+    init(requestedServices: [CBUUID]?) {
         
-        if let _ = connectableDevices.firstIndex(where: { $0.id == device.id }) {
-            return
-        }
-        connectableDevices.append(device)
-    }
-
-    func addConnectableDevice(peripheral: CBPeripheral) {
+        self.requestedServices = requestedServices
         
-        if let _ = connectableDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
-            return
-        }
-        connectableDevices.append(deviceFromPeripheral(peripheral: peripheral))
-    }
-
-    func removeConnectableDevice(device: BTDevice) {
+        super.init()
         
-        if let index = connectableDevices.firstIndex(where: { $0.id == device.id }) {
-            connectableDevices.remove(at: index)
-        }
-    }
+        // Read list of known devices
+        knownDevices.read(key: knownDeviceKey)
 
-    func removeConnectableDevice(peripheral: CBPeripheral) {
+        if knownDevices.empty() {
+            knownDevices.setDefault()
+            knownDevices.write(key: knownDeviceKey)
+        }
         
-        if let index = connectableDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
-            connectableDevices.remove(at: index)
-        }
-    }
-
-    func addKnownDevice(device: BTDevice) {
+        // connectableDevices is list of devices to connect to if seen
+        connectableDevices.devices = knownDevices.devices
         
-        if let _ = knownDevices.firstIndex(where: { $0.id == device.id }) {
-            return
-        }
-        knownDevices.append(device)
+        self.centralManager = CBCentralManager(delegate: self, queue: nil)
     }
-
-    func addKnownDevice(peripheral: CBPeripheral) {
-
-        if knownDevices.map({ $0.id }).contains(peripheral.identifier) {
-            return
-        }
-
-        knownDevices.append(deviceFromPeripheral(peripheral: peripheral))
     
-    }
-
-    func removeKnownDevice(device: BTDevice) {
+    func setCharacteristicCallback(characteristicCBUUID: CBUUID, callback: @escaping (Any) -> Void) {
         
-        if let index = knownDevices.firstIndex(where: { $0.id == device.id }) {
-            knownDevices.remove(at: index)
-        }
-    }
-    
-    func isKnownDevice(device: BTDevice) -> Bool {
-    
-        if let _ = knownDevices.firstIndex(where: { $0.id == device.id }) {
-            return true
-        }
-        return false
+        // Set the callback function for when the characteristic value is read.
+        
+        characteristicCallback[characteristicCBUUID] = callback
+        
     }
 
-    func isKnownDevice(peripheral: CBPeripheral) -> Bool {
-    
-        if let _ = knownDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
-            return true
-        }
-        return false
+    func setServiceConnectCallback(serviceCBUUID: CBUUID, callback: @escaping (Bool) -> Void) {
+        
+        // Set the callback function for when serivces connect / disconnect.
+        
+        serviceConnectCallback[serviceCBUUID] = callback
+        
     }
 
-    func isConnectableDevice(device: BTDevice) -> Bool {
-    
-        if let _ = connectableDevices.firstIndex(where: { $0.id == device.id }) {
-            return true
-        }
-        return false
-    }
-
-    func isConnectableDevice(peripheral: CBPeripheral) -> Bool {
-    
-        if let _ = connectableDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
-            return true
-        }
-        return false
+    func setBatteryLevelCallback(serviceCBUUID: CBUUID, callback: @escaping (Int) -> Void) {
+        
+        // Set the callback function for when battery level relevant to a service is read.
+        
+        batteryLevelCallback[serviceCBUUID] = callback
+        
     }
 
     func disconnectDevice(device: BTDevice) {
@@ -228,24 +302,13 @@ class BTDevicesController: NSObject, ObservableObject {
         }
     }
     
-    
     func forgetDevice(device: BTDevice) {
         
         disconnectDevice(device: device)
-        removeConnectableDevice(device: device)
-        removeKnownDevice(device: device)
-        writeKnownDevices()
-    }
-
-    func addServiceToKnownDevice(peripheral: CBPeripheral, service: String) {
-    
-        if let index = knownDevices.firstIndex(where: { $0.id == peripheral.identifier }) {
-            if !knownDevices[index].services.contains(service) {
-                knownDevices[index].services.append(service)
-                writeKnownDevices()
-            }
-        }
-        
+        connectableDevices.remove(device: device)
+        discoveredDevices.add(device: device)
+        knownDevices.remove(device: device)
+        knownDevices.write(key: knownDeviceKey)
     }
     
     func addActivePeripheral(peripheral: CBPeripheral) -> Int {
@@ -277,7 +340,7 @@ class BTDevicesController: NSObject, ObservableObject {
     func connectDevices() {
         
         if self.centralManager.state == .poweredOn {
-            self.centralManager.scanForPeripherals(withServices: nil)
+            self.centralManager.scanForPeripherals(withServices: requestedServices)
         }
     }
     
@@ -292,33 +355,12 @@ class BTDevicesController: NSObject, ObservableObject {
             for peripheral in activePeripherals {
                 self.centralManager.cancelPeripheralConnection(peripheral)
 
-                if isKnownDevice(peripheral: peripheral) {
-                    addConnectableDevice(peripheral: peripheral)
+                if knownDevices.contains(peripheral: peripheral) {
+                    connectableDevices.add(peripheral: peripheral)
                 }
             }
         }
     }
-    
-    func addDiscoveredDevice(peripheral: CBPeripheral) {
- 
-        if discoveredDevices.firstIndex(where: { $0.id == peripheral.identifier }) == nil {
-            discoveredDevices.append(deviceFromPeripheral(peripheral: peripheral))
-        }
-    }
-    
-    func resetDiscoveredDevices() {
-        
-//        discoveredDevices = []
-        
-    }
-    
-
-  func onHeartRateReceived(_ heartRate: Int) {
-      heartRateLabel = String(heartRate)
-      print("BPM: \(heartRate)")
-      workoutManager.setHeartRate(heartRate: Double(heartRate), hrSource: .bluetooth)
-      
-  }
     
 }
 
@@ -330,18 +372,19 @@ extension BTDevicesController: CBCentralManagerDelegate {
             print("central.state is .unknown")
         case .resetting:
             print("central.state is .resetting")
-            workoutManager.BTHRMConnected = false
+            // TO CHANGE!!
+            serviceConnectCallback[heartRateServiceCBUUID]!(false)
         case .unsupported:
             print("central.state is .unsupported")
         case .unauthorized:
             print("central.state is .unauthorized")
         case .poweredOff:
             print("central.state is .poweredOff")
-            workoutManager.BTHRMConnected = false
+            // TO CHANGE!!
+            serviceConnectCallback[heartRateServiceCBUUID]!(false)
         case .poweredOn:
             print("central.state is .poweredOn")
             scanForDevices()
-//            centralManager.scanForPeripherals(withServices: [heartRateServiceCBUUID])
             
         @unknown default:
             print("central.state is .default")
@@ -349,16 +392,28 @@ extension BTDevicesController: CBCentralManagerDelegate {
     }
     
     func scanForDevices() {
-        resetDiscoveredDevices()
-        if connectableDevices.count > 0 {
-            centralManager.scanForPeripherals(withServices: nil)
+        if self.centralManager.state == .poweredOn {
+            if !connectableDevices.empty() || discoveringDevices == true {
+                centralManager.scanForPeripherals(withServices: requestedServices)
+            }
         }
     }
     
+    func discoverDevices() {
+        discoveredDevices.reset()
+        discoveringDevices = true
+        scanForDevices()
+    }
+    
+    func stopDiscoverDevices() {
+        discoveringDevices = false
+        if connectableDevices.empty() {
+            centralManager.stopScan()
+        }
+    }
     func connectIfKnown(peripheral: CBPeripheral) {
         
-        if isConnectableDevice(peripheral: peripheral) {
-            
+        if connectableDevices.contains(peripheral: peripheral) {
             print("found device \(peripheral) in known devices - attempt to connect!!")
 
             let index = addActivePeripheral(peripheral: peripheral)
@@ -373,7 +428,8 @@ extension BTDevicesController: CBCentralManagerDelegate {
         print("attempting to connect device \(device)")
         print("Active peripherals \(activePeripherals)")
         
-        addConnectableDevice(device: device)
+        connectableDevices.add(device: device)
+
         print("Connectable devices \(connectableDevices)")
         if let index = activePeripherals.firstIndex(where: { $0.identifier == device.id }) {
             activePeripherals[index].delegate = self
@@ -385,35 +441,42 @@ extension BTDevicesController: CBCentralManagerDelegate {
     
     func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String : Any], rssi RSSI: NSNumber) {
         
-        let _ = addActivePeripheral(peripheral: peripheral)
-        addDiscoveredDevice(peripheral: peripheral)
-        
-        print("discoveredBTDevices = \(discoveredDevices)")
-
-        connectIfKnown(peripheral: peripheral)
-
+        if connectableDevices.contains(peripheral: peripheral) {
+            connectIfKnown(peripheral: peripheral)
+        }
+        else {
+            discoveredDevices.add(peripheral: peripheral)
+            print("discoveredBTDevices = \(discoveredDevices)")
+        }
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
 
         print("Connected!")
-        addKnownDevice(peripheral: peripheral)
-        writeKnownDevices()
+        knownDevices.add(peripheral: peripheral)
+        knownDevices.write(key: knownDeviceKey)
 
-        // Remove from Connecrtable Device list
-        removeConnectableDevice(peripheral: peripheral)
+        // Remove from Connectable Device list
+        connectableDevices.remove(peripheral: peripheral)
         
-        if connectableDevices.count == 0 {
+        if connectableDevices.empty() && !discoveringDevices {
             centralManager.stopScan()
         }
 
-        // TO DO : CHANGE BELOW!!
-        workoutManager.BTHRMConnected = true
+        var services = requestedServices
+        if services != nil {
+            services! += [batteryServiceCBUUID]
+        }
         let index = activePeripheralIndex(peripheral: peripheral)
         print(" connected index : \(index ?? -1)")
+                
         if index != nil {
-            activePeripherals[index!].discoverServices([heartRateServiceCBUUID])
+            activePeripherals[index!].discoverServices(services)
         }
+        
+        // TO DO : CHANGE BELOW!!
+        // TO CHANGE!!
+        serviceConnectCallback[heartRateServiceCBUUID]!(true)
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -427,81 +490,111 @@ extension BTDevicesController: CBCentralManagerDelegate {
         print("peripheral : \(peripheral)")
         print("Active Peripherals : \(activePeripherals)")
         
-        // Add back to connecrtable devices
-        if isKnownDevice(peripheral: peripheral) {
-            addConnectableDevice(peripheral: peripheral)
+        // Add back to connectable devices
+        if knownDevices.contains(peripheral: peripheral) {
+            connectableDevices.add(peripheral: peripheral)
         }
 
         scanForDevices()
         
         // TO DO: STUFF BELOW HERE TO BE CHANGED!!
-        workoutManager.BTHRMConnected = false
-
+        // TO CHANGE!!
+        serviceConnectCallback[heartRateServiceCBUUID]!(false)
     }
 }
 
 
 extension BTDevicesController: CBPeripheralDelegate {
-
+    
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         
         guard let services = peripheral.services else { return }
-
+/*
         let index = activePeripheralIndex(peripheral: peripheral)
         print("service peripheral index : \(index ?? -1)")
         if index != nil {
             print("Add services to connected devices & known devices? in loop below!")
         }
+ */
+        
+        // make sure all services registered before discovering characteristics
         for service in services {
             print("Service for peripheral \(peripheral) : \(service)")
             print("UUID : \(service.uuid.uuidString)  description: \(service.uuid.description)")
-            addServiceToKnownDevice(peripheral: peripheral, service: service.uuid.uuidString)
+            knownDevices.addService(peripheral: peripheral, service: service.uuid.uuidString)
             peripheral.discoverCharacteristics(nil, for: service)
         }
+        knownDevices.write(key: knownDeviceKey)
+
+        for service in services {
+            peripheral.discoverCharacteristics(nil, for: service)
+        }
+
     }
     
     func peripheral(_ peripheral: CBPeripheral, didDiscoverCharacteristicsFor service: CBService,
                     error: Error?) {
-      guard let characteristics = service.characteristics else { return }
-
-      for characteristic in characteristics {
-          print(characteristic)
-          if characteristic.properties.contains(.read) {
-              print("\(characteristic.uuid): properties contains .read")
-              peripheral.readValue(for: characteristic)
-          }
-          if characteristic.properties.contains(.notify) {
-              print("\(characteristic.uuid): properties contains .notify")
-              peripheral.setNotifyValue(true, for: characteristic)
-          }
-      }
+        guard let characteristics = service.characteristics else { return }
+        
+        for characteristic in characteristics {
+            print(characteristic)
+            if characteristic.properties.contains(.read) {
+                print("\(characteristic.uuid): properties contains .read")
+                peripheral.readValue(for: characteristic)
+            }
+            if characteristic.properties.contains(.notify) {
+                print("\(characteristic.uuid): properties contains .notify")
+                peripheral.setNotifyValue(true, for: characteristic)
+            }
+        }
     }
-
+    
     func peripheral(_ peripheral: CBPeripheral, didUpdateValueFor characteristic: CBCharacteristic,
                     error: Error?) {
-      switch characteristic.uuid {
-          case bodySensorLocationCharacteristicCBUUID:
-              let bodySensorLocation = bodyLocation(from: characteristic)
-              print("bodySensorLocation \(bodySensorLocation)")
-          
-          case heartRateMeasurementCharacteristicCBUUID:
-              bpm = heartRate(from: characteristic)
-              print("bpm = \(bpm)")
-              workoutManager.setHeartRate(heartRate: Double(bpm), hrSource: .bluetooth)
+        
+        var returnValue: Any?
+        
+        switch characteristic.uuid {
+        case bodySensorLocationCharacteristicCBUUID:
+            let bodySensorLocation = bodyLocation(from: characteristic)
+            print("bodySensorLocation \(bodySensorLocation)")
+            // returnValue as String
+            returnValue = bodySensorLocation
+            
+        case heartRateMeasurementCharacteristicCBUUID:
+            bpm = heartRate(from: characteristic)
+            print("bpm = \(bpm)")
+            // returnValue as Double
+            returnValue = Double(bpm)
+            
+        case batteryLevelCharacteristicCBUUID:
+            print("battery level characteristic \(characteristic) for peripheral \(peripheral)")
+            let batteryLevel = batteryLevel(from: characteristic)
+            print("battery level = \(batteryLevel)")
+            
+            for service in knownDevices.services(peripheral: peripheral) {
+                if (batteryLevelCallback[service] != nil) {
+                    batteryLevelCallback[service]!(batteryLevel)
+                }
 
-          case batteryLevelCharacteristicCBUUID:
-              print( "battery level characteristic \(characteristic) for peripheral \(peripheral)")
-
-          default:
-              print("Unhandled Characteristic UUID: \(characteristic.uuid)")
-      }
+            }
+            // batteryLevel is Int
+            returnValue = batteryLevel
+            
+        default:
+            print("Unhandled Characteristic UUID: \(characteristic.uuid) for peripheral \(peripheral)")
+        }
+        
+        if (characteristicCallback[characteristic.uuid] != nil) && (returnValue != nil) {
+            characteristicCallback[characteristic.uuid]!(returnValue!)
+        }
     }
     
     private func bodyLocation(from characteristic: CBCharacteristic) -> String {
-      guard let characteristicData = characteristic.value,
-        let byte = characteristicData.first else { return "Error" }
-
-      switch byte {
+        guard let characteristicData = characteristic.value,
+              let byte = characteristicData.first else { return "Error" }
+        
+        switch byte {
         case 0: return "Other"
         case 1: return "Chest"
         case 2: return "Wrist"
@@ -510,23 +603,33 @@ extension BTDevicesController: CBPeripheralDelegate {
         case 5: return "Ear Lobe"
         case 6: return "Foot"
         default:
-          return "Reserved for future use"
-      }
+            return "Reserved for future use"
+        }
     }
     
     private func heartRate(from characteristic: CBCharacteristic) -> Int {
-      guard let characteristicData = characteristic.value else { return -1 }
-      let byteArray = [UInt8](characteristicData)
-
-      let firstBitValue = byteArray[0] & 0x01
-      if firstBitValue == 0 {
-        // Heart Rate Value Format is in the 2nd byte
-        return Int(byteArray[1])
-      } else {
-        // Heart Rate Value Format is in the 2nd and 3rd bytes
-        return (Int(byteArray[1]) << 8) + Int(byteArray[2])
-      }
+        guard let characteristicData = characteristic.value else { return -1 }
+        let byteArray = [UInt8](characteristicData)
+        
+        let firstBitValue = byteArray[0] & 0x01
+        if firstBitValue == 0 {
+            // Heart Rate Value Format is in the 2nd byte
+            return Int(byteArray[1])
+        } else {
+            // Heart Rate Value Format is in the 2nd and 3rd bytes
+            return (Int(byteArray[1]) << 8) + Int(byteArray[2])
+        }
     }
+    
+    private func batteryLevel(from characteristic: CBCharacteristic) -> Int {
+        
+        guard let characteristicData = characteristic.value else { return -1 }
+        let byteArray = [UInt8](characteristicData)
+        let batteryLevel = Int(byteArray[0])
+
+        return batteryLevel
+    }
+
 }
 
 
