@@ -38,7 +38,7 @@ struct StartTabView: View {
 
             NowPlayingView().tag(Tab.nowPlaying)
 
-            BTStartDiscoverView(workoutManager: workoutManager).tag(Tab.btDevices)
+            BTContentView(bluetoothManager: workoutManager.bluetoothManager!).tag(Tab.btDevices)
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))

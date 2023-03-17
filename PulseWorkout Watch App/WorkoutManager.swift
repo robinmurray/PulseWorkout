@@ -90,13 +90,15 @@ class WorkoutManager: NSObject, ObservableObject {
 
     @Published var heartRate: Double = 0
     @Published var distance: Double = 0
+    @Published var cyclingPower: Int = 0
    
     @Published var workout: HKWorkout?
     @Published var running = false
     
     @Published var BTHRMConnected: Bool = false
     @Published var BTHRMBatteryLevel: Int?
-
+    @Published var BTcyclePowerBatteryLevel: Int?
+    
     @Published var liveTabSelection: LiveScreenTab = .liveMetrics
 
     var playedAlarm: Bool = false
@@ -154,7 +156,9 @@ class WorkoutManager: NSObject, ObservableObject {
         // Set up call back functions for when required characteristics are read.
         bluetoothManager!.setCharacteristicCallback(characteristicCBUUID: heartRateMeasurementCharacteristicCBUUID,
                                                     callback: setBTHeartRate)
- 
+        bluetoothManager!.setCharacteristicCallback(characteristicCBUUID: cyclingPowerMeasurementCBUUID,
+                                                    callback: setCyclingPower)
+
         // Set up call back functions for when services connect / disconnect.
         bluetoothManager!.setServiceConnectCallback(serviceCBUUID: heartRateServiceCBUUID,
                                                     callback: BTHRMServiceConnected)
@@ -162,6 +166,8 @@ class WorkoutManager: NSObject, ObservableObject {
         // Set up call back functions for when services connect / disconnect.
         bluetoothManager!.setBatteryLevelCallback(serviceCBUUID: heartRateServiceCBUUID,
                                                   callback: setBTHRMBatteryLevel)
+        bluetoothManager!.setBatteryLevelCallback(serviceCBUUID: cyclePowerMeterCBUUID,
+                                                  callback: setBTcyclePowerMeterBatteryLevel)
 
     }
 
@@ -311,11 +317,25 @@ class WorkoutManager: NSObject, ObservableObject {
     }
     
     func setBTHRMBatteryLevel(batteryLevel: Int) {
-        print("Setting battery level to \(batteryLevel)")
+        print("Setting HR battery level to \(batteryLevel)")
         
         BTHRMBatteryLevel = batteryLevel
     }
+
+    func setCyclingPower(value: Any) {
+        guard let power = value as? Int else {
+            print("API misuse - callback should return value that can be cast to Int")
+            return
+        }
+        
+        cyclingPower = power
+    }
     
+    func setBTcyclePowerMeterBatteryLevel(batteryLevel: Int) {
+        print("Setting PM battery level to \(batteryLevel)")
+        
+        BTcyclePowerBatteryLevel = batteryLevel
+    }
     func startStopHRMonitor() {
         
         if !(HRMonitorActive) {

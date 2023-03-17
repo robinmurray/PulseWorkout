@@ -37,6 +37,7 @@
 		E4A0839329A9FA09007B50D3 /* BTDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */; };
 		E4A0839529AA1790007B50D3 /* BTKnownDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */; };
 		E4A0839729AA18E7007B50D3 /* BTDiscoveredDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */; };
+		E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5029C49744008DB769 /* BTContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -113,6 +114,7 @@
 		E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceView.swift; sourceTree = "<group>"; };
 		E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTKnownDeviceView.swift; sourceTree = "<group>"; };
 		E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDiscoveredDeviceView.swift; sourceTree = "<group>"; };
+		E4C11F5029C49744008DB769 /* BTContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -170,6 +172,7 @@
 				E46EF0CB29560A1F006FA603 /* PulseWorkout Watch App.entitlements */,
 				E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */,
 				E46EF08529537CA1006FA603 /* ContentView.swift */,
+				E4C11F5029C49744008DB769 /* BTContentView.swift */,
 				E46EF0B329537D63006FA603 /* LiveTabView.swift */,
 				E46EF0BF29538811006FA603 /* LiveMetricsView.swift */,
 				E46EF0C129543FEA006FA603 /* StopView.swift */,
@@ -406,6 +409,7 @@
 				E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */,
 				E46EF08429537CA1006FA603 /* PulseWorkoutApp.swift in Sources */,
 				E46EF0B829537DF6006FA603 /* SummaryTabView.swift in Sources */,
+				E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */,
 				E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */,
 				E4A0839329A9FA09007B50D3 /* BTDeviceView.swift in Sources */,
 				E421295E299D513B001B8AA9 /* ActivityProfileView.swift in Sources */,

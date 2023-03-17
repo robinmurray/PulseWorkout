@@ -10,20 +10,33 @@ import CoreBluetooth
 import WatchKit
 import UIKit
 
+
+
 // User Defaults Key
 let knownDeviceKey: String = "KnownBTDevices"
 
 // Heart Rate Monitor Bluetooth ID
 let currentTimeServiceCBUUID = CBUUID(string: "0x1805")
 let deviceInfoServiceCBUUID = CBUUID(string: "0x180A")
+let serialNumberStringCharacteristicCBUUID = CBUUID(string: "0x2A25")
+let firmwareRevisionStringCharacteristicCBUUID = CBUUID(string: "0x2A26")
+let hardwareRevisionStringCharacteristicCBUUID = CBUUID(string: "0x2A27")
+let softwareRevisionStringCharacteristicCBUUID = CBUUID(string: "0x2A28")
+let manufacturerNameStringCharacteristicCBUUID = CBUUID(string: "0x2A29")
+
 let heartRateServiceCBUUID = CBUUID(string: "0x180D")
-let heartRateMeasurementCharacteristicCBUUID = CBUUID(string: "2A37")
-let bodySensorLocationCharacteristicCBUUID = CBUUID(string: "2A38")
+let heartRateMeasurementCharacteristicCBUUID = CBUUID(string: "0x2A37")
+let bodySensorLocationCharacteristicCBUUID = CBUUID(string: "0x2A38")
 
 let batteryServiceCBUUID = CBUUID(string: "0x180F")
 let batteryLevelCharacteristicCBUUID = CBUUID(string: "0x2A19")
 
 let cyclePowerMeterCBUUID = CBUUID(string: "0x1818")
+let cyclingPowerFeatureCBUUID = CBUUID(string: "0x2A65")
+let sensorLocationCBUUID = CBUUID(string: "0x2A5D")
+let cyclingPowerMeasurementCBUUID = CBUUID(string: "0x2A63")
+
+let cycleSpeedCadenceCBUUID = CBUUID(string: "0x1816")
 
 let BTServices: [String: String] =
 [currentTimeServiceCBUUID.uuidString: "Current Time",
@@ -47,6 +60,7 @@ struct BTDevice: Identifiable, Codable {
     var name: String
     var services: [String]
     var connectionState: DeviceConnectionState?
+    var deviceInfo: [String:String]?
     
     // set CodingKeys to exclude connectionState from coding/decoding
     private enum CodingKeys: String, CodingKey {
@@ -230,6 +244,8 @@ class BTDevicesController: NSObject, ObservableObject {
     @Published var discoveredDevices: DeviceList = DeviceList(devices: [])
     @Published var connectableDevices: DeviceList = DeviceList(devices: [])
     
+    @Published var appState: BTAppState = BTAppState.knownDevices
+    
     var activePeripherals: [CBPeripheral] = []
     
     var discoveringDevices: Bool = false
@@ -400,7 +416,9 @@ extension BTDevicesController: CBCentralManagerDelegate {
     }
     
     func discoverDevices() {
+        appState = .discoverDevices
         discoveredDevices.reset()
+        self.centralManager.stopScan()
         discoveringDevices = true
         scanForDevices()
     }
@@ -410,6 +428,7 @@ extension BTDevicesController: CBCentralManagerDelegate {
         if connectableDevices.empty() {
             centralManager.stopScan()
         }
+        appState = .knownDevices
     }
     func connectIfKnown(peripheral: CBPeripheral) {
         
@@ -476,20 +495,22 @@ extension BTDevicesController: CBCentralManagerDelegate {
         
         // TO DO : CHANGE BELOW!!
         // TO CHANGE!!
+        knownDevices.setConnectionState(peripheral: peripheral, connectionState: .connected)
         serviceConnectCallback[heartRateServiceCBUUID]!(true)
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
         print("Connect failed with error \(String(describing: error))")
         
+        knownDevices.setConnectionState(peripheral: peripheral, connectionState: .disconnected)
+
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
         print("Disconnected with error \(String(describing: error))")
         
-        print("peripheral : \(peripheral)")
-        print("Active Peripherals : \(activePeripherals)")
-        
+        knownDevices.setConnectionState(peripheral: peripheral, connectionState: .disconnected)
+
         // Add back to connectable devices
         if knownDevices.contains(peripheral: peripheral) {
             connectableDevices.add(peripheral: peripheral)
@@ -509,14 +530,7 @@ extension BTDevicesController: CBPeripheralDelegate {
     func peripheral(_ peripheral: CBPeripheral, didDiscoverServices error: Error?) {
         
         guard let services = peripheral.services else { return }
-/*
-        let index = activePeripheralIndex(peripheral: peripheral)
-        print("service peripheral index : \(index ?? -1)")
-        if index != nil {
-            print("Add services to connected devices & known devices? in loop below!")
-        }
- */
-        
+
         // make sure all services registered before discovering characteristics
         for service in services {
             print("Service for peripheral \(peripheral) : \(service)")
@@ -580,9 +594,30 @@ extension BTDevicesController: CBPeripheralDelegate {
             }
             // batteryLevel is Int
             returnValue = batteryLevel
+ 
+        case firmwareRevisionStringCharacteristicCBUUID:
+            print("firmware revision characteristic \(characteristic) for peripheral \(peripheral)")
+        case hardwareRevisionStringCharacteristicCBUUID:
+            print("hardware revision characteristic \(characteristic) for peripheral \(peripheral)")
+        case softwareRevisionStringCharacteristicCBUUID:
+            print("software revision characteristic \(characteristic) for peripheral \(peripheral)")
+        case manufacturerNameStringCharacteristicCBUUID:
+            print("manufacturer name characteristic \(characteristic) for peripheral \(peripheral)")
+
+        case cyclingPowerFeatureCBUUID:
+            print("cyclingPowerFeatureCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
+        case sensorLocationCBUUID:
+            print("sensorLocationCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
+        case cyclingPowerMeasurementCBUUID:
+            print("cyclingPowerMeasurementCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
+            let retValue = cyclingPower(from: characteristic)
+            print("Instantaneous Power \(retValue)")
             
+            returnValue = Int(retValue)
+
         default:
-            print("Unhandled Characteristic UUID: \(characteristic.uuid) for peripheral \(peripheral)")
+            print("Unhandled Characteristic: \(characteristic) for peripheral \(peripheral)")
+            
         }
         
         if (characteristicCallback[characteristic.uuid] != nil) && (returnValue != nil) {
@@ -630,6 +665,130 @@ extension BTDevicesController: CBPeripheralDelegate {
         return batteryLevel
     }
 
+    private func cyclingPower(from characteristic: CBCharacteristic) -> Int {
+
+        struct FlagRule {
+            var flag: String
+            var byte: Int
+            var bitmap: UInt8
+        }
+        
+        let flagMap: [FlagRule] = [FlagRule(flag: "Pedal Power Balance Present", byte: 0, bitmap: 0x01),
+                                   FlagRule(flag: "Pedal Power Balance Reference", byte: 0, bitmap: 0x02),
+                                   FlagRule(flag: "Accumulated Torque Present", byte: 0, bitmap: 0x04),
+                                   FlagRule(flag: "Accumulated Torque Source", byte: 0, bitmap: 0x08),
+                                   FlagRule(flag: "Wheel Revolution Data Present", byte: 0, bitmap: 0x10),
+                                   FlagRule(flag: "Crank Revolution Data Present", byte: 0, bitmap: 0x20),
+                                   FlagRule(flag: "Extreme Force Magnitudes Present", byte: 0, bitmap: 0x40),
+                                   FlagRule(flag: "Extreme Torque Magnitudes Present", byte: 0, bitmap: 0x80),
+                                   FlagRule(flag: "Extreme Angles Present", byte: 1, bitmap: 0x01),
+                                   FlagRule(flag: "Top Dead Spot Angle Present", byte: 1, bitmap: 0x02),
+                                   FlagRule(flag: "Bottom Dead Spot Angle Present", byte: 1, bitmap: 0x04),
+                                   FlagRule(flag: "Accumulated Energy Present", byte: 1, bitmap: 0x08),
+                                   FlagRule(flag: "Offset Compensation Indicator", byte: 1, bitmap: 0x10)]
+        
+        var flags: [String: Bool] = [:]
+        var byteIndex: Int = 0
+        var powerMeterValues: [String: Any] = [:]
+        
+        guard let characteristicData = characteristic.value else { return -1 }
+        let byteArray = [UInt8](characteristicData)
+        
+        for flagRule in flagMap {
+            flags[flagRule.flag] = (byteArray[flagRule.byte] & flagRule.bitmap != 0)
+        }
+
+        print("Cycling Power meter flags : \(flags)")
+        
+        // Unit is in watts with a resolution of 1. - Mandatory
+        byteIndex = 2
+        powerMeterValues["instantaneousPower"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+        byteIndex = 4
+        
+        // Unit is in percentage with a resolution of 1/2. - Optional
+        if flags["Pedal Power Balance Present"] ?? false {
+            powerMeterValues["pedalPowerBalance"] = Int(byteArray[byteIndex])
+            byteIndex += 1
+        }
+
+        // Unit is in newton metres with a resolution of 1/32.
+        if flags["Accumulated Torque Present"] ?? false {
+            powerMeterValues["accumulatedTorque"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+        }
+
+        if flags["Wheel Revolution Data Present"] ?? false {
+            powerMeterValues["cumulativeWheelRevolutions"] = Int32(byteArray[byteIndex]) + (Int32(byteArray[byteIndex+1]) * 256)  + (Int32(byteArray[byteIndex+2]) * 256 * 256) + (Int32(byteArray[byteIndex+3]) * 256 * 256 * 256)
+            byteIndex += 4
+            // Unit is in seconds with a resolution of 1/2048.
+            powerMeterValues["lastWheelEventTime"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+        }
+
+        if flags["Crank Revolution Data Present"] ?? false {
+            powerMeterValues["cumulativeCrankRevolutions"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+            
+            // Unit is in seconds with a resolution of 1/1024.
+            powerMeterValues["lastCrankEventTime"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+        }
+
+        if flags["Extreme Force Magnitudes Present"] ?? false {
+            // Unit is in newtons with a resolution of 1.
+            powerMeterValues["maximumForceMagnitudes"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+            
+            // Unit is in newtons with a resolution of 1.
+            powerMeterValues["minimumForceMagnitude"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+        }
+
+        if flags["Extreme Torque Magnitudes Present"] ?? false {
+            // Unit is in newton metres with a resolution of 1/32.
+            powerMeterValues["maximumTorqueMagnitude"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+            
+            // Unit is in newton metres with a resolution of 1/32.
+            powerMeterValues["minimumTorqueMagnitude"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+        }
+
+        if flags["Extreme Angles Present"] ?? false {
+            // Unit is in degrees with a resolution of 1
+            // NOTE - combined in single value!!
+            powerMeterValues["extremeAngles"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256) + (Int(byteArray[byteIndex+2]) * 256 * 256)
+            byteIndex += 3
+            
+        }
+
+        if flags["Top Dead Spot Angle Present"] ?? false {
+            // Unit is in degrees with a resolution of 1.
+            powerMeterValues["topDeadSpotAngle"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+
+        }
+
+        if flags["Bottom Dead Spot Angle Present"] ?? false {
+            // Unit is in degrees with a resolution of 1.
+            powerMeterValues["bottomDeadSpotAngle"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+
+        }
+
+        if flags["Accumulated Energy Present"] ?? false {
+            // Unit is in kilojoules with a resolution of 1.
+            powerMeterValues["accumulatedEnergy"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+            byteIndex += 2
+
+        }
+
+        
+        print("powerMeterValues: \(powerMeterValues)")
+        
+        return powerMeterValues["instantaneousPower"] as! Int
+
+    }
 }
 
 

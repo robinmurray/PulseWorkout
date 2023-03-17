@@ -53,13 +53,17 @@ struct LiveMetricsView: View {
         NavigationView {
 
         VStack {
-
-            TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
-                                                     isPaused: workoutManager.session?.state == .paused)) { context in
-                
-                    ElapsedTimeView(elapsedTime: workoutManager.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
-                        .foregroundStyle(.yellow)
+            HStack {
+                TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
+                                                         isPaused: workoutManager.session?.state == .paused)) { context in
+                    
+                        ElapsedTimeView(elapsedTime: workoutManager.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
+                            .foregroundStyle(.yellow)
+                }
+                Spacer()
+                Text(String(workoutManager.cyclingPower))
             }
+
 
             HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)

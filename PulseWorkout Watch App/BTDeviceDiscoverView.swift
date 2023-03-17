@@ -9,10 +9,10 @@ import SwiftUI
 
 struct BTDeviceDiscoverView: View {
 
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var bluetoothManager: BTDevicesController
     
-    init(workoutManager: WorkoutManager) {
-        self.workoutManager = workoutManager
+    init(bluetoothManager: BTDevicesController) {
+        self.bluetoothManager = bluetoothManager
     }
 
     @State private var selectedDevice: String?
@@ -22,8 +22,8 @@ struct BTDeviceDiscoverView: View {
         VStack{
 
             Group {
-                List(workoutManager.bluetoothManager!.discoveredDevices.devices) { device in
-                    BTDiscoveredDeviceView(btDevice: device, btManager: workoutManager.bluetoothManager!)
+                List(bluetoothManager.discoveredDevices.devices) { device in
+                    BTDiscoveredDeviceView(btDevice: device, btManager: bluetoothManager)
                 }
                 .listStyle(.carousel)
 
@@ -40,8 +40,8 @@ struct BTDeviceDiscoverView: View {
     }
     
     func dismissView() {
-        workoutManager.bluetoothManager?.stopDiscoverDevices()
-        workoutManager.appState = .initial
+        bluetoothManager.stopDiscoverDevices()
+//        workoutManager.appState = .initial
     }
 
 }
@@ -49,8 +49,9 @@ struct BTDeviceDiscoverView: View {
 struct BTDeviceDiscoverView_Previews: PreviewProvider {
     
     static var workoutManager = WorkoutManager()
-
+    static var bluetoothManager = workoutManager.bluetoothManager
+    
     static var previews: some View {
-        BTDeviceDiscoverView(workoutManager: workoutManager)
+        BTDeviceDiscoverView(bluetoothManager: bluetoothManager!)
     }
 }

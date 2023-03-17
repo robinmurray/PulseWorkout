@@ -28,13 +28,13 @@ struct BTDiscoveredDeviceView: View {
                 BTDeviceView(btDevice: btDevice)
                 
                 HStack {
-                    Text(btDevice.connected(bluetoothManager: btManager) ? "Connected" : btManager.connectableDevices.contains(device: btDevice) ? "": "Connecting")
+                    Text(btDevice.connected(bluetoothManager: btManager) ? "Connected" : btManager.connectableDevices.contains(device: btDevice) ? "Connecting": "")
                     Spacer()
                     VStack{
                         Button(action: connectDevice) {
                             Image(systemName: "link.circle")
                         }
-                        .foregroundColor( btManager.connectableDevices.contains(device: btDevice) ? Color.yellow : Color.gray)
+                        .foregroundColor( btManager.connectableDevices.contains(device: btDevice) ? Color.gray : Color.yellow)
                         .font(.title)
                         .frame(width: 40, height: 40)
                         .background(Color.clear)
@@ -42,7 +42,7 @@ struct BTDiscoveredDeviceView: View {
                         .buttonStyle(PlainButtonStyle())
                         
                         Text("Connect")
-                            .foregroundColor( btManager.connectableDevices.contains(device: btDevice) ? Color.yellow : Color.gray)
+                            .foregroundColor( btManager.connectableDevices.contains(device: btDevice) ? Color.gray : Color.yellow)
                         
                     }
                 }
