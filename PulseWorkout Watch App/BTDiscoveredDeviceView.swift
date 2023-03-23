@@ -24,35 +24,30 @@ struct BTDiscoveredDeviceView: View {
     
     var body: some View {
         HStack {
-            VStack {
-                BTDeviceView(btDevice: btDevice)
-                
-                HStack {
-                    Text(btDevice.connected(bluetoothManager: btManager) ? "Connected" : btManager.connectableDevices.contains(device: btDevice) ? "Connecting": "")
-                    Spacer()
-                    VStack{
-                        Button(action: connectDevice) {
-                            Image(systemName: "link.circle")
-                        }
-                        .foregroundColor( btManager.connectableDevices.contains(device: btDevice) ? Color.gray : Color.yellow)
-                        .font(.title)
-                        .frame(width: 40, height: 40)
-                        .background(Color.clear)
-                        .clipShape(Circle())
-                        .buttonStyle(PlainButtonStyle())
-                        
-                        Text("Connect")
-                            .foregroundColor( btManager.connectableDevices.contains(device: btDevice) ? Color.gray : Color.yellow)
-                        
-                    }
+            BTDeviceView(btDevice: btDevice)
+            Spacer()
+            VStack{
+                Button(action: connectDevice) {
+                    Image(systemName: "link.circle")
                 }
+                .foregroundColor( btManager.connectableDevices.contains(device: btDevice) ? Color.gray : Color.yellow)
+                .font(.title)
+                .frame(width: 40, height: 40)
+                .background(Color.clear)
+                .clipShape(Circle())
+                .buttonStyle(PlainButtonStyle())
+                
+                Text("Connect")
+                    .foregroundColor( btManager.connectableDevices.contains(device: btDevice) ? Color.gray : Color.yellow)
+                    .dynamicTypeSize(.xSmall)
+                    .fontWeight(.bold)
             }
         }
     }
 }
 
 struct BTDiscoveredDeviceView_Previews: PreviewProvider {
-    static var device = BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: [])
+    static var device = BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: [], deviceInfo: [:])
 
     static var btManager: BTDevicesController = BTDevicesController(requestedServices: nil)
 

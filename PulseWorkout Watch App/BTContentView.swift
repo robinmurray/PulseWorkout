@@ -36,7 +36,7 @@ struct BTContentView: View {
             return AnyView(BTDeviceDiscoverView(bluetoothManager:  bluetoothManager))
 
         case .deviceDetails:
-            return AnyView(BTDeviceDiscoverView(bluetoothManager:  bluetoothManager))
+            return AnyView(BTDetailDeviceView(bluetoothManager:  bluetoothManager))
 
         }
     }

@@ -91,6 +91,7 @@ class WorkoutManager: NSObject, ObservableObject {
     @Published var heartRate: Double = 0
     @Published var distance: Double = 0
     @Published var cyclingPower: Int = 0
+    @Published var cyclingCadence: Int = 0
    
     @Published var workout: HKWorkout?
     @Published var running = false
@@ -98,12 +99,16 @@ class WorkoutManager: NSObject, ObservableObject {
     @Published var BTHRMConnected: Bool = false
     @Published var BTHRMBatteryLevel: Int?
     @Published var BTcyclePowerBatteryLevel: Int?
-    
+    @Published var BTcyclePowerConnected: Bool = false
+
     @Published var liveTabSelection: LiveScreenTab = .liveMetrics
 
     var playedAlarm: Bool = false
     
     var appInBackground = false
+    
+    var prevCrankTime: Int = 0
+    var prevCrankRevs: Int = 0
     
     var runCount = 0
     var timer: Timer?
@@ -162,6 +167,8 @@ class WorkoutManager: NSObject, ObservableObject {
         // Set up call back functions for when services connect / disconnect.
         bluetoothManager!.setServiceConnectCallback(serviceCBUUID: heartRateServiceCBUUID,
                                                     callback: BTHRMServiceConnected)
+        bluetoothManager!.setServiceConnectCallback(serviceCBUUID: cyclePowerMeterCBUUID,
+                                                    callback: BTcyclePowerServiceConnected)
 
         // Set up call back functions for when services connect / disconnect.
         bluetoothManager!.setBatteryLevelCallback(serviceCBUUID: heartRateServiceCBUUID,
@@ -316,6 +323,13 @@ class WorkoutManager: NSObject, ObservableObject {
         BTHRMConnected = connected
     }
     
+    func BTcyclePowerServiceConnected(connected: Bool) {
+        
+        print("Setting BTcyclePowerConnected to \(connected)")
+        // Callback function provided to bluetooth manager to notify when HRM service connects/disconnects
+        BTcyclePowerConnected = connected
+    }
+    
     func setBTHRMBatteryLevel(batteryLevel: Int) {
         print("Setting HR battery level to \(batteryLevel)")
         
@@ -323,12 +337,34 @@ class WorkoutManager: NSObject, ObservableObject {
     }
 
     func setCyclingPower(value: Any) {
-        guard let power = value as? Int else {
-            print("API misuse - callback should return value that can be cast to Int")
+        guard let powerDict = value as? [String:Any] else {
+            print("API misuse - callback should return value that can be cast to dictionary")
             return
         }
-        
-        cyclingPower = power
+
+        cyclingPower = (powerDict["instantaneousPower"] ?? 0) as? Int ?? 0
+
+        // lastCrankTime is in seconds with a resolution of 1/1024.
+        let lastCrankTime = (powerDict["lastCrankEventTime"] ?? 0) as? Int ?? 0
+        let cumulativeCrankRevolutions = (powerDict["cumulativeCrankRevolutions"] ?? 0) as? Int ?? 0
+        if (lastCrankTime != 0) && (cumulativeCrankRevolutions != 0) {
+            if (prevCrankTime != 0) && (prevCrankRevs != 0) {
+                let elapsedCrankTime = lastCrankTime - prevCrankTime
+                let newCrankRevs = cumulativeCrankRevolutions - prevCrankRevs
+                if elapsedCrankTime != 0 {
+                    cyclingCadence = Int( 60 * 1024 / elapsedCrankTime) * newCrankRevs
+                    print("*********** lastCrankTime \(lastCrankTime)  cadence \(cyclingCadence)")
+                }
+                if newCrankRevs == 0 {
+                    cyclingCadence = 0
+                }
+
+            }
+            
+            prevCrankTime = lastCrankTime
+            prevCrankRevs = cumulativeCrankRevolutions
+        }
+            
     }
     
     func setBTcyclePowerMeterBatteryLevel(batteryLevel: Int) {

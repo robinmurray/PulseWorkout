@@ -38,6 +38,8 @@
 		E4A0839529AA1790007B50D3 /* BTKnownDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */; };
 		E4A0839729AA18E7007B50D3 /* BTDiscoveredDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */; };
 		E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5029C49744008DB769 /* BTContentView.swift */; };
+		E4C11F5329C632DB008DB769 /* BTDetailDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */; };
+		E4C11F5529C7588E008DB769 /* BTDeviceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +117,8 @@
 		E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTKnownDeviceView.swift; sourceTree = "<group>"; };
 		E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDiscoveredDeviceView.swift; sourceTree = "<group>"; };
 		E4C11F5029C49744008DB769 /* BTContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTContentView.swift; sourceTree = "<group>"; };
+		E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDetailDeviceView.swift; sourceTree = "<group>"; };
+		E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceInfoView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -191,6 +195,8 @@
 				E46EF0B929537E24006FA603 /* StartView.swift */,
 				E421295D299D513B001B8AA9 /* ActivityProfileView.swift */,
 				E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */,
+				E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */,
+				E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */,
 				E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */,
 				E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */,
 				E46EF0BB29537E4D006FA603 /* StartTabView.swift */,
@@ -393,10 +399,12 @@
 			files = (
 				E46EF0C82955C8E9006FA603 /* PausedView.swift in Sources */,
 				E46EF08629537CA1006FA603 /* ContentView.swift in Sources */,
+				E4C11F5529C7588E008DB769 /* BTDeviceInfoView.swift in Sources */,
 				E4A0839529AA1790007B50D3 /* BTKnownDeviceView.swift in Sources */,
 				E46EF0CA2955F615006FA603 /* WorkoutManager.swift in Sources */,
 				E46EF0BC29537E4D006FA603 /* StartTabView.swift in Sources */,
 				E46EF0C62955C836006FA603 /* PausedTabView.swift in Sources */,
+				E4C11F5329C632DB008DB769 /* BTDetailDeviceView.swift in Sources */,
 				E46EF0BE29538378006FA603 /* SummaryMetricsView.swift in Sources */,
 				E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */,
 				E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */,

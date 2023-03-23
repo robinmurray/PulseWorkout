@@ -47,7 +47,7 @@ let BTServices: [String: String] =
 
 // use as BTServices[uuidString, default: "Unknown"]
 
-let defaultBTDevices: [BTDevice] = [BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: [])]
+let defaultBTDevices: [BTDevice] = [BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: [], deviceInfo: [:])]
 
 
 enum DeviceConnectionState {
@@ -60,11 +60,11 @@ struct BTDevice: Identifiable, Codable {
     var name: String
     var services: [String]
     var connectionState: DeviceConnectionState?
-    var deviceInfo: [String:String]?
+    var deviceInfo: [String:String]
     
     // set CodingKeys to exclude connectionState from coding/decoding
     private enum CodingKeys: String, CodingKey {
-        case id, name, services
+        case id, name, services, deviceInfo
     }
 
     func serviceDescriptions() -> [String] {
@@ -74,6 +74,11 @@ struct BTDevice: Identifiable, Codable {
             returnVal.append(BTServices[service, default: service])
         }
         return returnVal
+    }
+
+
+    mutating func setDeviceInfo(key: String, value: String) {
+        deviceInfo[key] = value
     }
     
     func connected(bluetoothManager: BTDevicesController) -> Bool {
@@ -92,10 +97,11 @@ struct BTDevice: Identifiable, Codable {
 
 struct DeviceList {
     var devices: [BTDevice]
-    
+    var serviceConnectCallback: [CBUUID: (Bool) -> Void] = [:]
+
     func deviceFromPeripheral(peripheral: CBPeripheral) -> BTDevice {
         
-        return BTDevice(id: peripheral.identifier, name: peripheral.name ?? "Unknown", services: [])
+        return BTDevice(id: peripheral.identifier, name: peripheral.name ?? "Unknown", services: [], deviceInfo: [:])
     }
     
     func empty() -> Bool {
@@ -150,24 +156,101 @@ struct DeviceList {
         }
         return false
     }
-    
+
+    mutating func setServiceConnectCallback(serviceCBUUID: CBUUID, callback: @escaping (Bool) -> Void) {
+        
+        // Set the callback function for when services connect / disconnect.
+        
+        serviceConnectCallback[serviceCBUUID] = callback
+        
+    }
+
     mutating func setConnectionState(device: BTDevice, connectionState: DeviceConnectionState) {
+        
+        let initialConnectedServices: Set<String> = connectedServices()
         
         if let index = devices.firstIndex(where: { $0.id == device.id }) {
             devices[index].connectionState = connectionState
             
         }
+        
+        let finalConnectedServices: Set<String> = connectedServices()
+        
+        let serviceConnects: Set<String>  = finalConnectedServices.subtracting(initialConnectedServices)
+        let serviceDisconnects: Set<String>  = initialConnectedServices.subtracting(finalConnectedServices)
+
+        for service in serviceConnects {
+            print("new service connect: \(service)")
+            if (serviceConnectCallback[CBUUID(string: service)] != nil) {
+                serviceConnectCallback[CBUUID(string: service)]!(true)
+            }
+        }
+
+        for service in serviceDisconnects {
+            print("new service disconnect: \(service)")
+            if (serviceConnectCallback[CBUUID(string: service)] != nil) {
+                serviceConnectCallback[CBUUID(string: service)]!(false)
+            }
+        }
+
     }
     
     mutating func setConnectionState(peripheral: CBPeripheral, connectionState: DeviceConnectionState) {
+
+        let initialConnectedServices: Set<String> = connectedServices()
         
         if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
             devices[index].connectionState = connectionState
-            
         }
+
+        let finalConnectedServices: Set<String> = connectedServices()
         
+        let serviceConnects: Set<String>  = finalConnectedServices.subtracting(initialConnectedServices)
+        let serviceDisconnects: Set<String>  = initialConnectedServices.subtracting(finalConnectedServices)
+
+        for service in serviceConnects {
+            print("new service connect: \(service)")
+            if (serviceConnectCallback[CBUUID(string: service)] != nil) {
+                serviceConnectCallback[CBUUID(string: service)]!(true)
+            }
+        }
+
+        for service in serviceDisconnects {
+            print("new service disconnect: \(service)")
+            if (serviceConnectCallback[CBUUID(string: service)] != nil) {
+                serviceConnectCallback[CBUUID(string: service)]!(false)
+            }
+        }
     }
     
+    func connectedServices() -> Set<String> {
+        
+        var services = Set<String>()
+        
+        for device in devices {
+            if device.connectionState == .connected {
+                services = services.union(device.services)
+            }
+        }
+        return services
+    }
+    
+    mutating func setDeviceInfo(device: BTDevice, key: String, value: String) {
+        
+        if let index = devices.firstIndex(where: { $0.id == device.id }) {
+            devices[index].setDeviceInfo(key: key, value: value)
+            
+        }
+    }
+    
+    mutating func setDeviceInfo(peripheral: CBPeripheral, key: String, value: String) {
+        
+        if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
+            devices[index].setDeviceInfo(key: key, value: value)
+            
+        }
+    }
+
     mutating func reset() {
         devices = []
     }
@@ -249,7 +332,7 @@ class BTDevicesController: NSObject, ObservableObject {
     var activePeripherals: [CBPeripheral] = []
     
     var discoveringDevices: Bool = false
-    
+    var activeDetailDevice: BTDevice?
     @Published var bpm: Int = 0
    
     var bodySensorLocationLabel: String = ""
@@ -291,10 +374,10 @@ class BTDevicesController: NSObject, ObservableObject {
 
     func setServiceConnectCallback(serviceCBUUID: CBUUID, callback: @escaping (Bool) -> Void) {
         
-        // Set the callback function for when serivces connect / disconnect.
+        // Set the callback function for when services connect / disconnect.
         
         serviceConnectCallback[serviceCBUUID] = callback
-        
+        knownDevices.setServiceConnectCallback(serviceCBUUID: serviceCBUUID, callback: callback)
     }
 
     func setBatteryLevelCallback(serviceCBUUID: CBUUID, callback: @escaping (Int) -> Void) {
@@ -389,7 +472,7 @@ extension BTDevicesController: CBCentralManagerDelegate {
         case .resetting:
             print("central.state is .resetting")
             // TO CHANGE!!
-            serviceConnectCallback[heartRateServiceCBUUID]!(false)
+//            serviceConnectCallback[heartRateServiceCBUUID]!(false)
         case .unsupported:
             print("central.state is .unsupported")
         case .unauthorized:
@@ -397,7 +480,7 @@ extension BTDevicesController: CBCentralManagerDelegate {
         case .poweredOff:
             print("central.state is .poweredOff")
             // TO CHANGE!!
-            serviceConnectCallback[heartRateServiceCBUUID]!(false)
+//            serviceConnectCallback[heartRateServiceCBUUID]!(false)
         case .poweredOn:
             print("central.state is .poweredOn")
             scanForDevices()
@@ -493,10 +576,9 @@ extension BTDevicesController: CBCentralManagerDelegate {
             activePeripherals[index!].discoverServices(services)
         }
         
-        // TO DO : CHANGE BELOW!!
-        // TO CHANGE!!
         knownDevices.setConnectionState(peripheral: peripheral, connectionState: .connected)
-        serviceConnectCallback[heartRateServiceCBUUID]!(true)
+        // if device is in discoveringDevices - set to connected... or remove???
+        discoveredDevices.setConnectionState(peripheral: peripheral, connectionState: .connected)
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
@@ -517,10 +599,7 @@ extension BTDevicesController: CBCentralManagerDelegate {
         }
 
         scanForDevices()
-        
-        // TO DO: STUFF BELOW HERE TO BE CHANGED!!
-        // TO CHANGE!!
-        serviceConnectCallback[heartRateServiceCBUUID]!(false)
+
     }
 }
 
@@ -597,12 +676,23 @@ extension BTDevicesController: CBPeripheralDelegate {
  
         case firmwareRevisionStringCharacteristicCBUUID:
             print("firmware revision characteristic \(characteristic) for peripheral \(peripheral)")
+            knownDevices.setDeviceInfo(peripheral: peripheral, key: "Firmware Revision", value: stringCharacteristic(from: characteristic))
+            knownDevices.write(key: knownDeviceKey)
+            
         case hardwareRevisionStringCharacteristicCBUUID:
             print("hardware revision characteristic \(characteristic) for peripheral \(peripheral)")
+            knownDevices.setDeviceInfo(peripheral: peripheral, key: "Hardware Revision", value: stringCharacteristic(from: characteristic))
+            knownDevices.write(key: knownDeviceKey)
+            
         case softwareRevisionStringCharacteristicCBUUID:
             print("software revision characteristic \(characteristic) for peripheral \(peripheral)")
+            knownDevices.setDeviceInfo(peripheral: peripheral, key: "Software Revision", value: stringCharacteristic(from: characteristic))
+            knownDevices.write(key: knownDeviceKey)
+            
         case manufacturerNameStringCharacteristicCBUUID:
             print("manufacturer name characteristic \(characteristic) for peripheral \(peripheral)")
+            knownDevices.setDeviceInfo(peripheral: peripheral, key: "Manufacturer", value: stringCharacteristic(from: characteristic))
+            knownDevices.write(key: knownDeviceKey)
 
         case cyclingPowerFeatureCBUUID:
             print("cyclingPowerFeatureCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
@@ -610,11 +700,12 @@ extension BTDevicesController: CBPeripheralDelegate {
             print("sensorLocationCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
         case cyclingPowerMeasurementCBUUID:
             print("cyclingPowerMeasurementCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
-            let retValue = cyclingPower(from: characteristic)
-            print("Instantaneous Power \(retValue)")
             
-            returnValue = Int(retValue)
-
+            // return value is a dict [String: Any]
+            returnValue = cyclingPower(from: characteristic)
+//            let instantaneousPower = returnValue as [String: Any]["instantaneousPower"]
+//            print("Instantaneous Power \(instantaneousPower ?? -1)")
+            
         default:
             print("Unhandled Characteristic: \(characteristic) for peripheral \(peripheral)")
             
@@ -623,6 +714,14 @@ extension BTDevicesController: CBPeripheralDelegate {
         if (characteristicCallback[characteristic.uuid] != nil) && (returnValue != nil) {
             characteristicCallback[characteristic.uuid]!(returnValue!)
         }
+    }
+    
+    private func stringCharacteristic(from characteristic: CBCharacteristic) -> String {
+
+        guard let characteristicData = characteristic.value else { return "" }
+        
+        return String(data: characteristicData, encoding: .utf8) ?? ""
+
     }
     
     private func bodyLocation(from characteristic: CBCharacteristic) -> String {
@@ -665,7 +764,7 @@ extension BTDevicesController: CBPeripheralDelegate {
         return batteryLevel
     }
 
-    private func cyclingPower(from characteristic: CBCharacteristic) -> Int {
+    private func cyclingPower(from characteristic: CBCharacteristic) -> [String:Any] {
 
         struct FlagRule {
             var flag: String
@@ -691,7 +790,7 @@ extension BTDevicesController: CBPeripheralDelegate {
         var byteIndex: Int = 0
         var powerMeterValues: [String: Any] = [:]
         
-        guard let characteristicData = characteristic.value else { return -1 }
+        guard let characteristicData = characteristic.value else { return [:] }
         let byteArray = [UInt8](characteristicData)
         
         for flagRule in flagMap {
@@ -786,7 +885,8 @@ extension BTDevicesController: CBPeripheralDelegate {
         
         print("powerMeterValues: \(powerMeterValues)")
         
-        return powerMeterValues["instantaneousPower"] as! Int
+        return powerMeterValues
+//        return powerMeterValues["instantaneousPower"] as! Int
 
     }
 }

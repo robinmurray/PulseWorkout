@@ -48,12 +48,10 @@ struct BTDeviceBarView: View {
         
         let level = batteryLevel ?? 100
         switch level {
-        case 0:
+        case 0...10:
             return Color.red
-        case 1...25:
-            return Color.red
-        case 26...50:
-            return Color.orange
+        case 11...15:
+            return Color.yellow
         default:
             return Color.green
         }
@@ -67,7 +65,7 @@ struct BTDeviceBarView: View {
             Image(systemName:getBatteryImage(batteryLevel: workoutManager.BTHRMBatteryLevel))
                 .foregroundColor(getBatteryColor(batteryLevel: workoutManager.BTHRMBatteryLevel))
             Image(systemName:"dumbbell")
-                .foregroundColor(Color.gray)
+                .foregroundColor(BTconnectedColour[workoutManager.BTcyclePowerConnected])
             Image(systemName:getBatteryImage(batteryLevel: workoutManager.BTcyclePowerBatteryLevel))
                 .foregroundColor(getBatteryColor(batteryLevel: workoutManager.BTcyclePowerBatteryLevel))
             Image(systemName:"speedometer")

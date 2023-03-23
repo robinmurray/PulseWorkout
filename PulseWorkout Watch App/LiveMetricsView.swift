@@ -61,7 +61,23 @@ struct LiveMetricsView: View {
                             .foregroundStyle(.yellow)
                 }
                 Spacer()
-                Text(String(workoutManager.cyclingPower))
+                VStack {
+                    Spacer()
+                    HStack {
+                        Image(systemName: "bolt")
+                            .foregroundColor(Color.yellow)
+                        Text(String(workoutManager.cyclingPower))
+                            .foregroundColor(Color.yellow)
+                    }
+                    HStack {
+ //                       Image(systemName: "speedometer")
+ //                           .foregroundColor(Color.yellow)
+                        Text(String(workoutManager.cyclingCadence))
+                            .foregroundColor(Color.yellow)
+                    }
+ 
+                }
+                
             }
 
 
@@ -72,8 +88,8 @@ struct LiveMetricsView: View {
                         .formatted(.number.precision(.fractionLength(0))))
                     .fontWeight(.bold)
                     .foregroundColor(HRDisplay[workoutManager.hrState]?.colour)
-                    .frame(width: 140.0, height: 70.0)
-                    .font(.system(size: 80))
+                    .frame(width: 140.0, height: 60.0)
+                    .font(.system(size: 60))
                 }
 
             HStack {
