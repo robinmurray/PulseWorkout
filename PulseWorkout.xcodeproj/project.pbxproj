@@ -174,32 +174,8 @@
 			children = (
 				E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */,
 				E46EF0CB29560A1F006FA603 /* PulseWorkout Watch App.entitlements */,
-				E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */,
-				E46EF08529537CA1006FA603 /* ContentView.swift */,
-				E4C11F5029C49744008DB769 /* BTContentView.swift */,
-				E46EF0B329537D63006FA603 /* LiveTabView.swift */,
-				E46EF0BF29538811006FA603 /* LiveMetricsView.swift */,
-				E46EF0C129543FEA006FA603 /* StopView.swift */,
-				E46EF0C72955C8E9006FA603 /* PausedView.swift */,
-				E46EF0B529537D93006FA603 /* ProfileView.swift */,
-				E46EF0B729537DF6006FA603 /* SummaryTabView.swift */,
-				E46EF0C52955C836006FA603 /* PausedTabView.swift */,
-				E46EF0BD29538378006FA603 /* SummaryMetricsView.swift */,
-				E46EF0C92955F615006FA603 /* WorkoutManager.swift */,
-				E421295F29A21922001B8AA9 /* ActivityProfile.swift */,
-				E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */,
-				E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */,
-				E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */,
-				E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */,
-				E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */,
-				E46EF0B929537E24006FA603 /* StartView.swift */,
-				E421295D299D513B001B8AA9 /* ActivityProfileView.swift */,
-				E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */,
-				E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */,
-				E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */,
-				E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */,
-				E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */,
-				E46EF0BB29537E4D006FA603 /* StartTabView.swift */,
+				E4C11F5829CCCA5E008DB769 /* WorkoutManager */,
+				E4C11F5629CCC91F008DB769 /* Bluetooth */,
 				E46EF08729537CA3006FA603 /* Assets.xcassets */,
 				E46EF08929537CA3006FA603 /* Preview Content */,
 			);
@@ -237,6 +213,62 @@
 				E4968AD7296D710000DE0082 /* HealthKit.framework */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		E4C11F5629CCC91F008DB769 /* Bluetooth */ = {
+			isa = PBXGroup;
+			children = (
+				E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */,
+				E4C11F5729CCC9FD008DB769 /* Views */,
+			);
+			path = Bluetooth;
+			sourceTree = "<group>";
+		};
+		E4C11F5729CCC9FD008DB769 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E4C11F5029C49744008DB769 /* BTContentView.swift */,
+				E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */,
+				E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */,
+				E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */,
+				E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */,
+				E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */,
+				E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */,
+				E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E4C11F5829CCCA5E008DB769 /* WorkoutManager */ = {
+			isa = PBXGroup;
+			children = (
+				E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */,
+				E46EF0C92955F615006FA603 /* WorkoutManager.swift */,
+				E421295F29A21922001B8AA9 /* ActivityProfile.swift */,
+				E4C11F5929CCCA8E008DB769 /* Views */,
+			);
+			path = WorkoutManager;
+			sourceTree = "<group>";
+		};
+		E4C11F5929CCCA8E008DB769 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E46EF0B729537DF6006FA603 /* SummaryTabView.swift */,
+				E46EF0BD29538378006FA603 /* SummaryMetricsView.swift */,
+				E46EF0BF29538811006FA603 /* LiveMetricsView.swift */,
+				E46EF0B329537D63006FA603 /* LiveTabView.swift */,
+				E46EF08529537CA1006FA603 /* ContentView.swift */,
+				E46EF0C72955C8E9006FA603 /* PausedView.swift */,
+				E46EF0C129543FEA006FA603 /* StopView.swift */,
+				E46EF0C52955C836006FA603 /* PausedTabView.swift */,
+				E46EF0B929537E24006FA603 /* StartView.swift */,
+				E46EF0BB29537E4D006FA603 /* StartTabView.swift */,
+				E421295D299D513B001B8AA9 /* ActivityProfileView.swift */,
+				E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */,
+				E46EF0B529537D93006FA603 /* ProfileView.swift */,
+				E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
