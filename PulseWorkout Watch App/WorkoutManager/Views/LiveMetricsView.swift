@@ -50,7 +50,7 @@ struct LiveMetricsView: View {
     }
     
     var body: some View {
-        NavigationView {
+//        NavigationView {
 
         VStack {
             HStack {
@@ -70,8 +70,8 @@ struct LiveMetricsView: View {
                             .foregroundColor(Color.yellow)
                     }
                     HStack {
- //                       Image(systemName: "speedometer")
- //                           .foregroundColor(Color.yellow)
+                        Image(systemName: "speedometer")
+                            .foregroundColor(Color.yellow)
                         Text(String(workoutManager.cyclingCadence))
                             .foregroundColor(Color.yellow)
                     }
@@ -123,13 +123,14 @@ struct LiveMetricsView: View {
             BTDeviceBarView(workoutManager: workoutManager)
 
         }
-            
-        }
         .padding(.horizontal)
+
+        }
+//        .padding(.horizontal)
 //        .navigationTitle(workoutManager.liveActivityProfile.name)
 //        .navigationBarTitleDisplayMode(.inline)
 
-    }
+//    }
 
 }
     

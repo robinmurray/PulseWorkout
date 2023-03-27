@@ -126,6 +126,14 @@ struct DeviceList {
         
     }
 
+    func getConnectionState(device: BTDevice) -> DeviceConnectionState? {
+
+        if let index = devices.firstIndex(where: { $0.id == device.id }) {
+            return devices[index].connectionState
+        }
+        return nil
+    }
+    
     mutating func setConnectionState(device: BTDevice, connectionState: DeviceConnectionState) {
         
         let initialConnectedServices: Set<String> = connectedServices()

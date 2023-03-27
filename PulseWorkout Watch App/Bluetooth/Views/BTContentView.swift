@@ -22,24 +22,9 @@ struct BTContentView: View {
 
     var body: some View {
         
-        containedView()
+        BTStartDiscoverView(bluetoothManager:  bluetoothManager)
     }
-        
-    func containedView() -> AnyView {
-        
-        switch bluetoothManager.appState {
-            
-        case .knownDevices:
-            return AnyView(BTStartDiscoverView(bluetoothManager:  bluetoothManager))
 
-        case .discoverDevices:
-            return AnyView(BTDeviceDiscoverView(bluetoothManager:  bluetoothManager))
-
-        case .deviceDetails:
-            return AnyView(BTDetailDeviceView(bluetoothManager:  bluetoothManager))
-
-        }
-    }
 }
 
 struct BTContentView_Previews: PreviewProvider {

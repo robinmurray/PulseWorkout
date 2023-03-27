@@ -53,12 +53,9 @@ class BTDevicesController: NSObject, ObservableObject {
     @Published var discoveredDevices: DeviceList = DeviceList(devices: [])
     @Published var connectableDevices: DeviceList = DeviceList(devices: [])
     
-    @Published var appState: BTAppState = BTAppState.knownDevices
-    
     var activePeripherals: [CBPeripheral] = []
     
     var discoveringDevices: Bool = false
-    var activeDetailDevice: BTDevice?
     @Published var bpm: Int = 0
    
     var bodySensorLocationLabel: String = ""
@@ -225,25 +222,30 @@ extension BTDevicesController: CBCentralManagerDelegate {
     }
     
     func discoverDevices() {
-        appState = .discoverDevices
-        discoveredDevices.reset()
-        self.centralManager.stopScan()
-        discoveringDevices = true
-        scanForDevices()
+        if centralManager.state == .poweredOn {
+            discoveredDevices.reset()
+            self.centralManager.stopScan()
+            discoveringDevices = true
+            scanForDevices()
+        }
     }
     
     func stopDiscoverDevices() {
-        discoveringDevices = false
-        if connectableDevices.empty() {
-            centralManager.stopScan()
+        if centralManager.state == .poweredOn {
+            discoveringDevices = false
+            if connectableDevices.empty() {
+                centralManager.stopScan()
+            }
         }
-        appState = .knownDevices
     }
+    
     func connectIfKnown(peripheral: CBPeripheral) {
         
         if connectableDevices.contains(peripheral: peripheral) {
             print("found device \(peripheral) in known devices - attempt to connect!!")
 
+            knownDevices.setConnectionState(peripheral: peripheral, connectionState: .connecting)
+            discoveredDevices.setConnectionState(peripheral: peripheral, connectionState: .connecting)
             let index = addActivePeripheral(peripheral: peripheral)
             print("peripheral index = \(index)")
             activePeripherals[index].delegate = self
@@ -273,8 +275,10 @@ extension BTDevicesController: CBCentralManagerDelegate {
             connectIfKnown(peripheral: peripheral)
         }
         else {
-            discoveredDevices.add(peripheral: peripheral)
-            print("discoveredBTDevices = \(discoveredDevices)")
+            if !knownDevices.contains(peripheral: peripheral) {
+                discoveredDevices.add(peripheral: peripheral)
+                print("discoveredBTDevices = \(discoveredDevices)")
+            }
         }
     }
     

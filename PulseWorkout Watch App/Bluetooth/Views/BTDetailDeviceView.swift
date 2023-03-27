@@ -10,23 +10,20 @@ import SwiftUI
 struct BTDetailDeviceView: View {
     
     var btDevice: BTDevice
-    var bluetoothManager: BTDevicesController
-    
-    init(bluetoothManager: BTDevicesController) {
+    @ObservedObject var bluetoothManager: BTDevicesController
+    @Environment(\.presentationMode) var presentation
+
+    init(bluetoothManager: BTDevicesController, btDevice: BTDevice) {
         self.bluetoothManager = bluetoothManager
-        self.btDevice = bluetoothManager.activeDetailDevice!
+        self.btDevice = btDevice
         
     }
 
     func forgetDevice() {
         bluetoothManager.forgetDevice(device: btDevice)
-        bluetoothManager.appState = .knownDevices
+        self.presentation.wrappedValue.dismiss()
     }
     
-    func dismiss() {
-        bluetoothManager.appState = .knownDevices
-    }
-
     var body: some View {
         
         Form {
@@ -47,6 +44,8 @@ struct BTDetailDeviceView: View {
                 }
             }
             .foregroundStyle(.blue)
+            .navigationTitle("Back")
+            .navigationBarTitleDisplayMode(.inline)
 
             Section(header: Text("Device Information")) {
                 HStack {
@@ -81,7 +80,6 @@ struct BTDetailDeviceView: View {
                 HStack {
                     Text("Forget Device")
                         .foregroundColor(Color.yellow)
-                        .fontWeight(.bold)
                     
                     Spacer()
                     
@@ -97,9 +95,6 @@ struct BTDetailDeviceView: View {
                     
                 }
                 
-                Button("Dismiss", action: { dismiss() })
-                    .buttonStyle(.borderedProminent)
-                    .tint(Color.gray)
             }
             
         }
@@ -109,11 +104,10 @@ struct BTDetailDeviceView: View {
 
 struct BTDetailDeviceView_Previews: PreviewProvider {
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
+    static var btDevice = BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: ["Service 1", "Service 2"], deviceInfo: [:])
     
-    init() {
-        BTDetailDeviceView_Previews.bluetoothManager.activeDetailDevice = BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: ["Service 1", "Service 2"], deviceInfo: [:])
-    }
+
     static var previews: some View {
-        BTDetailDeviceView(bluetoothManager: bluetoothManager)
+        BTDetailDeviceView(bluetoothManager: bluetoothManager, btDevice: btDevice)
     }
 }

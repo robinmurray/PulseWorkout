@@ -27,23 +27,19 @@ struct BTDeviceDiscoverView: View {
                 }
                 .listStyle(.carousel)
 
-                Button(action: dismissView) {
-                        Text("Dismiss")
-                }
-
             }
             
         }
-        .navigationTitle("Discover Devices")
+        .navigationTitle("Back")
         .navigationBarTitleDisplayMode(.inline)
-               
+        .onAppear {
+            bluetoothManager.discoverDevices()
+        }
+        .onDisappear {
+            bluetoothManager.stopDiscoverDevices()
+        }
+        
     }
-    
-    func dismissView() {
-        bluetoothManager.stopDiscoverDevices()
-//        workoutManager.appState = .initial
-    }
-
 }
 
 struct BTDeviceDiscoverView_Previews: PreviewProvider {

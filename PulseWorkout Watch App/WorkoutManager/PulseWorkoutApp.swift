@@ -16,11 +16,7 @@ struct PulseWorkout_Watch_AppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            NavigationView
-            {
-                ContentView(workoutManager: workoutManager)
-            }
-
+            ContentView(workoutManager: workoutManager)
         }
         .onChange(of: scenePhase) { phase in
             switch phase {

@@ -17,25 +17,29 @@ struct BTStartDiscoverView: View {
 
 
     var body: some View {
- 
-        Group {
+        NavigationView {
+            Group {
 
-        VStack {
-            List(bluetoothManager.knownDevices.devices) { device in
-                BTKnownDeviceView(btDevice: device, btManager: bluetoothManager)
-            }
-            .listStyle(.carousel)
+            VStack {
+                List(bluetoothManager.knownDevices.devices) { device in
+                    BTKnownDeviceView(btDevice: device, btManager: bluetoothManager)
+                }
+                .listStyle(.carousel)
 
-            Button(action: discoverDevices) {
-                Text("Discover Devices")
+                NavigationLink(destination: BTDeviceDiscoverView(bluetoothManager: bluetoothManager)) {
+                    Text("Discover Devices")
+                    
+                }
+                .buttonStyle(.borderedProminent)
+                .tint(Color.blue)
+                .disabled(bluetoothManager.centralManager.state != .poweredOn)
+
             }
-            .buttonStyle(.borderedProminent)
-            .tint(Color.blue)
-            .disabled(bluetoothManager.centralManager.state != .poweredOn)
+            .navigationTitle("Devices")
+            .navigationBarTitleDisplayMode(.inline)
         }
-        .navigationTitle("Devices")
-        .navigationBarTitleDisplayMode(.inline)
-    }
+
+        }
         
     }
   

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BTKnownDeviceView: View {
     var btDevice: BTDevice
-    var btManager: BTDevicesController
+    @ObservedObject var btManager: BTDevicesController
     
     init(btDevice: BTDevice, btManager: BTDevicesController) {
         self.btDevice = btDevice
@@ -17,17 +17,13 @@ struct BTKnownDeviceView: View {
         
     }
     
-    func showDetailDevice() {
-        btManager.activeDetailDevice = btDevice
-        btManager.appState = .deviceDetails
-    }
-    
     var body: some View {
         HStack {
             BTDeviceView(btDevice: btDevice)
             Spacer()
-            Button(action: showDetailDevice) {
-                        Image(systemName: "info.circle")
+            NavigationLink(destination: BTDetailDeviceView(bluetoothManager: btManager, btDevice: btDevice)) {
+                Image(systemName: "info.circle")
+                
             }
             .foregroundColor(Color.blue)
             .font(.title)
