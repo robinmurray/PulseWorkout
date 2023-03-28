@@ -64,7 +64,7 @@ struct BTDeviceBarView: View {
                 .foregroundColor(BTconnectedColour[workoutManager.BTHRMConnected])
             Image(systemName:getBatteryImage(batteryLevel: workoutManager.BTHRMBatteryLevel))
                 .foregroundColor(getBatteryColor(batteryLevel: workoutManager.BTHRMBatteryLevel))
-            Image(systemName:"dumbbell")
+            Image(systemName:"bolt")
                 .foregroundColor(BTconnectedColour[workoutManager.BTcyclePowerConnected])
             Image(systemName:getBatteryImage(batteryLevel: workoutManager.BTcyclePowerBatteryLevel))
                 .foregroundColor(getBatteryColor(batteryLevel: workoutManager.BTcyclePowerBatteryLevel))

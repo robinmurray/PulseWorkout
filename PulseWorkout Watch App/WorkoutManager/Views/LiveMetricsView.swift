@@ -50,36 +50,44 @@ struct LiveMetricsView: View {
     }
     
     var body: some View {
-//        NavigationView {
 
         VStack {
             HStack {
+                Image(systemName: "timer")
+                    .foregroundColor(Color.yellow)
                 TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
-                                                         isPaused: workoutManager.session?.state == .paused)) { context in
+                                                     isPaused: workoutManager.session?.state == .paused)) { context in
                     
-                        ElapsedTimeView(elapsedTime: workoutManager.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
-                            .foregroundStyle(.yellow)
+                    ElapsedTimeView(elapsedTime: workoutManager.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
+                        .foregroundStyle(.yellow)
                 }
                 Spacer()
-                VStack {
-                    Spacer()
-                    HStack {
-                        Image(systemName: "bolt")
+                Image(systemName: "bolt")
+                    .foregroundColor(Color.yellow)
+                Text(String(workoutManager.cyclingPower))
+                    .foregroundColor(Color.yellow)
+            }
+            HStack {
+                HStack {
+                    Image(systemName: "figure.walk.motion")
+                        .foregroundColor(Color.yellow)
+                    Text(distanceFormatter(distance: workoutManager.summaryMetrics.distance))
+//                        .frame(maxWidth: .infinity, alignment: .trailing)
+                            .padding(.trailing, 8)
                             .foregroundColor(Color.yellow)
-                        Text(String(workoutManager.cyclingPower))
-                            .foregroundColor(Color.yellow)
-                    }
-                    HStack {
-                        Image(systemName: "speedometer")
-                            .foregroundColor(Color.yellow)
-                        Text(String(workoutManager.cyclingCadence))
-                            .foregroundColor(Color.yellow)
-                    }
- 
                 }
-                
+
+                Spacer()
+                HStack {
+                    Image(systemName: "speedometer")
+                        .foregroundColor(Color.yellow)
+                    Text(String(workoutManager.cyclingCadence))
+                        .foregroundColor(Color.yellow)
+                }
+
             }
 
+            Spacer()
 
             HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
@@ -92,13 +100,6 @@ struct LiveMetricsView: View {
                     .font(.system(size: 60))
                 }
 
-            HStack {
-                Text("Dist.").foregroundColor(Color.yellow)
-                Spacer().frame(maxWidth: .infinity)
-                Text(distanceFormatter(distance: workoutManager.summaryMetrics.distance))
-                    .frame(maxWidth: .infinity, alignment: .trailing)
-                        .padding(.trailing, 8)
-            }
 
             HStack {
                     Image(systemName: "arrow.down.to.line.circle.fill")
@@ -129,8 +130,6 @@ struct LiveMetricsView: View {
 //        .padding(.horizontal)
 //        .navigationTitle(workoutManager.liveActivityProfile.name)
 //        .navigationBarTitleDisplayMode(.inline)
-
-//    }
 
 }
     
