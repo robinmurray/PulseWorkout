@@ -21,34 +21,37 @@ struct NewView: View {
 struct StartView: View {
 
     @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var profileManager: ActivityProfiles
 
-//    @State private var profileNames: [String] = ["Race", "VO2 Max", "Threshold", "Aerobic"]
-
-    init(workoutManager: WorkoutManager) {
+    init(workoutManager: WorkoutManager, profileManager: ActivityProfiles) {
         self.workoutManager = workoutManager
+        self.profileManager = profileManager
     }
 
     
     var body: some View {
-        VStack {
-            List(workoutManager.activityProfiles.UIProfileList()) { activityProfile in
-                ActivityProfileView(workoutManager: workoutManager, activityProfile: activityProfile)
-            }
-            .listStyle(.carousel)
+        NavigationStack {
+            VStack {
+                ProfileListView(profileManager: profileManager,
+                                workoutManager: workoutManager)
 
-            BTDeviceBarView(workoutManager: workoutManager)
+                BTDeviceBarView(workoutManager: workoutManager)
 
+                }
+                .padding(.horizontal)
+                .navigationTitle("Profiles")
+                .navigationBarTitleDisplayMode(.inline)
             }
-            .padding(.horizontal)
-            .navigationTitle("Start Workout")
-            .navigationBarTitleDisplayMode(.inline)
         }
-}
+    }
+
 
 struct StartView_Previews: PreviewProvider {
     static var workoutManager = WorkoutManager()
+    static var profileManager = ActivityProfiles()
 
     static var previews: some View {
-        StartView(workoutManager: workoutManager)
+        StartView(workoutManager: workoutManager,
+                  profileManager: profileManager)
     }
 }

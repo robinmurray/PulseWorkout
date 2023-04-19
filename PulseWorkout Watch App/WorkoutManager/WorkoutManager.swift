@@ -124,8 +124,8 @@ class WorkoutManager: NSObject, ObservableObject {
     var builder: HKLiveWorkoutBuilder?
 
 
-    var activityProfiles = ActivityProfiles()
-    @Published var liveActivityProfile: ActivityProfile
+    @Published var activityProfiles = ActivityProfiles()
+    @Published var liveActivityProfile: ActivityProfile?
 
     
     @Published var summaryMetrics = SummaryMetrics(
@@ -150,11 +150,11 @@ class WorkoutManager: NSObject, ObservableObject {
 
 
     init(profileName: String = ""){
-    
-        self.liveActivityProfile = activityProfiles.getDefault()
-        
+            
         super.init()
-        
+   
+        self.liveActivityProfile = activityProfiles.getDefault()
+
         lastSummaryMetrics.get(tag: "LastSession")
         self.bluetoothManager = BTDevicesController(requestedServices: nil)
 
@@ -207,29 +207,29 @@ class WorkoutManager: NSObject, ObservableObject {
         self.appState = .live
     }
 
-    func editOrAddProfile(activityProfile: ActivityProfile) {
+/*    func editOrAddProfile(activityProfile: ActivityProfile) {
 
         liveActivityProfile = activityProfile
         
         appState = .editProfile
 
     }
-
+*/
     func writeLiveActivityProfile() {
         
-        activityProfiles.updateOrAdd(activityProfile: liveActivityProfile)
+        activityProfiles.updateOrAdd(activityProfile: liveActivityProfile!)
         
     }
 
     func deleteLiveActivityProfile() {
-        activityProfiles.remove(activityProfile: liveActivityProfile)
+        activityProfiles.remove(activityProfile: liveActivityProfile!)
 
     }
     
     func startWorkout(activityProfile: ActivityProfile) {
         
         liveActivityProfile = activityProfile
-        activityProfiles.update(activityProfile: liveActivityProfile)
+        activityProfiles.update(activityProfile: liveActivityProfile!)
         
         liveTabSelection = LiveScreenTab.liveMetrics
         
@@ -270,7 +270,7 @@ class WorkoutManager: NSObject, ObservableObject {
             }
         }
         
-        if self.liveActivityProfile.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
+        if self.liveActivityProfile!.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
             Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(delayedEnableWaterLock), userInfo: nil, repeats: false)
         }
 
@@ -403,18 +403,18 @@ class WorkoutManager: NSObject, ObservableObject {
     @objc func fireTimer() {
         self.runCount += 1
 
-        if (self.liveActivityProfile.hiLimitAlarmActive) &&
-           (Int(self.heartRate) >= self.liveActivityProfile.hiLimitAlarm) {
+        if (self.liveActivityProfile!.hiLimitAlarmActive) &&
+           (Int(self.heartRate) >= self.liveActivityProfile!.hiLimitAlarm) {
             
             self.summaryMetrics.timeOverHiAlarm += 2
             self.hrState = HRState.hiAlarm
             
-            if (liveActivityProfile.constantRepeat || !playedAlarm) {
-                if liveActivityProfile.playSound {
+            if (liveActivityProfile!.constantRepeat || !playedAlarm) {
+                if liveActivityProfile!.playSound {
                     WKInterfaceDevice.current().play(.failure)
                     print("playing sound 1")
                 }
-                if liveActivityProfile.playHaptic {
+                if liveActivityProfile!.playHaptic {
                     WKInterfaceDevice.current().play(.directionUp)
                     print("playing sound 2")                }
 
@@ -422,13 +422,13 @@ class WorkoutManager: NSObject, ObservableObject {
             }
 
             
-        } else if (self.liveActivityProfile.loLimitAlarmActive) &&
-                    (Int(self.heartRate) <= self.liveActivityProfile.loLimitAlarm) {
+        } else if (self.liveActivityProfile!.loLimitAlarmActive) &&
+                    (Int(self.heartRate) <= self.liveActivityProfile!.loLimitAlarm) {
  
             self.summaryMetrics.timeUnderLoAlarm += 2
             self.hrState = HRState.loAlarm
             
-            if liveActivityProfile.playSound && (liveActivityProfile.constantRepeat || !playedAlarm) {
+            if liveActivityProfile!.playSound && (liveActivityProfile!.constantRepeat || !playedAlarm) {
                 WKInterfaceDevice.current().play(.failure)
                 print("playing sound 3")
                 playedAlarm = true

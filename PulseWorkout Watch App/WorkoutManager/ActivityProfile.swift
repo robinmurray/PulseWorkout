@@ -26,17 +26,30 @@ struct ActivityProfile: Codable, Identifiable {
     
 }
 
+let newActivityProfile = ActivityProfile ( name: "New Profile",
+                                       workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
+                                       workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
+                                       hiLimitAlarmActive: false,
+                                       hiLimitAlarm: 140,
+                                       loLimitAlarmActive: false,
+                                       loLimitAlarm: 100,
+                                       playSound: false,
+                                       playHaptic: false,
+                                       constantRepeat: false,
+                                       lockScreen: false)
+
 //@Published var workoutType: HKWorkoutActivityType = HKWorkoutActivityType.cycling
 //@Published var workoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
 
-class ActivityProfiles: NSObject {
+class ActivityProfiles: NSObject, ObservableObject {
 
-    var profiles: [ActivityProfile] = []
+    @Published var profiles: [ActivityProfile] = []
+    @Published var UIProfileList: [ActivityProfile] = []
     
     override init() {
-        
+
         super.init()
-        
+
         // Read in all profiles from user defaults
         self.read()
         
@@ -45,10 +58,11 @@ class ActivityProfiles: NSObject {
             self.addDefaults()
             self.write()
         }
+
     }
     
-    func addNew() {
-        add(activityProfile: ActivityProfile ( name: "New",
+    func addNew() -> UUID {
+        return add(activityProfile: ActivityProfile ( name: "New",
                                                workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
                                                workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
                                                hiLimitAlarmActive: false,
@@ -61,7 +75,7 @@ class ActivityProfiles: NSObject {
                                                lockScreen: false))
     }
 
-    func UIProfileList() -> [ActivityProfile] {
+    func CreateUIProfileList() -> [ActivityProfile] {
         
         let  newActivityProfile = ActivityProfile ( name: "New Profile",
                                                        workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
@@ -76,14 +90,14 @@ class ActivityProfiles: NSObject {
                                                        lockScreen: false)
 
         let epochDate = NSDate(timeIntervalSince1970: 0) as Date
-        var profileList = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
-        profileList.append(newActivityProfile)
-        return profileList
+        UIProfileList = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
+        UIProfileList.append(newActivityProfile)
+        return UIProfileList
         
     }
     
     func getDefault() -> ActivityProfile {
-        return ActivityProfile ( name: "Default",
+        return ActivityProfile ( name: "New Profile",
                                  workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
                                  workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
                                  hiLimitAlarmActive: false,
@@ -100,7 +114,7 @@ class ActivityProfiles: NSObject {
     func addDefaults() {
         // Add a set of deault profiles to get application stared.
         
-        add(activityProfile: ActivityProfile ( name: "Race",
+        _ = add(activityProfile: ActivityProfile ( name: "Race",
                                                workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
                                                workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
                                                hiLimitAlarmActive: true,
@@ -112,7 +126,7 @@ class ActivityProfiles: NSObject {
                                                constantRepeat: false,
                                                lockScreen: false))
 
-        add(activityProfile: ActivityProfile ( name: "Aerobic",
+        _ = add(activityProfile: ActivityProfile ( name: "Aerobic",
                                                workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
                                                workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
                                                hiLimitAlarmActive: true,
@@ -124,7 +138,7 @@ class ActivityProfiles: NSObject {
                                                constantRepeat: false,
                                                lockScreen: false))
 
-        add(activityProfile: ActivityProfile ( name: "Recovery",
+        _ = add(activityProfile: ActivityProfile ( name: "Recovery",
                                                workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
                                                workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
                                                hiLimitAlarmActive: true,
@@ -138,7 +152,7 @@ class ActivityProfiles: NSObject {
 
     }
 
-    func add(activityProfile: ActivityProfile) {
+    func add(activityProfile: ActivityProfile) -> UUID {
         /* Add an activity profile to the list of profiles and
          write profiles back to userDefaults */
         
@@ -149,12 +163,14 @@ class ActivityProfiles: NSObject {
         newActivityProfile.lastUsed = Date()
         
         profiles.append(newActivityProfile)
+        UIProfileList.append(newActivityProfile)
         self.write()
+        
+        return newActivityProfile.id!
     }
     
     func remove(activityProfile: ActivityProfile) {
-        /* delete an activity profile from profiles and
-         write profiles back to userDefaults */
+        /* delete an activity profile from profiles */
         
         // don't allow deletion fo all profiles!
         if profiles.count == 1 {
@@ -164,8 +180,6 @@ class ActivityProfiles: NSObject {
         for (index, profile) in profiles.enumerated() {
             if profile.id == activityProfile.id {
                 profiles.remove(at: index)
-                
-                self.write()
                 return
             }
         }
@@ -176,7 +190,7 @@ class ActivityProfiles: NSObject {
            If activityProfile has no id then is a new profile - add it... */
 
         if activityProfile.id == nil {
-            add(activityProfile: activityProfile)
+            _ = add(activityProfile: activityProfile)
         } else {
             update(activityProfile: activityProfile)
         }
@@ -196,7 +210,7 @@ class ActivityProfiles: NSObject {
                 profiles[index] = updatedActivityProfile
                 
                 self.write()
-                return
+                //                return
             }
         }
     }
@@ -220,11 +234,11 @@ class ActivityProfiles: NSObject {
         // try to read from userDefaults in to this - if fails then use defaults
 
         if let savedProfiles = UserDefaults.standard.object(forKey: "ActivityProfiles") as? Data {
-            print("1111111")
             let decoder = JSONDecoder()
             if let loadedProfiles = try? decoder.decode(type(of: profiles), from: savedProfiles) {
                 print(loadedProfiles)
                 profiles = loadedProfiles
+                
             }
         }
     }

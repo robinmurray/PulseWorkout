@@ -103,19 +103,19 @@ struct LiveMetricsView: View {
 
             HStack {
                     Image(systemName: "arrow.down.to.line.circle.fill")
-                    .foregroundColor(loAlarmDisplay[workoutManager.liveActivityProfile.loLimitAlarmActive]?.colour)
+                    .foregroundColor(loAlarmDisplay[workoutManager.liveActivityProfile!.loLimitAlarmActive]?.colour)
                         .frame(height: 20)
                     
-                Text(loAlarmDisplay[workoutManager.liveActivityProfile.loLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.liveActivityProfile.loLimitAlarm ))
-                        .foregroundColor(loAlarmDisplay[workoutManager.liveActivityProfile.loLimitAlarmActive]?.colour)
+                Text(loAlarmDisplay[workoutManager.liveActivityProfile!.loLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.liveActivityProfile!.loLimitAlarm ))
+                        .foregroundColor(loAlarmDisplay[workoutManager.liveActivityProfile!.loLimitAlarmActive]?.colour)
                         .font(.system(size: 15))
                     
                     Image(systemName: "arrow.up.to.line.circle.fill")
-                        .foregroundColor(hiAlarmDisplay[workoutManager.liveActivityProfile.hiLimitAlarmActive]?.colour)
+                        .foregroundColor(hiAlarmDisplay[workoutManager.liveActivityProfile!.hiLimitAlarmActive]?.colour)
                         .frame(height: 20)
                     
-                    Text(hiAlarmDisplay[workoutManager.liveActivityProfile.hiLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.liveActivityProfile.hiLimitAlarm))
-                        .foregroundColor(hiAlarmDisplay[workoutManager.liveActivityProfile.hiLimitAlarmActive]?.colour)
+                    Text(hiAlarmDisplay[workoutManager.liveActivityProfile!.hiLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.liveActivityProfile!.hiLimitAlarm))
+                        .foregroundColor(hiAlarmDisplay[workoutManager.liveActivityProfile!.hiLimitAlarmActive]?.colour)
                         .font(.system(size: 15))
                 }
 

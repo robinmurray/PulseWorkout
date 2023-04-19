@@ -15,19 +15,21 @@ struct StartTabView: View {
         case start, summaryMetrics, nowPlaying, btDevices
     }
 
-//    @EnvironmentObject var workoutManager: WorkoutManager
     @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var profileManager: ActivityProfiles
     @State private var selection: Tab = .start
     
     
-    init(workoutManager: WorkoutManager) {
+    init(workoutManager: WorkoutManager, profileManager: ActivityProfiles) {
         self.workoutManager = workoutManager
+        self.profileManager = profileManager
     }
 
     var body: some View {
         TabView(selection: $selection) {
 
-            StartView(workoutManager: workoutManager)
+            StartView(workoutManager: workoutManager,
+                      profileManager: profileManager)
                 .tag(Tab.start)
             
             SummaryMetricsView(workoutManager: workoutManager,
@@ -49,8 +51,10 @@ struct StartTabView: View {
 
 struct StartTabView_Previews: PreviewProvider {
     static var workoutManager = WorkoutManager()
+    static var profileManager = ActivityProfiles()
 
     static var previews: some View {
-        StartTabView(workoutManager: workoutManager)
+        StartTabView(workoutManager: workoutManager,
+                     profileManager: profileManager)
     }
 }
