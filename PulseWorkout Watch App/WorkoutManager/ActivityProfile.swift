@@ -38,8 +38,6 @@ let newActivityProfile = ActivityProfile ( name: "New Profile",
                                        constantRepeat: false,
                                        lockScreen: false)
 
-//@Published var workoutType: HKWorkoutActivityType = HKWorkoutActivityType.cycling
-//@Published var workoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
 
 class ActivityProfiles: NSObject, ObservableObject {
 
@@ -62,7 +60,7 @@ class ActivityProfiles: NSObject, ObservableObject {
     }
     
     func addNew() -> UUID {
-        return add(activityProfile: ActivityProfile ( name: "New",
+        return add(activityProfile: ActivityProfile ( name: "New Profile",
                                                workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
                                                workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
                                                hiLimitAlarmActive: false,
@@ -75,27 +73,6 @@ class ActivityProfiles: NSObject, ObservableObject {
                                                lockScreen: false))
     }
 
-    func CreateUIProfileList() -> [ActivityProfile] {
-        
-        let  newActivityProfile = ActivityProfile ( name: "New Profile",
-                                                       workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
-                                                       workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
-                                                       hiLimitAlarmActive: false,
-                                                       hiLimitAlarm: 140,
-                                                       loLimitAlarmActive: false,
-                                                       loLimitAlarm: 100,
-                                                       playSound: false,
-                                                       playHaptic: false,
-                                                       constantRepeat: false,
-                                                       lockScreen: false)
-
-        let epochDate = NSDate(timeIntervalSince1970: 0) as Date
-        UIProfileList = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
-        UIProfileList.append(newActivityProfile)
-        return UIProfileList
-        
-    }
-    
     func getDefault() -> ActivityProfile {
         return ActivityProfile ( name: "New Profile",
                                  workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
@@ -185,19 +162,6 @@ class ActivityProfiles: NSObject, ObservableObject {
         }
     }
 
-    func updateOrAdd(activityProfile: ActivityProfile) {
-        /* Update activity profile and write to userDefaults.
-           If activityProfile has no id then is a new profile - add it... */
-
-        if activityProfile.id == nil {
-            _ = add(activityProfile: activityProfile)
-        } else {
-            update(activityProfile: activityProfile)
-        }
-        
-    }
-
-    
     func update(activityProfile: ActivityProfile) {
         /* Update activity profile and write to userDefaults */
 
@@ -248,6 +212,8 @@ class ActivityProfiles: NSObject, ObservableObject {
     func write() {
         
         print("Writing profile!")
+        let epochDate = NSDate(timeIntervalSince1970: 0) as Date
+        profiles = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
         do {
             let data = try JSONEncoder().encode(profiles)
             let jsonString = String(data: data, encoding: .utf8)
