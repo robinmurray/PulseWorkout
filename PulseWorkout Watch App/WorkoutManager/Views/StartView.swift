@@ -11,12 +11,6 @@ import Foundation
 
 import SwiftUI
 
-struct NewView: View {
-    var body: some View {
-        Text("New")
-    }
-    
-}
 
 struct StartView: View {
 
@@ -30,18 +24,16 @@ struct StartView: View {
 
     
     var body: some View {
-        NavigationStack {
-            VStack {
-                ProfileListView(profileManager: profileManager,
-                                workoutManager: workoutManager)
+        VStack {
+            ProfileListView(profileManager: profileManager,
+                            workoutManager: workoutManager)
 
-                BTDeviceBarView(workoutManager: workoutManager)
+            BTDeviceBarView(workoutManager: workoutManager)
 
-                }
-                .padding(.horizontal)
-                .navigationTitle("Profiles")
-                .navigationBarTitleDisplayMode(.inline)
             }
+            .padding(.horizontal)
+            .navigationTitle("Profiles")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
 

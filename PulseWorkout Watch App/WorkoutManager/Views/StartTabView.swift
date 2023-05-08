@@ -26,26 +26,28 @@ struct StartTabView: View {
     }
 
     var body: some View {
-        TabView(selection: $selection) {
+        NavigationStack {
+            TabView(selection: $selection) {
 
-            StartView(workoutManager: workoutManager,
-                      profileManager: profileManager)
-                .tag(Tab.start)
-            
-            SummaryMetricsView(workoutManager: workoutManager,
-                               viewTitleText: "Last Workout",
-                               displayDone: false,
-                               metrics: workoutManager.lastSummaryMetrics)
-                .tag(Tab.summaryMetrics)
+                StartView(workoutManager: workoutManager,
+                          profileManager: profileManager)
+                    .tag(Tab.start)
+                
+                SummaryMetricsView(workoutManager: workoutManager,
+                                   viewTitleText: "Last Workout",
+                                   displayDone: false,
+                                   metrics: workoutManager.lastSummaryMetrics)
+                    .tag(Tab.summaryMetrics)
 
-            NowPlayingView().tag(Tab.nowPlaying)
+                NowPlayingView().tag(Tab.nowPlaying)
 
-            BTContentView(bluetoothManager: workoutManager.bluetoothManager!).tag(Tab.btDevices)
+                BTContentView(bluetoothManager: workoutManager.bluetoothManager!).tag(Tab.btDevices)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+            .onAppear(perform: workoutManager.requestAuthorization)
+
         }
-        .tabViewStyle(.page(indexDisplayMode: .always))
-        .indexViewStyle(.page(backgroundDisplayMode: .automatic))
-        .onAppear(perform: workoutManager.requestAuthorization)
-
     }
 }
 

@@ -39,6 +39,7 @@ struct SummaryTabView: View {
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+        .navigationBarBackButtonHidden(true)
     }
 }
 

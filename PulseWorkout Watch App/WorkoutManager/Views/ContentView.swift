@@ -5,7 +5,9 @@
 //  Created by Robin Murray on 21/12/2022.
 //
 
+import Foundation
 import SwiftUI
+import WatchKit
 
 
 enum AppState {
@@ -14,43 +16,39 @@ enum AppState {
 
 struct ContentView: View {
 
+    enum Tab {
+        case start, summaryMetrics, nowPlaying, btDevices
+    }
+    
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var profileManager: ActivityProfiles
+    @State private var selection: Tab = .start
     
-    init(workoutManager: WorkoutManager, profileManager: ActivityProfiles) {
-        self.profileManager = profileManager
-        self.workoutManager = workoutManager
-
-    }
-
     var body: some View {
-        
-        containedView()
-    }
-        
-    func containedView() -> AnyView {
-        
-        switch workoutManager.appState {
-            
-        case .initial:
-            return AnyView(StartTabView(workoutManager: workoutManager,
-                                        profileManager: profileManager))
-            
-        case .live:
-            return AnyView(LiveTabView(workoutManager: workoutManager)
-                )
-            
-        case .paused:
-            return AnyView(PausedTabView(workoutManager: workoutManager))
-            
-        case .summary:
-            return AnyView(SummaryTabView(workoutManager: workoutManager))
+        NavigationStack {
+            TabView(selection: $selection) {
 
-        case .inBluetooth:
-            return AnyView(BTContentView(bluetoothManager:  workoutManager.bluetoothManager!))
+                StartView(workoutManager: workoutManager,
+                          profileManager: profileManager)
+                    .tag(Tab.start)
+                
+                SummaryMetricsView(workoutManager: workoutManager,
+                                   viewTitleText: "Last Workout",
+                                   displayDone: false,
+                                   metrics: workoutManager.lastSummaryMetrics)
+                    .tag(Tab.summaryMetrics)
+
+                NowPlayingView().tag(Tab.nowPlaying)
+
+                BTContentView(bluetoothManager: workoutManager.bluetoothManager!).tag(Tab.btDevices)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .always))
+            .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+            .onAppear(perform: workoutManager.requestAuthorization)
 
         }
     }
+
 }
 
 struct ContentView_Previews: PreviewProvider {

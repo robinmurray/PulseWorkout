@@ -14,6 +14,8 @@ struct SummaryMetricsView: View {
     var displayDone: Bool
     var metrics: SummaryMetrics
     
+    @Environment(\.dismiss) private var dismiss
+
     @State private var durationFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
@@ -93,6 +95,8 @@ struct SummaryMetricsView: View {
         workoutManager.summaryMetrics.reset()
         
         workoutManager.appState = .initial
+        
+        dismiss()
     }
 }
 

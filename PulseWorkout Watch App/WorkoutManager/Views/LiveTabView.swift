@@ -15,12 +15,12 @@ enum LiveScreenTab {
 
 struct LiveTabView: View {
     
+    @Binding var profile: ActivityProfile
     @ObservedObject var workoutManager: WorkoutManager
 
-    init(workoutManager: WorkoutManager) {
-        self.workoutManager = workoutManager
+    func startWorkout() {
+        workoutManager.startWorkout(activityProfile: profile)
     }
-    
     var body: some View {
 
             TabView(selection: $workoutManager.liveTabSelection) {
@@ -38,7 +38,9 @@ struct LiveTabView: View {
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .automatic))
-//            .padding(.all)
+            .navigationBarBackButtonHidden(true)
+//            .onAppear(perform: startWorkout)
+            .navigationTitle(profile.name)
 
     }
     
@@ -47,8 +49,8 @@ struct LiveTabView: View {
 
 
 
-
-struct LIveTabView_Previews: PreviewProvider {
+/*
+struct LiveTabView_Previews: PreviewProvider {
     
     static var workoutManager = WorkoutManager()
 
@@ -56,4 +58,4 @@ struct LIveTabView_Previews: PreviewProvider {
         LiveTabView(workoutManager: workoutManager)
     }
 }
-
+*/

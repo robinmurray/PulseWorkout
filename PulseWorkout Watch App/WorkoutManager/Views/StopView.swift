@@ -10,6 +10,7 @@ import SwiftUI
 struct StopView: View {
 
     @ObservedObject var workoutManager: WorkoutManager
+    @State private var navigateToSummaryView : Bool = false
     
     init(workoutManager: WorkoutManager) {
         self.workoutManager = workoutManager
@@ -17,26 +18,27 @@ struct StopView: View {
 
     
     var body: some View {
-        VStack{
-             Button(action: lockScreen) {
-                Image(systemName: "drop.circle")
-            }
-            .foregroundColor(Color.blue)
-            .frame(width: 40, height: 40)
-            .font(.title)
-            .background(Color.clear)
-            .clipShape(Circle())
-            
-            Text("Lock")
+        NavigationStack {
+            VStack{
+                Button(action: lockScreen) {
+                    Image(systemName: "drop.circle")
+                }
                 .foregroundColor(Color.blue)
-
-            HStack{
-
-                Spacer()
-
-                VStack{
-
-                    Button(action: workoutManager.pauseWorkout) {
+                .frame(width: 40, height: 40)
+                .font(.title)
+                .background(Color.clear)
+                .clipShape(Circle())
+                
+                Text("Lock")
+                    .foregroundColor(Color.blue)
+                
+                HStack{
+                    
+                    Spacer()
+                    
+                    VStack{
+                        
+                        Button(action: workoutManager.pauseWorkout) {
                             Image(systemName: "pause.circle")
                         }
                         .foregroundColor(Color.yellow)
@@ -48,28 +50,40 @@ struct StopView: View {
                         Text("Pause")
                             .foregroundColor(Color.yellow)
                     }
-
-                Spacer()
-
-                VStack{
-                    Button(action: workoutManager.endWorkout) {
-                        Image(systemName: "stop.circle")
+                    
+                    Spacer()
+                    
+                    VStack {
+                        Button {
+                            workoutManager.endWorkout()
+                            navigateToSummaryView = true
+                        } label: {
+                            VStack{
+                                Image(systemName: "stop.circle")
+                                    .foregroundColor(Color.red)
+                                    .font(.title)
+                                    .frame(width: 40, height: 40)
+                                    .background(Color.clear)
+                                    .clipShape(Circle())
+                                    .buttonStyle(PlainButtonStyle())
+                                
+                                Text("Stop")
+                                    .foregroundColor(Color.red)
+                            }
+                            
+                        }
+                        .tint(Color.red)
+                        .buttonStyle(BorderlessButtonStyle())
                     }
-                    .foregroundColor(Color.red)
-                    .frame(width: 40, height: 40)
-                    .font(.title)
-                    .background(Color.clear)
-                    .clipShape(Circle())
+                    .navigationDestination(isPresented: $navigateToSummaryView) {
+                        SummaryTabView(workoutManager: workoutManager)
+                    }
                     
-                    Text("Stop")
-                        .foregroundColor(Color.red)
-                    
+                    Spacer()
                 }
-
-                Spacer()
+                .navigationTitle("Workout Control")
+                .navigationBarTitleDisplayMode(.inline)
             }
-            .navigationTitle("Workout Control")
-            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
