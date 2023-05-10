@@ -24,7 +24,6 @@
 		E46EF0B429537D63006FA603 /* LiveTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B329537D63006FA603 /* LiveTabView.swift */; };
 		E46EF0B829537DF6006FA603 /* SummaryTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B729537DF6006FA603 /* SummaryTabView.swift */; };
 		E46EF0BA29537E24006FA603 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B929537E24006FA603 /* StartView.swift */; };
-		E46EF0BC29537E4D006FA603 /* StartTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0BB29537E4D006FA603 /* StartTabView.swift */; };
 		E46EF0BE29538378006FA603 /* SummaryMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0BD29538378006FA603 /* SummaryMetricsView.swift */; };
 		E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0BF29538811006FA603 /* LiveMetricsView.swift */; };
 		E46EF0C229543FEA006FA603 /* StopView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C129543FEA006FA603 /* StopView.swift */; };
@@ -103,7 +102,6 @@
 		E46EF0B329537D63006FA603 /* LiveTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveTabView.swift; sourceTree = "<group>"; };
 		E46EF0B729537DF6006FA603 /* SummaryTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryTabView.swift; sourceTree = "<group>"; };
 		E46EF0B929537E24006FA603 /* StartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartView.swift; sourceTree = "<group>"; };
-		E46EF0BB29537E4D006FA603 /* StartTabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StartTabView.swift; sourceTree = "<group>"; };
 		E46EF0BD29538378006FA603 /* SummaryMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryMetricsView.swift; sourceTree = "<group>"; };
 		E46EF0BF29538811006FA603 /* LiveMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsView.swift; sourceTree = "<group>"; };
 		E46EF0C129543FEA006FA603 /* StopView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StopView.swift; sourceTree = "<group>"; };
@@ -267,7 +265,6 @@
 				E46EF0C129543FEA006FA603 /* StopView.swift */,
 				E46EF0C52955C836006FA603 /* PausedTabView.swift */,
 				E46EF0B929537E24006FA603 /* StartView.swift */,
-				E46EF0BB29537E4D006FA603 /* StartTabView.swift */,
 				E468DC8029E931A10002FEA9 /* ProfileListView.swift */,
 				E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */,
 				E468DC8229E9B5050002FEA9 /* ProfileDetailView.swift */,
@@ -440,7 +437,6 @@
 				E4C11F5529C7588E008DB769 /* BTDeviceInfoView.swift in Sources */,
 				E4A0839529AA1790007B50D3 /* BTKnownDeviceView.swift in Sources */,
 				E46EF0CA2955F615006FA603 /* WorkoutManager.swift in Sources */,
-				E46EF0BC29537E4D006FA603 /* StartTabView.swift in Sources */,
 				E46EF0C62955C836006FA603 /* PausedTabView.swift in Sources */,
 				E4C11F5329C632DB008DB769 /* BTDetailDeviceView.swift in Sources */,
 				E46EF0BE29538378006FA603 /* SummaryMetricsView.swift in Sources */,

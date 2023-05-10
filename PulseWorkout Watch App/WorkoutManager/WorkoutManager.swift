@@ -14,6 +14,10 @@ enum HRSource {
     case healthkit, bluetooth
 }
 
+enum AppState {
+    case initial, live, paused
+}
+
 
 struct SummaryMetrics: Codable {
     var duration: Double
@@ -369,7 +373,7 @@ class WorkoutManager: NSObject, ObservableObject {
             self.timer?.invalidate()
             HRMonitorActive = false
             self.hrState = HRState.inactive
-            self.appState = .summary
+            self.appState = .initial
         }
         
     }

@@ -42,7 +42,7 @@ let newActivityProfile = ActivityProfile ( name: "New Profile",
 class ActivityProfiles: NSObject, ObservableObject {
 
     @Published var profiles: [ActivityProfile] = []
-    @Published var UIProfileList: [ActivityProfile] = []
+
     
     override init() {
 
@@ -140,7 +140,7 @@ class ActivityProfiles: NSObject, ObservableObject {
         newActivityProfile.lastUsed = Date()
         
         profiles.append(newActivityProfile)
-        UIProfileList.append(newActivityProfile)
+
         self.write()
         
         return newActivityProfile.id!

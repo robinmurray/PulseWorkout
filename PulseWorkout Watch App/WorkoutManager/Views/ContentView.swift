@@ -10,10 +10,6 @@ import SwiftUI
 import WatchKit
 
 
-enum AppState {
-    case initial, live, paused, summary, inBluetooth
-}
-
 struct ContentView: View {
 
     enum Tab {

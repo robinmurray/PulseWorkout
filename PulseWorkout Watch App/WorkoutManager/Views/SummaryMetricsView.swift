@@ -94,7 +94,7 @@ struct SummaryMetricsView: View {
         workoutManager.lastSummaryMetrics.get(tag: "LastSession")
         workoutManager.summaryMetrics.reset()
         
-        workoutManager.appState = .initial
+//        workoutManager.appState = .initial
         
         dismiss()
     }
