@@ -75,15 +75,6 @@ struct SummaryMetrics: Codable {
     }
 }
 
-
-enum Profile: String, CaseIterable, Identifiable {
-    case race, vo2, threshold, aerobic
-    var id: Self { self }
-}
-
-var profileNames: [String] = ["Race", "VO2 Max", "Threshold", "Aerobic"]
-
-
 class WorkoutManager: NSObject, ObservableObject {
 
     @Published var hrState: HRState = HRState.inactive
@@ -157,7 +148,7 @@ class WorkoutManager: NSObject, ObservableObject {
             
         super.init()
    
-        self.liveActivityProfile = activityProfiles.getDefault()
+        self.liveActivityProfile = activityProfiles.profiles[0]
 
         lastSummaryMetrics.get(tag: "LastSession")
         self.bluetoothManager = BTDevicesController(requestedServices: nil)
@@ -214,8 +205,6 @@ class WorkoutManager: NSObject, ObservableObject {
     func startWorkout(activityProfile: ActivityProfile) {
         
         liveActivityProfile = activityProfile
-        activityProfiles.update(activityProfile: liveActivityProfile!)
-        
         liveTabSelection = LiveScreenTab.liveMetrics
         
         startStopHRMonitor()

@@ -40,7 +40,7 @@ struct ProfileListView: View {
                     .tint(Color.green)
                 }
                 .navigationDestination(isPresented: $navigateToDetailView) {
-                    ProfileDetailView(profile: self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == newId }) ?? 0], profileManager: profileManager)
+                    ProfileDetailView(profileManager: profileManager, profileIndex: profileManager.profiles.firstIndex(where: { $0.id == newId }) ?? 0)
                 }
             }
             

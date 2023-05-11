@@ -9,40 +9,55 @@ import Foundation
 import HealthKit
 
 
-struct ActivityProfile: Codable, Identifiable {
+/** The main data structure for maintaining workout / profile infromation */
+struct ActivityProfile: Codable, Identifiable, Equatable {
+    /// The name of the activity profile.
     var name: String
-    var workoutTypeId: UInt
-    var workoutLocationId: Int
-    var hiLimitAlarmActive: Bool
-    var hiLimitAlarm: Int
-    var loLimitAlarmActive: Bool
-    var loLimitAlarm: Int
-    var playSound: Bool
-    var playHaptic: Bool
-    var constantRepeat: Bool
-    var lockScreen: Bool
-    var id: UUID?
-    var lastUsed: Date?
     
+    /// Apple HK workout type.
+    var workoutTypeId: UInt
+    
+    /// Apple HK workout location.
+    var workoutLocationId: Int
+    
+    /// Whether to raise alarm on HR over high limit.
+    var hiLimitAlarmActive: Bool
+    
+    /// Value of HR high limit.
+    var hiLimitAlarm: Int
+    
+    /// Whether to raise alarm on HR under low limit.
+    var loLimitAlarmActive: Bool
+    
+    /// Value of HR low limit.
+    var loLimitAlarm: Int
+    
+    /// Whether to play alarm sound on HR alarm limits.
+    var playSound: Bool
+    
+    /// Whether to create haptic on HR alarm limits.
+    var playHaptic: Bool
+    
+    /// Whether to repeat alarms / haptics when in alarm state, or just play alarm when entering alarm state.
+    var constantRepeat: Bool
+    
+    /// Whether to initiate water lock on screen when workout is active.
+    var lockScreen: Bool
+    
+    /// The unique identifier of the activity profile.
+    var id: UUID?
+    
+    /// The date the profile was last used or edited.
+    var lastUsed: Date?
+
 }
 
-let newActivityProfile = ActivityProfile ( name: "New Profile",
-                                       workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
-                                       workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
-                                       hiLimitAlarmActive: false,
-                                       hiLimitAlarm: 140,
-                                       loLimitAlarmActive: false,
-                                       loLimitAlarm: 100,
-                                       playSound: false,
-                                       playHaptic: false,
-                                       constantRepeat: false,
-                                       lockScreen: false)
 
 
 class ActivityProfiles: NSObject, ObservableObject {
 
     @Published var profiles: [ActivityProfile] = []
-
+    private var lastSavedProfiles: [ActivityProfile] = []
     
     override init() {
 
@@ -73,24 +88,11 @@ class ActivityProfiles: NSObject, ObservableObject {
                                                lockScreen: false))
     }
 
-    func getDefault() -> ActivityProfile {
-        return ActivityProfile ( name: "New Profile",
-                                 workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
-                                 workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
-                                 hiLimitAlarmActive: false,
-                                 hiLimitAlarm: 140,
-                                 loLimitAlarmActive: false,
-                                 loLimitAlarm: 100,
-                                 playSound: false,
-                                 playHaptic: false,
-                                 constantRepeat: false,
-                                 lockScreen: false,
-                                 id: UUID())
-    }
-    
+
+    /// Add a set of default profiles to get application stared.
+    /// Adds "Race", "Aerobic" and "Recovery" activity profiles.
     func addDefaults() {
-        // Add a set of deault profiles to get application stared.
-        
+
         _ = add(activityProfile: ActivityProfile ( name: "Race",
                                                workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
                                                workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
@@ -129,9 +131,8 @@ class ActivityProfiles: NSObject, ObservableObject {
 
     }
 
+    /// Add an activity profile to the list of profiles and write profiles back to userDefaults.
     func add(activityProfile: ActivityProfile) -> UUID {
-        /* Add an activity profile to the list of profiles and
-         write profiles back to userDefaults */
         
         var newActivityProfile = activityProfile
         if newActivityProfile.id == nil {
@@ -146,8 +147,8 @@ class ActivityProfiles: NSObject, ObservableObject {
         return newActivityProfile.id!
     }
     
+    /// Delete an activity profile from profiles.
     func remove(activityProfile: ActivityProfile) {
-        /* delete an activity profile from profiles */
         
         // don't allow deletion fo all profiles!
         if profiles.count == 1 {
@@ -162,26 +163,30 @@ class ActivityProfiles: NSObject, ObservableObject {
         }
     }
 
-    func update(activityProfile: ActivityProfile) {
-        /* Update activity profile and write to userDefaults */
+    /// Update activity profile and write to userDefaults.
+    /// If onlyIfChanged set then test that the profiles have changed before saving.
+    func update(activityProfile: ActivityProfile, onlyIfChanged: Bool) {
 
         var updatedActivityProfile = activityProfile
 
-        updatedActivityProfile.lastUsed = Date()
-
         for (index, profile) in profiles.enumerated() {
             if profile.id == updatedActivityProfile.id {
-                profiles[index] = updatedActivityProfile
-                
-                self.write()
-                //                return
+
+                if (!onlyIfChanged || !(lastSavedProfiles == profiles)) {
+                    updatedActivityProfile.lastUsed = Date()
+                    profiles[index] = updatedActivityProfile
+                    
+                    self.write()
+                }
+
+                return
             }
         }
     }
 
-    
+
+    /// Return activity profile for a given profile id.
     func get(id: UUID) -> ActivityProfile? {
-        // return activity profile for a profile id
 
         for profile in profiles {
             if profile.id == id {
@@ -202,6 +207,7 @@ class ActivityProfiles: NSObject, ObservableObject {
             if let loadedProfiles = try? decoder.decode(type(of: profiles), from: savedProfiles) {
                 print(loadedProfiles)
                 profiles = loadedProfiles
+                lastSavedProfiles = loadedProfiles
                 
             }
         }
@@ -214,6 +220,7 @@ class ActivityProfiles: NSObject, ObservableObject {
         print("Writing profile!")
         let epochDate = NSDate(timeIntervalSince1970: 0) as Date
         profiles = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
+        lastSavedProfiles = profiles
         do {
             let data = try JSONEncoder().encode(profiles)
             let jsonString = String(data: data, encoding: .utf8)

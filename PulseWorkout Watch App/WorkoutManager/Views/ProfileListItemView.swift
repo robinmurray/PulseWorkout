@@ -70,7 +70,7 @@ struct ProfileListItemView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .navigationDestination(isPresented: $navigateToDetailView) {
-                        ProfileDetailView(profile: $profile, profileManager: profileManager)
+                        ProfileDetailView(profileManager: profileManager, profileIndex: profileManager.profiles.firstIndex(where: { $0.id == profile.id }) ?? 0)
                     }
                 }
 
@@ -82,10 +82,11 @@ struct ProfileListItemView: View {
                 NavigationStack {
                     VStack {
                         Button {
+                            // Set last used date on profile and save to user defaults
+                            profileManager.update(activityProfile: profile, onlyIfChanged: false)
+
                             workoutManager.startWorkout(activityProfile: profile)
-                            print("navigateToLiveView \(navigateToLiveView)")
                             navigateToLiveView = true
-                            print("navigateToLiveView \(navigateToLiveView)")
                         } label: {
                             VStack{
                                 Image(systemName: "play.circle")

@@ -11,17 +11,17 @@ import HealthKit
 
 struct ProfileDetailView: View {
 
-    @Binding var profile: ActivityProfile
     @ObservedObject var profileManager: ActivityProfiles
-
+    var profileIndex: Int
 
     @Environment(\.dismiss) private var dismiss
     
     var workoutTypes: [HKWorkoutActivityType] = [.crossTraining, .cycling, .mixedCardio, .paddleSports, .rowing, .running, .walking]
     var workoutLocations: [HKWorkoutSessionLocationType] = [.indoor, .outdoor, .unknown]
 
+
     func delete() {
-        profileManager.remove(activityProfile: profile)
+        profileManager.remove(activityProfile: profileManager.profiles[profileIndex])
         dismiss()
     }
     
@@ -32,7 +32,7 @@ struct ProfileDetailView: View {
                 Section(header: Text("Profile Name")) {
                     TextField(
                         "Profile",
-                        text: $profile.name
+                        text: $profileManager.profiles[profileIndex].name
                     )
                     .font(.system(size: 15))
                     .fontWeight(.bold)
@@ -42,7 +42,7 @@ struct ProfileDetailView: View {
 
                 Section(header: Text("Workout type")) {
 
-                    Picker("Workout Type", selection: $profile.workoutTypeId) {
+                    Picker("Workout Type", selection: $profileManager.profiles[profileIndex].workoutTypeId) {
                         ForEach(workoutTypes) { workoutType in
                             Text(workoutType.name).tag(workoutType.self)
                         }
@@ -53,7 +53,7 @@ struct ProfileDetailView: View {
                     .listStyle(.carousel)
 
                     
-                    Picker("Workout Location", selection: $profile.workoutLocationId) {
+                    Picker("Workout Location", selection: $profileManager.profiles[profileIndex].workoutLocationId) {
                         ForEach(workoutLocations) { workoutLocation in
                             Text(workoutLocation.name).tag(workoutLocation.self)
                         }
@@ -67,19 +67,19 @@ struct ProfileDetailView: View {
 
                 Section(header: Text("Heart Rate Profile")) {
                     
-                    Toggle(isOn: $profile.lockScreen) {
+                    Toggle(isOn: $profileManager.profiles[profileIndex].lockScreen) {
                         Text("Lock Screen")
                     }
 
-                    Toggle(isOn: $profile.hiLimitAlarmActive) {
+                    Toggle(isOn: $profileManager.profiles[profileIndex].hiLimitAlarmActive) {
                         Text("High Limit Alarm")
                     }
                     
-                    Stepper(value: $profile.hiLimitAlarm,
+                    Stepper(value: $profileManager.profiles[profileIndex].hiLimitAlarm,
                             in: 1...220,
-                            step: 1) { Text("\(profile.hiLimitAlarm)")
+                            step: 1) { Text("\(profileManager.profiles[profileIndex].hiLimitAlarm)")
                     }
-                    .disabled(!profile.hiLimitAlarmActive)
+                    .disabled(!profileManager.profiles[profileIndex].hiLimitAlarmActive)
                     .font(.headline)
                     .fontWeight(.light)
                     .multilineTextAlignment(.leading)
@@ -87,36 +87,36 @@ struct ProfileDetailView: View {
                     .frame(width:160, height: 40, alignment: .topLeading)
                     
                     
-                    Toggle(isOn: $profile.loLimitAlarmActive) {
+                    Toggle(isOn: $profileManager.profiles[profileIndex].loLimitAlarmActive) {
                         Text("Low Limit Alarm")
                     }
                     
-                    Stepper(value: $profile.loLimitAlarm,
+                    Stepper(value: $profileManager.profiles[profileIndex].loLimitAlarm,
                             in: 1...220,
                             step: 1) {
-                        Text("\(profile.loLimitAlarm)")
+                        Text("\(profileManager.profiles[profileIndex].loLimitAlarm)")
                     }
-                    .disabled(!profile.loLimitAlarmActive)
+                    .disabled(!profileManager.profiles[profileIndex].loLimitAlarmActive)
                     .font(.headline)
                     .fontWeight(.light)
                     .multilineTextAlignment(.leading)
                     .minimumScaleFactor(0.20)
                     .frame(width:160, height: 40, alignment: .topLeading)
                     
-                    Toggle(isOn: $profile.playSound) {
+                    Toggle(isOn: $profileManager.profiles[profileIndex].playSound) {
                         Text("Play Sound")
                     }
-                    .disabled(!(profile.hiLimitAlarmActive || profile.loLimitAlarmActive))
+                    .disabled(!(profileManager.profiles[profileIndex].hiLimitAlarmActive || profileManager.profiles[profileIndex].loLimitAlarmActive))
                     
-                    Toggle(isOn: $profile.playHaptic) {
+                    Toggle(isOn: $profileManager.profiles[profileIndex].playHaptic) {
                         Text("Play Haptic")
                     }
-                    .disabled(!(profile.hiLimitAlarmActive || profile.loLimitAlarmActive))
+                    .disabled(!(profileManager.profiles[profileIndex].hiLimitAlarmActive || profileManager.profiles[profileIndex].loLimitAlarmActive))
                     
-                    Toggle(isOn: $profile.constantRepeat) {
+                    Toggle(isOn: $profileManager.profiles[profileIndex].constantRepeat) {
                         Text("Repeat Alarm")
                     }
-                    .disabled(!(profile.hiLimitAlarmActive || profile.loLimitAlarmActive))
+                    .disabled(!(profileManager.profiles[profileIndex].hiLimitAlarmActive || profileManager.profiles[profileIndex].loLimitAlarmActive))
                      
                 }
  
@@ -133,7 +133,8 @@ struct ProfileDetailView: View {
             .navigationTitle("Edit Profile")
             .navigationBarTitleDisplayMode(.inline)
             .onDisappear {
-                profileManager.write()
+                profileManager.update(activityProfile: profileManager.profiles[profileIndex], onlyIfChanged: true)
+
             }
 
         }
