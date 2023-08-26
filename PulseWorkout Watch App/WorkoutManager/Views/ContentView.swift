@@ -13,11 +13,12 @@ import WatchKit
 struct ContentView: View {
 
     enum Tab {
-        case start, summaryMetrics, nowPlaying, btDevices
+        case start, activityHistory, nowPlaying, btDevices
     }
     
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var profileManager: ActivityProfiles
+    @ObservedObject var activityDataManager: ActivityDataManager
     @State private var selection: Tab = .start
     
     var body: some View {
@@ -25,15 +26,13 @@ struct ContentView: View {
             TabView(selection: $selection) {
 
                 StartView(workoutManager: workoutManager,
-                          profileManager: profileManager)
+                          profileManager: profileManager,
+                          activityDataManager: activityDataManager)
                     .tag(Tab.start)
-                
-                SummaryMetricsView(workoutManager: workoutManager,
-                                   viewTitleText: "Last Workout",
-                                   displayDone: false,
-                                   metrics: workoutManager.lastSummaryMetrics)
-                    .tag(Tab.summaryMetrics)
 
+                ActivityHistoryView(activityDataManager: activityDataManager)
+                    .tag(Tab.activityHistory)
+                
                 NowPlayingView().tag(Tab.nowPlaying)
 
                 BTContentView(bluetoothManager: workoutManager.bluetoothManager!).tag(Tab.btDevices)
@@ -50,8 +49,9 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var workoutManager = WorkoutManager()
     static var profileManager = ActivityProfiles()
+    static var activityDataManager = ActivityDataManager()
 
     static var previews: some View {
-        ContentView(workoutManager: workoutManager, profileManager: profileManager)
+        ContentView(workoutManager: workoutManager, profileManager: profileManager, activityDataManager: activityDataManager)
     }
 }

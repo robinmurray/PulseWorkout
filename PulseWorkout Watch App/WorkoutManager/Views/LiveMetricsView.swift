@@ -71,7 +71,7 @@ struct LiveMetricsView: View {
                 HStack {
                     Image(systemName: "figure.walk.motion")
                         .foregroundColor(Color.yellow)
-                    Text(distanceFormatter(distance: workoutManager.summaryMetrics.distance))
+                    Text(distanceFormatter(distance: workoutManager.activityRecord.distance))
 //                        .frame(maxWidth: .infinity, alignment: .trailing)
                             .padding(.trailing, 8)
                             .foregroundColor(Color.yellow)
@@ -133,33 +133,6 @@ struct LiveMetricsView: View {
 
 }
     
-func distanceFormatter (distance: Double) -> String {
-    var unit = UnitLength.meters
-    var displayDistance: Double = distance.rounded()
-    if distance > 1000 {
-        unit = UnitLength.kilometers
-        displayDistance = distance / 1000
-        if displayDistance > 100 {
-            displayDistance = (displayDistance * 10).rounded() / 10
-        } else if displayDistance > 10 {
-            displayDistance = (displayDistance * 100).rounded() / 100
-        } else {
-            displayDistance = (displayDistance * 10).rounded() / 10
-        }
-
-    }
-    
-    return  Measurement(value: displayDistance,
-                       unit: unit)
-    .formatted(.measurement(width: .abbreviated,
-                            usage: .asProvided
-                           )
-    )
-
-}
-
-
-
 
 struct LiveMetricsView_Previews: PreviewProvider {
     

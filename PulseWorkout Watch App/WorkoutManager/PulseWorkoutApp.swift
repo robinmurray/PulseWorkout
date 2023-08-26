@@ -11,14 +11,17 @@ import SwiftUI
 struct PulseWorkout_Watch_AppApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
-    @ObservedObject var workoutManager = WorkoutManager()
     @ObservedObject var profileManager = ActivityProfiles()
+    @ObservedObject var activityDataManager = ActivityDataManager()
+    @ObservedObject var workoutManager = WorkoutManager()
+
 
 
     var body: some Scene {
         WindowGroup {
             ContentView(workoutManager: workoutManager,
-                        profileManager: profileManager)
+                        profileManager: profileManager,
+                        activityDataManager: activityDataManager)
         }
         .onChange(of: scenePhase) { phase in
             switch phase {

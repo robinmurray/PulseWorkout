@@ -16,17 +16,21 @@ struct StartView: View {
 
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var profileManager: ActivityProfiles
+    @ObservedObject var activityDataManager: ActivityDataManager
 
-    init(workoutManager: WorkoutManager, profileManager: ActivityProfiles) {
+/*
+    init(workoutManager: WorkoutManager,
+         profileManager: ActivityProfiles) {
         self.workoutManager = workoutManager
         self.profileManager = profileManager
     }
-
+*/
     
     var body: some View {
         VStack {
             ProfileListView(profileManager: profileManager,
-                            workoutManager: workoutManager)
+                            workoutManager: workoutManager,
+                            activityDataManager: activityDataManager)
 
             BTDeviceBarView(workoutManager: workoutManager)
 
@@ -41,9 +45,11 @@ struct StartView: View {
 struct StartView_Previews: PreviewProvider {
     static var workoutManager = WorkoutManager()
     static var profileManager = ActivityProfiles()
+    static var activityDataManager = ActivityDataManager()
 
     static var previews: some View {
         StartView(workoutManager: workoutManager,
-                  profileManager: profileManager)
+                  profileManager: profileManager,
+                  activityDataManager: activityDataManager)
     }
 }

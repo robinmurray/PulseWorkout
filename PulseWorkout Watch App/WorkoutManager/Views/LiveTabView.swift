@@ -17,15 +17,18 @@ struct LiveTabView: View {
     
     @Binding var profile: ActivityProfile
     @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var activityDataManager: ActivityDataManager
 
     func startWorkout() {
+        
         workoutManager.startWorkout(activityProfile: profile)
     }
     var body: some View {
 
             TabView(selection: $workoutManager.liveTabSelection) {
                 
-                StopView(workoutManager: workoutManager)
+                StopView(workoutManager: workoutManager,
+                         activityDataManager: activityDataManager)
                     .tag(LiveScreenTab.stop)
                 
                 LiveMetricsView(workoutManager: workoutManager)

@@ -14,6 +14,7 @@ struct ProfileListItemView: View {
     @Binding var profile: ActivityProfile
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var activityDataManager: ActivityDataManager
 
     @State private var navigateToDetailView : Bool = false
     @State private var navigateToLiveView : Bool = false
@@ -106,7 +107,7 @@ struct ProfileListItemView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .navigationDestination(isPresented: $navigateToLiveView) {
-                        LiveTabView(profile: $profile, workoutManager: workoutManager)
+                        LiveTabView(profile: $profile, workoutManager: workoutManager, activityDataManager: activityDataManager)
                     }
                 }
             }

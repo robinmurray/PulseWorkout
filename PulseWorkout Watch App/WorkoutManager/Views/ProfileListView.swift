@@ -11,6 +11,7 @@ struct ProfileListView: View {
 
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var activityDataManager: ActivityDataManager
 
     @State private var navigateToDetailView : Bool = false
     @State var newId: UUID?
@@ -23,7 +24,8 @@ struct ProfileListView: View {
                 // Pass binding to item into DetailsView
                 ProfileListItemView(profile:  self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id })!],
                                     profileManager: profileManager,
-                                    workoutManager: workoutManager)
+                                    workoutManager: workoutManager,
+                                    activityDataManager: activityDataManager)
             }
             
             NavigationStack {
@@ -53,9 +55,12 @@ struct ProfileListView_Previews: PreviewProvider {
     
     static var profileManager = ActivityProfiles()
     static var workoutManager = WorkoutManager()
+    static var activityDataManager = ActivityDataManager()
+    
     static var previews: some View {
         ProfileListView(profileManager: profileManager,
-                        workoutManager: workoutManager)
+                        workoutManager: workoutManager,
+                        activityDataManager: activityDataManager)
     }
 }
 

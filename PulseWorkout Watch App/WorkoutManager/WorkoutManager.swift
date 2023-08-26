@@ -19,62 +19,6 @@ enum AppState {
 }
 
 
-struct SummaryMetrics: Codable {
-    var duration: Double
-    var averageHeartRate: Double
-    var heartRateRecovery: Double
-    var activeEnergy: Double
-    var distance: Double
-    var timeOverHiAlarm: Double
-    var timeUnderLoAlarm: Double
-    
-    func put(tag: String){
-        let encoder = JSONEncoder()
-        if let encoded = try? encoder.encode(self) {
-            let defaults = UserDefaults.standard
-            defaults.set(encoded, forKey: tag)
-        }
-
-    }
-
-    mutating func get(tag: String){
-        print("Trying decode SummaryMetrics")
-        
-        // Initialise empty dictionary
-        // try to read from userDefaults in to this - if fails then use defaults
-        var metricsDict: [String: Any] = [:]
-        
-        let metricsJSON: Data =  UserDefaults.standard.object(forKey: tag) as? Data ?? Data()
-        let jsonString = String(data: metricsJSON, encoding: .utf8)
-        print("Returned data : \(String(describing: jsonString))")
-        do {
-            metricsDict = try JSONSerialization.jsonObject(with: metricsJSON, options: []) as! [String: Any]
-        } catch {
-            print("No valid dictionary stored")
-        }
-
-        // Read Dictionary or set default values
-        duration = (metricsDict["duration"] ?? Double(0)) as! Double
-        averageHeartRate = (metricsDict["averageHeartRate"] ?? Double(0)) as! Double
-        heartRateRecovery = (metricsDict["heartRateRecovery"] ?? Double(0)) as! Double
-        activeEnergy = (metricsDict["activeEnergy"] ?? Double(0)) as! Double
-        distance = (metricsDict["distance"] ?? Double(0)) as! Double
-        timeOverHiAlarm = (metricsDict["timeOverHiAlarm"] ?? Double(0)) as! Double
-        timeUnderLoAlarm = (metricsDict["timeUnderLoAlarm"] ?? Double(0)) as! Double
-    }
-
-    mutating func reset() {
-        duration = 0
-        averageHeartRate = 0
-        heartRateRecovery = 0
-        activeEnergy = 0
-        distance = 0
-        timeOverHiAlarm = 0
-        timeUnderLoAlarm = 0
-
-    }
-}
-
 class WorkoutManager: NSObject, ObservableObject {
 
     @Published var hrState: HRState = HRState.inactive
@@ -118,39 +62,19 @@ class WorkoutManager: NSObject, ObservableObject {
     var session: HKWorkoutSession?
     var builder: HKLiveWorkoutBuilder?
 
-
+    var activityDataManager: ActivityDataManager?
+    @Published var activityRecord: ActivityRecord!
+    
     @Published var activityProfiles = ActivityProfiles()
     @Published var liveActivityProfile: ActivityProfile?
 
-    
-    @Published var summaryMetrics = SummaryMetrics(
-        duration: 0,
-        averageHeartRate: 0,
-        heartRateRecovery: 0,
-        activeEnergy: 0,
-        distance: 0,
-        timeOverHiAlarm : 0,
-        timeUnderLoAlarm: 0
-        )
-
-    @Published var lastSummaryMetrics = SummaryMetrics(
-        duration: 0,
-        averageHeartRate: 0,
-        heartRateRecovery: 0,
-        activeEnergy: 0,
-        distance: 0,
-        timeOverHiAlarm : 0,
-        timeUnderLoAlarm: 0
-        )
-
 
     init(profileName: String = ""){
-            
+
         super.init()
-   
+
         self.liveActivityProfile = activityProfiles.profiles[0]
 
-        lastSummaryMetrics.get(tag: "LastSession")
         self.bluetoothManager = BTDevicesController(requestedServices: nil)
 
         // Set up call back functions for when required characteristics are read.
@@ -207,6 +131,7 @@ class WorkoutManager: NSObject, ObservableObject {
         liveActivityProfile = activityProfile
         liveTabSelection = LiveScreenTab.liveMetrics
         
+
         startStopHRMonitor()
         // FILL OUT!!
      
@@ -233,6 +158,8 @@ class WorkoutManager: NSObject, ObservableObject {
 
         // Start the workout session and begin data collection.
         let startDate = Date()
+        self.activityRecord = ActivityRecord()
+
         session?.startActivity(with: startDate)
         builder?.beginCollection(withStart: startDate) { (success, error) in
             // The workout has started.
@@ -241,6 +168,7 @@ class WorkoutManager: NSObject, ObservableObject {
                 print("Workout start Failed with error: \(String(describing: error))")
             } else {
                 print("Workout Started")
+                self.activityRecord.start(activityProfile: activityProfile, startDate: startDate)
             }
         }
         
@@ -249,13 +177,12 @@ class WorkoutManager: NSObject, ObservableObject {
         }
 
     }
-
+    
     func endWorkout() {
-        self.summaryMetrics.duration = self.builder?.elapsedTime(at: Date()) ?? 0
+        self.activityRecord.elapsedTime = self.builder?.elapsedTime(at: Date()) ?? 0
         session?.end()
         
         startStopHRMonitor()
-//        self.summaryMetrics.duration = self.workout?.duration ?? 0.0
     }
     
     func resumeWorkout() {
@@ -380,7 +307,7 @@ class WorkoutManager: NSObject, ObservableObject {
         if (self.liveActivityProfile!.hiLimitAlarmActive) &&
            (Int(self.heartRate) >= self.liveActivityProfile!.hiLimitAlarm) {
             
-            self.summaryMetrics.timeOverHiAlarm += 2
+            self.activityRecord.timeOverHiAlarm += 2
             self.hrState = HRState.hiAlarm
             
             if (liveActivityProfile!.constantRepeat || !playedAlarm) {
@@ -399,7 +326,7 @@ class WorkoutManager: NSObject, ObservableObject {
         } else if (self.liveActivityProfile!.loLimitAlarmActive) &&
                     (Int(self.heartRate) <= self.liveActivityProfile!.loLimitAlarm) {
  
-            self.summaryMetrics.timeUnderLoAlarm += 2
+            self.activityRecord.timeUnderLoAlarm += 2
             self.hrState = HRState.loAlarm
             
             if liveActivityProfile!.playSound && (liveActivityProfile!.constantRepeat || !playedAlarm) {
@@ -451,13 +378,13 @@ class WorkoutManager: NSObject, ObservableObject {
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
                 self.setHeartRate( heartRate: statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0,
                                    hrSource: .healthkit )
-                self.summaryMetrics.averageHeartRate = statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0
+                self.activityRecord.averageHeartRate = statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0
             case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
                 let energyUnit = HKUnit.kilocalorie()
-                self.summaryMetrics.activeEnergy = statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0
+                self.activityRecord.activeEnergy = statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0
             case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning), HKQuantityType.quantityType(forIdentifier: .distanceCycling):
                 let meterUnit = HKUnit.meter()
-                self.summaryMetrics.distance = statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0
+                self.activityRecord.distance = statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0
             default:
                 return
             }

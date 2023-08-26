@@ -10,10 +10,12 @@ import SwiftUI
 struct StopView: View {
 
     @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var activityDataManager: ActivityDataManager
     @State private var navigateToSummaryView : Bool = false
     
-    init(workoutManager: WorkoutManager) {
+    init(workoutManager: WorkoutManager, activityDataManager: ActivityDataManager) {
         self.workoutManager = workoutManager
+        self.activityDataManager = activityDataManager
     }
 
     
@@ -76,7 +78,9 @@ struct StopView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .navigationDestination(isPresented: $navigateToSummaryView) {
-                        SummaryTabView(workoutManager: workoutManager)
+                        ActivitySaveView(workoutManager: workoutManager,
+                                       activityDataManager: activityDataManager,
+                                         activityRecord: workoutManager.activityRecord)
                     }
                     
                     Spacer()
@@ -96,8 +100,10 @@ struct StopView: View {
 struct StopView_Previews: PreviewProvider {
     
     static var workoutManager = WorkoutManager()
+    static var activityDataManager = ActivityDataManager()
 
     static var previews: some View {
-        StopView(workoutManager: workoutManager)
+        StopView(workoutManager: workoutManager,
+                 activityDataManager: activityDataManager)
     }
 }
