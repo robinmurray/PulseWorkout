@@ -64,7 +64,7 @@ struct LiveMetricsView: View {
                 Spacer()
                 Image(systemName: "bolt")
                     .foregroundColor(Color.yellow)
-                Text(String(workoutManager.cyclingPower))
+                Text(String(workoutManager.cyclingPower ?? 0))
                     .foregroundColor(Color.yellow)
             }
             HStack {
@@ -81,7 +81,7 @@ struct LiveMetricsView: View {
                 HStack {
                     Image(systemName: "speedometer")
                         .foregroundColor(Color.yellow)
-                    Text(String(workoutManager.cyclingCadence))
+                    Text(String(workoutManager.cyclingCadence ?? 0))
                         .foregroundColor(Color.yellow)
                 }
 
@@ -92,7 +92,7 @@ struct LiveMetricsView: View {
             HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
                     Spacer().frame(maxWidth: .infinity)
-                    Text(workoutManager.heartRate
+                    Text((workoutManager.heartRate ?? 0)
                         .formatted(.number.precision(.fractionLength(0))))
                     .fontWeight(.bold)
                     .foregroundColor(HRDisplay[workoutManager.hrState]?.colour)

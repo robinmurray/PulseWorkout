@@ -8,6 +8,7 @@
 import Foundation
 import CloudKit
 
+
 class ActivityRecord: NSObject, Identifiable {
     
     let recordType = "activity"
@@ -26,6 +27,20 @@ class ActivityRecord: NSObject, Identifiable {
 
     var timeOverHiAlarm: Double = 0
     var timeUnderLoAlarm: Double = 0
+ 
+    struct TrackPoint {
+        var time: Date
+        var heartRate: Double?
+        var latitude: Double?
+        var longitude: Double?
+        var altitudeMeters: Double?
+        var distanceMeters: Double?
+        var cadence: Int?
+        var speed: Double?
+        var watts: Int?
+    }
+    
+    var trackPoints: [TrackPoint] = []
 
     var stravaStatus: Bool = false
 
@@ -121,6 +136,24 @@ class ActivityRecord: NSObject, Identifiable {
         activityDescription = activityProfile.name
     }
     
+    func addTrackPoint(heartRate: Double?,
+                       distanceMeters: Double?,
+                       cadence: Int?,
+                       speed: Double?,
+                       watts: Int?) {
+
+
+        trackPoints.append(TrackPoint(time: Date(),
+                                      heartRate: heartRate,
+                                      distanceMeters: distanceMeters,
+                                      cadence: cadence,
+                                      speed: speed,
+                                      watts: watts
+                                     )
+                            )
+        
+
+    }
     
     func description() -> String {
           let mirror = Mirror(reflecting: self)
@@ -197,6 +230,7 @@ class ActivityDataManager: NSObject, ObservableObject {
         let CKRecord = activityRecord.asCKRecord()
 
         print("Adding CK Record \(CKRecord)")
+        print("Track Points \(activityRecord.trackPoints)")
  //       print("CK Asset \(myCKAsset)")
         
         isBusy = true

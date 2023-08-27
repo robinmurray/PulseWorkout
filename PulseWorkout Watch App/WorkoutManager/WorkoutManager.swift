@@ -27,10 +27,10 @@ class WorkoutManager: NSObject, ObservableObject {
     @Published var workoutType: HKWorkoutActivityType = HKWorkoutActivityType.cycling
     @Published var workoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
 
-    @Published var heartRate: Double = 0
-    @Published var distance: Double = 0
-    @Published var cyclingPower: Int = 0
-    @Published var cyclingCadence: Int = 0
+    @Published var heartRate: Double?
+    @Published var distance: Double?
+    @Published var cyclingPower: Int?
+    @Published var cyclingCadence: Int?
    
     @Published var workout: HKWorkout?
     @Published var running = false
@@ -49,7 +49,6 @@ class WorkoutManager: NSObject, ObservableObject {
     var prevCrankTime: Int = 0
     var prevCrankRevs: Int = 0
     
-    var runCount = 0
     var timer: Timer?
     var HRchange: Int = 10
     var runLimit: Int = 50
@@ -67,7 +66,6 @@ class WorkoutManager: NSObject, ObservableObject {
     
     @Published var activityProfiles = ActivityProfiles()
     @Published var liveActivityProfile: ActivityProfile?
-
 
     init(profileName: String = ""){
 
@@ -206,6 +204,7 @@ class WorkoutManager: NSObject, ObservableObject {
             self.heartRate = heartRate
 
         }
+        
     }
     
     func setBTHeartRate(value: Any) {
@@ -277,7 +276,6 @@ class WorkoutManager: NSObject, ObservableObject {
         
         if !(HRMonitorActive) {
             print("Initialising timer")
-            self.runCount = 0
             self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
             self.timer!.tolerance = 0.2
             print("Timer initialised")
@@ -302,10 +300,15 @@ class WorkoutManager: NSObject, ObservableObject {
     
     
     @objc func fireTimer() {
-        self.runCount += 1
+        
+        activityRecord.addTrackPoint(heartRate: heartRate,
+                                     distanceMeters: distance,
+                                     cadence: cyclingCadence,
+                                     speed: nil,
+                                     watts: cyclingPower )
 
         if (self.liveActivityProfile!.hiLimitAlarmActive) &&
-           (Int(self.heartRate) >= self.liveActivityProfile!.hiLimitAlarm) {
+           (Int(self.heartRate ?? 0) >= self.liveActivityProfile!.hiLimitAlarm) {
             
             self.activityRecord.timeOverHiAlarm += 2
             self.hrState = HRState.hiAlarm
@@ -324,7 +327,7 @@ class WorkoutManager: NSObject, ObservableObject {
 
             
         } else if (self.liveActivityProfile!.loLimitAlarmActive) &&
-                    (Int(self.heartRate) <= self.liveActivityProfile!.loLimitAlarm) {
+                    (Int(self.heartRate ?? 999) <= self.liveActivityProfile!.loLimitAlarm) {
  
             self.activityRecord.timeUnderLoAlarm += 2
             self.hrState = HRState.loAlarm
