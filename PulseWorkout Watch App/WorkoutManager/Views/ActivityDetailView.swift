@@ -44,15 +44,10 @@ struct ActivityHeaderView: View {
                     .foregroundStyle(.yellow)
                 Spacer()
             }
-            HStack {
-                Text(activityRecord.activityDescription)
-                    .foregroundStyle(.yellow)
-                Spacer()
-            }
-            
+
             HStack {
                 Text(activityRecord.startDateLocal.formatted(
-                    Date.FormatStyle()
+                    Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
                         .day(.twoDigits)
                         .month(.abbreviated)
                         .hour(.defaultDigits(amPM: .omitted))
@@ -92,7 +87,7 @@ struct ActivityDetailView: View {
                 .foregroundStyle(.yellow)
                 
                 SummaryMetricView(title: "Distance",
-                                  value: distanceFormatter(distance: activityRecord.distance))
+                                  value: distanceFormatter(distance: activityRecord.distanceMeters))
                 .foregroundStyle(.yellow)
 
                 SummaryMetricView(title: "Time Over High Limit",

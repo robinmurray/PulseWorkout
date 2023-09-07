@@ -28,7 +28,7 @@ class WorkoutManager: NSObject, ObservableObject {
     @Published var workoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
 
     @Published var heartRate: Double?
-    @Published var distance: Double?
+ //   @Published var distance: Double?
     @Published var cyclingPower: Int?
     @Published var cyclingCadence: Int?
    
@@ -166,7 +166,7 @@ class WorkoutManager: NSObject, ObservableObject {
                 print("Workout start Failed with error: \(String(describing: error))")
             } else {
                 print("Workout Started")
-                self.activityRecord.start(activityProfile: activityProfile, startDate: startDate)
+                self.activityRecord.start(activityProfile: self.liveActivityProfile!, startDate: startDate)
             }
         }
         
@@ -204,7 +204,7 @@ class WorkoutManager: NSObject, ObservableObject {
             self.heartRate = heartRate
 
         }
-        
+        activityRecord.heartRate = heartRate
     }
     
     func setBTHeartRate(value: Any) {
@@ -243,6 +243,7 @@ class WorkoutManager: NSObject, ObservableObject {
         }
 
         cyclingPower = (powerDict["instantaneousPower"] ?? 0) as? Int ?? 0
+        activityRecord.watts = cyclingPower
 
         // lastCrankTime is in seconds with a resolution of 1/1024.
         let lastCrankTime = (powerDict["lastCrankEventTime"] ?? 0) as? Int ?? 0
@@ -253,12 +254,11 @@ class WorkoutManager: NSObject, ObservableObject {
                 let newCrankRevs = cumulativeCrankRevolutions - prevCrankRevs
                 if elapsedCrankTime != 0 {
                     cyclingCadence = Int( 60 * 1024 / elapsedCrankTime) * newCrankRevs
-                    print("*********** lastCrankTime \(lastCrankTime)  cadence \(cyclingCadence)")
                 }
                 if newCrankRevs == 0 {
                     cyclingCadence = 0
                 }
-
+                activityRecord.cadence = cyclingCadence
             }
             
             prevCrankTime = lastCrankTime
@@ -301,11 +301,8 @@ class WorkoutManager: NSObject, ObservableObject {
     
     @objc func fireTimer() {
         
-        activityRecord.addTrackPoint(heartRate: heartRate,
-                                     distanceMeters: distance,
-                                     cadence: cyclingCadence,
-                                     speed: nil,
-                                     watts: cyclingPower )
+        // add a track point for tcx file creation every time timer fires...
+        activityRecord.addTrackPoint()
 
         if (self.liveActivityProfile!.hiLimitAlarmActive) &&
            (Int(self.heartRate ?? 0) >= self.liveActivityProfile!.hiLimitAlarm) {
@@ -387,7 +384,7 @@ class WorkoutManager: NSObject, ObservableObject {
                 self.activityRecord.activeEnergy = statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0
             case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning), HKQuantityType.quantityType(forIdentifier: .distanceCycling):
                 let meterUnit = HKUnit.meter()
-                self.activityRecord.distance = statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0
+                self.activityRecord.distanceMeters = statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0
             default:
                 return
             }

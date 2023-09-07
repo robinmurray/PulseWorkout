@@ -71,7 +71,7 @@ struct LiveMetricsView: View {
                 HStack {
                     Image(systemName: "figure.walk.motion")
                         .foregroundColor(Color.yellow)
-                    Text(distanceFormatter(distance: workoutManager.activityRecord.distance))
+                    Text(distanceFormatter(distance: workoutManager.activityRecord.distanceMeters))
 //                        .frame(maxWidth: .infinity, alignment: .trailing)
                             .padding(.trailing, 8)
                             .foregroundColor(Color.yellow)

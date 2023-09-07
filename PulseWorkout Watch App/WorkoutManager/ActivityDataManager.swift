@@ -5,9 +5,31 @@
 //  Created by Robin Murray on 30/06/2023.
 //
 
+
 import Foundation
 import CloudKit
 
+
+
+func getCacheDirectory() -> URL? {
+//    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+//    let paths = FileManager.default.temporaryDirectory
+    let cachePath = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("pulseWorkout")
+    do {
+        try FileManager.default.createDirectory(at: cachePath, withIntermediateDirectories: true)
+    } catch {
+        print("error \(error)")
+        return nil
+    }
+//    let documentsDirectory = paths[0]
+    return cachePath
+}
+
+func getTrackFileURL() -> URL? {
+    let fileName = NSUUID().uuidString + ".tcx"
+    guard let cachePath = getCacheDirectory() else { return nil }
+    return cachePath.appendingPathComponent(fileName)
+}
 
 class ActivityRecord: NSObject, Identifiable {
     
@@ -19,14 +41,21 @@ class ActivityRecord: NSObject, Identifiable {
     var startDateLocal: Date = Date()
     var elapsedTime: Double = 0
     var activityDescription: String = ""
-    var distance: Double = 0
-
+    var heartRate: Double?
+    var distanceMeters: Double = 0
+    var cadence: Int?
+    var watts: Int?
+    var speed: Double?
     var averageHeartRate: Double = 0
     var heartRateRecovery: Double = 0
     var activeEnergy: Double = 0
 
     var timeOverHiAlarm: Double = 0
     var timeUnderLoAlarm: Double = 0
+    
+    var tcxAsset: CKAsset?
+    var tcxURL: URL?        // Temporary cache URL for tcx file
+    
  
     struct TrackPoint {
         var time: Date
@@ -38,12 +67,116 @@ class ActivityRecord: NSObject, Identifiable {
         var cadence: Int?
         var speed: Double?
         var watts: Int?
+        
+        
+        func addXMLtoNode(node: XMLElement) {
+            let trackPointNode = node.addNode(name: "Trackpoint")
+            trackPointNode.addValue(name: "Time", value: time.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))
+
+            if ((latitude != nil) && (longitude != nil)) {
+                let positionNode = trackPointNode.addNode(name: "Position")
+                positionNode.addValue(name: "LatitudeDegrees", value: String(format: "%.7f", latitude!))
+                positionNode.addValue(name: "LongitudeDegrees", value: String(format: "%.7f", longitude!))
+
+            }
+            if altitudeMeters != nil {
+                trackPointNode.addValue(name: "AltitudeMeters", value: String(format: "%.1f", altitudeMeters!))
+            }
+    
+            if heartRate != nil {
+                let HRNode = trackPointNode.addNode(name: "HeartRateBpm")
+                HRNode.addValue(name: "Value", value: String(Int(heartRate!)))
+            }
+
+            if distanceMeters != nil {
+                trackPointNode.addValue(name: "DistanceMeters", value: String(Int(distanceMeters!)))
+            }
+
+            if cadence != nil {
+                trackPointNode.addValue(name: "Cadence", value: String(cadence!))
+            }
+            
+            if speed != nil || watts != nil {
+                let extNode = trackPointNode.addNode(name: "Extensions")
+                let tpxNode = extNode.addNode(name: "TPX", attributes: ["xmlns" : "http://www.garmin.com/xmlschemas/ActivityExtension/v2"])
+                if speed != nil {
+                    tpxNode.addValue(name: "Speed", value: String(format: "%.1f", speed!))
+                }
+                if watts != nil {
+                    tpxNode.addValue(name: "Watts", value: String(watts!))
+                }
+                
+            }
+
+        }
+        
     }
     
     var trackPoints: [TrackPoint] = []
 
     var stravaStatus: Bool = false
 
+    
+    func saveTrackRecord() -> Bool {
+        
+        tcxURL = getTrackFileURL()
+        
+        if tcxURL == nil { return false }
+        
+        var tcxXMLDoc = XMLDocument()
+        
+        tcxXMLDoc.addProlog(prolog: "xml version=\"1.0\" encoding=\"UTF-8\"")
+        tcxXMLDoc.addComment(comment: "Written by PulseWorkout")
+
+        let tcxNode = tcxXMLDoc.addNode(name: "TrainingCenterDatabase",
+                                        attributes: ["xsi:schemaLocation" : "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2 http://www.garmin.com/xmlschemas/TrainingCenterDatabasev2.xsd",
+                                                     "xmlns:ns5" : "http://www.garmin.com/xmlschemas/ActivityGoals/v1",
+                                                     "xmlns:ns3" : "http://www.garmin.com/xmlschemas/ActivityExtension/v2",
+                                                     "xmlns:ns2" : "http://www.garmin.com/xmlschemas/UserProfile/v2",
+                                                     "xmlns" : "http://www.garmin.com/xmlschemas/TrainingCenterDatabase/v2",
+                                                     "xmlns:xsi" : "http://www.w3.org/2001/XMLSchema-instance"
+                                                    ])
+        let activitiesNode = tcxNode.addNode(name: "Activities")
+        let activityNode = activitiesNode.addNode(name: "Activity", attributes: ["Sport" : "Biking"]) // FIX!!
+        activityNode.addValue(name: "Id", value: startDateLocal.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))
+        let lapNode = activityNode.addNode(name: "Lap", attributes: ["StartTime" : startDateLocal.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash))])
+        lapNode.addValue(name: "TotalTimeSeconds", value: String(format: "%.1f", elapsedTime))
+        lapNode.addValue(name: "DistanceMeters", value: String(format: "%.1f", distanceMeters))
+        let aveHRNode = lapNode.addNode(name: "AverageHeartRate")
+        aveHRNode.addValue(name: "Value", value: String(Int(averageHeartRate)))
+        lapNode.addValue(name: "TriggerMethod", value: "Manual")
+        let trackNode = lapNode.addNode(name: "Track")
+        for trackPoint in trackPoints {
+            trackPoint.addXMLtoNode(node: trackNode)
+        }
+        
+        do {
+            try tcxXMLDoc.serialize().write(to: tcxURL!, atomically: true, encoding: .utf8)
+            
+            return true
+        }
+        catch {
+            error as any Error
+            print("error \(error)")
+            return false
+        }
+
+    }
+
+    /// Remove temporary .tcx file
+    func deleteTrackRecord() {
+        if tcxURL != nil {
+            do {
+                try FileManager.default.removeItem(at: tcxURL!)
+                    print("tcx has been deleted")
+                } catch {
+                    print(error)
+                }
+            }
+        }
+
+    
+    
     func createDummy() {
         name = "Morning Ride"
         type = "Ride"
@@ -51,7 +184,7 @@ class ActivityRecord: NSObject, Identifiable {
         startDateLocal = Date()
         elapsedTime = 10
         activityDescription = ""
-        distance = 5370
+        distanceMeters = 5370
 
         averageHeartRate = 130
         heartRateRecovery = 0
@@ -70,7 +203,7 @@ class ActivityRecord: NSObject, Identifiable {
         activityRecord["startDateLocal"] = startDateLocal as CKRecordValue
         activityRecord["elapsedTime"] = elapsedTime as CKRecordValue
         activityRecord["activityDescription"] = activityDescription as CKRecordValue
-        activityRecord["distance"] = distance as CKRecordValue
+        activityRecord["distance"] = distanceMeters as CKRecordValue
 
         activityRecord["averageHeartRate"] = averageHeartRate as CKRecordValue
         activityRecord["heartRateRecovery"] = heartRateRecovery as CKRecordValue
@@ -79,6 +212,12 @@ class ActivityRecord: NSObject, Identifiable {
         activityRecord["timeOverHiAlarm"] = timeOverHiAlarm as CKRecordValue
         activityRecord["timeUnderLoAlarm"] = timeUnderLoAlarm as CKRecordValue
         
+        
+        if saveTrackRecord() {
+            print("creating asset!")
+            activityRecord["tcx"] = CKAsset(fileURL: tcxURL!)
+        }
+
         return activityRecord
 
     }
@@ -91,7 +230,7 @@ class ActivityRecord: NSObject, Identifiable {
         startDateLocal = activityRecord["startDateLocal"] ?? Date() as Date
         elapsedTime = activityRecord["elapsedTime"] ?? 0 as Double
         activityDescription = activityRecord["activityDescription"] ?? "" as String
-        distance = activityRecord["distance"] ?? 0 as Double
+        distanceMeters = activityRecord["distance"] ?? 0 as Double
 
         averageHeartRate = activityRecord["averageHeartRate"] ?? 0 as Double
         heartRateRecovery = activityRecord["heartRateRecovery"] ?? 0 as Double
@@ -109,38 +248,35 @@ class ActivityRecord: NSObject, Identifiable {
         sportType = "Ride"
         startDateLocal = startDate
 
+        
         let localStartHour = Int(startDateLocal.formatted(
-            Date.FormatStyle()
+            Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
                 .hour(.defaultDigits(amPM: .omitted))
         )) ?? 0
         switch localStartHour {
         case 0 ... 4:
-            name = "Night " + sportType
+            name = "Night " + activityProfile.name
 
         case 5 ... 11:
-            name = "Morning " + sportType
+            name = "Morning " + activityProfile.name
 
         case 12 ... 16:
-            name = "Afternoon " + sportType
+            name = "Afternoon " + activityProfile.name
 
         case 17 ... 20:
-            name = "Evening " + sportType
+            name = "Evening " + activityProfile.name
             
         case 21 ... 24:
-            name = "Night " + sportType
+            name = "Night " + activityProfile.name
 
         default:
-            name = "Morning " + sportType
+            name = "Morning " + activityProfile.name
         }
 
-        activityDescription = activityProfile.name
+        activityDescription = ""
     }
     
-    func addTrackPoint(heartRate: Double?,
-                       distanceMeters: Double?,
-                       cadence: Int?,
-                       speed: Double?,
-                       watts: Int?) {
+    func addTrackPoint() {
 
 
         trackPoints.append(TrackPoint(time: Date(),
@@ -229,10 +365,6 @@ class ActivityDataManager: NSObject, ObservableObject {
 
         let CKRecord = activityRecord.asCKRecord()
 
-        print("Adding CK Record \(CKRecord)")
-        print("Track Points \(activityRecord.trackPoints)")
- //       print("CK Asset \(myCKAsset)")
-        
         isBusy = true
         
         database.save(CKRecord) { [self] record, error in
@@ -245,6 +377,7 @@ class ActivityDataManager: NSObject, ObservableObject {
 
                     self.isBusy = false
                     self.recordSet.insert(activityRecord, at: 0)
+                    activityRecord.deleteTrackRecord()
                 }
             }
         }

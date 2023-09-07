@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		E40F88302A97AAF500E00F25 /* ActivitySaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */; };
+		E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F886A2AA5D31400E00F25 /* SimpleXML.swift */; };
 		E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */; };
 		E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */; };
 		E421295C299D4D91001B8AA9 /* BTDeviceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */; };
@@ -86,6 +87,7 @@
 
 /* Begin PBXFileReference section */
 		E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySaveView.swift; sourceTree = "<group>"; };
+		E40F886A2AA5D31400E00F25 /* SimpleXML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleXML.swift; sourceTree = "<group>"; };
 		E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceDiscoverView.swift; sourceTree = "<group>"; };
 		E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTStartDiscoverView.swift; sourceTree = "<group>"; };
 		E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceBarView.swift; sourceTree = "<group>"; };
@@ -255,6 +257,7 @@
 				E46EF0C92955F615006FA603 /* WorkoutManager.swift */,
 				E421295F29A21922001B8AA9 /* ActivityProfile.swift */,
 				E4C25BA92A4F54B1002F315D /* ActivityDataManager.swift */,
+				E40F886A2AA5D31400E00F25 /* SimpleXML.swift */,
 				E4C11F5929CCCA8E008DB769 /* Views */,
 			);
 			path = WorkoutManager;
@@ -462,6 +465,7 @@
 				E468DC8329E9B5050002FEA9 /* ProfileDetailView.swift in Sources */,
 				E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */,
 				E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */,
+				E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */,
 				E46EF08429537CA1006FA603 /* PulseWorkoutApp.swift in Sources */,
 				E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */,
 				E4C11F5B29CCCC43008DB769 /* DeviceList.swift in Sources */,
