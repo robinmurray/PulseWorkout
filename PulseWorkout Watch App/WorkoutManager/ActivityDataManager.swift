@@ -156,7 +156,7 @@ class ActivityRecord: NSObject, Identifiable {
             return true
         }
         catch {
-            error as any Error
+//            error as any Error
             print("error \(error)")
             return false
         }
@@ -249,10 +249,17 @@ class ActivityRecord: NSObject, Identifiable {
         startDateLocal = startDate
 
         
-        let localStartHour = Int(startDateLocal.formatted(
+        var localStartHour = Int(startDateLocal.formatted(
             Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
                 .hour(.defaultDigits(amPM: .omitted))
         )) ?? 0
+        
+        let AMPM = startDateLocal.formatted(
+            Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
+                .hour(.defaultDigits(amPM: .wide)))
+
+        if AMPM.contains("PM") { localStartHour += 12 }
+        
         switch localStartHour {
         case 0 ... 4:
             name = "Night " + activityProfile.name

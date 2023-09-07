@@ -19,10 +19,6 @@ struct LiveTabView: View {
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var activityDataManager: ActivityDataManager
 
-    func startWorkout() {
-        
-        workoutManager.startWorkout(activityProfile: profile)
-    }
     var body: some View {
 
             TabView(selection: $workoutManager.liveTabSelection) {
@@ -42,7 +38,6 @@ struct LiveTabView: View {
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .automatic))
             .navigationBarBackButtonHidden(true)
-//            .onAppear(perform: startWorkout)
             .navigationTitle(profile.name)
 
     }

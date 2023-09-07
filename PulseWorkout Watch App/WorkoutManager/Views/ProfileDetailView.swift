@@ -17,7 +17,7 @@ struct ProfileDetailView: View {
     @Environment(\.dismiss) private var dismiss
     
     var workoutTypes: [HKWorkoutActivityType] = [.crossTraining, .cycling, .mixedCardio, .paddleSports, .rowing, .running, .walking]
-    var workoutLocations: [HKWorkoutSessionLocationType] = [.indoor, .outdoor, .unknown]
+    var workoutLocations: [HKWorkoutSessionLocationType] = [.indoor, .outdoor]
 
 
     func delete() {
@@ -134,9 +134,7 @@ struct ProfileDetailView: View {
             .navigationBarTitleDisplayMode(.inline)
             .onDisappear {
                 profileManager.update(activityProfile: profileManager.profiles[profileIndex], onlyIfChanged: true)
-
             }
-
         }
 
     }

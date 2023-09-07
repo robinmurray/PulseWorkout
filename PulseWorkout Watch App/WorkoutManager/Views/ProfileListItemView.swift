@@ -35,6 +35,7 @@ struct ProfileListItemView: View {
      true: AlarmStyling(colour: Color.orange)]
     
     func startWorkout() {
+        print("ProfileListItemView starting workout with profile \(profile.name)")
         workoutManager.startWorkout(activityProfile: profile)
     }
     
@@ -83,10 +84,13 @@ struct ProfileListItemView: View {
                 NavigationStack {
                     VStack {
                         Button {
+                            
+                            workoutManager.startWorkout(activityProfile: profile)
+                            
                             // Set last used date on profile and save to user defaults
+                            // Do this after starting workout as may change list binding!!
                             profileManager.update(activityProfile: profile, onlyIfChanged: false)
 
-                            workoutManager.startWorkout(activityProfile: profile)
                             navigateToLiveView = true
                         } label: {
                             VStack{
