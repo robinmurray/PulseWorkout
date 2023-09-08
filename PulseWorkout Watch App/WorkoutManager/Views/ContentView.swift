@@ -13,7 +13,7 @@ import WatchKit
 struct ContentView: View {
 
     enum Tab {
-        case start, activityHistory, nowPlaying, btDevices
+        case start, activityHistory, nowPlaying, settings
     }
     
     @ObservedObject var workoutManager: WorkoutManager
@@ -35,7 +35,7 @@ struct ContentView: View {
                 
                 NowPlayingView().tag(Tab.nowPlaying)
 
-                BTContentView(bluetoothManager: workoutManager.bluetoothManager!).tag(Tab.btDevices)
+                SettingsView(bluetoothManager: workoutManager.bluetoothManager!).tag(Tab.settings)
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .automatic))
