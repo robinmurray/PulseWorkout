@@ -14,6 +14,7 @@ struct PulseWorkout_Watch_AppApp: App {
     @ObservedObject var profileManager = ActivityProfiles()
     @ObservedObject var activityDataManager = ActivityDataManager()
     @ObservedObject var workoutManager = WorkoutManager()
+    @ObservedObject var settingsManager = SettingsManager()
 
 
 
@@ -21,7 +22,8 @@ struct PulseWorkout_Watch_AppApp: App {
         WindowGroup {
             ContentView(workoutManager: workoutManager,
                         profileManager: profileManager,
-                        activityDataManager: activityDataManager)
+                        activityDataManager: activityDataManager,
+                        settingsManager: settingsManager)
         }
         .onChange(of: scenePhase) { phase in
             switch phase {

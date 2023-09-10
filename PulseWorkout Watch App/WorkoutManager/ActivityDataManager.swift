@@ -123,7 +123,7 @@ class ActivityRecord: NSObject, Identifiable {
         
         if tcxURL == nil { return false }
         
-        var tcxXMLDoc = XMLDocument()
+        let tcxXMLDoc = XMLDocument()
         
         tcxXMLDoc.addProlog(prolog: "xml version=\"1.0\" encoding=\"UTF-8\"")
         tcxXMLDoc.addComment(comment: "Written by PulseWorkout")

@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     
     @ObservedObject var bluetoothManager: BTDevicesController
+    @ObservedObject var settingsManager: SettingsManager
     
     var body: some View {
         NavigationStack {
@@ -25,7 +26,7 @@ struct SettingsView: View {
                         }
                         
                     }
-                    .buttonStyle(.borderedProminent)
+ //                   .buttonStyle(.borderedProminent)
  //               .tint(Color.blue)
 
                 NavigationLink(
@@ -35,29 +36,29 @@ struct SettingsView: View {
                             Spacer()
                         }
                     }
-                    .buttonStyle(.borderedProminent)
+ //                   .buttonStyle(.borderedProminent)
  //               .tint(Color.blue)
 
                 NavigationLink(
-                    destination: BTContentView(bluetoothManager: bluetoothManager)) {
+                    destination: WatchAsDeviceView(settingsManager: settingsManager)) {
                         HStack {
                             Label("Watch as Device", systemImage: "applewatch.radiowaves.left.and.right")
                             Spacer()
                         }
 
                 }
-                .buttonStyle(.borderedProminent)
+ //               .buttonStyle(.borderedProminent)
  //               .tint(Color.blue)
 
 
                 NavigationLink(
                     destination: BTContentView(bluetoothManager: bluetoothManager)) {
                         HStack {
-                            Label("Strava", systemImage: "figure.outdoor.cycle")
+                            Label("Cloud Connections", systemImage: "cloud")
                             Spacer()
                         }
                     }
-                    .buttonStyle(.borderedProminent)
+//                    .buttonStyle(.borderedProminent)
 //                .tint(Color.blue)
 
 
@@ -75,9 +76,10 @@ struct SettingsView: View {
 struct SettingsView_Previews: PreviewProvider {
     
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
+    static var settingsManager = SettingsManager()
 
 
     static var previews: some View {
-        SettingsView(bluetoothManager: bluetoothManager)
+        SettingsView(bluetoothManager: bluetoothManager, settingsManager: settingsManager)
     }
 }

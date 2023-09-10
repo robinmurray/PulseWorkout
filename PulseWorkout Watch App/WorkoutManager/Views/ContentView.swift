@@ -19,6 +19,8 @@ struct ContentView: View {
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var activityDataManager: ActivityDataManager
+    @ObservedObject var settingsManager: SettingsManager
+    
     @State private var selection: Tab = .start
     
     var body: some View {
@@ -35,7 +37,7 @@ struct ContentView: View {
                 
                 NowPlayingView().tag(Tab.nowPlaying)
 
-                SettingsView(bluetoothManager: workoutManager.bluetoothManager!).tag(Tab.settings)
+                SettingsView(bluetoothManager: workoutManager.bluetoothManager!, settingsManager: settingsManager).tag(Tab.settings)
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .automatic))
@@ -50,8 +52,10 @@ struct ContentView_Previews: PreviewProvider {
     static var workoutManager = WorkoutManager()
     static var profileManager = ActivityProfiles()
     static var activityDataManager = ActivityDataManager()
+    static var settingsManager = SettingsManager()
 
     static var previews: some View {
-        ContentView(workoutManager: workoutManager, profileManager: profileManager, activityDataManager: activityDataManager)
+        ContentView(workoutManager: workoutManager, profileManager:         profileManager, activityDataManager: activityDataManager,
+                    settingsManager: settingsManager)
     }
 }
