@@ -19,7 +19,7 @@ struct SettingsView: View {
             VStack {
 
                 NavigationLink(
-                    destination: BTContentView(bluetoothManager: bluetoothManager)) {
+                    destination: GeneralSettingsView(settingsManager: settingsManager)) {
                         HStack {
                             Label("General", systemImage: "folder")
                             Spacer()
@@ -32,7 +32,7 @@ struct SettingsView: View {
                 NavigationLink(
                     destination: BTContentView(bluetoothManager: bluetoothManager)) {
                         HStack {
-                            Label("Devices", systemImage: "badge.plus.radiowaves.right")
+                            Label("Sensors", systemImage: "badge.plus.radiowaves.right")
                             Spacer()
                         }
                     }
@@ -42,7 +42,7 @@ struct SettingsView: View {
                 NavigationLink(
                     destination: WatchAsDeviceView(settingsManager: settingsManager)) {
                         HStack {
-                            Label("Watch as Device", systemImage: "applewatch.radiowaves.left.and.right")
+                            Label("Watch as Sensor", systemImage: "applewatch.radiowaves.left.and.right")
                             Spacer()
                         }
 
@@ -52,7 +52,7 @@ struct SettingsView: View {
 
 
                 NavigationLink(
-                    destination: BTContentView(bluetoothManager: bluetoothManager)) {
+                    destination: CloudConnectionsView(settingsManager: settingsManager)) {
                         HStack {
                             Label("Cloud Connections", systemImage: "cloud")
                             Spacer()

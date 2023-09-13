@@ -35,7 +35,7 @@ struct BTStartDiscoverView: View {
                 .disabled(bluetoothManager.centralManager.state != .poweredOn)
 
             }
-            .navigationTitle("Devices")
+            .navigationTitle("Sensors")
             .navigationBarTitleDisplayMode(.inline)
         }
 
