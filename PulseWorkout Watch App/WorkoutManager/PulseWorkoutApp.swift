@@ -12,10 +12,10 @@ struct PulseWorkout_Watch_AppApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
     @ObservedObject var profileManager = ActivityProfiles()
+    @ObservedObject var locationManager = LocationManager()
     @ObservedObject var activityDataManager = ActivityDataManager()
     @ObservedObject var workoutManager = WorkoutManager()
     @ObservedObject var settingsManager = SettingsManager()
-
 
 
     var body: some Scene {
@@ -23,7 +23,8 @@ struct PulseWorkout_Watch_AppApp: App {
             ContentView(workoutManager: workoutManager,
                         profileManager: profileManager,
                         activityDataManager: activityDataManager,
-                        settingsManager: settingsManager)
+                        settingsManager: settingsManager,
+                        locationManager: locationManager)
         }
         .onChange(of: scenePhase) { phase in
             switch phase {

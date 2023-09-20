@@ -3,27 +3,14 @@
 <plist version="1.0">
 <dict>
 	<key>UIBackgroundModes</key>
-	<array/>
+	<array>
+		<string>location</string>
+	</array>
+	<key>WKApplication</key>
+	<true/>
 	<key>WKBackgroundModes</key>
 	<array>
 		<string>workout-processing</string>
 	</array>
-	<key>CFBundleExecutable</key>
-	<string></string>
-	<key>CFBundleIdentifier</key>
-	<string></string>
-	<key>WKApplication</key>
-	<true/>
-	<key>WKWatchOnly</key>
-	<true/>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-	</array>
-	<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Connect to bluetooth workout devices</string>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Connect to bluetooth workout devices for workout measurements</string>
 </dict>
 </plist>

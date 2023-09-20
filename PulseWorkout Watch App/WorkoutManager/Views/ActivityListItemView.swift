@@ -15,7 +15,7 @@ struct ActivityListItemView: View {
         VStack {
 
             HStack {
-                Text(activityRecord.activityDescription)
+                Text(activityRecord.name)
                     .foregroundStyle(.yellow)
                 Spacer()
             }

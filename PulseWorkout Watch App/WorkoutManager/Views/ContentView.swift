@@ -13,13 +13,14 @@ import WatchKit
 struct ContentView: View {
 
     enum Tab {
-        case start, activityHistory, nowPlaying, settings
+        case start, location, activityHistory, nowPlaying, settings
     }
     
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var activityDataManager: ActivityDataManager
     @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var locationManager: LocationManager
     
     @State private var selection: Tab = .start
     
@@ -31,6 +32,8 @@ struct ContentView: View {
                           profileManager: profileManager,
                           activityDataManager: activityDataManager)
                     .tag(Tab.start)
+                
+                LocationView(locationManager: locationManager)
 
                 ActivityHistoryView(activityDataManager: activityDataManager)
                     .tag(Tab.activityHistory)
@@ -53,9 +56,11 @@ struct ContentView_Previews: PreviewProvider {
     static var profileManager = ActivityProfiles()
     static var activityDataManager = ActivityDataManager()
     static var settingsManager = SettingsManager()
-
+    static var locationManager = LocationManager()
+    
     static var previews: some View {
-        ContentView(workoutManager: workoutManager, profileManager:         profileManager, activityDataManager: activityDataManager,
-                    settingsManager: settingsManager)
+        ContentView(workoutManager: workoutManager, profileManager:             profileManager, activityDataManager: activityDataManager,
+                    settingsManager: settingsManager,
+                    locationManager: locationManager)
     }
 }

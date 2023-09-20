@@ -19,8 +19,10 @@ enum AppState {
 }
 
 
-class WorkoutManager: NSObject, ObservableObject {
+class WorkoutManager : NSObject, ObservableObject {
 
+//    var locationManager: LocationManager
+    
     @Published var hrState: HRState = HRState.inactive
     @Published var HRMonitorActive: Bool = false
     @Published var appState: AppState = .initial
@@ -67,7 +69,7 @@ class WorkoutManager: NSObject, ObservableObject {
     @Published var activityProfiles = ActivityProfiles()
     @Published var liveActivityProfile: ActivityProfile?
 
-    init(profileName: String = ""){
+    init(profileName: String = "") {
 
         super.init()
 
@@ -94,7 +96,7 @@ class WorkoutManager: NSObject, ObservableObject {
                                                   callback: setBTcyclePowerMeterBatteryLevel)
 
     }
-
+    
     func appActive() {
         print("App becoming active")
         if (appInBackground && (appState != .live)) {
@@ -129,9 +131,12 @@ class WorkoutManager: NSObject, ObservableObject {
         liveActivityProfile = activityProfile
         liveTabSelection = LiveScreenTab.liveMetrics
         
-
+        if activityProfile.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
+//            locationManager.startBGLocationServices()
+        }
+            
         startStopHRMonitor()
-        // FILL OUT!!
+
      
         
         let configuration = HKWorkoutConfiguration()
@@ -181,6 +186,10 @@ class WorkoutManager: NSObject, ObservableObject {
         session?.end()
         
         startStopHRMonitor()
+        
+        if liveActivityProfile!.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
+//            locationManager.stopBGLocationServices()
+        }
     }
     
     func resumeWorkout() {
@@ -204,7 +213,10 @@ class WorkoutManager: NSObject, ObservableObject {
             self.heartRate = heartRate
 
         }
-        activityRecord.heartRate = heartRate
+        if activityRecord != nil {
+            activityRecord.heartRate = heartRate
+        }
+        
     }
     
     func setBTHeartRate(value: Any) {
@@ -243,7 +255,10 @@ class WorkoutManager: NSObject, ObservableObject {
         }
 
         cyclingPower = (powerDict["instantaneousPower"] ?? 0) as? Int ?? 0
-        activityRecord.watts = cyclingPower
+        if activityRecord != nil {
+            activityRecord.watts = cyclingPower
+        }
+        
 
         // lastCrankTime is in seconds with a resolution of 1/1024.
         let lastCrankTime = (powerDict["lastCrankEventTime"] ?? 0) as? Int ?? 0
@@ -258,7 +273,11 @@ class WorkoutManager: NSObject, ObservableObject {
                 if newCrankRevs == 0 {
                     cyclingCadence = 0
                 }
-                activityRecord.cadence = cyclingCadence
+                
+                if activityRecord != nil {
+                    activityRecord.cadence = cyclingCadence
+                }
+
             }
             
             prevCrankTime = lastCrankTime
@@ -302,7 +321,11 @@ class WorkoutManager: NSObject, ObservableObject {
     @objc func fireTimer() {
         
         // add a track point for tcx file creation every time timer fires...
-        activityRecord.addTrackPoint()
+        if activityRecord != nil {
+            activityRecord.addTrackPoint()
+        }
+        
+        
 
         if (self.liveActivityProfile!.hiLimitAlarmActive) &&
            (Int(self.heartRate ?? 0) >= self.liveActivityProfile!.hiLimitAlarm) {
