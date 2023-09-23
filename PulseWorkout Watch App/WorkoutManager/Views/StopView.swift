@@ -99,7 +99,8 @@ struct StopView: View {
 
 struct StopView_Previews: PreviewProvider {
     
-    static var workoutManager = WorkoutManager()
+    static var locationManager = LocationManager()
+    static var workoutManager = WorkoutManager(locationManager: locationManager)
     static var activityDataManager = ActivityDataManager()
 
     static var previews: some View {

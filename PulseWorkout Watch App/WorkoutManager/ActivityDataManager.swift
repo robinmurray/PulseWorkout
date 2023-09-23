@@ -12,8 +12,7 @@ import CloudKit
 
 
 func getCacheDirectory() -> URL? {
-//    let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-//    let paths = FileManager.default.temporaryDirectory
+
     let cachePath = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("pulseWorkout")
     do {
         try FileManager.default.createDirectory(at: cachePath, withIntermediateDirectories: true)
@@ -21,42 +20,45 @@ func getCacheDirectory() -> URL? {
         print("error \(error)")
         return nil
     }
-//    let documentsDirectory = paths[0]
+
     return cachePath
 }
 
-func getTrackFileURL() -> URL? {
-    let fileName = NSUUID().uuidString + ".tcx"
-    guard let cachePath = getCacheDirectory() else { return nil }
-    return cachePath.appendingPathComponent(fileName)
-}
 
-class ActivityRecord: NSObject, Identifiable {
+class ActivityRecord: NSObject, Identifiable, Codable {
     
-    let recordType = "activity"
-    var recordID: CKRecord.ID!
     var name: String = "Morning Ride"
     var type: String = "Ride"
     var sportType = "Ride"
     var startDateLocal: Date = Date()
     var elapsedTime: Double = 0
     var activityDescription: String = ""
-    var heartRate: Double?
     var distanceMeters: Double = 0
-    var cadence: Int?
-    var watts: Int?
-    var speed: Double?
     var averageHeartRate: Double = 0
     var heartRateRecovery: Double = 0
     var activeEnergy: Double = 0
-
     var timeOverHiAlarm: Double = 0
     var timeUnderLoAlarm: Double = 0
-    
-    var tcxAsset: CKAsset?
+    var stravaStatus: Bool = false
     var tcxURL: URL?        // Temporary cache URL for tcx file
     
+    // Instantaneous data fields
+    var heartRate: Double?
+    var cadence: Int?
+    var watts: Int?
+    var speed: Double?
+    var latitude: Double?
+    var longitude: Double?
+
+    
+    // fields used for storing to Cloudkit only
+    let recordType = "activity"
+    var recordID: CKRecord.ID!
+    var tcxAsset: CKAsset?
+    
+    let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
  
+    
     struct TrackPoint {
         var time: Date
         var heartRate: Double?
@@ -111,15 +113,190 @@ class ActivityRecord: NSObject, Identifiable {
         }
         
     }
-    
-    var trackPoints: [TrackPoint] = []
 
-    var stravaStatus: Bool = false
+    private var trackPoints: [TrackPoint] = []
+    
+    
+    func start(activityProfile: ActivityProfile, startDate: Date) {
+    
+        recordID = CKRecord.ID()
+        type = "Ride"
+        sportType = "Ride"
+        startDateLocal = startDate
+
+        
+        var localStartHour = Int(startDateLocal.formatted(
+            Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
+                .hour(.defaultDigits(amPM: .omitted))
+        )) ?? 0
+        
+        let AMPM = startDateLocal.formatted(
+            Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
+                .hour(.defaultDigits(amPM: .wide)))
+
+        if AMPM.contains("PM") { localStartHour += 12 }
+        
+        switch localStartHour {
+        case 0 ... 4:
+            name = "Night " + activityProfile.name
+
+        case 5 ... 11:
+            name = "Morning " + activityProfile.name
+
+        case 12 ... 16:
+            name = "Afternoon " + activityProfile.name
+
+        case 17 ... 20:
+            name = "Evening " + activityProfile.name
+            
+        case 21 ... 24:
+            name = "Night " + activityProfile.name
+
+        default:
+            name = "Morning " + activityProfile.name
+        }
+
+        activityDescription = ""
+    }
+    
 
     
+    func description() -> String {
+          let mirror = Mirror(reflecting: self)
+          
+          var str = "\(mirror.subjectType)("
+          var first = true
+          for (label, value) in mirror.children {
+            if let label = label {
+              if first {
+                first = false
+              } else {
+                str += ", "
+              }
+              str += label
+              str += ": "
+              str += "\(value)"
+            }
+          }
+          str += ")"
+          
+          return str
+        
+    }
+}
+
+// MARK: - Serialise Activity Record to JSON
+
+/// Extension for serialising / de-serialising activity record to JSON file
+extension ActivityRecord {
+
+    // set CodingKeys to define which variables are stored to JSON file
+    private enum CodingKeys: String, CodingKey {
+        case name, type, sportType, startDateLocal,
+             elapsedTime, activityDescription, distanceMeters,
+             averageHeartRate, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, stravaStatus
+    }
+    
+    /// Get URL for JSON file
+    func JSONFileURL() -> URL? {
+        guard let cachePath = getCacheDirectory() else { return nil }
+        return cachePath.appendingPathComponent(baseFileName + ".json")
+    }
+
+    /// Write activity record to JSON file in cache folder
+    func writeToJSON() -> Bool {
+        
+        guard let jURL = JSONFileURL() else { return false }
+        
+        print("Writing Activity Record to JSON file")
+        do {
+            let data = try JSONEncoder().encode(self)
+            let jsonString = String(data: data, encoding: .utf8)
+            print("JSON : \(String(describing: jsonString))")
+            do {
+                try data.write(to: jURL)
+                
+                return true
+            }
+            catch {
+    //            error as any Error
+                print("error \(error)")
+                return false
+            }
+
+        } catch {
+            print("Error enconding Activity Record")
+            return false
+        }
+
+    }
+
+    /// Create activity record from JSON file in cache folder
+    func readFromJSON() -> Bool {
+        guard let jURL = JSONFileURL() else { return false }
+        
+        do {
+            let data = try Data(contentsOf: jURL)
+            let decoder = JSONDecoder()
+            let JSONData = try decoder.decode(ActivityRecord.self, from: data)
+            print ("Read JSONData name: \(JSONData.name)")
+            print ("Read JSONData type: \(JSONData.type)")
+            print ("Read JSONData startDateLocal: \(JSONData.startDateLocal)")
+            print ("Read JSONData elapsedTime: \(JSONData.elapsedTime)")
+            print ("Read JSONData activityDescription: \(JSONData.activityDescription)")
+            return true
+        }
+        catch {
+            print("error:\(error)")
+            return false
+        }
+    }
+
+    
+    /// Remove temporary .json file from cache folder
+    func deleteJSON() {
+        guard let jURL = JSONFileURL() else { return }
+
+        do {
+            try FileManager.default.removeItem(at: jURL)
+                print("JSON file has been deleted")
+        } catch {
+            print(error)
+        }
+    }
+
+
+}
+
+
+// MARK: - Management of list of track points within ActivityRecord
+
+/// Extension for serialising / de-serialising activity record to JSON file
+extension ActivityRecord {
+    
+    /// Add data as a track point
+    func addTrackPoint() {
+
+        trackPoints.append(TrackPoint(time: Date(),
+                                      heartRate: heartRate,
+                                      latitude: latitude,
+                                      longitude: longitude,
+                                      distanceMeters: distanceMeters,
+                                      cadence: cadence,
+                                      speed: speed,
+                                      watts: watts
+                                     )
+                            )
+    }
+
+    func trackFileURL() -> URL? {
+        guard let cachePath = getCacheDirectory() else { return nil }
+        return cachePath.appendingPathComponent(baseFileName + ".tcx")
+    }
+
     func saveTrackRecord() -> Bool {
         
-        tcxURL = getTrackFileURL()
+        tcxURL = trackFileURL()
         
         if tcxURL == nil { return false }
         
@@ -165,34 +342,22 @@ class ActivityRecord: NSObject, Identifiable {
 
     /// Remove temporary .tcx file
     func deleteTrackRecord() {
-        if tcxURL != nil {
-            do {
-                try FileManager.default.removeItem(at: tcxURL!)
-                    print("tcx has been deleted")
-                } catch {
-                    print(error)
-                }
-            }
+        guard let tcxURL = trackFileURL() else { return }
+
+        do {
+            try FileManager.default.removeItem(at: tcxURL)
+                print("tcx has been deleted")
+        } catch {
+            print(error)
         }
-
-    
-    
-    func createDummy() {
-        name = "Morning Ride"
-        type = "Ride"
-        sportType = "Ride"
-        startDateLocal = Date()
-        elapsedTime = 10
-        activityDescription = ""
-        distanceMeters = 5370
-
-        averageHeartRate = 130
-        heartRateRecovery = 0
-        activeEnergy = 950
-
-        timeOverHiAlarm = 100
-        timeUnderLoAlarm = 200
     }
+
+}
+
+// MARK: - Saving / Receiving Activity Record to / from Cloudkit
+
+/// Extension for Saving / Receiving Activity Record to / from Cloudkit
+extension ActivityRecord {
     
     func asCKRecord() -> CKRecord {
         recordID = CKRecord.ID()
@@ -241,86 +406,10 @@ class ActivityRecord: NSObject, Identifiable {
     }
 
     
-    func start(activityProfile: ActivityProfile, startDate: Date) {
-    
-        recordID = CKRecord.ID()
-        type = "Ride"
-        sportType = "Ride"
-        startDateLocal = startDate
-
-        
-        var localStartHour = Int(startDateLocal.formatted(
-            Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
-                .hour(.defaultDigits(amPM: .omitted))
-        )) ?? 0
-        
-        let AMPM = startDateLocal.formatted(
-            Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
-                .hour(.defaultDigits(amPM: .wide)))
-
-        if AMPM.contains("PM") { localStartHour += 12 }
-        
-        switch localStartHour {
-        case 0 ... 4:
-            name = "Night " + activityProfile.name
-
-        case 5 ... 11:
-            name = "Morning " + activityProfile.name
-
-        case 12 ... 16:
-            name = "Afternoon " + activityProfile.name
-
-        case 17 ... 20:
-            name = "Evening " + activityProfile.name
-            
-        case 21 ... 24:
-            name = "Night " + activityProfile.name
-
-        default:
-            name = "Morning " + activityProfile.name
-        }
-
-        activityDescription = ""
-    }
-    
-    func addTrackPoint() {
-
-
-        trackPoints.append(TrackPoint(time: Date(),
-                                      heartRate: heartRate,
-                                      distanceMeters: distanceMeters,
-                                      cadence: cadence,
-                                      speed: speed,
-                                      watts: watts
-                                     )
-                            )
-        
-
-    }
-    
-    func description() -> String {
-          let mirror = Mirror(reflecting: self)
-          
-          var str = "\(mirror.subjectType)("
-          var first = true
-          for (label, value) in mirror.children {
-            if let label = label {
-              if first {
-                first = false
-              } else {
-                str += ", "
-              }
-              str += label
-              str += ": "
-              str += "\(value)"
-            }
-          }
-          str += ")"
-          
-          return str
-        
-    }
 }
+
+
+// MARK: - ActivityDataManager
 
 class ActivityDataManager: NSObject, ObservableObject {
     
@@ -370,6 +459,10 @@ class ActivityDataManager: NSObject, ObservableObject {
     
     func saveActivityRecord(activityRecord: ActivityRecord) {
 
+        // First store activity record to local cache for if defered cloudkit operation required
+        let activitySavedLocally = activityRecord.writeToJSON()
+        let result = activityRecord.readFromJSON()
+        
         let CKRecord = activityRecord.asCKRecord()
 
         isBusy = true
@@ -390,14 +483,6 @@ class ActivityDataManager: NSObject, ObservableObject {
         }
 
         
-    }
-    
-    func saveDummyActivityRecord()  {
-
-        let activityRecord = ActivityRecord()
-        activityRecord.createDummy()
-        saveActivityRecord(activityRecord: activityRecord)
-
     }
     
     

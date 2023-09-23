@@ -68,9 +68,13 @@ class WorkoutManager : NSObject, ObservableObject {
     
     @Published var activityProfiles = ActivityProfiles()
     @Published var liveActivityProfile: ActivityProfile?
+    
+    var locationManager: LocationManager
 
-    init(profileName: String = "") {
+    init(profileName: String = "", locationManager: LocationManager) {
 
+        self.locationManager = locationManager
+        
         super.init()
 
         self.liveActivityProfile = activityProfiles.profiles[0]
@@ -131,9 +135,6 @@ class WorkoutManager : NSObject, ObservableObject {
         liveActivityProfile = activityProfile
         liveTabSelection = LiveScreenTab.liveMetrics
         
-        if activityProfile.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
-//            locationManager.startBGLocationServices()
-        }
             
         startStopHRMonitor()
 
@@ -163,6 +164,10 @@ class WorkoutManager : NSObject, ObservableObject {
         let startDate = Date()
         self.activityRecord = ActivityRecord()
 
+        if activityProfile.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
+            locationManager.startBGLocationServices(activityRecord: self.activityRecord)
+        }
+
         session?.startActivity(with: startDate)
         builder?.beginCollection(withStart: startDate) { (success, error) in
             // The workout has started.
@@ -188,7 +193,7 @@ class WorkoutManager : NSObject, ObservableObject {
         startStopHRMonitor()
         
         if liveActivityProfile!.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
-//            locationManager.stopBGLocationServices()
+            locationManager.stopBGLocationServices()
         }
     }
     

@@ -44,7 +44,8 @@ struct BTDeviceDiscoverView: View {
 
 struct BTDeviceDiscoverView_Previews: PreviewProvider {
     
-    static var workoutManager = WorkoutManager()
+    static var locationManager = LocationManager()
+    static var workoutManager = WorkoutManager(locationManager: locationManager)
     static var bluetoothManager = workoutManager.bluetoothManager
     
     static var previews: some View {

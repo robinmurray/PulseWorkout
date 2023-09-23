@@ -40,8 +40,9 @@ struct PausedTabView: View {
 }
 
 struct PausedTabView_Previews: PreviewProvider {
-    static var workoutManager = WorkoutManager()
-
+    static var locationManager = LocationManager()
+    static var workoutManager = WorkoutManager(locationManager: locationManager)
+    
     static var previews: some View {
         PausedTabView(workoutManager: workoutManager)
     }

@@ -10,7 +10,7 @@ import SwiftUI
 import WatchKit
 
 enum LiveScreenTab {
-    case stop, liveMetrics, nowPlaying
+    case stop, liveMetrics, location, nowPlaying
 }
 
 struct LiveTabView: View {
@@ -30,7 +30,10 @@ struct LiveTabView: View {
                 LiveMetricsView(workoutManager: workoutManager)
                     .tag(LiveScreenTab.liveMetrics)
                 
-                
+                LocationView(locationManager: workoutManager.locationManager)
+                    .tag(LiveScreenTab.location)
+
+
                 NowPlayingView()
                     .tag(LiveScreenTab.nowPlaying)
                 

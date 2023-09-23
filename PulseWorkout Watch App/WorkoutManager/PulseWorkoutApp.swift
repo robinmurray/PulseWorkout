@@ -11,12 +11,23 @@ import SwiftUI
 struct PulseWorkout_Watch_AppApp: App {
     @Environment(\.scenePhase) private var scenePhase
 
-    @ObservedObject var profileManager = ActivityProfiles()
-    @ObservedObject var locationManager = LocationManager()
-    @ObservedObject var activityDataManager = ActivityDataManager()
-    @ObservedObject var workoutManager = WorkoutManager()
-    @ObservedObject var settingsManager = SettingsManager()
+    
+    @ObservedObject var profileManager: ActivityProfiles
+    @ObservedObject var locationManager: LocationManager
+    @ObservedObject var activityDataManager: ActivityDataManager
+    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var settingsManager: SettingsManager
 
+    init() {
+        let myLocationManager = LocationManager()
+        
+        locationManager = myLocationManager
+        workoutManager = WorkoutManager(locationManager: myLocationManager)
+        profileManager = ActivityProfiles()
+        activityDataManager = ActivityDataManager()
+        settingsManager = SettingsManager()
+        
+    }
 
     var body: some Scene {
         WindowGroup {

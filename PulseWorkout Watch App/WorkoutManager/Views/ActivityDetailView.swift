@@ -32,6 +32,16 @@ func distanceFormatter (distance: Double) -> String {
 
 }
 
+func speedFormatter (speed: Double) -> String {
+    var unit = UnitSpeed.kilometersPerHour
+    var speedKPH = speed * 3.6
+    
+    speedKPH = max(speedKPH, 0)
+    
+    return String(format: "%.1f", speedKPH) + " k/h"
+    
+}
+
 struct ActivityHeaderView: View {
 
     @State var activityRecord: ActivityRecord

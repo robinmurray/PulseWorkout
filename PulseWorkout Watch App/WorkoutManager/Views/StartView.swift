@@ -43,7 +43,8 @@ struct StartView: View {
 
 
 struct StartView_Previews: PreviewProvider {
-    static var workoutManager = WorkoutManager()
+    static var locationManager = LocationManager()
+    static var workoutManager = WorkoutManager(locationManager: locationManager)
     static var profileManager = ActivityProfiles()
     static var activityDataManager = ActivityDataManager()
 

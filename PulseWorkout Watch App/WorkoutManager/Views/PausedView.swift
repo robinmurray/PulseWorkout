@@ -85,8 +85,9 @@ struct PausedView: View {
 
 struct PausedView_Previews: PreviewProvider {
     
-    static var workoutManager = WorkoutManager()
-
+    static var locationManager = LocationManager()
+    static var workoutManager = WorkoutManager(locationManager: locationManager)
+    
     static var previews: some View {
         PausedView(workoutManager: workoutManager)
     }

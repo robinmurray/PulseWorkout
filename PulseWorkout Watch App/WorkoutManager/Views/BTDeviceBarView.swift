@@ -68,7 +68,7 @@ struct BTDeviceBarView: View {
                 .foregroundColor(BTconnectedColour[workoutManager.BTcyclePowerConnected])
             Image(systemName:getBatteryImage(batteryLevel: workoutManager.BTcyclePowerBatteryLevel))
                 .foregroundColor(getBatteryColor(batteryLevel: workoutManager.BTcyclePowerBatteryLevel))
-            Image(systemName:"speedometer")
+            Image(systemName:"arrow.clockwise.circle")
                 .foregroundColor(Color.gray)
             Image(systemName:"battery.100.bolt")
                 .foregroundColor(Color.gray)
@@ -80,8 +80,9 @@ struct BTDeviceBarView: View {
 
 struct BTDevicesView_Previews: PreviewProvider {
 
-    static var workoutManager = WorkoutManager()
-
+    static var locationManager = LocationManager()
+    static var workoutManager = WorkoutManager(locationManager: locationManager)
+    
     static var previews: some View {
         BTDeviceBarView(workoutManager: workoutManager)
     }

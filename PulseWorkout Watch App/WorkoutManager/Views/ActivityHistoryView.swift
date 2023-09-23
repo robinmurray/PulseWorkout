@@ -24,9 +24,6 @@ struct ActivityHistoryView: View {
                     activityDataManager.delete(recordID: activityDataManager.recordSet.last!.recordID)
                 }
 
-                Button("Save Activity") {
-                    activityDataManager.saveDummyActivityRecord()
-                }
 
                 Button("Query Cloudkit") {
                     activityDataManager.query()

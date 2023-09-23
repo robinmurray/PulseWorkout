@@ -68,11 +68,24 @@ struct LocationView: View {
                         Text("+/- " + String(format: "%.0f", locationManager.verticalAccuracy ?? 0) + "m")
                             .foregroundColor(Color.yellow)
                     }
-                    
+ 
+                    HStack {
+                        Text("Ascent")
+                        Spacer()
+                        Text(String(format: "%.0f", locationManager.totalAscent ?? 0) + "m")
+                            .foregroundColor(Color.yellow)
+                    }
+
+                    HStack {
+                        Text("Descent")
+                        Spacer()
+                        Text(String(format: "%.0f", locationManager.totalDescent ?? 0) + "m")
+                            .foregroundColor(Color.yellow)
+                    }
                     HStack {
                         Text("Speed")
                         Spacer()
-                        Text(String(format: "%.1f", locationManager.speed ?? 0) + "m/s")
+                        Text(speedFormatter(speed: locationManager.speed ?? 0))
                             .foregroundColor(Color.yellow)
                     }
                     HStack {
