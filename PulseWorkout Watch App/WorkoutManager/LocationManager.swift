@@ -44,8 +44,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.activityDataManager = activityDataManager
         locManager = CLLocationManager()
         headingsOk = CLLocationManager.headingAvailable()
-        print("headingsOk \(headingsOk)")
-        print("locationsOk \(CLLocationManager.locationServicesEnabled())")
+
         super.init()
         
         locManager.delegate = self
