@@ -11,6 +11,9 @@ import SwiftUI
 struct CloudConnectionsView: View {
     
     @ObservedObject var settingsManager: SettingsManager
+    var activityDataManager: ActivityDataManager
+    
+    
     
     var body: some View {
             Form {
@@ -28,6 +31,14 @@ struct CloudConnectionsView: View {
 
                 Text("Save activities and routes to Strava.")
                     .font(.footnote).foregroundColor(.gray)
+                
+                Button("Clear Unsaved Activities") {
+                    activityDataManager.clearCache()
+                }.buttonStyle(.borderedProminent)
+                    .tint(Color.blue)
+                
+                Text("Delete locally stored activities that have not been uploaded to cloud storage.")
+                    .font(.footnote).foregroundColor(.gray)
 
             }
             .navigationTitle("Settings")
@@ -41,8 +52,10 @@ struct CloudConnectionsView: View {
 struct CloudConnectionsView_Previews: PreviewProvider {
     
     static var settingsManager = SettingsManager()
+    static var activityDataManager = ActivityDataManager()
     
     static var previews: some View {
-        CloudConnectionsView(settingsManager: settingsManager)
+        CloudConnectionsView(settingsManager: settingsManager,
+                             activityDataManager: activityDataManager)
     }
 }

@@ -31,7 +31,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var headingsOk: Bool
     var location: CLLocation?
     var lastGeoLocation: CLLocation?
-    var activityRecord: ActivityRecord?
+    var activityDataManager: ActivityDataManager
     @Published var pinnedLocation: CLLocation?
     @Published var pinnedPlaceName: String?
     @Published var pinnedLocationDistance: Double?
@@ -39,8 +39,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     let GeoLocationAccuracy: Double = 10
     
     
-    override init() {
+    init(activityDataManager: ActivityDataManager) {
 
+        self.activityDataManager = activityDataManager
         locManager = CLLocationManager()
         headingsOk = CLLocationManager.headingAvailable()
         print("headingsOk \(headingsOk)")
@@ -128,14 +129,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     /// Start location services with background updates switched on.
     /// Use this for location service for workouts when background app updating is needed.
-    func startBGLocationServices(activityRecord: ActivityRecord?) {
+    func startBGLocationServices() {
         
         print("starting BG location services")
         
         locManager.allowsBackgroundLocationUpdates = true
 
         if authStatusOk {
-            self.activityRecord = activityRecord
             locManager.startUpdatingLocation()
             backgroundActive = true
         }
@@ -145,7 +145,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func stopBGLocationServices() {
         locManager.allowsBackgroundLocationUpdates = false
         backgroundActive = false
-        self.activityRecord = nil
         
         if !foregroundActive {
             locManager.stopUpdatingLocation()
@@ -229,13 +228,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             
             lastAltitude = altitude
             
-            
-            if activityRecord != nil {
-                activityRecord!.speed = speed
-                activityRecord!.latitude = latitude
-                activityRecord!.longitude = longitude
-            }
-            
+            activityDataManager.set(speed: speed)
+            activityDataManager.set(latitude: latitude)
+            activityDataManager.set(longitude: longitude)
+            activityDataManager.set(totalAscent: totalAscent)
+            activityDataManager.set(totalDescent: totalDescent)
+
             if pinnedLocation != nil {
                 pinnedLocationDistance = location!.distance(from: pinnedLocation!)
             }

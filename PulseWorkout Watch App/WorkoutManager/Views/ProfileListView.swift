@@ -52,11 +52,13 @@ struct ProfileListView: View {
 
 
 struct ProfileListView_Previews: PreviewProvider {
-    
-    static var profileManager = ActivityProfiles()
-    static var locationManager = LocationManager()
-    static var workoutManager = WorkoutManager(locationManager: locationManager)
+
     static var activityDataManager = ActivityDataManager()
+    static var profileManager = ActivityProfiles()
+    static var locationManager = LocationManager(activityDataManager: activityDataManager)
+    static var workoutManager = WorkoutManager(locationManager: locationManager,
+                                               activityDataManager: activityDataManager)
+
     
     static var previews: some View {
         ProfileListView(profileManager: profileManager,

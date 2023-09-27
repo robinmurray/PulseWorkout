@@ -12,13 +12,19 @@ struct ActivitySaveView: View {
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var activityDataManager: ActivityDataManager
 
-    @State var activityRecord: ActivityRecord
+//    @State var activityRecord: ActivityRecord
     
     @Environment(\.dismiss) private var dismiss
 
+    init(workoutManager: WorkoutManager) {
+        self.workoutManager = workoutManager
+        self.activityDataManager = workoutManager.activityDataManager
+    }
+    
+    
     var body: some View {
         VStack(alignment: .leading) {
-            ActivityHeaderView(activityRecord: activityRecord)
+            ActivityHeaderView(activityRecord: self.activityDataManager.liveActivityRecord!)
             Divider()
             Button(action: SaveActivity) {
                 Text("Done").padding([.leading, .trailing], 40)
@@ -33,7 +39,7 @@ struct ActivitySaveView: View {
     }
     
     func SaveActivity() {
-        activityDataManager.saveActivityRecord(activityRecord: workoutManager.activityRecord)
+        activityDataManager.saveActivityRecord()
                 
         dismiss()
     }
@@ -42,13 +48,11 @@ struct ActivitySaveView: View {
 
 struct ActivitySaveView_Previews: PreviewProvider {
     static var record = ActivityRecord()
-    static var locationManager = LocationManager()
-    static var workoutManager = WorkoutManager(locationManager: locationManager)
     static var activityDataManager = ActivityDataManager()
+    static var locationManager = LocationManager(activityDataManager: activityDataManager)
+    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager)
 
     static var previews: some View {
-        ActivitySaveView(workoutManager: workoutManager,
-                         activityDataManager: activityDataManager,
-                         activityRecord: record)
+        ActivitySaveView(workoutManager: workoutManager)
     }
 }

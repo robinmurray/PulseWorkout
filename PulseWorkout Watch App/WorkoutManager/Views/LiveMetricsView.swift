@@ -29,6 +29,7 @@ struct AlarmStyling {
 struct LiveMetricsView: View {
     
     @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var activityData: ActivityRecord
 
     let HRDisplay: [HRState: HRStyling] =
     [HRState.inactive: HRStyling(HRText: "___", colour: Color.gray),
@@ -47,6 +48,7 @@ struct LiveMetricsView: View {
     
     init(workoutManager: WorkoutManager) {
         self.workoutManager = workoutManager
+        self.activityData = workoutManager.activityDataManager.liveActivityRecord!
     }
     
     var body: some View {
@@ -69,7 +71,7 @@ struct LiveMetricsView: View {
                         HStack {
                             Image(systemName: "arrowshape.forward")
                                 .foregroundColor(Color.yellow)
-                            Text(distanceFormatter(distance: workoutManager.activityRecord.distanceMeters))
+                            Text(distanceFormatter(distance: activityData.distanceMeters))
         //                        .frame(maxWidth: .infinity, alignment: .trailing)
                                     .padding(.trailing, 8)
                                     .foregroundColor(Color.yellow)
@@ -79,7 +81,7 @@ struct LiveMetricsView: View {
                         HStack {
                             Image(systemName: "arrow.up.right.circle")
                                 .foregroundColor(Color.yellow)
-                            Text(distanceFormatter(distance: workoutManager.locationManager.totalAscent ?? 0))
+                            Text(distanceFormatter(distance: activityData.totalAscent ?? 0))
         //                        .frame(maxWidth: .infinity, alignment: .trailing)
                                     .padding(.trailing, 8)
                                     .foregroundColor(Color.yellow)
@@ -94,17 +96,15 @@ struct LiveMetricsView: View {
                     HStack {
                         Image(systemName: "speedometer")
                             .foregroundColor(Color.yellow)
-                        Text(speedFormatter(speed: workoutManager.locationManager.speed ?? 0))
+                        Text(speedFormatter(speed: activityData.speed ?? 0))
                             .foregroundColor(Color.yellow)
-    //                    Text(String(workoutManager.cyclingCadence ?? 0))
-    //                        .foregroundColor(Color.yellow)
                         Spacer()
                     }
                     
                     HStack {
                         Image(systemName: "bolt")
                             .foregroundColor(Color.yellow)
-                        Text(String(workoutManager.cyclingPower ?? 0) + " w")
+                        Text(String(activityData.watts ?? 0) + " w")
                             .foregroundColor(Color.yellow)
                         Spacer()
                     }
@@ -112,7 +112,7 @@ struct LiveMetricsView: View {
                     HStack {
                         Image(systemName: "arrow.clockwise.circle")
                             .foregroundColor(Color.yellow)
-                        Text(String(workoutManager.cyclingCadence ?? 0))
+                        Text(String(activityData.cadence ?? 0))
                             .foregroundColor(Color.yellow)
                         Spacer()
                     }
@@ -163,17 +163,16 @@ struct LiveMetricsView: View {
         .padding(.horizontal)
 
         }
-//        .padding(.horizontal)
-//        .navigationTitle(workoutManager.liveActivityProfile.name)
-//        .navigationBarTitleDisplayMode(.inline)
+
 
 }
     
 
 struct LiveMetricsView_Previews: PreviewProvider {
     
-    static var locationManager = LocationManager()
-    static var workoutManager = WorkoutManager(locationManager: locationManager)
+    static var activityDataManager = ActivityDataManager()
+    static var locationManager = LocationManager(activityDataManager: activityDataManager)
+    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager)
     
     static var previews: some View {
         LiveMetricsView(workoutManager: workoutManager)

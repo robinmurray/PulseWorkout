@@ -19,12 +19,14 @@ struct PulseWorkout_Watch_AppApp: App {
     @ObservedObject var settingsManager: SettingsManager
 
     init() {
-        let myLocationManager = LocationManager()
+        let myActivityDataManager = ActivityDataManager()
+        let myLocationManager = LocationManager(activityDataManager: myActivityDataManager)
         
         locationManager = myLocationManager
-        workoutManager = WorkoutManager(locationManager: myLocationManager)
+        workoutManager = WorkoutManager(locationManager: myLocationManager,
+                                        activityDataManager: myActivityDataManager)
         profileManager = ActivityProfiles()
-        activityDataManager = ActivityDataManager()
+        activityDataManager = myActivityDataManager
         settingsManager = SettingsManager()
         
     }

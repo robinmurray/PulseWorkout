@@ -11,6 +11,7 @@ struct SettingsView: View {
     
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var settingsManager: SettingsManager
+    var activityDataManager: ActivityDataManager
     
     var body: some View {
         NavigationStack {
@@ -52,7 +53,7 @@ struct SettingsView: View {
 
 
                 NavigationLink(
-                    destination: CloudConnectionsView(settingsManager: settingsManager)) {
+                    destination: CloudConnectionsView(settingsManager: settingsManager, activityDataManager: activityDataManager)) {
                         HStack {
                             Label("Cloud Connections", systemImage: "cloud")
                             Spacer()
@@ -77,9 +78,10 @@ struct SettingsView_Previews: PreviewProvider {
     
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
     static var settingsManager = SettingsManager()
+    static var activityDataManager = ActivityDataManager()
 
 
     static var previews: some View {
-        SettingsView(bluetoothManager: bluetoothManager, settingsManager: settingsManager)
+        SettingsView(bluetoothManager: bluetoothManager, settingsManager: settingsManager, activityDataManager: activityDataManager)
     }
 }

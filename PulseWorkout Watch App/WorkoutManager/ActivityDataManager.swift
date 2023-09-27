@@ -25,7 +25,7 @@ func getCacheDirectory() -> URL? {
 }
 
 
-class ActivityRecord: NSObject, Identifiable, Codable {
+class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
     var name: String = "Morning Ride"
     var type: String = "Ride"
@@ -33,14 +33,14 @@ class ActivityRecord: NSObject, Identifiable, Codable {
     var startDateLocal: Date = Date()
     var elapsedTime: Double = 0
     var activityDescription: String = ""
-    var distanceMeters: Double = 0
     var averageHeartRate: Double = 0
     var heartRateRecovery: Double = 0
     var activeEnergy: Double = 0
     var timeOverHiAlarm: Double = 0
     var timeUnderLoAlarm: Double = 0
     var stravaStatus: Bool = false
-    var tcxURL: URL?        // Temporary cache URL for tcx file
+    var tcxFileName: String?    // Temporary cache file for tcx file
+    var JSONFileName: String?   // Temporary cache file for JSON serialisation of activity record
     
     // Instantaneous data fields
     var heartRate: Double?
@@ -49,6 +49,10 @@ class ActivityRecord: NSObject, Identifiable, Codable {
     var speed: Double?
     var latitude: Double?
     var longitude: Double?
+    var totalAscent: Double?
+    var totalDescent: Double?
+    var altitudeMeters: Double?
+    var distanceMeters: Double = 0
 
     
     // fields used for storing to Cloudkit only
@@ -56,8 +60,6 @@ class ActivityRecord: NSObject, Identifiable, Codable {
     var recordID: CKRecord.ID!
     var tcxAsset: CKAsset?
     
-    let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
- 
     
     struct TrackPoint {
         var time: Date
@@ -116,6 +118,16 @@ class ActivityRecord: NSObject, Identifiable, Codable {
 
     private var trackPoints: [TrackPoint] = []
     
+
+    override init() {
+        
+        super.init()
+        
+        let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
+        self.tcxFileName = baseFileName + ".tcx"
+        self.JSONFileName = baseFileName + ".json"
+    }
+
     
     func start(activityProfile: ActivityProfile, startDate: Date) {
     
@@ -190,23 +202,28 @@ class ActivityRecord: NSObject, Identifiable, Codable {
 /// Extension for serialising / de-serialising activity record to JSON file
 extension ActivityRecord {
 
+
     // set CodingKeys to define which variables are stored to JSON file
     private enum CodingKeys: String, CodingKey {
         case name, type, sportType, startDateLocal,
              elapsedTime, activityDescription, distanceMeters,
-             averageHeartRate, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, stravaStatus
+             averageHeartRate, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, stravaStatus,
+             tcxFileName, JSONFileName
     }
     
     /// Get URL for JSON file
-    func JSONFileURL() -> URL? {
+    func CacheURL(fileName: String) -> URL? {
+
         guard let cachePath = getCacheDirectory() else { return nil }
-        return cachePath.appendingPathComponent(baseFileName + ".json")
+
+        return cachePath.appendingPathComponent(fileName)
     }
 
     /// Write activity record to JSON file in cache folder
     func writeToJSON() -> Bool {
         
-        guard let jURL = JSONFileURL() else { return false }
+        guard let jFile = JSONFileName else { return false }
+        guard let jURL = CacheURL(fileName: jFile) else { return false }
         
         print("Writing Activity Record to JSON file")
         do {
@@ -232,18 +249,27 @@ extension ActivityRecord {
     }
 
     /// Create activity record from JSON file in cache folder
-    func readFromJSON() -> Bool {
-        guard let jURL = JSONFileURL() else { return false }
-        
+    func readFromJSON(jURL: URL) -> Bool {
+
         do {
             let data = try Data(contentsOf: jURL)
             let decoder = JSONDecoder()
             let JSONData = try decoder.decode(ActivityRecord.self, from: data)
-            print ("Read JSONData name: \(JSONData.name)")
-            print ("Read JSONData type: \(JSONData.type)")
-            print ("Read JSONData startDateLocal: \(JSONData.startDateLocal)")
-            print ("Read JSONData elapsedTime: \(JSONData.elapsedTime)")
-            print ("Read JSONData activityDescription: \(JSONData.activityDescription)")
+            name = JSONData.name
+            type = JSONData.type
+            sportType = JSONData.sportType
+            startDateLocal = JSONData.startDateLocal
+            elapsedTime = JSONData.elapsedTime
+            activityDescription = JSONData.activityDescription
+            distanceMeters = JSONData.distanceMeters
+            averageHeartRate = JSONData.averageHeartRate
+            activeEnergy = JSONData.activeEnergy
+            timeOverHiAlarm = JSONData.timeOverHiAlarm
+            timeUnderLoAlarm = JSONData.timeUnderLoAlarm
+            stravaStatus = JSONData.stravaStatus
+            tcxFileName = JSONData.tcxFileName
+            JSONFileName = JSONData.JSONFileName
+
             return true
         }
         catch {
@@ -255,7 +281,8 @@ extension ActivityRecord {
     
     /// Remove temporary .json file from cache folder
     func deleteJSON() {
-        guard let jURL = JSONFileURL() else { return }
+        guard let jFile = JSONFileName else { return }
+        guard let jURL = CacheURL(fileName: jFile) else { return }
 
         do {
             try FileManager.default.removeItem(at: jURL)
@@ -281,6 +308,7 @@ extension ActivityRecord {
                                       heartRate: heartRate,
                                       latitude: latitude,
                                       longitude: longitude,
+                                      altitudeMeters: altitudeMeters,
                                       distanceMeters: distanceMeters,
                                       cadence: cadence,
                                       speed: speed,
@@ -289,17 +317,17 @@ extension ActivityRecord {
                             )
     }
 
-    func trackFileURL() -> URL? {
-        guard let cachePath = getCacheDirectory() else { return nil }
-        return cachePath.appendingPathComponent(baseFileName + ".tcx")
-    }
 
     func saveTrackRecord() -> Bool {
-        
-        tcxURL = trackFileURL()
-        
-        if tcxURL == nil { return false }
-        
+
+        guard let tFile = tcxFileName else { return false }
+        guard let tURL = CacheURL(fileName: tFile) else { return false }
+
+        print("testing file at \(tURL.path)")
+        if FileManager.default.fileExists(atPath: tURL.path) {
+            return true
+        }
+        print("file not found!")
         let tcxXMLDoc = XMLDocument()
         
         tcxXMLDoc.addProlog(prolog: "xml version=\"1.0\" encoding=\"UTF-8\"")
@@ -328,7 +356,7 @@ extension ActivityRecord {
         }
         
         do {
-            try tcxXMLDoc.serialize().write(to: tcxURL!, atomically: true, encoding: .utf8)
+            try tcxXMLDoc.serialize().write(to: tURL, atomically: true, encoding: .utf8)
             
             return true
         }
@@ -342,10 +370,11 @@ extension ActivityRecord {
 
     /// Remove temporary .tcx file
     func deleteTrackRecord() {
-        guard let tcxURL = trackFileURL() else { return }
+        guard let tFile = tcxFileName else { return }
+        guard let tURL = CacheURL(fileName: tFile) else { return }
 
         do {
-            try FileManager.default.removeItem(at: tcxURL)
+            try FileManager.default.removeItem(at: tURL)
                 print("tcx has been deleted")
         } catch {
             print(error)
@@ -380,7 +409,9 @@ extension ActivityRecord {
         
         if saveTrackRecord() {
             print("creating asset!")
-            activityRecord["tcx"] = CKAsset(fileURL: tcxURL!)
+            guard let tFile = tcxFileName else { return activityRecord }
+            guard let tURL = CacheURL(fileName: tFile) else { return activityRecord }
+            activityRecord["tcx"] = CKAsset(fileURL: tURL)
         }
 
         return activityRecord
@@ -420,6 +451,9 @@ class ActivityDataManager: NSObject, ObservableObject {
     @Published var fetched: Bool = false
     @Published var recordSet: [ActivityRecord] = []
 
+    var liveActivityRecord: ActivityRecord?
+    var deferredSaveTimer: Timer?
+    
     override init() {
         super.init()
         
@@ -439,6 +473,106 @@ class ActivityDataManager: NSObject, ObservableObject {
          */
 
         fetchAll()
+        
+        // if starts and has unsaved records - attenmpt to save
+        if deferredSaveRequired() { startDeferredSave() }
+    }
+    
+    /// Start an activity and initiate data collection
+    func start(activityProfile: ActivityProfile, startDate: Date) {
+        
+        liveActivityRecord = ActivityRecord()
+        liveActivityRecord?.start(activityProfile: activityProfile, startDate: startDate)
+    }
+    
+    func set(heartRate: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.heartRate = heartRate
+        }
+    }
+    
+    func set(elapsedTime: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.elapsedTime = elapsedTime
+        }
+    }
+    
+    func set(watts: Int?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.watts = watts
+        }
+    }
+    
+    func set(cadence:Int?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.cadence = cadence
+        }
+    }
+    
+    func set(averageHeartRate: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.averageHeartRate = averageHeartRate
+        }
+    }
+    
+    func set(activeEnergy: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.activeEnergy = activeEnergy
+        }
+    }
+    
+    func set(distanceMeters: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.distanceMeters = distanceMeters
+        }
+    }
+
+    func set(speed: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.speed = speed
+        }
+    }
+    
+    func set(latitude: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.latitude = latitude
+        }
+    }
+    
+    func set(longitude: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.longitude = longitude
+        }
+    }
+
+    func set(totalAscent: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.totalAscent = totalAscent
+        }
+    }
+
+    func set(totalDescent: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.totalDescent = totalDescent
+        }
+    }
+
+    func increment(timeOverHiAlarm: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.timeOverHiAlarm += timeOverHiAlarm
+        }
+    }
+    
+    func increment(timeUnderLoAlarm: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.timeUnderLoAlarm += timeUnderLoAlarm
+        }
+    }
+    
+    func addTrackPoint() {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.addTrackPoint()
+        }
     }
     
     
@@ -457,35 +591,159 @@ class ActivityDataManager: NSObject, ObservableObject {
     }
  
     
-    func saveActivityRecord(activityRecord: ActivityRecord) {
+    func saveActivityRecord() {
 
-        // First store activity record to local cache for if defered cloudkit operation required
-        let activitySavedLocally = activityRecord.writeToJSON()
-        let result = activityRecord.readFromJSON()
-        
+        if liveActivityRecord != nil {
+            // First store activity record to local cache for if defered cloudkit operation required
+            let activitySavedLocally = liveActivityRecord!.writeToJSON()
+            
+            saveActivityRecordtoCK(activityRecord: liveActivityRecord!)
+            
+            // add activity record to live list view whether save to cloudkit successful or not...
+            // if unsuccessful will initiate deferred saving, so long as save to JSON worked!
+            if activitySavedLocally {
+                self.recordSet.insert(self.liveActivityRecord!, at: 0)
+            }
+            
+ //           liveActivityRecord = nil
+        }
+    }
+
+    
+    func saveActivityRecordtoCK(activityRecord: ActivityRecord) {
+
         let CKRecord = activityRecord.asCKRecord()
 
         isBusy = true
-        
+            
         database.save(CKRecord) { [self] record, error in
             DispatchQueue.main.async {
                 if let error = error {
+                    switch error {
+                    case CKError.accountTemporarilyUnavailable,
+                        CKError.networkFailure,
+                        CKError.networkUnavailable,
+                        CKError.serviceUnavailable,
+                        CKError.zoneBusy,
+                        CKError.notAuthenticated: // REMOVE!!!
+                        
+                        print("temporary error - set up retry")
+                        self.startDeferredSave()
+                        
+                    default:
+                        print("permanent error - not retrying")
+                    }
+                    
                     print("\(error)")
                     self.isBusy = false
                 } else {
                     print("Saved")
 
                     self.isBusy = false
-                    self.recordSet.insert(activityRecord, at: 0)
                     activityRecord.deleteTrackRecord()
+                    activityRecord.deleteJSON()
+                    
+                    // set up a deferred save if there are still records to save
+                    if self.deferredSaveRequired() {
+                        self.startDeferredSave()
+                    } else {
+                        self.stopDeferredSave()
+                    }
                 }
             }
         }
-
         
     }
     
+    func deferredSaveRequired() -> Bool {
+        
+        let jsonPaths = deferredFileList()
+        if jsonPaths.count > 0 {
+            return true
+            
+        }
+        return false
+        
+    }
     
+    func startDeferredSave() {
+        
+        if deferredSaveRequired() {
+            if deferredSaveTimer == nil {
+                print("starting deferred timer")
+                deferredSaveTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(deferredSave), userInfo: nil, repeats: true)
+                deferredSaveTimer!.tolerance = 5
+                print("Timer initialised")
+            }
+        }
+    }
+
+    func stopDeferredSave() {
+        
+        if deferredSaveTimer != nil {
+            deferredSaveTimer!.invalidate()
+            deferredSaveTimer = nil
+        }
+    }
+
+    func deferredFileList() -> [URL] {
+
+        let fm = FileManager.default
+        guard let cacheDirectory = getCacheDirectory() else { return [] }
+        
+        do {
+            let files = try fm.contentsOfDirectory(atPath: cacheDirectory.path)
+            let paths = files.map { cacheDirectory.appendingPathComponent($0) }
+            let jsonPaths = paths.filter{ $0.pathExtension == "json" }
+
+            return jsonPaths
+
+        } catch {
+            // failed to read directory
+            print("Directory search failed!")
+            return []
+
+        }
+    }
+    
+    @objc func deferredSave() {
+        
+        let jsonPaths = deferredFileList()
+
+        if jsonPaths.count > 0 {
+            let deferredActivityRecord = ActivityRecord()
+            if deferredActivityRecord.readFromJSON(jURL: jsonPaths[0]) {
+                saveActivityRecordtoCK(activityRecord: deferredActivityRecord)
+            }
+        }
+        else {
+            stopDeferredSave()
+        }
+    }
+
+    func clearCache() {
+        let fm = FileManager.default
+
+        do {
+            let files = try fm.contentsOfDirectory(atPath: getCacheDirectory()!.path)
+//            let jsonFiles = files.filter{ $0.pathExtension == "json" }
+            for file in files {
+                let path = getCacheDirectory()!.appendingPathComponent(file)
+                do {
+                    try FileManager.default.removeItem(at: path)
+
+                } catch {
+                    print(error)
+                }
+
+                
+            }
+        } catch {
+            print("Directory search failed!")
+            // failed to read directory – bad permissions, perhaps?
+        }
+    }
+
     func fetchAll() {
         query()
     }

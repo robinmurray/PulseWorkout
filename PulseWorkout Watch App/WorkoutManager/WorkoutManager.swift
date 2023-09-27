@@ -31,8 +31,8 @@ class WorkoutManager : NSObject, ObservableObject {
 
     @Published var heartRate: Double?
  //   @Published var distance: Double?
-    @Published var cyclingPower: Int?
-    @Published var cyclingCadence: Int?
+ //   @Published var cyclingPower: Int?
+ //   @Published var cyclingCadence: Int?
    
     @Published var workout: HKWorkout?
     @Published var running = false
@@ -63,17 +63,18 @@ class WorkoutManager : NSObject, ObservableObject {
     var session: HKWorkoutSession?
     var builder: HKLiveWorkoutBuilder?
 
-    var activityDataManager: ActivityDataManager?
-    @Published var activityRecord: ActivityRecord!
-    
     @Published var activityProfiles = ActivityProfiles()
     @Published var liveActivityProfile: ActivityProfile?
     
     var locationManager: LocationManager
+    @Published var activityDataManager: ActivityDataManager
 
-    init(profileName: String = "", locationManager: LocationManager) {
+    init(profileName: String = "",
+         locationManager: LocationManager,
+         activityDataManager: ActivityDataManager) {
 
         self.locationManager = locationManager
+        self.activityDataManager = activityDataManager
         
         super.init()
 
@@ -134,12 +135,11 @@ class WorkoutManager : NSObject, ObservableObject {
         
         liveActivityProfile = activityProfile
         liveTabSelection = LiveScreenTab.liveMetrics
-        
-            
+        let startDate = Date()
+        self.activityDataManager.start(activityProfile: self.liveActivityProfile!, startDate: startDate)
+
         startStopHRMonitor()
 
-     
-        
         let configuration = HKWorkoutConfiguration()
         configuration.activityType = workoutType
         configuration.locationType = workoutLocation
@@ -161,11 +161,10 @@ class WorkoutManager : NSObject, ObservableObject {
                                                      workoutConfiguration: configuration)
 
         // Start the workout session and begin data collection.
-        let startDate = Date()
-        self.activityRecord = ActivityRecord()
-
+        
+        // If an outdoor activity then start location services
         if activityProfile.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
-            locationManager.startBGLocationServices(activityRecord: self.activityRecord)
+            locationManager.startBGLocationServices()
         }
 
         session?.startActivity(with: startDate)
@@ -176,7 +175,7 @@ class WorkoutManager : NSObject, ObservableObject {
                 print("Workout start Failed with error: \(String(describing: error))")
             } else {
                 print("Workout Started")
-                self.activityRecord.start(activityProfile: self.liveActivityProfile!, startDate: startDate)
+ //               self.activityDataManager.start(activityProfile: self.liveActivityProfile!, startDate: startDate)
             }
         }
         
@@ -187,7 +186,7 @@ class WorkoutManager : NSObject, ObservableObject {
     }
     
     func endWorkout() {
-        self.activityRecord.elapsedTime = self.builder?.elapsedTime(at: Date()) ?? 0
+        self.activityDataManager.set(elapsedTime: self.builder?.elapsedTime(at: Date()) ?? 0)
         session?.end()
         
         startStopHRMonitor()
@@ -218,9 +217,8 @@ class WorkoutManager : NSObject, ObservableObject {
             self.heartRate = heartRate
 
         }
-        if activityRecord != nil {
-            activityRecord.heartRate = heartRate
-        }
+
+        activityDataManager.set(heartRate: heartRate)
         
     }
     
@@ -258,13 +256,12 @@ class WorkoutManager : NSObject, ObservableObject {
             print("API misuse - callback should return value that can be cast to dictionary")
             return
         }
-
-        cyclingPower = (powerDict["instantaneousPower"] ?? 0) as? Int ?? 0
-        if activityRecord != nil {
-            activityRecord.watts = cyclingPower
-        }
         
+        let cyclingPower = (powerDict["instantaneousPower"] ?? 0) as? Int ?? 0
+        activityDataManager.set(watts: cyclingPower)
 
+        
+        var cyclingCadence: Int?
         // lastCrankTime is in seconds with a resolution of 1/1024.
         let lastCrankTime = (powerDict["lastCrankEventTime"] ?? 0) as? Int ?? 0
         let cumulativeCrankRevolutions = (powerDict["cumulativeCrankRevolutions"] ?? 0) as? Int ?? 0
@@ -279,9 +276,7 @@ class WorkoutManager : NSObject, ObservableObject {
                     cyclingCadence = 0
                 }
                 
-                if activityRecord != nil {
-                    activityRecord.cadence = cyclingCadence
-                }
+                activityDataManager.set(cadence: cyclingCadence)
 
             }
             
@@ -326,16 +321,12 @@ class WorkoutManager : NSObject, ObservableObject {
     @objc func fireTimer() {
         
         // add a track point for tcx file creation every time timer fires...
-        if activityRecord != nil {
-            activityRecord.addTrackPoint()
-        }
+        activityDataManager.addTrackPoint()
         
-        
-
         if (self.liveActivityProfile!.hiLimitAlarmActive) &&
            (Int(self.heartRate ?? 0) >= self.liveActivityProfile!.hiLimitAlarm) {
             
-            self.activityRecord.timeOverHiAlarm += 2
+            activityDataManager.increment(timeOverHiAlarm: 2)
             self.hrState = HRState.hiAlarm
             
             if (liveActivityProfile!.constantRepeat || !playedAlarm) {
@@ -354,7 +345,7 @@ class WorkoutManager : NSObject, ObservableObject {
         } else if (self.liveActivityProfile!.loLimitAlarmActive) &&
                     (Int(self.heartRate ?? 999) <= self.liveActivityProfile!.loLimitAlarm) {
  
-            self.activityRecord.timeUnderLoAlarm += 2
+            activityDataManager.increment(timeUnderLoAlarm: 2)
             self.hrState = HRState.loAlarm
             
             if liveActivityProfile!.playSound && (liveActivityProfile!.constantRepeat || !playedAlarm) {
@@ -406,13 +397,13 @@ class WorkoutManager : NSObject, ObservableObject {
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
                 self.setHeartRate( heartRate: statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0,
                                    hrSource: .healthkit )
-                self.activityRecord.averageHeartRate = statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0
+                self.activityDataManager.set(averageHeartRate: statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0)
             case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
                 let energyUnit = HKUnit.kilocalorie()
-                self.activityRecord.activeEnergy = statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0
+                self.activityDataManager.set(activeEnergy: statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0)
             case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning), HKQuantityType.quantityType(forIdentifier: .distanceCycling):
                 let meterUnit = HKUnit.meter()
-                self.activityRecord.distanceMeters = statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0
+                self.activityDataManager.set(distanceMeters: statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0)
             default:
                 return
             }

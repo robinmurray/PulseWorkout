@@ -23,8 +23,7 @@ struct LiveTabView: View {
 
             TabView(selection: $workoutManager.liveTabSelection) {
                 
-                StopView(workoutManager: workoutManager,
-                         activityDataManager: activityDataManager)
+                StopView(workoutManager: workoutManager)
                     .tag(LiveScreenTab.stop)
                 
                 LiveMetricsView(workoutManager: workoutManager)

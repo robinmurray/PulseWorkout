@@ -40,7 +40,7 @@ struct ContentView: View {
                 
                 NowPlayingView().tag(Tab.nowPlaying)
 
-                SettingsView(bluetoothManager: workoutManager.bluetoothManager!, settingsManager: settingsManager).tag(Tab.settings)
+                SettingsView(bluetoothManager: workoutManager.bluetoothManager!, settingsManager: settingsManager, activityDataManager: activityDataManager).tag(Tab.settings)
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .automatic))
@@ -52,10 +52,11 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
-    static var locationManager = LocationManager()
-    static var workoutManager = WorkoutManager(locationManager: locationManager)
-    static var profileManager = ActivityProfiles()
     static var activityDataManager = ActivityDataManager()
+    static var locationManager = LocationManager(activityDataManager: activityDataManager)
+    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager)
+    static var profileManager = ActivityProfiles()
+
     static var settingsManager = SettingsManager()
 
     
