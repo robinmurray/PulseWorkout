@@ -54,10 +54,10 @@ struct ContentView: View {
 struct ContentView_Previews: PreviewProvider {
     static var activityDataManager = ActivityDataManager()
     static var locationManager = LocationManager(activityDataManager: activityDataManager)
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager)
-    static var profileManager = ActivityProfiles()
-
     static var settingsManager = SettingsManager()
+    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+        settingsManager: settingsManager)
+    static var profileManager = ActivityProfiles()
 
     
     static var previews: some View {

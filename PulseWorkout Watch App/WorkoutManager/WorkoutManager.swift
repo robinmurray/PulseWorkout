@@ -44,7 +44,7 @@ class WorkoutManager : NSObject, ObservableObject {
 
     @Published var liveTabSelection: LiveScreenTab = .liveMetrics
 
-    var playedAlarm: Bool = false
+    var alarmRepeatCount: Int = 0
     
     var appInBackground = false
     
@@ -68,13 +68,17 @@ class WorkoutManager : NSObject, ObservableObject {
     
     var locationManager: LocationManager
     @Published var activityDataManager: ActivityDataManager
+    var settingsManager: SettingsManager
 
     init(profileName: String = "",
          locationManager: LocationManager,
-         activityDataManager: ActivityDataManager) {
+         activityDataManager: ActivityDataManager,
+         settingsManager: SettingsManager) {
 
         self.locationManager = locationManager
         self.activityDataManager = activityDataManager
+        self.settingsManager = settingsManager
+        
         
         super.init()
 
@@ -135,6 +139,8 @@ class WorkoutManager : NSObject, ObservableObject {
         
         liveActivityProfile = activityProfile
         liveTabSelection = LiveScreenTab.liveMetrics
+        alarmRepeatCount = 0
+        
         let startDate = Date()
         self.activityDataManager.start(activityProfile: self.liveActivityProfile!, startDate: startDate)
 
@@ -323,22 +329,27 @@ class WorkoutManager : NSObject, ObservableObject {
         // add a track point for tcx file creation every time timer fires...
         activityDataManager.addTrackPoint()
         
+        let maxAlarmRepeat = (liveActivityProfile!.constantRepeat ? settingsManager.maxAlarmRepeatCount : 1)
+        
         if (self.liveActivityProfile!.hiLimitAlarmActive) &&
            (Int(self.heartRate ?? 0) >= self.liveActivityProfile!.hiLimitAlarm) {
             
             activityDataManager.increment(timeOverHiAlarm: 2)
             self.hrState = HRState.hiAlarm
             
-            if (liveActivityProfile!.constantRepeat || !playedAlarm) {
+            if alarmRepeatCount < maxAlarmRepeat {
                 if liveActivityProfile!.playSound {
-                    WKInterfaceDevice.current().play(.failure)
+                    WKInterfaceDevice.current().play(settingsManager.hapticType)
                     print("playing sound 1")
                 }
+                /*
                 if liveActivityProfile!.playHaptic {
-                    WKInterfaceDevice.current().play(.directionUp)
-                    print("playing sound 2")                }
-
-                playedAlarm = true
+                    WKInterfaceDevice.current().play(settingsManager.hapticType)
+                    print("playing sound 2")
+                    
+                }
+                */
+                alarmRepeatCount += 1
             }
 
             
@@ -348,15 +359,15 @@ class WorkoutManager : NSObject, ObservableObject {
             activityDataManager.increment(timeUnderLoAlarm: 2)
             self.hrState = HRState.loAlarm
             
-            if liveActivityProfile!.playSound && (liveActivityProfile!.constantRepeat || !playedAlarm) {
-                WKInterfaceDevice.current().play(.failure)
+            if liveActivityProfile!.playSound && (alarmRepeatCount < maxAlarmRepeat) {
+                WKInterfaceDevice.current().play(settingsManager.hapticType)
                 print("playing sound 3")
-                playedAlarm = true
+                alarmRepeatCount += 1
             }
             
         } else {
             self.hrState = HRState.normal
-            playedAlarm = false
+            alarmRepeatCount = 0
         }
         
     }

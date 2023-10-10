@@ -50,7 +50,10 @@ struct ActivitySaveView_Previews: PreviewProvider {
     static var record = ActivityRecord()
     static var activityDataManager = ActivityDataManager()
     static var locationManager = LocationManager(activityDataManager: activityDataManager)
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager)
+    static var settingsManager = SettingsManager()
+    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+        settingsManager: settingsManager)
+    
 
     static var previews: some View {
         ActivitySaveView(workoutManager: workoutManager)

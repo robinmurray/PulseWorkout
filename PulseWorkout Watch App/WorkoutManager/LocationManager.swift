@@ -70,6 +70,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         if pinLatitude != 0 && pinLongitude != 0 {
             pinnedLocation = CLLocation(latitude: pinLatitude, longitude: pinLongitude)
             pinnedPlaceName = UserDefaults().string(forKey: "pinnedLocationPlaceName")
+            
+            if pinnedPlaceName == nil { getPinnedGeoLocation() }
         }
         
         
@@ -80,16 +82,16 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func setPinnedLocation() {
         
         pinnedLocation = location
-        pinnedPlaceName = placeName
+        pinnedPlaceName = nil
         
         if pinnedLocation != nil {
             
             UserDefaults().set( pinnedLocation!.coordinate.latitude, forKey: "pinnedLocationLatitude")
             UserDefaults().set( pinnedLocation!.coordinate.longitude, forKey: "pinnedLocationLongitude")
-
-            UserDefaults().set( pinnedPlaceName, forKey: "pinnedLocationPlaceName")
+            UserDefaults().removeObject(forKey: "pinnedLocationPlaceName")
 
         }
+        getPinnedGeoLocation()
     }
     
     /// Remove pinned location and clear from user defaults
@@ -169,7 +171,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             if !backgroundActive {
                 locManager.startUpdatingLocation()
             } else {
-                getGeoLocation()
+                getCurrentGeoLocation()
             }
             
             foregroundActive = true
@@ -238,13 +240,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
             
             // Get Geo location if running in foreground mode and has moved from last geolocation
-            if foregroundActive {
-                if lastGeoLocation == nil {
-                    getGeoLocation()
-                } else if location!.distance(from: lastGeoLocation!) > GeoLocationAccuracy {
-                    getGeoLocation()
-                }
-            }
+            if foregroundActive { getCurrentGeoLocation() }
 
         }
         
@@ -258,17 +254,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         // Handle failure to get a user’s location
     }
     
-    func lookUpCurrentLocation(completionHandler: @escaping (CLPlacemark?)
+    func getGeoLocation(lookupLocation: CLLocation?, setLastGeoLocation: Bool = true,  completionHandler: @escaping (CLPlacemark?)
                     -> Void ) {
         // Use the last reported location.
-        if let lastLocation = location {
+        if let lastLocation = lookupLocation {
             let geocoder = CLGeocoder()
                 
             // Look up the location and pass it to the completion handler
             geocoder.reverseGeocodeLocation(lastLocation,
                         completionHandler: { (placemarks, error) in
                 if error == nil {
-                    self.lastGeoLocation = lastLocation
+                    if setLastGeoLocation { self.lastGeoLocation = lastLocation }
                     let firstLocation = placemarks?[0]
                     completionHandler(firstLocation)
                     
@@ -285,15 +281,44 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
-    func lookUpCurrentLocationCompletion(placemark: CLPlacemark?) {
+    func currentLocationCompletion(placemark: CLPlacemark?) {
         if placemark != nil {
             placeName = placemark?.name
         }
     }
     
-    func getGeoLocation() {
-        lookUpCurrentLocation(completionHandler: lookUpCurrentLocationCompletion)
+    func getCurrentGeoLocation() {
+        if lastGeoLocation == nil {
+            getGeoLocation(lookupLocation: location,
+                                  completionHandler: currentLocationCompletion)
+        } else if location!.distance(from: lastGeoLocation!) > GeoLocationAccuracy {
+            getGeoLocation(lookupLocation: location,
+                                  completionHandler: currentLocationCompletion)
+        }
     }
+
+    @objc func getPinnedGeoLocation() {
+        guard let lookupLocation = pinnedLocation else { return }
+        
+        getGeoLocation(lookupLocation: lookupLocation,
+                       completionHandler: pinnedLocationCompletion)
+
+    }
+
+    func pinnedLocationCompletion(placemark: CLPlacemark?) {
+        if placemark != nil {
+            print("Setting pinned place name")
+            pinnedPlaceName = placemark?.name
+            UserDefaults().set( pinnedPlaceName, forKey: "pinnedLocationPlaceName")
+        } else { setDeferredGetPinnedLocation() }
+    }
+
+    func setDeferredGetPinnedLocation() {
+        let deferredTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(getPinnedGeoLocation), userInfo: nil, repeats: false)
+        deferredTimer.tolerance = 5
+
+    }
+    
 }
 
 

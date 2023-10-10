@@ -100,6 +100,14 @@ struct ActivityDetailView: View {
                                   value: distanceFormatter(distance: activityRecord.distanceMeters))
                 .foregroundStyle(.yellow)
 
+                SummaryMetricView(title: "Total Ascent",
+                                  value: distanceFormatter(distance: activityRecord.totalAscent ?? 0))
+                .foregroundStyle(.yellow)
+
+                SummaryMetricView(title: "Total Descent",
+                                  value: distanceFormatter(distance: activityRecord.totalDescent ?? 0))
+                .foregroundStyle(.yellow)
+
                 SummaryMetricView(title: "Time Over High Limit",
                                   value: durationFormatter.string(from: activityRecord.timeOverHiAlarm) ?? "0")
                 .foregroundStyle(.yellow)
@@ -111,11 +119,6 @@ struct ActivityDetailView: View {
                 SummaryMetricView(title: "Ave. HR",
                                   value: activityRecord.averageHeartRate
                     .formatted(.number.precision(.fractionLength(0))) + " bpm")
-                .foregroundStyle(.yellow)
-
-                SummaryMetricView(title: "Recovery",
-                                  value: activityRecord.heartRateRecovery
-                    .formatted(.number.precision(.fractionLength(0))))
                 .foregroundStyle(.yellow)
 
                 SummaryMetricView(title: "Energy",

@@ -36,10 +36,36 @@ struct GeneralSettingsView: View {
                     .font(.footnote).foregroundColor(.gray)
 
 
+                Picker("Haptic Type", selection: $settingsManager.hapticType) {
+                    ForEach(hapticTypes) { hapticType in
+                        Text(hapticType.name).tag(hapticType.self)
+                    }
+                }
+                .font(.headline)
+                .foregroundColor(Color.blue)
+                .fontWeight(.bold)
+                .listStyle(.carousel)
+                .onChange(of: settingsManager.hapticType,
+                          perform: {newValue in WKInterfaceDevice.current().play(settingsManager.hapticType)} )
+                
+                
+                Text("Maximum haptic repeat")
+                Stepper(value: $settingsManager.maxAlarmRepeatCount,
+                        in: 1...5,
+                        step: 1) { Text("\(settingsManager.maxAlarmRepeatCount)")
+                }
+                .font(.headline)
+                .fontWeight(.light)
+                .multilineTextAlignment(.leading)
+                .minimumScaleFactor(0.20)
+                .frame(width:160, height: 40, alignment: .topLeading)
+
+
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .onDisappear(perform: settingsManager.save)
+
         }
         
 

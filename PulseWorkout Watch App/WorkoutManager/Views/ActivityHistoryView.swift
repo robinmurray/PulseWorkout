@@ -56,10 +56,6 @@ struct ActivityHistoryView: View {
             if activityDataManager.isBusy {
 
                 ProgressView()
-                    .frame(width: 80, height: 80)
-                    .cornerRadius(3)
-                    .background(Color.white)
-                    .opacity(0.7)
                     .scaleEffect(2)
                 
 

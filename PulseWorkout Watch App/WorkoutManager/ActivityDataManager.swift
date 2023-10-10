@@ -8,6 +8,7 @@
 
 import Foundation
 import CloudKit
+import Gzip
 
 
 
@@ -34,7 +35,6 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var elapsedTime: Double = 0
     var activityDescription: String = ""
     var averageHeartRate: Double = 0
-    var heartRateRecovery: Double = 0
     var activeEnergy: Double = 0
     var timeOverHiAlarm: Double = 0
     var timeUnderLoAlarm: Double = 0
@@ -124,7 +124,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         super.init()
         
         let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
-        self.tcxFileName = baseFileName + ".tcx"
+        self.tcxFileName = baseFileName + ".gz"
         self.JSONFileName = baseFileName + ".json"
     }
 
@@ -208,6 +208,7 @@ extension ActivityRecord {
         case name, type, sportType, startDateLocal,
              elapsedTime, activityDescription, distanceMeters,
              averageHeartRate, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, stravaStatus,
+             totalAscent, totalDescent,
              tcxFileName, JSONFileName
     }
     
@@ -267,6 +268,8 @@ extension ActivityRecord {
             timeOverHiAlarm = JSONData.timeOverHiAlarm
             timeUnderLoAlarm = JSONData.timeUnderLoAlarm
             stravaStatus = JSONData.stravaStatus
+            totalAscent = JSONData.totalAscent
+            totalDescent = JSONData.totalDescent
             tcxFileName = JSONData.tcxFileName
             JSONFileName = JSONData.JSONFileName
 
@@ -320,11 +323,12 @@ extension ActivityRecord {
 
     func saveTrackRecord() -> Bool {
 
-        guard let tFile = tcxFileName else { return false }
-        guard let tURL = CacheURL(fileName: tFile) else { return false }
-
-        print("testing file at \(tURL.path)")
-        if FileManager.default.fileExists(atPath: tURL.path) {
+        // get files for gzipped tcx file
+        guard let gzFile = tcxFileName else { return false }
+        guard let gzURL = CacheURL(fileName: gzFile) else { return false }
+        
+        print("testing file at \(gzURL.path)")
+        if FileManager.default.fileExists(atPath: gzURL.path) {
             return true
         }
         print("file not found!")
@@ -356,8 +360,11 @@ extension ActivityRecord {
         }
         
         do {
-            try tcxXMLDoc.serialize().write(to: tURL, atomically: true, encoding: .utf8)
+//            try tcxXMLDoc.serialize().write(to: tURL, atomically: true, encoding: .utf8)
+            guard let tcxData = tcxXMLDoc.serialize().data(using: .utf8) else {return false}
             
+            let compressedData: Data = try tcxData.gzipped()
+            try compressedData.write(to: gzURL)
             return true
         }
         catch {
@@ -400,8 +407,10 @@ extension ActivityRecord {
         activityRecord["distance"] = distanceMeters as CKRecordValue
 
         activityRecord["averageHeartRate"] = averageHeartRate as CKRecordValue
-        activityRecord["heartRateRecovery"] = heartRateRecovery as CKRecordValue
         activityRecord["activeEnergy"] = activeEnergy as CKRecordValue
+
+        activityRecord["totalAscent"] = (totalAscent ?? 0) as CKRecordValue
+        activityRecord["totalDescent"] = (totalDescent ?? 0) as CKRecordValue
 
         activityRecord["timeOverHiAlarm"] = timeOverHiAlarm as CKRecordValue
         activityRecord["timeUnderLoAlarm"] = timeUnderLoAlarm as CKRecordValue
@@ -427,9 +436,10 @@ extension ActivityRecord {
         elapsedTime = activityRecord["elapsedTime"] ?? 0 as Double
         activityDescription = activityRecord["activityDescription"] ?? "" as String
         distanceMeters = activityRecord["distance"] ?? 0 as Double
+        totalAscent = activityRecord["totalAscent"] ?? 0 as Double
+        totalDescent = activityRecord["totalDescent"] ?? 0 as Double
 
         averageHeartRate = activityRecord["averageHeartRate"] ?? 0 as Double
-        heartRateRecovery = activityRecord["heartRateRecovery"] ?? 0 as Double
         activeEnergy = activityRecord["activeEnergy"] ?? 0 as Double
         timeOverHiAlarm = activityRecord["timeOverHiAlarm"] ?? 0 as Double
         timeUnderLoAlarm = activityRecord["timeUnderLoAlarm"] ?? 0 as Double
@@ -624,14 +634,14 @@ class ActivityDataManager: NSObject, ObservableObject {
                         CKError.networkFailure,
                         CKError.networkUnavailable,
                         CKError.serviceUnavailable,
-                        CKError.zoneBusy,
-                        CKError.notAuthenticated: // REMOVE!!!
+                        CKError.zoneBusy:
                         
                         print("temporary error - set up retry")
                         self.startDeferredSave()
                         
                     default:
                         print("permanent error - not retrying")
+ //                       self.stopDeferredSave()
                     }
                     
                     print("\(error)")
@@ -646,9 +656,10 @@ class ActivityDataManager: NSObject, ObservableObject {
                     // set up a deferred save if there are still records to save
                     if self.deferredSaveRequired() {
                         self.startDeferredSave()
-                    } else {
-                        self.stopDeferredSave()
                     }
+//                    else {
+//                        self.stopDeferredSave()
+//                    }
                 }
             }
         }
@@ -669,12 +680,12 @@ class ActivityDataManager: NSObject, ObservableObject {
     func startDeferredSave() {
         
         if deferredSaveRequired() {
-            if deferredSaveTimer == nil {
+//            if deferredSaveTimer == nil {
                 print("starting deferred timer")
-                deferredSaveTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(deferredSave), userInfo: nil, repeats: true)
+                deferredSaveTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(deferredSave), userInfo: nil, repeats: false)
                 deferredSaveTimer!.tolerance = 5
                 print("Timer initialised")
-            }
+//            }
         }
     }
 
@@ -713,12 +724,13 @@ class ActivityDataManager: NSObject, ObservableObject {
         if jsonPaths.count > 0 {
             let deferredActivityRecord = ActivityRecord()
             if deferredActivityRecord.readFromJSON(jURL: jsonPaths[0]) {
+                print("executing deferred save on \(deferredActivityRecord)")
                 saveActivityRecordtoCK(activityRecord: deferredActivityRecord)
             }
         }
-        else {
-            stopDeferredSave()
-        }
+//        else {
+//            stopDeferredSave()
+//        }
     }
 
     func clearCache() {
@@ -748,7 +760,7 @@ class ActivityDataManager: NSObject, ObservableObject {
         query()
     }
     
-    func query() {
+    @objc func query() {
         
         isBusy = true
         recordSet = []
@@ -759,8 +771,12 @@ class ActivityDataManager: NSObject, ObservableObject {
         query.sortDescriptors = [sort]
 
         let operation = CKQueryOperation(query: query)
-        operation.desiredKeys = nil
+//        operation.desiredKeys = nil
+        operation.desiredKeys = ["name", "type", "sportType", "startDateLocal", "elapsedTime", "activityDescription", "distance",
+                                 "totalAscent", "totalDescent",
+                                 "averageHeartRate", "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm" ]
         operation.resultsLimit = 50
+        operation.configuration.timeoutIntervalForRequest = 30
 
 
         operation.recordMatchedBlock = { recordID, result in
@@ -789,26 +805,43 @@ class ActivityDataManager: NSObject, ObservableObject {
             case .success:
                 // TODO: Yay, the operation was successful, now do something. Perhaps reload your awesome UI.
                 //                    self.fetched = true
- //               print("All Ok \(self.recordSet)")
- //               print("Record Count : \(self.recordSet.count)")
+
                 for record in self.recordSet {
                     print( record.description() )
                 }
                 break
                     
             case .failure(let error):
-                // TODO: An error happened at the operation level, check the error and decide what to do. Retry might be applicable, or tell the user to connect to internet, etc..
+
+                switch error {
+                case CKError.accountTemporarilyUnavailable,
+                    CKError.networkFailure,
+                    CKError.networkUnavailable,
+                    CKError.serviceUnavailable,
+                    CKError.zoneBusy,
+                    CKError.notAuthenticated: //REMOVE!!
+                    
+                    print("temporary query error - set up retry")
+                    self.startDeferredQuery()
+                    
+                default:
+                    print("permanent query error - not retrying")
+                }
                 print( "Fetch failed \(String(describing: error))")
                 break
             }
             DispatchQueue.main.async {
                 self.isBusy = false
             }
-            
         }
         
         database.add(operation)
 
+    }
+    
+    func startDeferredQuery() {
+//        let deferredTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(query), userInfo: nil, repeats: false)
+//        deferredTimer.tolerance = 5
     }
 
     

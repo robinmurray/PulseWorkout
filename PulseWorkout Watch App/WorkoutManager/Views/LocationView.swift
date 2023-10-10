@@ -6,6 +6,40 @@
 //
 
 import SwiftUI
+import MapKit
+
+struct Location: Identifiable {
+  let id = UUID()
+  let coordinate: CLLocationCoordinate2D
+}
+
+struct MapView: View {
+    
+    var latitude: Double
+    var longitude: Double
+    var pinLocation: CLLocationCoordinate2D
+    
+    @State private var region: MKCoordinateRegion
+    
+    init(latitude: Double, longitude: Double) {
+        self.latitude = latitude
+        self.longitude = longitude
+        pinLocation = CLLocationCoordinate2D(latitude: latitude, longitude: longitude)
+        
+        region = MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: latitude, longitude: longitude), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05))
+    }
+
+
+    var body: some View {
+        Map(coordinateRegion: $region,
+            interactionModes: .zoom,
+            annotationItems: [Location(coordinate: pinLocation)], annotationContent: { place in
+            MapMarker(coordinate: place.coordinate,
+                   tint: Color.yellow)
+        })
+            .frame(width: 160, height: 160)
+    }
+}
 
 struct LocationView: View {
     
@@ -123,9 +157,14 @@ struct LocationView: View {
                             Text("Distance")
 
                             Spacer()
-                            Text(String(format: "%.0f", locationManager.pinnedLocationDistance ?? 0))
+                            Text(distanceFormatter(distance:
+                                                    locationManager.pinnedLocationDistance ?? 0))
                                 .foregroundColor(Color.yellow)
                         }
+                        
+                        MapView(latitude:       locationManager.pinnedLocation!.coordinate.latitude,
+                                longitude: locationManager.pinnedLocation!.coordinate.longitude)
+  
                     }
 
                 }

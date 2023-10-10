@@ -21,13 +21,14 @@ struct PulseWorkout_Watch_AppApp: App {
     init() {
         let myActivityDataManager = ActivityDataManager()
         let myLocationManager = LocationManager(activityDataManager: myActivityDataManager)
-        
+        let mySettingsManager = SettingsManager()
         locationManager = myLocationManager
         workoutManager = WorkoutManager(locationManager: myLocationManager,
-                                        activityDataManager: myActivityDataManager)
+                                        activityDataManager: myActivityDataManager,
+                                        settingsManager: mySettingsManager)
         profileManager = ActivityProfiles()
         activityDataManager = myActivityDataManager
-        settingsManager = SettingsManager()
+        settingsManager = mySettingsManager
         
     }
 

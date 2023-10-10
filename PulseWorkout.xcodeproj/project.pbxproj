@@ -21,6 +21,7 @@
 		E46121F62AAF6FCB00E07749 /* GeneralSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F52AAF6FCB00E07749 /* GeneralSettingsView.swift */; };
 		E46121F82AB1A0AD00E07749 /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F72AB1A0AD00E07749 /* LocationManager.swift */; };
 		E46121FA2AB315E600E07749 /* LocationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F92AB315E600E07749 /* LocationView.swift */; };
+		E46122012ACB1CA500E07749 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = E46122002ACB1CA500E07749 /* Gzip */; };
 		E468DC8129E931A10002FEA9 /* ProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E468DC8029E931A10002FEA9 /* ProfileListView.swift */; };
 		E468DC8329E9B5050002FEA9 /* ProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E468DC8229E9B5050002FEA9 /* ProfileDetailView.swift */; };
 		E46EF07F29537CA1006FA603 /* PulseWorkout Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = E46EF07E29537CA1006FA603 /* PulseWorkout Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -152,6 +153,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E46122012ACB1CA500E07749 /* Gzip in Frameworks */,
 				E4968AD8296D710100DE0082 /* HealthKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -359,6 +361,9 @@
 			dependencies = (
 			);
 			name = "PulseWorkout Watch App";
+			packageProductDependencies = (
+				E46122002ACB1CA500E07749 /* Gzip */,
+			);
 			productName = "PulseWorkout Watch App";
 			productReference = E46EF07E29537CA1006FA603 /* PulseWorkout Watch App.app */;
 			productType = "com.apple.product-type.application";
@@ -434,6 +439,9 @@
 				Base,
 			);
 			mainGroup = E46EF07129537CA0006FA603;
+			packageReferences = (
+				E46121FF2ACB1CA500E07749 /* XCRemoteSwiftPackageReference "GzipSwift" */,
+			);
 			productRefGroup = E46EF07929537CA1006FA603 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -926,6 +934,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		E46121FF2ACB1CA500E07749 /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/1024jp/GzipSwift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 6.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		E46122002ACB1CA500E07749 /* Gzip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E46121FF2ACB1CA500E07749 /* XCRemoteSwiftPackageReference "GzipSwift" */;
+			productName = Gzip;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = E46EF07229537CA0006FA603 /* Project object */;
 }
