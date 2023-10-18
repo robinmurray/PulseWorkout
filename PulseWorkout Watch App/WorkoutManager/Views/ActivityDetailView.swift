@@ -33,7 +33,7 @@ func distanceFormatter (distance: Double) -> String {
 }
 
 func speedFormatter (speed: Double) -> String {
-    var unit = UnitSpeed.kilometersPerHour
+    // var unit = UnitSpeed.kilometersPerHour
     var speedKPH = speed * 3.6
     
     speedKPH = max(speedKPH, 0)
@@ -89,52 +89,87 @@ struct ActivityDetailView: View {
             Divider()
 
 
-        ScrollView {
-            VStack(alignment: .leading) {
+            ScrollView {
+                VStack(alignment: .leading) {
                 
-                SummaryMetricView(title: "Total Time",
-                                  value: durationFormatter.string(from: activityRecord.elapsedTime) ?? "")
-                .foregroundStyle(.yellow)
+                    Section("Activity Times") {
+                        SummaryMetricView(title: "Elapsed Time",
+                                          value: durationFormatter.string(from: activityRecord.elapsedTime) ?? "")
+                            .foregroundStyle(.yellow)
+
+                            
+                        SummaryMetricView(title: "Moving Time",
+                                          value: durationFormatter.string(from: activityRecord.movingTime) ?? "")
+                            .foregroundStyle(.yellow)
+
+                            
+                        SummaryMetricView(title: "Paused Time",
+                                          value: durationFormatter.string(from: activityRecord.pausedTime) ?? "")
+                            .foregroundStyle(.yellow)
+                    }
+                    .foregroundStyle(.blue)
+    
+
+                    Section("Activity Distances") {
+                        SummaryMetricView(title: "Distance",
+                                          value: distanceFormatter(distance: activityRecord.distanceMeters))
+                            .foregroundStyle(.yellow)
+
+                        SummaryMetricView(title: "Total Ascent",
+                                          value: distanceFormatter(distance: activityRecord.totalAscent ?? 0))
+                            .foregroundStyle(.yellow)
+
+                        SummaryMetricView(title: "Total Descent",
+                                          value: distanceFormatter(distance: activityRecord.totalDescent ?? 0))
+                            .foregroundStyle(.yellow)
+                    }
+                    .foregroundStyle(.blue)
                 
-                SummaryMetricView(title: "Distance",
-                                  value: distanceFormatter(distance: activityRecord.distanceMeters))
-                .foregroundStyle(.yellow)
+                    Section("Heart Rates") {
+                        SummaryMetricView(title: activityRecord.hiHRLimit == nil ? "Time Over High Limit" : "Time Over High Limit (\(activityRecord.hiHRLimit!))",
+                                          value: durationFormatter.string(from: activityRecord.timeOverHiAlarm) ?? "0")
+                            .foregroundStyle(.yellow)
 
-                SummaryMetricView(title: "Total Ascent",
-                                  value: distanceFormatter(distance: activityRecord.totalAscent ?? 0))
-                .foregroundStyle(.yellow)
+                        SummaryMetricView(title: activityRecord.loHRLimit == nil ? "Time Under Low Limit"   : "Time Under Low Limit (\(activityRecord.loHRLimit!))",
+                                          value: durationFormatter.string(from: activityRecord.timeUnderLoAlarm) ?? "0")
+                            .foregroundStyle(.yellow)
 
-                SummaryMetricView(title: "Total Descent",
-                                  value: distanceFormatter(distance: activityRecord.totalDescent ?? 0))
-                .foregroundStyle(.yellow)
+                    }
+                    .foregroundStyle(.blue)
 
-                SummaryMetricView(title: "Time Over High Limit",
-                                  value: durationFormatter.string(from: activityRecord.timeOverHiAlarm) ?? "0")
-                .foregroundStyle(.yellow)
+                    Section("Averages") {
+                        SummaryMetricView(title: "Average Speed",
+                                          value: speedFormatter(speed: activityRecord.averageSpeed))
+                            .foregroundStyle(.yellow)
+               
 
-                SummaryMetricView(title: "Time Under Low Limit",
-                                  value: durationFormatter.string(from: activityRecord.timeUnderLoAlarm) ?? "0")
-                .foregroundStyle(.yellow)
-                
-                SummaryMetricView(title: "Ave. HR",
-                                  value: activityRecord.averageHeartRate
-                    .formatted(.number.precision(.fractionLength(0))) + " bpm")
-                .foregroundStyle(.yellow)
+                        SummaryMetricView(title: "Average HR",
+                                          value: activityRecord.averageHeartRate
+                                             .formatted(.number.precision(.fractionLength(0))) + " bpm")
+                            .foregroundStyle(.yellow)
 
-                SummaryMetricView(title: "Energy",
-                                  value: Measurement(value: activityRecord.activeEnergy,
-                                                     unit: UnitEnergy.kilocalories).formatted(.measurement(
-                                                        width: .abbreviated,
-                                                        usage: .workout)))
-                .foregroundStyle(.yellow)
+                        SummaryMetricView(title: "Average Power",
+                                          value: activityRecord.averagePower.formatted(.number.precision(.fractionLength(0))) + " W")
+                            .foregroundStyle(.yellow)
 
-                
+                        SummaryMetricView(title: "Average Cadence",
+                                          value: activityRecord.averageCadence
+                                            .formatted(.number.precision(.fractionLength(0))))
+                            .foregroundStyle(.yellow)
+                    
+                        SummaryMetricView(title: "Energy",
+                                          value: Measurement(value: activityRecord.activeEnergy,
+                                                             unit: UnitEnergy.kilocalories).formatted(.measurement(
+                                                                width: .abbreviated,
+                                                                usage: .workout)))
+                            .foregroundStyle(.yellow)
+
+                    }
+                    .foregroundStyle(.blue)
+                }
             }
         }
     }
-    }
-    
-
 }
 
 

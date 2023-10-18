@@ -33,11 +33,18 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var sportType = "Ride"
     var startDateLocal: Date = Date()
     var elapsedTime: Double = 0
+    var pausedTime: Double = 0
+    var movingTime: Double = 0
     var activityDescription: String = ""
     var averageHeartRate: Double = 0
+    var averageCadence: Double = 0
+    var averagePower: Double = 0
+    var averageSpeed: Double = 0
     var activeEnergy: Double = 0
     var timeOverHiAlarm: Double = 0
     var timeUnderLoAlarm: Double = 0
+    var hiHRLimit: Int?
+    var loHRLimit: Int?
     var stravaStatus: Bool = false
     var tcxFileName: String?    // Temporary cache file for tcx file
     var JSONFileName: String?   // Temporary cache file for JSON serialisation of activity record
@@ -206,10 +213,8 @@ extension ActivityRecord {
     // set CodingKeys to define which variables are stored to JSON file
     private enum CodingKeys: String, CodingKey {
         case name, type, sportType, startDateLocal,
-             elapsedTime, activityDescription, distanceMeters,
-             averageHeartRate, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, stravaStatus,
-             totalAscent, totalDescent,
-             tcxFileName, JSONFileName
+             elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
+             averageHeartRate, averageCadence, averagePower, averageSpeed, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit, stravaStatus, totalAscent, totalDescent, tcxFileName, JSONFileName
     }
     
     /// Get URL for JSON file
@@ -261,12 +266,19 @@ extension ActivityRecord {
             sportType = JSONData.sportType
             startDateLocal = JSONData.startDateLocal
             elapsedTime = JSONData.elapsedTime
+            pausedTime = JSONData.pausedTime
+            movingTime = JSONData.movingTime
             activityDescription = JSONData.activityDescription
             distanceMeters = JSONData.distanceMeters
             averageHeartRate = JSONData.averageHeartRate
+            averageCadence = JSONData.averageCadence
+            averagePower = JSONData.averagePower
+            averageSpeed = JSONData.averageSpeed
             activeEnergy = JSONData.activeEnergy
             timeOverHiAlarm = JSONData.timeOverHiAlarm
             timeUnderLoAlarm = JSONData.timeUnderLoAlarm
+            hiHRLimit = JSONData.hiHRLimit
+            loHRLimit = JSONData.loHRLimit
             stravaStatus = JSONData.stravaStatus
             totalAscent = JSONData.totalAscent
             totalDescent = JSONData.totalDescent
@@ -351,6 +363,7 @@ extension ActivityRecord {
         let lapNode = activityNode.addNode(name: "Lap", attributes: ["StartTime" : startDateLocal.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash))])
         lapNode.addValue(name: "TotalTimeSeconds", value: String(format: "%.1f", elapsedTime))
         lapNode.addValue(name: "DistanceMeters", value: String(format: "%.1f", distanceMeters))
+        /// USE Cadence for average cadence, probably extension for power...
         let aveHRNode = lapNode.addNode(name: "AverageHeartRate")
         aveHRNode.addValue(name: "Value", value: String(Int(averageHeartRate)))
         lapNode.addValue(name: "TriggerMethod", value: "Manual")
@@ -403,10 +416,15 @@ extension ActivityRecord {
         activityRecord["sportType"] = sportType as CKRecordValue
         activityRecord["startDateLocal"] = startDateLocal as CKRecordValue
         activityRecord["elapsedTime"] = elapsedTime as CKRecordValue
+        activityRecord["pausedTime"] = pausedTime as CKRecordValue
+        activityRecord["movingTime"] = movingTime as CKRecordValue
         activityRecord["activityDescription"] = activityDescription as CKRecordValue
         activityRecord["distance"] = distanceMeters as CKRecordValue
 
         activityRecord["averageHeartRate"] = averageHeartRate as CKRecordValue
+        activityRecord["averageCadence"] = averageCadence as CKRecordValue
+        activityRecord["averagePower"] = averagePower as CKRecordValue
+        activityRecord["averageSpeed"] = averageSpeed as CKRecordValue
         activityRecord["activeEnergy"] = activeEnergy as CKRecordValue
 
         activityRecord["totalAscent"] = (totalAscent ?? 0) as CKRecordValue
@@ -414,7 +432,13 @@ extension ActivityRecord {
 
         activityRecord["timeOverHiAlarm"] = timeOverHiAlarm as CKRecordValue
         activityRecord["timeUnderLoAlarm"] = timeUnderLoAlarm as CKRecordValue
-        
+        if hiHRLimit != nil {
+            activityRecord["hiHRLimit"] = hiHRLimit! as CKRecordValue
+        }
+        if loHRLimit != nil {
+            activityRecord["loHRLimit"] = loHRLimit! as CKRecordValue
+        }
+
         
         if saveTrackRecord() {
             print("creating asset!")
@@ -434,15 +458,22 @@ extension ActivityRecord {
         sportType = activityRecord["sportType"] ?? "" as String
         startDateLocal = activityRecord["startDateLocal"] ?? Date() as Date
         elapsedTime = activityRecord["elapsedTime"] ?? 0 as Double
+        pausedTime = activityRecord["pausedTime"] ?? 0 as Double
+        movingTime = activityRecord["movingTime"] ?? 0 as Double
         activityDescription = activityRecord["activityDescription"] ?? "" as String
         distanceMeters = activityRecord["distance"] ?? 0 as Double
         totalAscent = activityRecord["totalAscent"] ?? 0 as Double
         totalDescent = activityRecord["totalDescent"] ?? 0 as Double
 
         averageHeartRate = activityRecord["averageHeartRate"] ?? 0 as Double
+        averageCadence = activityRecord["averageCadence"] ?? 0 as Double
+        averagePower = activityRecord["averagePower"] ?? 0 as Double
+        averageSpeed = activityRecord["averageSpeed"] ?? 0 as Double
         activeEnergy = activityRecord["activeEnergy"] ?? 0 as Double
         timeOverHiAlarm = activityRecord["timeOverHiAlarm"] ?? 0 as Double
         timeUnderLoAlarm = activityRecord["timeUnderLoAlarm"] ?? 0 as Double
+        hiHRLimit = activityRecord["hiHRLimit"] as Int?
+        loHRLimit = activityRecord["loHRLimit"] as Int?
 
     }
 
@@ -772,9 +803,9 @@ class ActivityDataManager: NSObject, ObservableObject {
 
         let operation = CKQueryOperation(query: query)
 //        operation.desiredKeys = nil
-        operation.desiredKeys = ["name", "type", "sportType", "startDateLocal", "elapsedTime", "activityDescription", "distance",
-                                 "totalAscent", "totalDescent",
-                                 "averageHeartRate", "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm" ]
+        operation.desiredKeys = ["name", "type", "sportType", "startDateLocal", "elapsedTime", "pausedTime", "movingTime",
+                                 "activityDescription", "distance", "totalAscent", "totalDescent",
+                                 "averageHeartRate", "averageCadence", "averagePower", "averageSpeed", "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit" ]
         operation.resultsLimit = 50
         operation.configuration.timeoutIntervalForRequest = 30
 

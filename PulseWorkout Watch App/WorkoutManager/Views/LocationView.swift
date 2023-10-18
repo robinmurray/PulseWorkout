@@ -182,7 +182,8 @@ struct LocationView: View {
 struct LocationView_Previews: PreviewProvider {
     
     static var activityDataManager = ActivityDataManager()
-    static var locationManager = LocationManager(activityDataManager: activityDataManager)
+    static var settingsManager = SettingsManager()
+    static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
     static var previews: some View {
         LocationView(locationManager: locationManager)
     }

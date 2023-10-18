@@ -32,16 +32,27 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var location: CLLocation?
     var lastGeoLocation: CLLocation?
     var activityDataManager: ActivityDataManager
+    var settingsManager: SettingsManager
     @Published var pinnedLocation: CLLocation?
     @Published var pinnedPlaceName: String?
     @Published var pinnedLocationDistance: Double?
+    
+    /// Set when activity is auto-paused when speed < limit
+    var isPaused: Bool = false
+    
+    /// When latest auto-pause started
+    var autoPauseStart: Date?
+    
+    /// Total duration of auto-pauses (not including current one if currently auto-paused
+    var totalAutoPauseDuration: Double = 0
 
     let GeoLocationAccuracy: Double = 10
     
     
-    init(activityDataManager: ActivityDataManager) {
+    init(activityDataManager: ActivityDataManager, settingsManager: SettingsManager) {
 
         self.activityDataManager = activityDataManager
+        self.settingsManager = settingsManager
         locManager = CLLocationManager()
         headingsOk = CLLocationManager.headingAvailable()
 
@@ -61,6 +72,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     }
 
+    
     /// Read the pinned location from user defaults, if is set
     func getPinnedLocation() {
         
@@ -73,10 +85,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             
             if pinnedPlaceName == nil { getPinnedGeoLocation() }
         }
-        
-        
-        
     }
+    
     
     /// Set a pinned location and store to user defaults
     func setPinnedLocation() {
@@ -94,6 +104,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         getPinnedGeoLocation()
     }
     
+    
     /// Remove pinned location and clear from user defaults
     func clearPinnedLocation() {
         UserDefaults().removeObject(forKey: "pinnedLocationLatitude")
@@ -104,6 +115,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         pinnedPlaceName = nil
         pinnedLocationDistance = nil
     }
+    
     
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
             switch manager.authorizationStatus {
@@ -128,6 +140,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
         }
     
+    
     /// Start location services with background updates switched on.
     /// Use this for location service for workouts when background app updating is needed.
     func startBGLocationServices() {
@@ -141,6 +154,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             backgroundActive = true
         }
     }
+    
     
     /// Stop location services if not active in foreground mode as well as background mode.
     func stopBGLocationServices() {
@@ -164,6 +178,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     }
 
+    
     /// Start location services without background update permission
     func startFGLocationServices() {
         
@@ -178,6 +193,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             lastGeoLocation = nil // force update of geo location
         }
     }
+    
     
     /// Stop location services if not active in background mode as well as forground mode.
     func stopFGLocationServices() {
@@ -202,7 +218,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
 
-    
     func locationManager(
         _ manager: CLLocationManager,
         didUpdateLocations locations: [CLLocation]
@@ -229,6 +244,28 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             
             lastAltitude = altitude
             
+            // auto pause if configured and speed < pause speed
+            if settingsManager.autoPause {
+                let speedKPH = (speed ?? 999) * 3.6
+                let isNowPaused = (speedKPH < 0.2) ? true : false
+                
+                // if auto-pause starting...
+                if isNowPaused && !isPaused {
+                    isPaused = true
+                    autoPauseStart = Date()
+                }
+                
+                // if auto-pause ending...
+                if !isNowPaused && isPaused {
+                    isPaused = false
+                    let pauseDuration = Date().timeIntervalSince(autoPauseStart!)
+                    autoPauseStart = nil
+                    totalAutoPauseDuration += pauseDuration
+                    
+                }
+            }
+            
+            
             activityDataManager.set(speed: speed)
             activityDataManager.set(latitude: latitude)
             activityDataManager.set(longitude: longitude)
@@ -247,12 +284,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     }
 
+    
     func locationManager(
         _ manager: CLLocationManager,
         didFailWithError error: Error
     ) {
         // Handle failure to get a user’s location
     }
+    
     
     func getGeoLocation(lookupLocation: CLLocation?, setLastGeoLocation: Bool = true,  completionHandler: @escaping (CLPlacemark?)
                     -> Void ) {
@@ -281,11 +320,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
     
+    
     func currentLocationCompletion(placemark: CLPlacemark?) {
         if placemark != nil {
             placeName = placemark?.name
         }
     }
+    
     
     func getCurrentGeoLocation() {
         if lastGeoLocation == nil {
@@ -297,6 +338,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         }
     }
 
+    
     @objc func getPinnedGeoLocation() {
         guard let lookupLocation = pinnedLocation else { return }
         
@@ -305,6 +347,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     }
 
+    
     func pinnedLocationCompletion(placemark: CLPlacemark?) {
         if placemark != nil {
             print("Setting pinned place name")
@@ -313,6 +356,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         } else { setDeferredGetPinnedLocation() }
     }
 
+    
     func setDeferredGetPinnedLocation() {
         let deferredTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(getPinnedGeoLocation), userInfo: nil, repeats: false)
         deferredTimer.tolerance = 5
