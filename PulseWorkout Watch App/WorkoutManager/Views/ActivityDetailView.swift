@@ -7,10 +7,10 @@
 
 import SwiftUI
 
-func distanceFormatter (distance: Double) -> String {
+func distanceFormatter (distance: Double, forceMeters: Bool = false) -> String {
     var unit = UnitLength.meters
     var displayDistance: Double = distance.rounded()
-    if distance > 1000 {
+    if (distance > 1000) && (!forceMeters) {
         unit = UnitLength.kilometers
         displayDistance = distance / 1000
         if displayDistance > 100 {
@@ -116,11 +116,11 @@ struct ActivityDetailView: View {
                             .foregroundStyle(.yellow)
 
                         SummaryMetricView(title: "Total Ascent",
-                                          value: distanceFormatter(distance: activityRecord.totalAscent ?? 0))
+                                          value: distanceFormatter(distance: activityRecord.totalAscent ?? 0, forceMeters: true))
                             .foregroundStyle(.yellow)
 
                         SummaryMetricView(title: "Total Descent",
-                                          value: distanceFormatter(distance: activityRecord.totalDescent ?? 0))
+                                          value: distanceFormatter(distance: activityRecord.totalDescent ?? 0, forceMeters: true))
                             .foregroundStyle(.yellow)
                     }
                     .foregroundStyle(.blue)
@@ -148,10 +148,15 @@ struct ActivityDetailView: View {
                                              .formatted(.number.precision(.fractionLength(0))) + " bpm")
                             .foregroundStyle(.yellow)
 
-                        SummaryMetricView(title: "Average Power",
-                                          value: activityRecord.averagePower.formatted(.number.precision(.fractionLength(0))) + " W")
-                            .foregroundStyle(.yellow)
 
+                        SummaryMetricView(title: "Average Power",
+                                          value: Measurement(value: activityRecord.averagePower.rounded(),
+                                                             unit: UnitPower.watts)
+                                            .formatted(.measurement(width: .abbreviated,
+                                                                    usage: .asProvided)
+                                            ))
+                            .foregroundStyle(.yellow)
+                        
                         SummaryMetricView(title: "Average Cadence",
                                           value: activityRecord.averageCadence
                                             .formatted(.number.precision(.fractionLength(0))))

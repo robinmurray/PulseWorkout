@@ -271,6 +271,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             activityDataManager.set(longitude: longitude)
             activityDataManager.set(totalAscent: totalAscent)
             activityDataManager.set(totalDescent: totalDescent)
+            activityDataManager.set(pausedTime: totalAutoPauseDuration)
 
             if pinnedLocation != nil {
                 pinnedLocationDistance = location!.distance(from: pinnedLocation!)

@@ -81,7 +81,8 @@ struct LiveMetricsView: View {
                         HStack {
                             Image(systemName: "arrow.up.right.circle")
                                 .foregroundColor(Color.yellow)
-                            Text(distanceFormatter(distance: activityData.totalAscent ?? 0))
+                            Text(distanceFormatter(distance: activityData.totalAscent ?? 0,
+                                                  forceMeters: true))
         //                        .frame(maxWidth: .infinity, alignment: .trailing)
                                     .padding(.trailing, 8)
                                     .foregroundColor(Color.yellow)

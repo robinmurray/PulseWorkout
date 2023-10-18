@@ -142,6 +142,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         type = "Ride"
         sportType = "Ride"
         startDateLocal = startDate
+        hiHRLimit = activityProfile.hiLimitAlarm
+        loHRLimit = activityProfile.loLimitAlarm
 
         
         var localStartHour = Int(startDateLocal.formatted(
@@ -535,9 +537,18 @@ class ActivityDataManager: NSObject, ObservableObject {
     func set(elapsedTime: Double) {
         if liveActivityRecord != nil {
             liveActivityRecord!.elapsedTime = elapsedTime
+            liveActivityRecord!.movingTime = elapsedTime - liveActivityRecord!.pausedTime
         }
     }
-    
+
+    func set(pausedTime: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.pausedTime = pausedTime
+            liveActivityRecord!.movingTime = liveActivityRecord!.elapsedTime - pausedTime
+
+        }
+    }
+
     func set(watts: Int?) {
         if liveActivityRecord != nil {
             liveActivityRecord!.watts = watts
