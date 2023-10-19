@@ -242,6 +242,7 @@ class WorkoutManager : NSObject, ObservableObject {
         print("Setting BTHRMConnected to \(connected)")
         // Callback function provided to bluetooth manager to notify when HRM service connects/disconnects
         BTHRMConnected = connected
+        if !BTHRMConnected {BTHRMBatteryLevel = nil}
     }
     
     func BTcyclePowerServiceConnected(connected: Bool) {
@@ -249,6 +250,7 @@ class WorkoutManager : NSObject, ObservableObject {
         print("Setting BTcyclePowerConnected to \(connected)")
         // Callback function provided to bluetooth manager to notify when HRM service connects/disconnects
         BTcyclePowerConnected = connected
+        if !BTcyclePowerConnected {BTcyclePowerBatteryLevel = nil}
     }
     
     func setBTHRMBatteryLevel(batteryLevel: Int) {
