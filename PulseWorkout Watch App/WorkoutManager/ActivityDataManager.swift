@@ -103,14 +103,18 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
                 trackPointNode.addValue(name: "DistanceMeters", value: String(Int(distanceMeters!)))
             }
 
+            if altitudeMeters != nil {
+                trackPointNode.addValue(name: "AltitudeMeters", value: String(Int(altitudeMeters!)))
+            }
+
             if cadence != nil {
                 trackPointNode.addValue(name: "Cadence", value: String(cadence!))
             }
             
-            if speed != nil || watts != nil {
+            if (speed != nil && (speed ?? -1) > 0) || watts != nil {
                 let extNode = trackPointNode.addNode(name: "Extensions")
                 let tpxNode = extNode.addNode(name: "TPX", attributes: ["xmlns" : "http://www.garmin.com/xmlschemas/ActivityExtension/v2"])
-                if speed != nil {
+                if (speed != nil && (speed ?? -1) > 0) {
                     tpxNode.addValue(name: "Speed", value: String(format: "%.1f", speed!))
                 }
                 if watts != nil {

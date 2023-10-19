@@ -174,7 +174,8 @@ struct LocationView: View {
         }
         .onAppear(perform: locationManager.startFGLocationServices)
         .onDisappear(perform: locationManager.stopFGLocationServices)
-        
+        .navigationTitle("Location")
+        .navigationBarTitleDisplayMode(.inline)
     }
 
 }

@@ -23,6 +23,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var placeName: String?
     
     var lastAltitude: Double?
+    
+    // Hold last 5 altitude readings to take moving average to smooth out errors
+    var smoothedAltitudeList: [Double] = []
 
     var locManager: CLLocationManager
     var backgroundActive: Bool = false
@@ -168,6 +171,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             longitude = nil
             altitude = nil
             lastAltitude = nil
+            smoothedAltitudeList = []
             totalAscent = nil
             totalDescent = nil
             speed = nil
@@ -207,6 +211,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             longitude = nil
             altitude = nil
             lastAltitude = nil
+            smoothedAltitudeList = []
             totalAscent = nil
             totalDescent = nil
             speed = nil
@@ -233,7 +238,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             horizontalAccuracy = location!.horizontalAccuracy
             verticalAccuracy = location!.verticalAccuracy
             direction = location!.course
-            
+
+            /*
             if altitude != nil && lastAltitude != nil {
                 if altitude! > lastAltitude! {
                     totalAscent = (totalAscent ?? 0) + (altitude! - lastAltitude!)
@@ -243,6 +249,29 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
             
             lastAltitude = altitude
+            */
+            
+            if altitude != nil {
+                let smoothingLength = 5
+                var smoothedAltitude: Double?
+                if smoothedAltitudeList.count == smoothingLength {
+                    smoothedAltitude = smoothedAltitudeList.reduce(0, +) / 5
+                    smoothedAltitudeList.removeFirst()
+                    
+                }
+
+                smoothedAltitudeList.append(altitude!)
+                
+                if smoothedAltitudeList.count == smoothingLength {
+                    let thisSmoothedAltitude = smoothedAltitudeList.reduce(0, +) / 5
+                    let prevSmoothedAltitude = smoothedAltitude ?? thisSmoothedAltitude     // ensure zero change on first ever calc!
+                    if thisSmoothedAltitude >= prevSmoothedAltitude {
+                        totalAscent = (totalAscent ?? 0) + (thisSmoothedAltitude - prevSmoothedAltitude)
+                    } else {
+                        totalDescent = (totalDescent ?? 0) + (prevSmoothedAltitude - thisSmoothedAltitude)
+                    }
+                }
+            }
             
             // auto pause if configured and speed < pause speed
             if settingsManager.autoPause {
