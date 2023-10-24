@@ -13,8 +13,9 @@ struct ProfileListView: View {
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var activityDataManager: ActivityDataManager
 
-    @State private var navigateToDetailView : Bool = false
-    @State var newId: UUID?
+     @State private var navigateToNewView : Bool = false
+
+    @State var newProfileIndex: Int = 0
     
     
     var body: some View {
@@ -31,18 +32,15 @@ struct ProfileListView: View {
             NavigationStack {
                 VStack {
                     Button {
-                        //Code here before changing the bool value
-                        newId = profileManager.addNew()
-                        
-                        navigateToDetailView = true
+                        navigateToNewView = true
                     } label: {
                         Text("New Profile")
                     }
                     .buttonStyle(.borderedProminent)
                     .tint(Color.green)
                 }
-                .navigationDestination(isPresented: $navigateToDetailView) {
-                    ProfileDetailView(profileManager: profileManager, profileIndex: profileManager.profiles.firstIndex(where: { $0.id == newId }) ?? 0)
+                .navigationDestination(isPresented: $navigateToNewView) {
+                    NewProfileDetailView(profileManager: profileManager)
                 }
             }
             

@@ -72,7 +72,8 @@ struct ProfileListItemView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .navigationDestination(isPresented: $navigateToDetailView) {
-                        ProfileDetailView(profileManager: profileManager, profileIndex: profileManager.profiles.firstIndex(where: { $0.id == profile.id }) ?? 0)
+                        ProfileDetailView(profileManager: profileManager,
+                                          profile: self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id }) ?? 0] )
                     }
                 }
 

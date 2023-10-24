@@ -74,18 +74,25 @@ class ActivityProfiles: NSObject, ObservableObject {
 
     }
     
-    func addNew() -> UUID {
-        return add(activityProfile: ActivityProfile ( name: "New Profile",
-                                               workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
-                                               workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
-                                               hiLimitAlarmActive: false,
-                                               hiLimitAlarm: 140,
-                                               loLimitAlarmActive: false,
-                                               loLimitAlarm: 100,
-                                               playSound: false,
-                                               playHaptic: false,
-                                               constantRepeat: false,
-                                               lockScreen: false))
+    func newProfile() -> ActivityProfile {
+        
+        return ActivityProfile (name: "New Profile",
+                                workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
+                                workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
+                                hiLimitAlarmActive: false,
+                                hiLimitAlarm: 140,
+                                loLimitAlarmActive: false,
+                                loLimitAlarm: 100,
+                                playSound: false,
+                                playHaptic: false,
+                                constantRepeat: false,
+                                lockScreen: false)
+        
+    }
+    
+    
+    func addNew() -> Int {
+        return add(activityProfile: newProfile())
     }
 
 
@@ -132,7 +139,7 @@ class ActivityProfiles: NSObject, ObservableObject {
     }
 
     /// Add an activity profile to the list of profiles and write profiles back to userDefaults.
-    func add(activityProfile: ActivityProfile) -> UUID {
+    func add(activityProfile: ActivityProfile) -> Int {
         
         var newActivityProfile = activityProfile
         if newActivityProfile.id == nil {
@@ -140,11 +147,12 @@ class ActivityProfiles: NSObject, ObservableObject {
         }
         newActivityProfile.lastUsed = Date()
         
-        profiles.append(newActivityProfile)
+        profiles.insert(newActivityProfile, at: 0)
 
-        self.write()
+        self.write(sortBeforeWrite: false)
         
-        return newActivityProfile.id!
+        // return index of new entry
+        return (0)
     }
     
     /// Delete an activity profile from profiles.
@@ -158,6 +166,7 @@ class ActivityProfiles: NSObject, ObservableObject {
         for (index, profile) in profiles.enumerated() {
             if profile.id == activityProfile.id {
                 profiles.remove(at: index)
+                self.write()
                 return
             }
         }
@@ -176,7 +185,7 @@ class ActivityProfiles: NSObject, ObservableObject {
                     updatedActivityProfile.lastUsed = Date()
                     profiles[index] = updatedActivityProfile
                     
-                    self.write()
+                    self.write(sortBeforeWrite: false)
                 }
 
                 return
@@ -215,11 +224,14 @@ class ActivityProfiles: NSObject, ObservableObject {
 
     
     
-    func write() {
+    func write(sortBeforeWrite: Bool = true) {
         
         print("Writing profile!")
-        let epochDate = NSDate(timeIntervalSince1970: 0) as Date
-        profiles = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
+        if sortBeforeWrite {
+            let epochDate = NSDate(timeIntervalSince1970: 0) as Date
+            profiles = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
+        }
+
         lastSavedProfiles = profiles
         do {
             let data = try JSONEncoder().encode(profiles)
