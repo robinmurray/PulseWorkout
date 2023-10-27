@@ -24,7 +24,8 @@ struct ActivitySaveView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            ActivityHeaderView(activityRecord: self.activityDataManager.liveActivityRecord!)
+            ActivityHeaderView(activityRecord: self.activityDataManager.liveActivityRecord ??
+                               self.activityDataManager.dummyActivityRecord)
             Divider()
             Button(action: SaveActivity) {
                 Text("Done").padding([.leading, .trailing], 40)

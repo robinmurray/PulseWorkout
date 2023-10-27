@@ -126,6 +126,20 @@ class WorkoutManager : NSObject, ObservableObject {
         appInBackground = true
     }
    
+    /// Return total elapsed time for the activity
+    func elapsedTime(at: Date) -> TimeInterval {
+        return builder?.elapsedTime(at: at) ?? 0
+    }
+
+    /// Return duration of current auto-pause (or zero if not auto-paused)
+    func currentPauseDuration(at: Date) -> TimeInterval {
+        return locationManager.currentPauseDuration(at: at)
+    }
+
+    /// Return total moving time = elapsed time - total auto-pause - current active auto-pause
+    func movingTime(at: Date) -> TimeInterval {
+        return (builder?.elapsedTime(at: at) ?? 0) - locationManager.currentPauseDuration(at: at) - activityDataManager.liveActivityRecord!.pausedTime
+    }
     
     func PauseHRMonitor() {
         self.appState = .paused
@@ -198,7 +212,7 @@ class WorkoutManager : NSObject, ObservableObject {
         startStopHRMonitor()
         
         if liveActivityProfile!.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
-            locationManager.stopBGLocationServices()
+            locationManager.stopLocationSession()
         }
     }
     

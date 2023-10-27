@@ -500,7 +500,10 @@ class ActivityDataManager: NSObject, ObservableObject {
 
     var liveActivityRecord: ActivityRecord?
     var deferredSaveTimer: Timer?
-    
+
+    // Dummy activity record used for previews
+    var dummyActivityRecord: ActivityRecord = ActivityRecord()
+
     override init() {
         super.init()
         
@@ -545,10 +548,10 @@ class ActivityDataManager: NSObject, ObservableObject {
         }
     }
 
-    func set(pausedTime: Double) {
+    func increment(pausedTime: Double) {
         if liveActivityRecord != nil {
-            liveActivityRecord!.pausedTime = pausedTime
-            liveActivityRecord!.movingTime = liveActivityRecord!.elapsedTime - pausedTime
+            liveActivityRecord!.pausedTime += pausedTime
+            liveActivityRecord!.movingTime = liveActivityRecord!.elapsedTime - liveActivityRecord!.pausedTime
 
         }
     }

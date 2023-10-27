@@ -21,6 +21,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var speed: Double?
     @Published var direction: Double?
     @Published var placeName: String?
+
+    /// Set when activity is auto-paused when speed < limit
+    @Published var isPaused: Bool = false
     
     var lastAltitude: Double?
     
@@ -40,15 +43,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var pinnedPlaceName: String?
     @Published var pinnedLocationDistance: Double?
     
-    /// Set when activity is auto-paused when speed < limit
-    var isPaused: Bool = false
+
     
     /// When latest auto-pause started
     var autoPauseStart: Date?
     
-    /// Total duration of auto-pauses (not including current one if currently auto-paused
-    var totalAutoPauseDuration: Double = 0
-
     let GeoLocationAccuracy: Double = 10
     
     
@@ -159,6 +158,35 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
     
     
+    /// reset any live location fields to nil if locationservices disabled
+    func resetLocationData() {
+
+        latitude = nil
+        longitude = nil
+        altitude = nil
+        lastAltitude = nil
+        smoothedAltitudeList = []
+        speed = nil
+        horizontalAccuracy = nil
+        direction = nil
+        pinnedLocationDistance = nil
+        
+        autoPauseStart = nil
+        isPaused = false
+        
+    }
+    
+    
+    func stopLocationSession() {
+        
+        if isPaused && autoPauseStart != nil {          
+            activityDataManager.increment(pausedTime: Date().timeIntervalSince(autoPauseStart!))
+            autoPauseStart = nil
+        }
+        stopBGLocationServices()
+    }
+    
+    
     /// Stop location services if not active in foreground mode as well as background mode.
     func stopBGLocationServices() {
         locManager.allowsBackgroundLocationUpdates = false
@@ -167,17 +195,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         if !foregroundActive {
             locManager.stopUpdatingLocation()
 
-            latitude = nil
-            longitude = nil
-            altitude = nil
-            lastAltitude = nil
-            smoothedAltitudeList = []
-            totalAscent = nil
-            totalDescent = nil
-            speed = nil
-            horizontalAccuracy = nil
-            direction = nil
-            pinnedLocationDistance = nil
+            resetLocationData()
         }
 
     }
@@ -207,22 +225,22 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         if !backgroundActive {
             locManager.stopUpdatingLocation()
 
-            latitude = nil
-            longitude = nil
-            altitude = nil
-            lastAltitude = nil
-            smoothedAltitudeList = []
-            totalAscent = nil
-            totalDescent = nil
-            speed = nil
-            horizontalAccuracy = nil
-            direction = nil
-            pinnedLocationDistance = nil
+            resetLocationData()
         }
 
     }
 
 
+    /// Return length of current pause
+    func currentPauseDuration(at: Date) -> TimeInterval {
+        
+        if !isPaused || autoPauseStart == nil {return TimeInterval(0)}
+        
+        return at.timeIntervalSince(autoPauseStart!)
+        
+    }
+    
+    
     func locationManager(
         _ manager: CLLocationManager,
         didUpdateLocations locations: [CLLocation]
@@ -274,7 +292,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             }
             
             // auto pause if configured and speed < pause speed
-            if settingsManager.autoPause {
+            if settingsManager.autoPause == true {
                 let speedKPH = (speed ?? 999) * 3.6
                 let isNowPaused = (speedKPH < 0.2) ? true : false
                 
@@ -289,9 +307,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     isPaused = false
                     let pauseDuration = Date().timeIntervalSince(autoPauseStart!)
                     autoPauseStart = nil
-                    totalAutoPauseDuration += pauseDuration
+                    activityDataManager.increment(pausedTime: pauseDuration)
                     
                 }
+            } else {
+                isPaused = false
             }
             
             
@@ -300,7 +320,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             activityDataManager.set(longitude: longitude)
             activityDataManager.set(totalAscent: totalAscent)
             activityDataManager.set(totalDescent: totalDescent)
-            activityDataManager.set(pausedTime: totalAutoPauseDuration)
+            
 
             if pinnedLocation != nil {
                 pinnedLocationDistance = location!.distance(from: pinnedLocation!)

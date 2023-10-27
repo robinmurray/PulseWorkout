@@ -48,79 +48,145 @@ struct LiveMetricsView: View {
     
     init(workoutManager: WorkoutManager) {
         self.workoutManager = workoutManager
-        self.activityData = workoutManager.activityDataManager.liveActivityRecord!
+        self.activityData = workoutManager.activityDataManager.liveActivityRecord ??
+            workoutManager.activityDataManager.dummyActivityRecord
+        
+//        workoutManager.locationManager.isPaused = true
     }
     
     var body: some View {
 
         VStack {
-            HStack {
-                VStack {
-                    HStack {
- //                       Image(systemName: "timer")
- //                           .foregroundColor(Color.yellow)
-                        TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
-                                                             isPaused: workoutManager.session?.state == .paused)) { context in
-                            
-                            ElapsedTimeView(elapsedTime: workoutManager.builder?.elapsedTime(at: context.date) ?? 0, showSubseconds: context.cadence == .live)
-                                .foregroundStyle(.yellow)
+            
+            ZStack {
+                HStack {
+                    VStack {
+                        HStack {
+     //                       Image(systemName: "timer")
+     //                           .foregroundColor(Color.yellow)
+                            TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
+                                                                 isPaused: workoutManager.session?.state == .paused)) { context in
+                                
+                                ElapsedTimeView(elapsedTime: workoutManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
+                                    .foregroundStyle(.yellow)
+                                }
+                            Spacer()
                             }
-                        Spacer()
-                        }
-                        
-                        HStack {
-                            Image(systemName: "arrowshape.forward")
-                                .foregroundColor(Color.yellow)
-                            Text(distanceFormatter(distance: activityData.distanceMeters))
-        //                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .padding(.trailing, 8)
+                            
+                            HStack {
+                                Image(systemName: "arrowshape.forward")
                                     .foregroundColor(Color.yellow)
-                            Spacer()
-                        }
-                        
-                        HStack {
-                            Image(systemName: "arrow.up.right.circle")
-                                .foregroundColor(Color.yellow)
-                            Text(distanceFormatter(distance: activityData.totalAscent ?? 0,
-                                                  forceMeters: true))
-        //                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                    .padding(.trailing, 8)
+                                Text(distanceFormatter(distance: activityData.distanceMeters))
+            //                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .padding(.trailing, 8)
+                                        .foregroundColor(Color.yellow)
+                                Spacer()
+                            }
+                            
+                            HStack {
+                                Image(systemName: "arrow.up.right.circle")
                                     .foregroundColor(Color.yellow)
-                            Spacer()
-                        }
-                }
-                
-                
-                Spacer()
-                
-                VStack {
-                    HStack {
-                        Image(systemName: "speedometer")
-                            .foregroundColor(Color.yellow)
-                        Text(speedFormatter(speed: activityData.speed ?? 0))
-                            .foregroundColor(Color.yellow)
-                        Spacer()
+                                Text(distanceFormatter(distance: activityData.totalAscent ?? 0,
+                                                      forceMeters: true))
+            //                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .padding(.trailing, 8)
+                                        .foregroundColor(Color.yellow)
+                                Spacer()
+                            }
                     }
                     
-                    HStack {
-                        Image(systemName: "bolt")
-                            .foregroundColor(Color.yellow)
-                        Text(String(activityData.watts ?? 0) + " w")
-                            .foregroundColor(Color.yellow)
-                        Spacer()
+                    
+                    Spacer()
+                    
+                    ZStack {
+                        VStack {
+                            HStack {
+                                Image(systemName: "speedometer")
+                                    .foregroundColor(Color.yellow)
+                                Text(speedFormatter(speed: activityData.speed ?? 0))
+                                    .foregroundColor(Color.yellow)
+                                Spacer()
+                            }
+                            
+                            HStack {
+                                Image(systemName: "bolt")
+                                    .foregroundColor(Color.yellow)
+                                Text(String(activityData.watts ?? 0) + " w")
+                                    .foregroundColor(Color.yellow)
+                                Spacer()
+                            }
+
+                            HStack {
+                                Image(systemName: "arrow.clockwise.circle")
+                                    .foregroundColor(Color.yellow)
+                                Text(String(activityData.cadence ?? 0))
+                                    .foregroundColor(Color.yellow)
+                                Spacer()
+                            }
+                        }
+                        
+                        
+                        // Paused View
+
+                        if workoutManager.locationManager.isPaused == true {
+            
+                            Image(systemName: "pause.fill")
+                                .fontWeight(.bold)
+                                .padding(.horizontal)
+                                .foregroundColor(Color.white)
+                                .font(.system(size: 50))
+
+                            VStack {
+                                HStack {
+                                    Text("Paused")
+                                        .fontWeight(.bold)
+                                        .padding(.horizontal)
+                                        .foregroundStyle(Color.black)
+
+                                    Spacer()
+
+                                }
+                                .foregroundColor(Color.black)
+                                
+
+                                 
+                                HStack {
+                                    
+                                    TimelineView(MetricsTimelineSchedule(from: workoutManager.locationManager.autoPauseStart ?? Date(),
+                                                                         isPaused: false)) { context in
+                                        VStack {
+                                            HStack {
+                                                ElapsedTimeView(elapsedTime: workoutManager.currentPauseDuration(at: context.date),
+                                                                showSubseconds: context.cadence == .live)
+                                                    .foregroundStyle(.black)
+                                                    .padding(.horizontal)
+                                                Spacer()
+                                            }
+
+                                            HStack {
+                                                ElapsedTimeView(elapsedTime: workoutManager.elapsedTime(at: context.date),
+                                                                showSubseconds: context.cadence == .live)
+                                                .foregroundStyle(Color.white)
+                                                    .padding(.horizontal)
+                                                Spacer()
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            .background(.orange.opacity(0.8))
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 10)
+                                    .stroke(Color.orange, lineWidth: 3)
+                            )
+
+                        }
+
                     }
 
-                    HStack {
-                        Image(systemName: "arrow.clockwise.circle")
-                            .foregroundColor(Color.yellow)
-                        Text(String(activityData.cadence ?? 0))
-                            .foregroundColor(Color.yellow)
-                        Spacer()
-                    }
                 }
-    
             }
-            
 
  
 
@@ -171,12 +237,14 @@ struct LiveMetricsView: View {
 
 struct LiveMetricsView_Previews: PreviewProvider {
     
+    static var activityProfile = ActivityProfiles()
     static var activityDataManager = ActivityDataManager()
     static var settingsManager = SettingsManager()
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
     static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
+
     
     static var previews: some View {
         LiveMetricsView(workoutManager: workoutManager)
