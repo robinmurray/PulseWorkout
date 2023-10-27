@@ -163,13 +163,13 @@ struct ProfileDetailView: View {
 
 
 
-/*
+
 struct ProfileDetailView_Previews: PreviewProvider {
     static var profileManager = ActivityProfiles()
     
     static var previews: some View {
-        ProfileDetailView(profile: .constant(profileManager.profiles[0]),
-                          profileManager: profileManager, new: false)
+        ProfileDetailView(profileManager: profileManager,
+                          profile: .constant(profileManager.profiles[0]) )
     }
 }
-*/
+

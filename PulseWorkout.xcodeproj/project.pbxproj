@@ -14,6 +14,7 @@
 		E421295C299D4D91001B8AA9 /* BTDeviceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */; };
 		E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295F29A21922001B8AA9 /* ActivityProfile.swift */; };
 		E42AD0912AE82094008E7B05 /* NewProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */; };
+		E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */; };
 		E46121EA2AAB5F9A00E07749 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121E92AAB5F9A00E07749 /* SettingsView.swift */; };
 		E46121EE2AACCF2300E07749 /* WatchAsDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */; };
 		E46121F02AADC86F00E07749 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121EF2AADC86F00E07749 /* SettingsManager.swift */; };
@@ -103,6 +104,7 @@
 		E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceBarView.swift; sourceTree = "<group>"; };
 		E421295F29A21922001B8AA9 /* ActivityProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityProfile.swift; sourceTree = "<group>"; };
 		E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProfileDetailView.swift; sourceTree = "<group>"; };
+		E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsPausedView.swift; sourceTree = "<group>"; };
 		E46121E92AAB5F9A00E07749 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAsDeviceView.swift; sourceTree = "<group>"; };
 		E46121EF2AADC86F00E07749 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */,
 				E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */,
 				E46EF0BF29538811006FA603 /* LiveMetricsView.swift */,
+				E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */,
 				E46EF0B329537D63006FA603 /* LiveTabView.swift */,
 				E46121F92AB315E600E07749 /* LocationView.swift */,
 				E46EF08529537CA1006FA603 /* ContentView.swift */,
@@ -517,6 +520,7 @@
 				E4C25BAE2A4F55FB002F315D /* ActivityListItemView.swift in Sources */,
 				E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */,
 				E46EF0B429537D63006FA603 /* LiveTabView.swift in Sources */,
+				E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */,
 				E4A0839729AA18E7007B50D3 /* BTDiscoveredDeviceView.swift in Sources */,
 				E468DC8329E9B5050002FEA9 /* ProfileDetailView.swift in Sources */,
 				E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */,

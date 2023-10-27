@@ -138,7 +138,7 @@ class WorkoutManager : NSObject, ObservableObject {
 
     /// Return total moving time = elapsed time - total auto-pause - current active auto-pause
     func movingTime(at: Date) -> TimeInterval {
-        return (builder?.elapsedTime(at: at) ?? 0) - locationManager.currentPauseDuration(at: at) - activityDataManager.liveActivityRecord!.pausedTime
+        return (builder?.elapsedTime(at: at) ?? 0) - locationManager.currentPauseDuration(at: at) - (activityDataManager.liveActivityRecord?.pausedTime ?? 0)
     }
     
     func PauseHRMonitor() {

@@ -19,17 +19,7 @@ struct ActivityHistoryView: View {
         
         ZStack {
             VStack {
-/*
-                Button("Delete Record") {
-                    activityDataManager.delete(recordID: activityDataManager.recordSet.last!.recordID)
-                }
 
-
-                Button("Query Cloudkit") {
-                    activityDataManager.query()
-                }
-
-*/
                 NavigationStack {
                     List{
                         ForEach(activityDataManager.recordSet) {activityRecord in

@@ -15,7 +15,7 @@ enum LiveScreenTab {
 
 struct LiveTabView: View {
     
-    @Binding var profile: ActivityProfile
+    var profileName: String
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var activityDataManager: ActivityDataManager
 
@@ -40,7 +40,7 @@ struct LiveTabView: View {
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .automatic))
             .navigationBarBackButtonHidden(true)
-            .navigationTitle(profile.name)
+            .navigationTitle(profileName)
 
     }
     
@@ -49,13 +49,18 @@ struct LiveTabView: View {
 
 
 
-/*
+
 struct LiveTabView_Previews: PreviewProvider {
     
-    static var workoutManager = WorkoutManager()
+    static var activityDataManager = ActivityDataManager()
+    static var settingsManager = SettingsManager()
+    static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
+
+    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+        settingsManager: settingsManager)
 
     static var previews: some View {
-        LiveTabView(workoutManager: workoutManager)
+        LiveTabView(profileName: "Preview Profile", workoutManager: workoutManager, activityDataManager: activityDataManager)
     }
 }
-*/
+

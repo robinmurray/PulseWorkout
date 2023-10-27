@@ -112,7 +112,7 @@ struct ProfileListItemView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .navigationDestination(isPresented: $navigateToLiveView) {
-                        LiveTabView(profile: $profile, workoutManager: workoutManager, activityDataManager: activityDataManager)
+                        LiveTabView(profileName: profile.name, workoutManager: workoutManager, activityDataManager: activityDataManager)
                     }
                 }
             }
@@ -145,19 +145,28 @@ struct ProfileListItemView: View {
     }
     
     
-    /*
+    
      struct ProfileListItemView_Previews: PreviewProvider {
      
-     static var profiles: ActivityProfiles = ActivityProfiles()
-     static var workoutManager = WorkoutManager()
-     @Binding var profile: ActivityProfile = projectedValue<[ActivityProfile]>[0]
-     
-     static var previews: some View {
-     
-     let profile = profiles.profiles[0]
-     ProfileListItemView(profile: profile, workoutManager: workoutManager)
+         static var activityDataManager = ActivityDataManager()
+         static var settingsManager = SettingsManager()
+         static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
+
+         static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+             settingsManager: settingsManager)
+         static var profileManager = ActivityProfiles()
+
+         
+         
+         static var previews: some View {
+
+            ProfileListItemView(profile: .constant(profileManager.profiles[0]),
+                                profileManager: profileManager,
+                                workoutManager: workoutManager,
+                                activityDataManager: activityDataManager)
+                 
+         }
      }
-     }
-     */
+     
     
 

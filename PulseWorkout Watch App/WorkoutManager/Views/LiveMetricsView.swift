@@ -129,63 +129,14 @@ struct LiveMetricsView: View {
                         // Paused View
 
                         if workoutManager.locationManager.isPaused == true {
-            
-                            Image(systemName: "pause.fill")
-                                .fontWeight(.bold)
-                                .padding(.horizontal)
-                                .foregroundColor(Color.white)
-                                .font(.system(size: 50))
-
-                            VStack {
-                                HStack {
-                                    Text("Paused")
-                                        .fontWeight(.bold)
-                                        .padding(.horizontal)
-                                        .foregroundStyle(Color.black)
-
-                                    Spacer()
-
-                                }
-                                .foregroundColor(Color.black)
-                                
-
-                                 
-                                HStack {
-                                    
-                                    TimelineView(MetricsTimelineSchedule(from: workoutManager.locationManager.autoPauseStart ?? Date(),
-                                                                         isPaused: false)) { context in
-                                        VStack {
-                                            HStack {
-                                                ElapsedTimeView(elapsedTime: workoutManager.currentPauseDuration(at: context.date),
-                                                                showSubseconds: context.cadence == .live)
-                                                    .foregroundStyle(.black)
-                                                    .padding(.horizontal)
-                                                Spacer()
-                                            }
-
-                                            HStack {
-                                                ElapsedTimeView(elapsedTime: workoutManager.elapsedTime(at: context.date),
-                                                                showSubseconds: context.cadence == .live)
-                                                .foregroundStyle(Color.white)
-                                                    .padding(.horizontal)
-                                                Spacer()
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            .background(.orange.opacity(0.8))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 10)
-                                    .stroke(Color.orange, lineWidth: 3)
-                            )
+                            LiveMetricsPausedView(workoutManager: workoutManager)
 
                         }
 
                     }
 
                 }
+
             }
 
  
@@ -203,25 +154,6 @@ struct LiveMetricsView: View {
                     .font(.system(size: 60))
                 }
 
-/*
-            HStack {
-                    Image(systemName: "arrow.down.to.line.circle.fill")
-                    .foregroundColor(loAlarmDisplay[workoutManager.liveActivityProfile!.loLimitAlarmActive]?.colour)
-                        .frame(height: 20)
-                    
-                Text(loAlarmDisplay[workoutManager.liveActivityProfile!.loLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.liveActivityProfile!.loLimitAlarm ))
-                        .foregroundColor(loAlarmDisplay[workoutManager.liveActivityProfile!.loLimitAlarmActive]?.colour)
-                        .font(.system(size: 15))
-                    
-                    Image(systemName: "arrow.up.to.line.circle.fill")
-                        .foregroundColor(hiAlarmDisplay[workoutManager.liveActivityProfile!.hiLimitAlarmActive]?.colour)
-                        .frame(height: 20)
-                    
-                    Text(hiAlarmDisplay[workoutManager.liveActivityProfile!.hiLimitAlarmActive]?.alarmLevelText ?? String(workoutManager.liveActivityProfile!.hiLimitAlarm))
-                        .foregroundColor(hiAlarmDisplay[workoutManager.liveActivityProfile!.hiLimitAlarmActive]?.colour)
-                        .font(.system(size: 15))
-                }
-*/
             Spacer().frame(maxWidth: .infinity)
        
             BTDeviceBarView(workoutManager: workoutManager)
@@ -252,7 +184,7 @@ struct LiveMetricsView_Previews: PreviewProvider {
 }
 
 
-private struct MetricsTimelineSchedule: TimelineSchedule {
+struct MetricsTimelineSchedule: TimelineSchedule {
     var startDate: Date
     var isPaused: Bool
 
