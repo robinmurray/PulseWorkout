@@ -128,7 +128,8 @@ struct LiveMetricsView: View {
                         
                         // Paused View
 
-                        if workoutManager.locationManager.isPaused == true {
+                        if (workoutManager.locationManager.isPaused == true) &&
+                            (workoutManager.currentPauseDuration() > 0) {
                             LiveMetricsPausedView(workoutManager: workoutManager)
 
                         }

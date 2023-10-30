@@ -39,7 +39,7 @@ struct LiveMetricsPausedView: View {
                                                          isPaused: false)) { context in
                         VStack {
                             HStack {
-                                ElapsedTimeView(elapsedTime: workoutManager.currentPauseDuration(at: context.date),
+                                ElapsedTimeView(elapsedTime: workoutManager.currentPauseDurationAt(at: context.date),
                                                 showSubseconds: context.cadence == .live)
                                     .foregroundStyle(.black)
                                     .padding(.horizontal)

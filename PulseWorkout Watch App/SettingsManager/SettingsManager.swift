@@ -19,7 +19,18 @@ class SettingsManager: NSObject, ObservableObject  {
     @Published var saveAppleHealth: Bool
     @Published var saveStrava: Bool
     
+    /// Whether to enable auto-pause on speed dropping below a limit
     @Published var autoPause: Bool
+    
+    /// If auto-pause enabled, pause activity if speed drops below this limit
+    @Published var autoPauseSpeed: Double
+    
+    /// If auto-pause enabled and activity is paused, auto-resume when speed increases above this limit (must be greater than autoPauseSpeed!
+    @Published var autoResumeSpeed: Double
+    
+    /// The minimum length of autoPause in seconds - have to pause for greater than this time to reister as a pause
+    @Published var minAutoPauseSeconds: Int
+    
     @Published var aveCadenceZeros: Bool
     @Published var avePowerZeros: Bool
     @Published var hapticType: WKHapticType
@@ -34,6 +45,10 @@ class SettingsManager: NSObject, ObservableObject  {
         saveStrava = UserDefaults.standard.bool(forKey: "saveStrava")
         
         autoPause = UserDefaults.standard.bool(forKey: "autoPause")
+        autoPauseSpeed = UserDefaults.standard.object(forKey: "autoPauseSpeed") != nil ? UserDefaults.standard.double(forKey: "autoPauseSpeed") : 0.2
+        autoResumeSpeed = UserDefaults.standard.object(forKey: "autoResumeSpeed") != nil ? UserDefaults.standard.double(forKey: "autoResumeSpeed") : 0.4
+        minAutoPauseSeconds = UserDefaults.standard.object(forKey: "minAutoPauseSeconds") != nil ? UserDefaults.standard.integer(forKey: "minAutoPauseSeconds") : 3
+
         aveCadenceZeros = UserDefaults.standard.bool(forKey: "aveCadenceZeros")
         avePowerZeros = UserDefaults.standard.bool(forKey: "avePowerZeros")
         hapticType = WKHapticType(rawValue: UserDefaults.standard.integer(forKey: "hapticType")) ?? .notification
@@ -51,6 +66,10 @@ class SettingsManager: NSObject, ObservableObject  {
         UserDefaults.standard.set(saveStrava, forKey: "saveStrava")
         
         UserDefaults.standard.set(autoPause, forKey: "autoPause")
+        UserDefaults.standard.set(autoPauseSpeed, forKey: "autoPauseSpeed")
+        UserDefaults.standard.set(autoResumeSpeed, forKey: "autoResumeSpeed")
+        UserDefaults.standard.set(minAutoPauseSeconds, forKey: "minAutoPauseSeconds")
+
         UserDefaults.standard.set(aveCadenceZeros, forKey: "aveCadenceZeros")
         UserDefaults.standard.set(avePowerZeros, forKey: "avePowerZeros")
         UserDefaults.standard.set(hapticType.rawValue, forKey: "hapticType")

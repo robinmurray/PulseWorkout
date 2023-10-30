@@ -231,15 +231,32 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
 
-    /// Return length of current pause
-    func currentPauseDuration(at: Date) -> TimeInterval {
+    /// Return length of current pause now
+    func currentPauseDuration() -> TimeInterval {
         
         if !isPaused || autoPauseStart == nil {return TimeInterval(0)}
         
-        return at.timeIntervalSince(autoPauseStart!)
+        let duration = Date().timeIntervalSince(autoPauseStart!)
+        if Int(duration) < settingsManager.minAutoPauseSeconds {
+            return TimeInterval(0)
+        }
+        return duration
         
     }
-    
+
+    /// Return length of current pause at a given date
+    func currentPauseDurationAt(at: Date) -> TimeInterval {
+        
+        if !isPaused || autoPauseStart == nil {return TimeInterval(0)}
+        
+        let duration = at.timeIntervalSince(autoPauseStart!)
+        if Int(duration) < settingsManager.minAutoPauseSeconds {
+            return TimeInterval(0)
+        }
+        return duration
+        
+    }
+
     
     func locationManager(
         _ manager: CLLocationManager,
@@ -294,7 +311,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             // auto pause if configured and speed < pause speed
             if settingsManager.autoPause == true {
                 let speedKPH = (speed ?? 999) * 3.6
-                let isNowPaused = (speedKPH < 0.2) ? true : false
+                let isNowPaused = (speedKPH <= settingsManager.autoPauseSpeed) ||
+                                   ((isPaused == true) && (speedKPH < settingsManager.autoResumeSpeed) ) ? true : false
                 
                 // if auto-pause starting...
                 if isNowPaused && !isPaused {
@@ -304,8 +322,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 
                 // if auto-pause ending...
                 if !isNowPaused && isPaused {
+                    let pauseDuration = currentPauseDuration()
                     isPaused = false
-                    let pauseDuration = Date().timeIntervalSince(autoPauseStart!)
                     autoPauseStart = nil
                     activityDataManager.increment(pausedTime: pauseDuration)
                     
