@@ -60,7 +60,8 @@ struct ActivityHistoryView: View {
 
 struct ActivityHistoryView_Previews: PreviewProvider {
     
-    static var activityDataManager = ActivityDataManager()
+    static var settingsManager = SettingsManager()
+    static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
     static var activityRecord = ActivityRecord()
     
     init() {

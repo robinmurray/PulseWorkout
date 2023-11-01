@@ -52,8 +52,8 @@ struct CloudConnectionsView: View {
 struct CloudConnectionsView_Previews: PreviewProvider {
     
     static var settingsManager = SettingsManager()
-    static var activityDataManager = ActivityDataManager()
-    
+    static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
+
     static var previews: some View {
         CloudConnectionsView(settingsManager: settingsManager,
                              activityDataManager: activityDataManager)

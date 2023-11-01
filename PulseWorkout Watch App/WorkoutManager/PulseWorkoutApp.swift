@@ -19,8 +19,8 @@ struct PulseWorkout_Watch_AppApp: App {
     @ObservedObject var settingsManager: SettingsManager
 
     init() {
-        let myActivityDataManager = ActivityDataManager()
         let mySettingsManager = SettingsManager()
+        let myActivityDataManager = ActivityDataManager(settingsManager: mySettingsManager)
         let myLocationManager = LocationManager(activityDataManager: myActivityDataManager, settingsManager: mySettingsManager)
         locationManager = myLocationManager
         workoutManager = WorkoutManager(locationManager: myLocationManager,

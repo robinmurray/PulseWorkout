@@ -494,6 +494,7 @@ class ActivityDataManager: NSObject, ObservableObject {
     var container: CKContainer!
     var database: CKDatabase!
     var zoneID: CKRecordZone.ID!
+    var settingsManager: SettingsManager
     @Published var isBusy: Bool = false
     @Published var fetched: Bool = false
     @Published var recordSet: [ActivityRecord] = []
@@ -504,13 +505,14 @@ class ActivityDataManager: NSObject, ObservableObject {
     // Dummy activity record used for previews
     var dummyActivityRecord: ActivityRecord = ActivityRecord()
 
-    override init() {
+    init(settingsManager: SettingsManager) {
+        self.settingsManager = settingsManager
+
         super.init()
         
         container = CKContainer(identifier: "iCloud.CloudKitLesson")
         database = container.privateCloudDatabase
         zoneID = CKRecordZone.ID(zoneName: "CKL_Zone")
-     
         /*
         Task {
             do {

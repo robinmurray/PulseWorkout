@@ -78,7 +78,7 @@ struct SettingsView_Previews: PreviewProvider {
     
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
     static var settingsManager = SettingsManager()
-    static var activityDataManager = ActivityDataManager()
+    static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
 
 
     static var previews: some View {
