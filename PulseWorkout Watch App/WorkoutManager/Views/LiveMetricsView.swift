@@ -62,14 +62,14 @@ struct LiveMetricsView: View {
                 HStack {
                     VStack {
                         HStack {
-     //                       Image(systemName: "timer")
-     //                           .foregroundColor(Color.yellow)
+
                             TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
                                                                  isPaused: workoutManager.session?.state == .paused)) { context in
                                 
                                 ElapsedTimeView(elapsedTime: workoutManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
                                     .foregroundStyle(.yellow)
                                 }
+                            
                             Spacer()
                             }
                             

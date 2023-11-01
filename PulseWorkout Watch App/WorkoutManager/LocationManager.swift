@@ -148,7 +148,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func startBGLocationServices() {
         
         print("starting BG location services")
-        
+    
+        autoPauseStart = nil
+        isPaused = false
         locManager.allowsBackgroundLocationUpdates = true
 
         if authStatusOk {
@@ -179,11 +181,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func stopLocationSession() {
         
-        if isPaused && autoPauseStart != nil {          
+        if isPaused && (autoPauseStart != nil) {
             activityDataManager.increment(pausedTime: Date().timeIntervalSince(autoPauseStart!))
-            autoPauseStart = nil
+
         }
         stopBGLocationServices()
+        autoPauseStart = nil
+        isPaused = false
+
     }
     
     
@@ -234,20 +239,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     /// Return length of current pause now
     func currentPauseDuration() -> TimeInterval {
         
-        if !isPaused || autoPauseStart == nil {return TimeInterval(0)}
-        
-        let duration = Date().timeIntervalSince(autoPauseStart!)
-        if Int(duration) < settingsManager.minAutoPauseSeconds {
-            return TimeInterval(0)
-        }
-        return duration
+        return currentPauseDurationAt(at: Date())
         
     }
 
     /// Return length of current pause at a given date
     func currentPauseDurationAt(at: Date) -> TimeInterval {
         
-        if !isPaused || autoPauseStart == nil {return TimeInterval(0)}
+        if (!isPaused) || (autoPauseStart == nil) {return TimeInterval(0)}
         
         let duration = at.timeIntervalSince(autoPauseStart!)
         if Int(duration) < settingsManager.minAutoPauseSeconds {
@@ -286,59 +285,62 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             lastAltitude = altitude
             */
             
-            if altitude != nil {
-                let smoothingLength = 5
-                var smoothedAltitude: Double?
-                if smoothedAltitudeList.count == smoothingLength {
-                    smoothedAltitude = smoothedAltitudeList.reduce(0, +) / 5
-                    smoothedAltitudeList.removeFirst()
-                    
-                }
+            if backgroundActive {
+                if altitude != nil {
+                    let smoothingLength = 5
+                    var smoothedAltitude: Double?
+                    if smoothedAltitudeList.count == smoothingLength {
+                        smoothedAltitude = smoothedAltitudeList.reduce(0, +) / 5
+                        smoothedAltitudeList.removeFirst()
+                        
+                    }
 
-                smoothedAltitudeList.append(altitude!)
-                
-                if smoothedAltitudeList.count == smoothingLength {
-                    let thisSmoothedAltitude = smoothedAltitudeList.reduce(0, +) / 5
-                    let prevSmoothedAltitude = smoothedAltitude ?? thisSmoothedAltitude     // ensure zero change on first ever calc!
-                    if thisSmoothedAltitude >= prevSmoothedAltitude {
-                        totalAscent = (totalAscent ?? 0) + (thisSmoothedAltitude - prevSmoothedAltitude)
-                    } else {
-                        totalDescent = (totalDescent ?? 0) + (prevSmoothedAltitude - thisSmoothedAltitude)
+                    smoothedAltitudeList.append(altitude!)
+                    
+                    if smoothedAltitudeList.count == smoothingLength {
+                        let thisSmoothedAltitude = smoothedAltitudeList.reduce(0, +) / 5
+                        let prevSmoothedAltitude = smoothedAltitude ?? thisSmoothedAltitude     // ensure zero change on first ever calc!
+                        if thisSmoothedAltitude >= prevSmoothedAltitude {
+                            totalAscent = (totalAscent ?? 0) + (thisSmoothedAltitude - prevSmoothedAltitude)
+                        } else {
+                            totalDescent = (totalDescent ?? 0) + (prevSmoothedAltitude - thisSmoothedAltitude)
+                        }
                     }
                 }
-            }
-            
-            // auto pause if configured and speed < pause speed
-            if settingsManager.autoPause == true {
-                let speedKPH = (speed ?? 999) * 3.6
-                let isNowPaused = (speedKPH <= settingsManager.autoPauseSpeed) ||
-                                   ((isPaused == true) && (speedKPH < settingsManager.autoResumeSpeed) ) ? true : false
                 
-                // if auto-pause starting...
-                if isNowPaused && !isPaused {
-                    isPaused = true
-                    autoPauseStart = Date()
-                }
-                
-                // if auto-pause ending...
-                if !isNowPaused && isPaused {
-                    let pauseDuration = currentPauseDuration()
-                    isPaused = false
-                    autoPauseStart = nil
-                    activityDataManager.increment(pausedTime: pauseDuration)
+                // auto pause if configured and speed < pause speed
+                if settingsManager.autoPause == true {
+                    let speedKPH = (speed ?? 999) * 3.6
+                    let isNowPaused = (speedKPH <= settingsManager.autoPauseSpeed) ||
+                                       ((isPaused == true) && (speedKPH < settingsManager.autoResumeSpeed) ) ? true : false
                     
+                    // if auto-pause starting...
+                    if isNowPaused && !isPaused {
+                        isPaused = true
+                        autoPauseStart = Date()
+                    }
+                    
+                    // if auto-pause ending...
+                    if !isNowPaused && isPaused {
+                        let pauseDuration = currentPauseDuration()
+                        isPaused = false
+                        autoPauseStart = nil
+                        activityDataManager.increment(pausedTime: pauseDuration)
+                        
+                    }
+                } else {
+                    isPaused = false
                 }
-            } else {
-                isPaused = false
+                
+                
+                activityDataManager.set(speed: speed)
+                activityDataManager.set(latitude: latitude)
+                activityDataManager.set(longitude: longitude)
+                activityDataManager.set(totalAscent: totalAscent)
+                activityDataManager.set(totalDescent: totalDescent)
+
             }
-            
-            
-            activityDataManager.set(speed: speed)
-            activityDataManager.set(latitude: latitude)
-            activityDataManager.set(longitude: longitude)
-            activityDataManager.set(totalAscent: totalAscent)
-            activityDataManager.set(totalDescent: totalDescent)
-            
+             
 
             if pinnedLocation != nil {
                 pinnedLocationDistance = location!.distance(from: pinnedLocation!)
@@ -357,7 +359,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         _ manager: CLLocationManager,
         didFailWithError error: Error
     ) {
+        print("Failed to get user location with error \(error)")
         // Handle failure to get a user’s location
+        
+        if error._code == CLError.Code.locationUnknown.rawValue {
+            print("Location unknown - retrying")
+        }
+
     }
     
     

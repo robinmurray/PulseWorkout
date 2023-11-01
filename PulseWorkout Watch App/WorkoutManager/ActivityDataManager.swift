@@ -583,6 +583,9 @@ class ActivityDataManager: NSObject, ObservableObject {
     func set(distanceMeters: Double) {
         if liveActivityRecord != nil {
             liveActivityRecord!.distanceMeters = distanceMeters
+            if liveActivityRecord!.movingTime != 0 {
+                liveActivityRecord!.averageSpeed = distanceMeters / liveActivityRecord!.movingTime * 3.6
+            }
         }
     }
 
