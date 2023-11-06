@@ -151,6 +151,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
         autoPauseStart = nil
         isPaused = false
+        activityDataManager.set(isPaused: false)
         locManager.allowsBackgroundLocationUpdates = true
 
         if authStatusOk {
@@ -175,6 +176,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         autoPauseStart = nil
         isPaused = false
+        activityDataManager.set(isPaused: false)
         
     }
     
@@ -188,6 +190,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         stopBGLocationServices()
         autoPauseStart = nil
         isPaused = false
+        activityDataManager.set(isPaused: false)
 
     }
     
@@ -317,6 +320,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     // if auto-pause starting...
                     if isNowPaused && !isPaused {
                         isPaused = true
+                        activityDataManager.set(isPaused: true)
                         autoPauseStart = Date()
                     }
                     
@@ -324,12 +328,14 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     if !isNowPaused && isPaused {
                         let pauseDuration = currentPauseDuration()
                         isPaused = false
+                        activityDataManager.set(isPaused: false)
                         autoPauseStart = nil
                         activityDataManager.increment(pausedTime: pauseDuration)
                         
                     }
                 } else {
                     isPaused = false
+                    activityDataManager.set(isPaused: false)
                 }
                 
                 

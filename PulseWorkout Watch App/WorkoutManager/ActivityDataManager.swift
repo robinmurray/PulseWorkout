@@ -36,10 +36,6 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var pausedTime: Double = 0
     var movingTime: Double = 0
     var activityDescription: String = ""
-    var averageHeartRate: Double = 0
-    var averageCadence: Double = 0
-    var averagePower: Double = 0
-    var averageSpeed: Double = 0
     var activeEnergy: Double = 0
     var timeOverHiAlarm: Double = 0
     var timeUnderLoAlarm: Double = 0
@@ -60,7 +56,55 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var totalDescent: Double?
     var altitudeMeters: Double?
     var distanceMeters: Double = 0
+    
+    var isPaused: Bool = false
 
+    private var settingsManager: SettingsManager!
+    
+    init(settingsManager: SettingsManager) {
+        super.init()
+        self.settingsManager = settingsManager
+        
+        let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
+        self.tcxFileName = baseFileName + ".gz"
+        self.JSONFileName = baseFileName + ".json"
+
+    }
+    
+    // Calculated averages
+    struct analysedVariable {
+        var N: Int = 0
+        var total: Double = 0
+        var maxVal: Double = 0
+        
+        var average: Double {
+            get {
+                N == 0 ? 0 : total / Double(N)
+            }
+        }
+        
+        mutating func add( _ newVal: Double?, includeZeros: Bool = true) {
+            
+            if newVal == nil {return}
+            
+            if !includeZeros && (newVal == 0) {return}
+            
+            maxVal = max(newVal!, maxVal)
+            N += 1
+            total += newVal!
+            
+        }
+    }
+    
+    var heartRateAnalysis: analysedVariable = analysedVariable()
+    var cadenceAnalysis: analysedVariable = analysedVariable()
+    var powerAnalysis: analysedVariable = analysedVariable()
+
+    var averageHeartRate: Double = 0
+    var averageCadence: Double = 0
+    var averagePower: Double = 0
+    var averageSpeed: Double = 0
+    
     
     // fields used for storing to Cloudkit only
     let recordType = "activity"
@@ -129,16 +173,6 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
 
     private var trackPoints: [TrackPoint] = []
     
-
-    override init() {
-        
-        super.init()
-        
-        let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
-        self.tcxFileName = baseFileName + ".gz"
-        self.JSONFileName = baseFileName + ".json"
-    }
-
     
     func start(activityProfile: ActivityProfile, startDate: Date) {
     
@@ -336,6 +370,13 @@ extension ActivityRecord {
                                       watts: watts
                                      )
                             )
+        if !(isPaused && !settingsManager.aveHRPaused) {
+            heartRateAnalysis.add(heartRate)
+        }
+        
+        cadenceAnalysis.add(cadence == nil ? nil : Double(cadence!), includeZeros: settingsManager.aveCadenceZeros)
+        powerAnalysis.add(cadence == nil ? nil : Double(watts!), includeZeros: settingsManager.avePowerZeros)
+
     }
 
 
@@ -503,11 +544,11 @@ class ActivityDataManager: NSObject, ObservableObject {
     var deferredSaveTimer: Timer?
 
     // Dummy activity record used for previews
-    var dummyActivityRecord: ActivityRecord = ActivityRecord()
+    var dummyActivityRecord: ActivityRecord
 
     init(settingsManager: SettingsManager) {
         self.settingsManager = settingsManager
-
+        dummyActivityRecord = ActivityRecord(settingsManager: settingsManager)
         super.init()
         
         container = CKContainer(identifier: "iCloud.CloudKitLesson")
@@ -533,7 +574,7 @@ class ActivityDataManager: NSObject, ObservableObject {
     /// Start an activity and initiate data collection
     func start(activityProfile: ActivityProfile, startDate: Date) {
         
-        liveActivityRecord = ActivityRecord()
+        liveActivityRecord = ActivityRecord(settingsManager: settingsManager)
         liveActivityRecord?.start(activityProfile: activityProfile, startDate: startDate)
     }
     
@@ -547,9 +588,16 @@ class ActivityDataManager: NSObject, ObservableObject {
         if liveActivityRecord != nil {
             liveActivityRecord!.elapsedTime = elapsedTime
             liveActivityRecord!.movingTime = elapsedTime - liveActivityRecord!.pausedTime
+            setAverageSpeed()
         }
     }
 
+    private func setAverageSpeed() {
+        if liveActivityRecord!.movingTime != 0 {
+            liveActivityRecord!.averageSpeed = liveActivityRecord!.distanceMeters / liveActivityRecord!.movingTime * 3.6
+        }
+    }
+    
     func increment(pausedTime: Double) {
         if liveActivityRecord != nil {
             liveActivityRecord!.pausedTime += pausedTime
@@ -585,9 +633,7 @@ class ActivityDataManager: NSObject, ObservableObject {
     func set(distanceMeters: Double) {
         if liveActivityRecord != nil {
             liveActivityRecord!.distanceMeters = distanceMeters
-            if liveActivityRecord!.movingTime != 0 {
-                liveActivityRecord!.averageSpeed = distanceMeters / liveActivityRecord!.movingTime * 3.6
-            }
+            setAverageSpeed()
         }
     }
 
@@ -618,6 +664,12 @@ class ActivityDataManager: NSObject, ObservableObject {
     func set(totalDescent: Double?) {
         if liveActivityRecord != nil {
             liveActivityRecord!.totalDescent = totalDescent
+        }
+    }
+
+    func set(isPaused: Bool) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.isPaused = isPaused
         }
     }
 
@@ -776,7 +828,7 @@ class ActivityDataManager: NSObject, ObservableObject {
         let jsonPaths = deferredFileList()
 
         if jsonPaths.count > 0 {
-            let deferredActivityRecord = ActivityRecord()
+            let deferredActivityRecord = ActivityRecord(settingsManager: settingsManager)
             if deferredActivityRecord.readFromJSON(jURL: jsonPaths[0]) {
                 print("executing deferred save on \(deferredActivityRecord)")
                 saveActivityRecordtoCK(activityRecord: deferredActivityRecord)
@@ -837,7 +889,7 @@ class ActivityDataManager: NSObject, ObservableObject {
             switch result {
             case .success(let record):
                 // TODO: Do something with the record that was received.
-                let myRecord = ActivityRecord()
+                let myRecord = ActivityRecord(settingsManager: self.settingsManager)
                 myRecord.fromCKRecord(activityRecord: record)
                 DispatchQueue.main.async {
                     print("Adding to recordSet : \(myRecord)")

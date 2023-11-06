@@ -40,7 +40,8 @@ struct ActivityListItemView: View {
 
 struct ActivityListItemView_Previews: PreviewProvider {
     
-    static var activityRecord = ActivityRecord()
+    static var settingsManager = SettingsManager()
+    static var activityRecord = ActivityRecord(settingsManager: settingsManager)
     
     static var previews: some View {
         ActivityListItemView(activityRecord: activityRecord)

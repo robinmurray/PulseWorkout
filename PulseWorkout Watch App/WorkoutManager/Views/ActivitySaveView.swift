@@ -48,8 +48,8 @@ struct ActivitySaveView: View {
 }
 
 struct ActivitySaveView_Previews: PreviewProvider {
-    static var record = ActivityRecord()
     static var settingsManager = SettingsManager()
+    static var record = ActivityRecord(settingsManager: settingsManager)
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
 
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)

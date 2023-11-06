@@ -97,8 +97,21 @@ struct GeneralSettingsView: View {
                     Text("Only register auto-pauses when they are greater than this duration.")
                         .font(.footnote).foregroundColor(.gray)
 
+
                 }
 
+                VStack {
+                    
+                    Toggle(isOn: $settingsManager.aveHRPaused) {
+                        Text("Ave. HR - include pauses")
+                    }
+                    .disabled(!settingsManager.autoPause)
+                    
+                    Text("Include HR in average when auto-paused.")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                }
+                
                 VStack {
                     Toggle(isOn: $settingsManager.avePowerZeros) {
                         Text("Ave. Power - include zeros")

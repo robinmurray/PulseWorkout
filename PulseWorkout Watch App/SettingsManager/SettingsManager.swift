@@ -33,6 +33,9 @@ class SettingsManager: NSObject, ObservableObject  {
     
     @Published var aveCadenceZeros: Bool
     @Published var avePowerZeros: Bool
+    
+    // whether to include HR in average when pasued - true -> yes, false -> no
+    @Published var aveHRPaused: Bool
     @Published var hapticType: WKHapticType
     @Published var maxAlarmRepeatCount: Int
 
@@ -51,6 +54,7 @@ class SettingsManager: NSObject, ObservableObject  {
 
         aveCadenceZeros = UserDefaults.standard.bool(forKey: "aveCadenceZeros")
         avePowerZeros = UserDefaults.standard.bool(forKey: "avePowerZeros")
+        aveHRPaused = UserDefaults.standard.bool(forKey: "aveHRPaused")
         hapticType = WKHapticType(rawValue: UserDefaults.standard.integer(forKey: "hapticType")) ?? .notification
         maxAlarmRepeatCount = max( UserDefaults.standard.integer(forKey: "maxAlarmRepeatCount"), 1 )
         super.init()
@@ -72,6 +76,7 @@ class SettingsManager: NSObject, ObservableObject  {
 
         UserDefaults.standard.set(aveCadenceZeros, forKey: "aveCadenceZeros")
         UserDefaults.standard.set(avePowerZeros, forKey: "avePowerZeros")
+        UserDefaults.standard.set(aveHRPaused, forKey: "aveHRPaused")
         UserDefaults.standard.set(hapticType.rawValue, forKey: "hapticType")
         UserDefaults.standard.set(maxAlarmRepeatCount, forKey: "maxAlarmRepeatCount")
 

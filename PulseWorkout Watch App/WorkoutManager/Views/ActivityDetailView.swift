@@ -193,7 +193,8 @@ struct SummaryMetricView: View {
 
 struct ActivityDetailView_Previews: PreviewProvider {
     
-    static var record = ActivityRecord()
+    static var settingsManager = SettingsManager()
+    static var record = ActivityRecord(settingsManager: settingsManager)
     
     static var previews: some View {
         ActivityDetailView(activityRecord: record)

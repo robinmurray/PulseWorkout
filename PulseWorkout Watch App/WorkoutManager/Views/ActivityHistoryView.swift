@@ -62,7 +62,7 @@ struct ActivityHistoryView_Previews: PreviewProvider {
     
     static var settingsManager = SettingsManager()
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
-    static var activityRecord = ActivityRecord()
+    static var activityRecord = ActivityRecord(settingsManager: settingsManager)
     
     init() {
         ActivityHistoryView_Previews.activityDataManager.recordSet.append(ActivityHistoryView_Previews.activityRecord)
