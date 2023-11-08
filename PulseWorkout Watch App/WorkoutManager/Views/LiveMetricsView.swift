@@ -8,6 +8,21 @@
 import SwiftUI
 
 
+struct GetHeightModifier: ViewModifier {
+    @Binding var height: CGFloat
+
+    func body(content: Content) -> some View {
+        content.background(
+            GeometryReader { geo -> Color in
+                DispatchQueue.main.async {
+                    height = geo.size.height
+                }
+                return Color.clear
+            }
+        )
+    }
+}
+
 struct HRStyling  {
     var HRText: String?
     var colour: Color
@@ -30,6 +45,9 @@ struct LiveMetricsView: View {
     
     @ObservedObject var workoutManager: WorkoutManager
     @ObservedObject var activityData: ActivityRecord
+
+    // to manage fixed height scrolling view
+    @State private var scrollStackheight: CGFloat = 0
 
     let HRDisplay: [HRState: HRStyling] =
     [HRState.inactive: HRStyling(HRText: "___", colour: Color.gray),
@@ -55,105 +73,148 @@ struct LiveMetricsView: View {
     }
     
     var body: some View {
-
+        
         VStack {
             
-            ZStack {
-                HStack {
-                    VStack {
-                        HStack {
+            HStack {
+                VStack {
+                    HStack {
 
-                            TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
+                        TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
                                                                  isPaused: workoutManager.session?.state == .paused)) { context in
                                 
                                 ElapsedTimeView(elapsedTime: workoutManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
                                     .foregroundStyle(.yellow)
-                                }
-                            
-                            Spacer()
                             }
                             
-                            HStack {
-                                Image(systemName: "arrowshape.forward")
-                                    .foregroundColor(Color.yellow)
-                                Text(distanceFormatter(distance: activityData.distanceMeters))
-            //                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .padding(.trailing, 8)
-                                        .foregroundColor(Color.yellow)
-                                Spacer()
-                            }
-                            
-                            HStack {
-                                Image(systemName: "arrow.up.right.circle")
-                                    .foregroundColor(Color.yellow)
-                                Text(distanceFormatter(distance: activityData.totalAscent ?? 0,
-                                                      forceMeters: true))
-            //                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .padding(.trailing, 8)
-                                        .foregroundColor(Color.yellow)
-                                Spacer()
-                            }
+                        Spacer()
                     }
                     
-                    
-                    Spacer()
-                    
-                    ZStack {
+                    ScrollView {
                         VStack {
-                            HStack {
-                                Image(systemName: "speedometer")
-                                    .foregroundColor(Color.yellow)
-                                Text(speedFormatter(speed: activityData.speed ?? 0))
-                                    .foregroundColor(Color.yellow)
-                                Spacer()
+
+
+
+                                VStack {
+                                    HStack {
+                                        Image(systemName: "arrowshape.forward")
+                                            .foregroundColor(Color.yellow)
+                                        Text(distanceFormatter(distance: activityData.distanceMeters))
+                                        //                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                            .padding(.trailing, 8)
+                                            .foregroundColor(Color.yellow)
+                                        Spacer()
+                                    }
+                                    
+                                    HStack {
+                                        Image(systemName: "arrow.up.right.circle")
+                                            .foregroundColor(Color.yellow)
+                                        Text(distanceFormatter(distance: activityData.totalAscent ?? 0,
+                                                               forceMeters: true))
+                                        //                        .frame(maxWidth: .infinity, alignment: .trailing)
+                                        .padding(.trailing, 8)
+                                        .foregroundColor(Color.yellow)
+                                        
+                                        Spacer()
+                                    }
+                                    
+                                }
+                                .modifier(GetHeightModifier(height: $scrollStackheight))
+
+                            // Speed and Average Speed
+                            VStack {
+                                HStack {
+                                    Image(systemName: "speedometer")
+                                        .foregroundColor(Color.yellow)
+                                    Text(speedFormatter(speed: activityData.speed ?? 0))
+                                        .foregroundColor(Color.yellow)
+                                    Spacer()
+                                }
+                                HStack {
+                                    Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
+                                        .foregroundColor(Color.yellow)
+                                    Text(speedFormatter(speed: activityData.averageSpeed ))
+                                        .foregroundColor(Color.yellow)
+                                    Spacer()
+                                }
                             }
                             
-                            HStack {
-                                Image(systemName: "bolt")
-                                    .foregroundColor(Color.yellow)
-                                Text(String(activityData.watts ?? 0) + " w")
-                                    .foregroundColor(Color.yellow)
-                                Spacer()
+                            // Power and Average Power
+                            VStack {
+                                HStack {
+                                    Image(systemName: "bolt")
+                                        .foregroundColor(Color.yellow)
+                                    Text(String(activityData.watts ?? 0) + " w")
+                                        .foregroundColor(Color.yellow)
+                                    Spacer()
+                                }
+
+                                HStack {
+                                    Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
+                                        .foregroundColor(Color.yellow)
+                                    Text(String(activityData.averagePower ) + " w")
+                                        .foregroundColor(Color.yellow)
+                                    Spacer()
+                                }
+                                
                             }
 
-                            HStack {
-                                Image(systemName: "arrow.clockwise.circle")
-                                    .foregroundColor(Color.yellow)
-                                Text(String(activityData.cadence ?? 0))
-                                    .foregroundColor(Color.yellow)
-                                Spacer()
+                            // Cadence and Average Cadence
+                            VStack {
+
+                                HStack {
+                                    Image(systemName: "arrow.clockwise.circle")
+                                        .foregroundColor(Color.yellow)
+                                    Text(String(activityData.cadence ?? 0))
+                                        .foregroundColor(Color.yellow)
+                                    Spacer()
+                                }
+
+                                HStack {
+                                    Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
+                                        .foregroundColor(Color.yellow)
+                                    Text(String(activityData.averageCadence ))
+                                        .foregroundColor(Color.yellow)
+                                    Spacer()
+                                }
                             }
-                        }
-                        
-                        
-                        // Paused View
 
-                        if (workoutManager.locationManager.isPaused == true) &&
-                            (workoutManager.currentPauseDuration() > 0) {
-                            LiveMetricsPausedView(workoutManager: workoutManager)
+
 
                         }
-
                     }
+                    .frame(height: scrollStackheight)
 
                 }
 
             }
 
- 
-
             Spacer()
 
-            HStack {
+
+            ZStack {
+                HStack {
                     Image(systemName: "heart.fill").foregroundColor(Color.red)
+                    
                     Spacer().frame(maxWidth: .infinity)
+                    
                     Text((workoutManager.heartRate ?? 0)
                         .formatted(.number.precision(.fractionLength(0))))
-                    .fontWeight(.bold)
-                    .foregroundColor(HRDisplay[workoutManager.hrState]?.colour)
-                    .frame(width: 140.0, height: 60.0)
-                    .font(.system(size: 60))
+                        .fontWeight(.bold)
+                        .foregroundColor(HRDisplay[workoutManager.hrState]?.colour)
+                        .frame(width: 140.0, height: 60.0)
+                        .font(.system(size: 60))
                 }
+                
+                if (workoutManager.locationManager.isPaused == true) &&
+                    (workoutManager.currentPauseDuration() > 0) {
+                    LiveMetricsPausedView(workoutManager: workoutManager)
+
+                }
+
+                
+            }
+
 
             Spacer().frame(maxWidth: .infinity)
        
