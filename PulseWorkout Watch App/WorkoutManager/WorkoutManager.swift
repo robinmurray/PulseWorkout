@@ -144,8 +144,8 @@ class WorkoutManager : NSObject, ObservableObject {
     /// Return total moving time = elapsed time - total auto-pause - current active auto-pause
     func movingTime(at: Date) -> TimeInterval {
 
-        return (builder?.elapsedTime(at: at) ?? 0) - (activityDataManager.liveActivityRecord?.pausedTime ?? 0)
-                - currentPauseDurationAt(at: at)
+        return max((builder?.elapsedTime(at: at) ?? 0) - (activityDataManager.liveActivityRecord?.pausedTime ?? 0)
+                - currentPauseDurationAt(at: at), 0)
     }
     
     func PauseHRMonitor() {
@@ -165,7 +165,7 @@ class WorkoutManager : NSObject, ObservableObject {
         let startDate = Date()
         self.activityDataManager.start(activityProfile: self.liveActivityProfile!, startDate: startDate)
 
-        startStopHRMonitor()
+        startHRMonitor()
 
         let configuration = HKWorkoutConfiguration()
         configuration.activityType = workoutType
@@ -216,7 +216,7 @@ class WorkoutManager : NSObject, ObservableObject {
         self.activityDataManager.set(elapsedTime: self.builder?.elapsedTime(at: Date()) ?? 0)
         session?.end()
         
-        startStopHRMonitor()
+        stopHRMonitor()
         
         if liveActivityProfile!.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
             locationManager.stopLocationSession()
@@ -320,24 +320,24 @@ class WorkoutManager : NSObject, ObservableObject {
         
         BTcyclePowerBatteryLevel = batteryLevel
     }
-    func startStopHRMonitor() {
+    
+    func startHRMonitor() {
+        print("Initialising timer")
+        self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+        self.timer!.tolerance = 0.2
+        print("Timer initialised")
+        HRMonitorActive = true
+        self.hrState = HRState.normal
         
-        if !(HRMonitorActive) {
-            print("Initialising timer")
-            self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
-            self.timer!.tolerance = 0.2
-            print("Timer initialised")
-            HRMonitorActive = true
-            self.hrState = HRState.normal
-            
-            self.appState = .live
-        } else {
-            self.timer?.invalidate()
-            HRMonitorActive = false
-            self.hrState = HRState.inactive
-            self.appState = .initial
-        }
-        
+        self.appState = .live
+    }
+    
+    func stopHRMonitor() {
+        print("stopping timer")
+        self.timer?.invalidate()
+        HRMonitorActive = false
+        self.hrState = HRState.inactive
+        self.appState = .initial
     }
     
     @objc func delayedEnableWaterLock() {

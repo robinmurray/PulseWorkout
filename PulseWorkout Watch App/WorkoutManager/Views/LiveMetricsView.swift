@@ -62,22 +62,31 @@ struct LiveMetricsView: View {
     let loAlarmDisplay: [Bool: AlarmStyling] =
     [false: AlarmStyling(alarmLevelText: "___", colour: Color.gray),
      true: AlarmStyling(colour: Color.orange)]
-    
+
     
     init(workoutManager: WorkoutManager) {
         self.workoutManager = workoutManager
         self.activityData = workoutManager.activityDataManager.liveActivityRecord ??
             workoutManager.activityDataManager.dummyActivityRecord
         
-//        workoutManager.locationManager.isPaused = true
     }
     
+    func scrollPosition(scrollDate: Date, scrollInterval: Int, scrollItems: Int) -> Int {
+        
+        let seconds = Calendar.current.component(.second, from: scrollDate)
+        let scrollCount: Int = seconds / scrollInterval
+        let scrollPos: Int = scrollCount % scrollItems
+        
+        return scrollPos
+    }
+
     var body: some View {
         
         VStack {
             
             HStack {
                 VStack {
+                    
                     HStack {
 
                         TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
@@ -89,108 +98,81 @@ struct LiveMetricsView: View {
                             
                         Spacer()
                     }
-                    
-                    ScrollView {
-                        VStack {
 
+                    TimelineView(.periodic(from: Date(), by: 1)) { context in
+                        
+                        ScrollView {
+                            VStack {
 
+                                switch scrollPosition(scrollDate: context.date,
+                                                      scrollInterval: 2,
+                                                      scrollItems: 4) {
+                                case 0:
+                                    LiveMetricCarouselItem(
+                                        metric1: (image: "arrowshape.forward",
+                                                  text: distanceFormatter(distance: activityData.distanceMeters)),
+                                        metric2: (image: "arrow.up.right.circle",
+                                                  text: distanceFormatter(distance: activityData.totalAscent ?? 0,
+                                                                              forceMeters: true))
+                                    )
+                                        .modifier(GetHeightModifier(height: $scrollStackheight))
 
-                                VStack {
-                                    HStack {
-                                        Image(systemName: "arrowshape.forward")
-                                            .foregroundColor(Color.yellow)
-                                        Text(distanceFormatter(distance: activityData.distanceMeters))
-                                        //                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                            .padding(.trailing, 8)
-                                            .foregroundColor(Color.yellow)
-                                        Spacer()
-                                    }
-                                    
-                                    HStack {
-                                        Image(systemName: "arrow.up.right.circle")
-                                            .foregroundColor(Color.yellow)
-                                        Text(distanceFormatter(distance: activityData.totalAscent ?? 0,
-                                                               forceMeters: true))
-                                        //                        .frame(maxWidth: .infinity, alignment: .trailing)
-                                        .padding(.trailing, 8)
-                                        .foregroundColor(Color.yellow)
                                         
-                                        Spacer()
-                                    }
+                                case 1:
+                                    // Speed and Average Speed
+                                    LiveMetricCarouselItem(
+                                        metric1: (image: "speedometer",
+                                                  text: speedFormatter(speed: activityData.speed ?? 0)),
+                                        metric2: (image: "arrow.up.and.line.horizontal.and.arrow.down",
+                                                  text: speedFormatter(speed: activityData.averageSpeed))
+                                    )
+                                        .modifier(GetHeightModifier(height: $scrollStackheight))
+ 
+                                case 2:
+                                    // Power and Average Power
+                                    LiveMetricCarouselItem(
+                                        metric1: (image: "bolt",
+                                                  text: String(activityData.watts ?? 0) + " w"),
+                                        metric2: (image: "arrow.up.and.line.horizontal.and.arrow.down",
+                                                  text: String(activityData.averagePower ) + " w")
+                                    )
+                                    .modifier(GetHeightModifier(height: $scrollStackheight))
+
+                                        
+                                case 3:
+                                    // Cadence and Average Cadence
+                                    LiveMetricCarouselItem(
+                                        metric1: (image: "arrow.clockwise.circle",
+                                                  text: String(activityData.cadence ?? 0)),
+                                        metric2: (image: "arrow.up.and.line.horizontal.and.arrow.down",
+                                                  text: String(activityData.averageCadence))
+                                    )
+                                    .modifier(GetHeightModifier(height: $scrollStackheight))
+                                       
+                                default:
+                                    LiveMetricCarouselItem(
+                                        metric1: (image: "arrowshape.forward",
+                                                  text: distanceFormatter(distance: activityData.distanceMeters)),
+                                        metric2: (image: "arrow.up.right.circle",
+                                                  text: distanceFormatter(distance: activityData.totalAscent ?? 0,
+                                                                              forceMeters: true))
+                                    )
+                                        .modifier(GetHeightModifier(height: $scrollStackheight))
+                                        
+                                }
                                     
-                                }
-                                .modifier(GetHeightModifier(height: $scrollStackheight))
-
-                            // Speed and Average Speed
-                            VStack {
-                                HStack {
-                                    Image(systemName: "speedometer")
-                                        .foregroundColor(Color.yellow)
-                                    Text(speedFormatter(speed: activityData.speed ?? 0))
-                                        .foregroundColor(Color.yellow)
-                                    Spacer()
-                                }
-                                HStack {
-                                    Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
-                                        .foregroundColor(Color.yellow)
-                                    Text(speedFormatter(speed: activityData.averageSpeed ))
-                                        .foregroundColor(Color.yellow)
-                                    Spacer()
-                                }
-                            }
+                             }
                             
-                            // Power and Average Power
-                            VStack {
-                                HStack {
-                                    Image(systemName: "bolt")
-                                        .foregroundColor(Color.yellow)
-                                    Text(String(activityData.watts ?? 0) + " w")
-                                        .foregroundColor(Color.yellow)
-                                    Spacer()
-                                }
-
-                                HStack {
-                                    Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
-                                        .foregroundColor(Color.yellow)
-                                    Text(String(activityData.averagePower ) + " w")
-                                        .foregroundColor(Color.yellow)
-                                    Spacer()
-                                }
-                                
-                            }
-
-                            // Cadence and Average Cadence
-                            VStack {
-
-                                HStack {
-                                    Image(systemName: "arrow.clockwise.circle")
-                                        .foregroundColor(Color.yellow)
-                                    Text(String(activityData.cadence ?? 0))
-                                        .foregroundColor(Color.yellow)
-                                    Spacer()
-                                }
-
-                                HStack {
-                                    Image(systemName: "arrow.up.and.line.horizontal.and.arrow.down")
-                                        .foregroundColor(Color.yellow)
-                                    Text(String(activityData.averageCadence ))
-                                        .foregroundColor(Color.yellow)
-                                    Spacer()
-                                }
-                            }
-
-
-
                         }
+                        .frame(height: scrollStackheight)
+ 
                     }
-                    .frame(height: scrollStackheight)
 
                 }
 
             }
 
             Spacer()
-
 
             ZStack {
                 HStack {
@@ -218,6 +200,7 @@ struct LiveMetricsView: View {
 
             Spacer().frame(maxWidth: .infinity)
        
+            
             BTDeviceBarView(workoutManager: workoutManager)
 
         }

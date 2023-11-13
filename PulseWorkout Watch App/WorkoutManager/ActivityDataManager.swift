@@ -587,21 +587,21 @@ class ActivityDataManager: NSObject, ObservableObject {
     func set(elapsedTime: Double) {
         if liveActivityRecord != nil {
             liveActivityRecord!.elapsedTime = elapsedTime
-            liveActivityRecord!.movingTime = elapsedTime - liveActivityRecord!.pausedTime
+            liveActivityRecord!.movingTime = max(elapsedTime - liveActivityRecord!.pausedTime, 0)
             setAverageSpeed()
         }
     }
 
     private func setAverageSpeed() {
         if liveActivityRecord!.movingTime != 0 {
-            liveActivityRecord!.averageSpeed = liveActivityRecord!.distanceMeters / liveActivityRecord!.movingTime * 3.6
+            liveActivityRecord!.averageSpeed = liveActivityRecord!.distanceMeters / liveActivityRecord!.movingTime
         }
     }
     
     func increment(pausedTime: Double) {
         if liveActivityRecord != nil {
             liveActivityRecord!.pausedTime += pausedTime
-            liveActivityRecord!.movingTime = liveActivityRecord!.elapsedTime - liveActivityRecord!.pausedTime
+            liveActivityRecord!.movingTime = max(liveActivityRecord!.elapsedTime - liveActivityRecord!.pausedTime, 0)
 
         }
     }
