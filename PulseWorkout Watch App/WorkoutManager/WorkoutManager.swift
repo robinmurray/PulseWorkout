@@ -455,19 +455,25 @@ extension WorkoutManager: HKWorkoutSessionDelegate {
     func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState,
                         from fromState: HKWorkoutSessionState, date: Date) {
         DispatchQueue.main.async {
-            self.running = toState == .running
+            self.running = (toState == .running)
         }
         
         
         // Wait for the session to transition states before ending the builder.
         if toState == .ended {
-            builder?.endCollection(withEnd: date) { (success, error) in
-                self.builder?.finishWorkout { (workout, error) in
-                    DispatchQueue.main.async {
-                        self.workout = workout
+            
+            if settingsManager.saveAppleHealth {
+                builder?.endCollection(withEnd: date) { (success, error) in
+                    self.builder?.finishWorkout { (workout, error) in
+                        DispatchQueue.main.async {
+                            self.workout = workout
+                        }
                     }
                 }
+            } else {
+                builder?.discardWorkout()
             }
+
         }
     }
 

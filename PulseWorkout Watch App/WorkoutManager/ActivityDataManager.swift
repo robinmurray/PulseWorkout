@@ -180,8 +180,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         type = "Ride"
         sportType = "Ride"
         startDateLocal = startDate
-        hiHRLimit = activityProfile.hiLimitAlarm
-        loHRLimit = activityProfile.loLimitAlarm
+        hiHRLimit = activityProfile.hiLimitAlarmActive ? activityProfile.hiLimitAlarm : nil
+        loHRLimit = activityProfile.loLimitAlarmActive ? activityProfile.loLimitAlarm : nil
 
         
         var localStartHour = Int(startDateLocal.formatted(
@@ -877,7 +877,7 @@ class ActivityDataManager: NSObject, ObservableObject {
         query.sortDescriptors = [sort]
 
         let operation = CKQueryOperation(query: query)
-//        operation.desiredKeys = nil
+
         operation.desiredKeys = ["name", "type", "sportType", "startDateLocal", "elapsedTime", "pausedTime", "movingTime",
                                  "activityDescription", "distance", "totalAscent", "totalDescent",
                                  "averageHeartRate", "averageCadence", "averagePower", "averageSpeed", "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit" ]
@@ -924,8 +924,8 @@ class ActivityDataManager: NSObject, ObservableObject {
                     CKError.networkFailure,
                     CKError.networkUnavailable,
                     CKError.serviceUnavailable,
-                    CKError.zoneBusy,
-                    CKError.notAuthenticated: //REMOVE!!
+                    CKError.zoneBusy:
+//                    CKError.notAuthenticated: //REMOVE!!
                     
                     print("temporary query error - set up retry")
                     self.startDeferredQuery()
@@ -946,8 +946,8 @@ class ActivityDataManager: NSObject, ObservableObject {
     }
     
     func startDeferredQuery() {
-//        let deferredTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(query), userInfo: nil, repeats: false)
-//        deferredTimer.tolerance = 5
+        let deferredTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(query), userInfo: nil, repeats: false)
+        deferredTimer.tolerance = 5
     }
 
     
