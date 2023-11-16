@@ -26,7 +26,7 @@ func getCacheDirectory() -> URL? {
 }
 
 
-class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
+class ActivityRecord: NSObject, Identifiable, Codable {
     
     var name: String = "Morning Ride"
     var type: String = "Ride"

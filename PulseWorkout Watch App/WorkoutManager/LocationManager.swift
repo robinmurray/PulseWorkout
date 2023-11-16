@@ -9,21 +9,23 @@ import Foundation
 import CoreLocation
 
 
+
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
-    @Published var latitude: Double?
-    @Published var longitude: Double?
-    @Published var altitude: Double?
-    @Published var horizontalAccuracy: Double?
-    @Published var verticalAccuracy: Double?
-    @Published var totalAscent: Double?
-    @Published var totalDescent: Double?
-    @Published var speed: Double?
-    @Published var direction: Double?
-    @Published var placeName: String?
-
+    var latitude: Double?
+    var longitude: Double?
+    var altitude: Double?
+    var horizontalAccuracy: Double?
+    var verticalAccuracy: Double?
+    var totalAscent: Double?
+    var totalDescent: Double?
+    var speed: Double?
+    var direction: Double?
+    var placeName: String?
+    
     /// Set when activity is auto-paused when speed < limit
-    @Published var isPaused: Bool = false
+    ///
+    var isPaused: Bool = false
     
     var lastAltitude: Double?
     
@@ -40,8 +42,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var activityDataManager: ActivityDataManager
     var settingsManager: SettingsManager
     @Published var pinnedLocation: CLLocation?
-    @Published var pinnedPlaceName: String?
-    @Published var pinnedLocationDistance: Double?
+    var pinnedPlaceName: String?
+    var pinnedLocationDistance: Double?
+    var prevSmoothedAltitude: Double?
     
 
     
@@ -74,7 +77,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
     }
 
-    
+        
     /// Read the pinned location from user defaults, if is set
     func getPinnedLocation() {
         
@@ -169,6 +172,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         altitude = nil
         lastAltitude = nil
         smoothedAltitudeList = []
+        prevSmoothedAltitude = nil
+        totalAscent = nil
+        totalDescent = nil
         speed = nil
         horizontalAccuracy = nil
         direction = nil
@@ -291,23 +297,22 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             if backgroundActive {
                 if altitude != nil {
                     let smoothingLength = 5
-                    var smoothedAltitude: Double?
-                    if smoothedAltitudeList.count == smoothingLength {
-                        smoothedAltitude = smoothedAltitudeList.reduce(0, +) / 5
-                        smoothedAltitudeList.removeFirst()
-                        
-                    }
 
                     smoothedAltitudeList.append(altitude!)
                     
                     if smoothedAltitudeList.count == smoothingLength {
-                        let thisSmoothedAltitude = smoothedAltitudeList.reduce(0, +) / 5
-                        let prevSmoothedAltitude = smoothedAltitude ?? thisSmoothedAltitude     // ensure zero change on first ever calc!
-                        if thisSmoothedAltitude >= prevSmoothedAltitude {
-                            totalAscent = (totalAscent ?? 0) + (thisSmoothedAltitude - prevSmoothedAltitude)
-                        } else {
-                            totalDescent = (totalDescent ?? 0) + (prevSmoothedAltitude - thisSmoothedAltitude)
+                        let thisSmoothedAltitude = smoothedAltitudeList.reduce(0, +) / Double(smoothingLength)
+                        
+                        if prevSmoothedAltitude != nil {
+                            if thisSmoothedAltitude >= prevSmoothedAltitude! {
+                                totalAscent = (totalAscent ?? 0) + (thisSmoothedAltitude - prevSmoothedAltitude!)
+                            } else {
+                                totalDescent = (totalDescent ?? 0) + (prevSmoothedAltitude! - thisSmoothedAltitude)
+                            }
                         }
+
+                        prevSmoothedAltitude = thisSmoothedAltitude
+                        smoothedAltitudeList = []
                     }
                 }
                 

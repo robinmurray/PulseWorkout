@@ -48,135 +48,152 @@ struct LocationView: View {
 
     var body: some View {
 
-        Form {
-            Section(header: Text("Current Location")) {
-                HStack {
-                    Text(locationManager.placeName ?? "Geo-location not available")
-                        .foregroundColor(Color.yellow)
-                        .font(locationManager.placeName == nil ? .footnote : .caption)
-                    
-                    Spacer()
-                    
-                    Button(action: locationManager.setPinnedLocation) {
-                        Image(systemName: "mappin.circle")
-                    }
-                    .foregroundColor(Color.yellow)
-                    .font(.title)
-                    .frame(width: 40, height: 40)
-                    .background(Color.clear)
-                    .clipShape(Circle())
-                    .buttonStyle(PlainButtonStyle())
-                    
-                }
-                
-                VStack {
-
-                    HStack {
-                        Text("Longitude")
-                        Spacer()
-                        Text(String(format: "%.4f", locationManager.longitude ?? 0))
-                            .foregroundColor(Color.yellow)
-                    }
-                    HStack {
-                        Text("Latitude")
-                        Spacer()
-                        Text(String(format: "%.4f", locationManager.latitude ?? 0))
-                            .foregroundColor(Color.yellow)
-                    }
-                    HStack {
-                        Text("Accuracy")
-                        Spacer()
-                        Text("+/- " + String(format: "%.0f", locationManager.horizontalAccuracy ?? 0) + "m")
-                            .foregroundColor(Color.yellow)
-                    }
-                    
-                    HStack {
-                        Text("Altitude")
-                        Spacer()
-                        Text(String(format: "%.0f", locationManager.altitude ?? 0) + "m")
-                            .foregroundColor(Color.yellow)
-                    }
-                    HStack {
-                        Text("Accuracy")
-                        Spacer()
-                        Text("+/- " + String(format: "%.0f", locationManager.verticalAccuracy ?? 0) + "m")
-                            .foregroundColor(Color.yellow)
-                    }
- 
-                    HStack {
-                        Text("Ascent")
-                        Spacer()
-                        Text(String(format: "%.0f", locationManager.totalAscent ?? 0) + "m")
-                            .foregroundColor(Color.yellow)
-                    }
-
-                    HStack {
-                        Text("Descent")
-                        Spacer()
-                        Text(String(format: "%.0f", locationManager.totalDescent ?? 0) + "m")
-                            .foregroundColor(Color.yellow)
-                    }
-                    HStack {
-                        Text("Speed")
-                        Spacer()
-                        Text(speedFormatter(speed: locationManager.speed ?? 0))
-                            .foregroundColor(Color.yellow)
-                    }
-                    HStack {
-                        Text("Heading")
-                        Spacer()
-                        Text(String(format: "%.0f", locationManager.direction ?? 0))
-                            .foregroundColor(Color.yellow)
-                    }
-                }
-            }
+        TimelineView(.periodic(from: Date(), by: 2)) { context in
             
-            if locationManager.pinnedLocation != nil {
-                Section(header: Text("Pinned Location")) {
-                    VStack {
-                        HStack {
-                            Text(locationManager.pinnedPlaceName ?? "Geo-location not available")
-                                .foregroundColor(Color.blue)
-                                .font(locationManager.placeName == nil ? .footnote : .footnote)
-                            
-                            Spacer()
-                            
-                            Button(action: locationManager.clearPinnedLocation) {
-                                Image(systemName: "mappin.slash.circle")
+            if !locationManager.authStatusOk {
+                LocationNotAuthView()
+                    .navigationTitle("Location")
+                    .navigationBarTitleDisplayMode(.inline)
+            }
+            else {
+                VStack {
+                    Form {
+                            Section(header: Text("Current Location")) {
+                                HStack {
+
+                                    Text(locationManager.placeName ?? "Geo-location not available")
+                                        .foregroundColor(Color.yellow)
+                                        .font(locationManager.placeName == nil ? .footnote : .caption)
+
+                                    Spacer()
+                                    
+                                    Button(action: locationManager.setPinnedLocation) {
+                                        Image(systemName: "mappin.circle")
+                                    }
+                                    .foregroundColor(Color.yellow)
+                                    .font(.title)
+                                    .frame(width: 40, height: 40)
+                                    .background(Color.clear)
+                                    .clipShape(Circle())
+                                    .buttonStyle(PlainButtonStyle())
+                                    
+                                }
+
+                                VStack {
+
+                                    HStack {
+                                        Text("Longitude")
+                                        Spacer()
+                                        Text(String(format: "%.4f", locationManager.longitude ?? 0))
+                                            .foregroundColor(Color.yellow)
+                                    }
+             
+                                    HStack {
+                                        Text("Latitude")
+                                        Spacer()
+                                        Text(String(format: "%.4f", locationManager.latitude ?? 0))
+                                            .foregroundColor(Color.yellow)
+                                    }
+                                    HStack {
+                                        Text("Accuracy")
+                                        Spacer()
+                                        Text("+/- " + String(format: "%.0f", locationManager.horizontalAccuracy ?? 0) + "m")
+                                            .foregroundColor(Color.yellow)
+                                    }
+                                    
+                                    HStack {
+                                        Text("Altitude")
+                                        Spacer()
+                                        Text(String(format: "%.0f", locationManager.altitude ?? 0) + "m")
+                                            .foregroundColor(Color.yellow)
+                                    }
+                                    HStack {
+                                        Text("Accuracy")
+                                        Spacer()
+                                        Text("+/- " + String(format: "%.0f", locationManager.verticalAccuracy ?? 0) + "m")
+                                            .foregroundColor(Color.yellow)
+                                    }
+                 
+                                    HStack {
+                                        Text("Ascent")
+                                        Spacer()
+                                        Text(String(format: "%.0f", locationManager.totalAscent ?? 0) + "m")
+                                            .foregroundColor(Color.yellow)
+                                    }
+
+                                    HStack {
+                                        Text("Descent")
+                                        Spacer()
+                                        Text(String(format: "%.0f", locationManager.totalDescent ?? 0) + "m")
+                                            .foregroundColor(Color.yellow)
+                                    }
+                                    HStack {
+                                        Text("Speed")
+                                        Spacer()
+                                        Text(speedFormatter(speed: locationManager.speed ?? 0))
+                                            .foregroundColor(Color.yellow)
+                                    }
+                                    HStack {
+                                        Text("Heading")
+                                        Spacer()
+                                        Text(String(format: "%.0f", locationManager.direction ?? 0))
+                                            .foregroundColor(Color.yellow)
+                                    }
+                                }
                             }
-                            .foregroundColor(Color.blue)
-                            .font(.title)
-                            .frame(width: 40, height: 40)
-                            .background(Color.clear)
-                            .clipShape(Circle())
-                            .buttonStyle(PlainButtonStyle())
-                            
-                        }
-                        
-                        HStack {
-                            Text("Distance")
+             
 
-                            Spacer()
-                            Text(distanceFormatter(distance:
-                                                    locationManager.pinnedLocationDistance ?? 0))
-                                .foregroundColor(Color.yellow)
+                            if locationManager.pinnedLocation != nil {
+                                Section(header: Text("Pinned Location")) {
+                                    VStack {
+                                        HStack {
+                                            Text(locationManager.pinnedPlaceName ?? "Geo-location not available")
+                                                .foregroundColor(Color.blue)
+                                                .font(.footnote)
+                                        
+                                            Spacer()
+                                        
+                                            Button(action: locationManager.clearPinnedLocation) {
+                                                Image(systemName: "mappin.slash.circle")
+                                            }
+                                            .foregroundColor(Color.blue)
+                                            .font(.title)
+                                            .frame(width: 40, height: 40)
+                                            .background(Color.clear)
+                                            .clipShape(Circle())
+                                            .buttonStyle(PlainButtonStyle())
+                                        
+                                        }
+                                    
+                                        HStack {
+                                            Text("Distance")
+                                        
+                                            Spacer()
+                                            Text(distanceFormatter(distance:
+                                                                locationManager.pinnedLocationDistance ?? 0))
+                                                .foregroundColor(Color.yellow)
+                                        }
+                                        /*
+                                         MapView(latitude: locationManager.pinnedLocation!.coordinate.latitude,
+                                         longitude: locationManager.pinnedLocation!.coordinate.longitude)
+                                         */
+                                    }
+                                
+                                }
+                            }
+         
                         }
-                        
-                        MapView(latitude:       locationManager.pinnedLocation!.coordinate.latitude,
-                                longitude: locationManager.pinnedLocation!.coordinate.longitude)
-  
+
                     }
-
+                    
                 }
             }
+            .onAppear(perform: locationManager.startFGLocationServices)
+            .onDisappear(perform: locationManager.stopFGLocationServices)
 
-        
-        }
-        .onAppear(perform: locationManager.startFGLocationServices)
-        .onDisappear(perform: locationManager.stopFGLocationServices)
-        .navigationTitle("Location")
-        .navigationBarTitleDisplayMode(.inline)
     }
+        
+
 
 }
 

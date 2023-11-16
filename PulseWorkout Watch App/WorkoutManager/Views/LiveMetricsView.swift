@@ -44,7 +44,7 @@ struct AlarmStyling {
 struct LiveMetricsView: View {
     
     @ObservedObject var workoutManager: WorkoutManager
-    @ObservedObject var activityData: ActivityRecord
+    var activityData: ActivityRecord
 
     // to manage fixed height scrolling view
     @State private var scrollStackheight: CGFloat = 0
