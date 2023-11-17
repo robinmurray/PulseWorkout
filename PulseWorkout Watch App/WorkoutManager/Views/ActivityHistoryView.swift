@@ -29,10 +29,12 @@ struct ActivityHistoryView: View {
                                 ActivityListItemView(activityRecord: activityRecord)
                             }
                             .swipeActions {
-                                Button("Delete") {
+                                Button(role:.destructive) {
                                     activityDataManager.delete(recordID: activityRecord.recordID)
+                                } label: {
+                                    Label("Delete", systemImage: "xmark.bin")
                                 }
-                                .tint(.red)
+                                
                             }
                         }
                     }
