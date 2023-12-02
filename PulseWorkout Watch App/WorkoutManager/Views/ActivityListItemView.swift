@@ -18,6 +18,10 @@ struct ActivityListItemView: View {
                 Text(activityRecord.name)
                     .foregroundStyle(.yellow)
                 Spacer()
+                if activityRecord.toSave {
+                    Image(systemName: "icloud.slash.fill").foregroundColor(.red)
+                }
+                
             }
             
             HStack {

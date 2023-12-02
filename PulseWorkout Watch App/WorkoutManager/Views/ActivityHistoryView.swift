@@ -10,51 +10,39 @@ import SwiftUI
 
 struct ActivityHistoryView: View {
     
-    @State var isBusy: Bool = false
-//    var status: UILabel! = UILabel()
     @ObservedObject var activityDataManager: ActivityDataManager
     
  
     var body: some View {
         
-        ZStack {
-            VStack {
 
-                NavigationStack {
-                    List{
-                        ForEach(activityDataManager.recordSet) {activityRecord in
-                            NavigationLink {
-                                ActivityDetailView(activityRecord: activityRecord)
-                            } label : {
-                                ActivityListItemView(activityRecord: activityRecord)
+        VStack {
+
+            NavigationStack {
+                List{
+                    ForEach(activityDataManager.recordSet) {activityRecord in
+                        NavigationLink {
+                            ActivityDetailView(activityRecord: activityRecord)
+                        } label : {
+                            ActivityListItemView(activityRecord: activityRecord)
+                        }
+                        .swipeActions {
+                            Button(role:.destructive) {
+                                activityDataManager.delete(recordID:
+                                    activityRecord.recordID)
+                            } label: {
+                                Label("Delete", systemImage: "xmark.bin")
                             }
-                            .swipeActions {
-                                Button(role:.destructive) {
-                                    activityDataManager.delete(recordID: activityRecord.recordID)
-                                } label: {
-                                    Label("Delete", systemImage: "xmark.bin")
-                                }
                                 
-                            }
                         }
                     }
+                }
                     
 
-                }
-                
             }
-            .padding()
-
-            if activityDataManager.isBusy {
-
-                ProgressView()
-                    .scaleEffect(2)
                 
-
-            }
-
-    
         }
+        .padding()
         .navigationTitle("History")
         .navigationBarTitleDisplayMode(.inline)
     }

@@ -32,6 +32,9 @@ class DataCache: NSObject, Codable {
     var database: CKDatabase!
     var zoneID: CKRecordZone.ID!
     
+    // Callback function to update UI if/when cache changes
+    var activityDataManager: ActivityDataManager?
+    
     let cacheSize = 50
     let cacheFile = "activityCache.act"
     private var activities: [ActivityRecord] = []
@@ -43,14 +46,15 @@ class DataCache: NSObject, Codable {
         case activities
     }
 
-    override init() {
+    init(readCache: Bool = true) {
 
         super.init()
         
         container = CKContainer(identifier: "iCloud.CloudKitLesson")
         database = container.privateCloudDatabase
         zoneID = CKRecordZone.ID(zoneName: "CKL_Zone")
-        /*
+        
+        
         Task {
             do {
                 try await createCKZoneIfNeeded()
@@ -59,19 +63,39 @@ class DataCache: NSObject, Codable {
             }
 
         }
-        */
+        
 
-        _ = read()
-        
-        
-        if !dirty() {
-            refresh()
+        if readCache {
+            _ = read()
+            
+            
+            if !dirty() {
+                refresh()
+            }
         }
         
         synchTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(synch), userInfo: nil, repeats: true)
         synchTimer!.tolerance = 5
 
     }
+
+    func setActivityDataManager( activityDataManager: ActivityDataManager ) {
+        self.activityDataManager = activityDataManager
+    }
+    
+    private func createCKZoneIfNeeded() async throws {
+
+        guard !UserDefaults.standard.bool(forKey: "zoneCreated") else {
+            return
+        }
+
+        print("creating zone")
+        let newZone = CKRecordZone(zoneID: zoneID)
+        _ = try await database.modifyRecordZones(saving: [newZone], deleting: [])
+
+        UserDefaults.standard.set(true, forKey: "zoneCreated")
+    }
+ 
 
     func add(activityRecord: ActivityRecord) {
         
@@ -162,17 +186,11 @@ class DataCache: NSObject, Codable {
             activities = []
             
             for activity in JSONData.activities {
-                print("activity \(activity.recordName ?? "xxx")")
-                activity.recordID = CKRecord.ID(recordName: activity.recordName, zoneID: zoneID) // FIX!!!!
+                print("activity \(activity.recordName ?? "xxx")  toBeSaved status \(activity.toSave) -- toDelete status \(activity.toDelete)")
+                // create recordID from recordName as recordID not serialised to JSON
+                activity.recordID = CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
                 activities.append(activity)
             }
-
-            /*
-            print("Cache ::")
-            for activity in activities {
-                print("activity : \(activity.description())")
-            }
-            */
             
             return true
         }
@@ -192,15 +210,18 @@ class DataCache: NSObject, Codable {
         print("Activities \(activities)")
         do {
             let data = try JSONEncoder().encode(self)
-            let jsonString = String(data: data, encoding: .utf8)
-            print("JSON : \(String(describing: jsonString))")
+//            let jsonString = String(data: data, encoding: .utf8)
+//            print("JSON : \(String(describing: jsonString))")
             do {
                 try data.write(to: cacheURL)
                 
+                if activityDataManager != nil {
+                    activityDataManager!.updateUI()
+                }
+
                 return true
             }
             catch {
-    //            error as any Error
                 print("error \(error)")
                 return false
             }
@@ -350,6 +371,14 @@ class DataCache: NSObject, Codable {
                         CKError.zoneBusy:
                         
                         print("temporary error")
+                    
+                    case CKError.serverRecordChanged:
+                        // Record alreday exists- shouldn't happen, but!
+                        print("record already exists!")
+                        activityRecord.deleteTrackRecord()
+                        activityRecord.toSave = false
+                        
+                        _ = self.write()
                         
                     default:
                         print("permanent error")
@@ -363,6 +392,8 @@ class DataCache: NSObject, Codable {
 
                     activityRecord.deleteTrackRecord()
                     activityRecord.toSave = false
+                    
+                    _ = self.write()
                 }
             }
         }
@@ -371,7 +402,7 @@ class DataCache: NSObject, Codable {
  
     @objc func synch() {
         
-        if !dirty() {return}
+        if !dirty() { return }
         
         if toBeDeleted().count > 0 {
             CKDelete(recordID: toBeDeleted()[0].recordID)
@@ -425,6 +456,7 @@ class ActivityRecord: NSObject, Identifiable, Codable {
 
     private var settingsManager: SettingsManager?
     
+    // Create new activity record - create recordID and recordName
     init(settingsManager: SettingsManager) {
         super.init()
         self.settingsManager = settingsManager
@@ -432,20 +464,17 @@ class ActivityRecord: NSObject, Identifiable, Codable {
         let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
         self.tcxFileName = baseFileName + ".gz"
         self.JSONFileName = baseFileName + ".json"
+        self.recordID = CKRecord.ID()
+        self.recordName = recordID.recordName
 
     }
     
+    // Initialise record from CloudKt record - will have recordID set
     init(fromCKRecord: CKRecord) {
         super.init()
         self.fromCKRecord(activityRecord: fromCKRecord)
     }
-
-    init(fromJSONURL: URL) {
-        super.init()
-        _ = readFromJSON(jURL: fromJSONURL)
-        
-    }
-    
+  
 
     // Calculated averages
     struct analysedVariable {
@@ -553,8 +582,6 @@ class ActivityRecord: NSObject, Identifiable, Codable {
     
     func start(activityProfile: ActivityProfile, startDate: Date) {
     
-        recordID = CKRecord.ID()
-        recordName = recordID.recordName
         type = "Ride"
         sportType = "Ride"
         startDateLocal = startDate
@@ -627,7 +654,6 @@ class ActivityRecord: NSObject, Identifiable, Codable {
 /// Extension for serialising / de-serialising activity record to JSON file
 extension ActivityRecord {
 
-
     // set CodingKeys to define which variables are stored to JSON file
     private enum CodingKeys: String, CodingKey {
         case recordName, name, type, sportType, startDateLocal,
@@ -636,6 +662,14 @@ extension ActivityRecord {
              stravaStatus, totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete
     }
     
+}
+
+
+// MARK: - Management of list of track points within ActivityRecord
+
+/// Extension for managing track points
+extension ActivityRecord {
+
     /// Get URL for JSON file
     func CacheURL(fileName: String) -> URL? {
 
@@ -643,99 +677,6 @@ extension ActivityRecord {
 
         return cachePath.appendingPathComponent(fileName)
     }
-
-    /// Write activity record to JSON file in cache folder
-    func writeToJSON() -> Bool {
-        
-        guard let jFile = JSONFileName else { return false }
-        guard let jURL = CacheURL(fileName: jFile) else { return false }
-        
-        print("Writing Activity Record to JSON file")
-        do {
-            let data = try JSONEncoder().encode(self)
-            let jsonString = String(data: data, encoding: .utf8)
-            print("JSON : \(String(describing: jsonString))")
-            do {
-                try data.write(to: jURL)
-                
-                return true
-            }
-            catch {
-    //            error as any Error
-                print("error \(error)")
-                return false
-            }
-
-        } catch {
-            print("Error enconding Activity Record")
-            return false
-        }
-
-    }
-
-    /// Create activity record from JSON file in cache folder
-    func readFromJSON(jURL: URL) -> Bool {
-
-        do {
-            let data = try Data(contentsOf: jURL)
-            let decoder = JSONDecoder()
-            let JSONData = try decoder.decode(ActivityRecord.self, from: data)
-            name = JSONData.name
-            type = JSONData.type
-            sportType = JSONData.sportType
-            startDateLocal = JSONData.startDateLocal
-            elapsedTime = JSONData.elapsedTime
-            pausedTime = JSONData.pausedTime
-            movingTime = JSONData.movingTime
-            activityDescription = JSONData.activityDescription
-            distanceMeters = JSONData.distanceMeters
-            averageHeartRate = JSONData.averageHeartRate
-            averageCadence = JSONData.averageCadence
-            averagePower = JSONData.averagePower
-            averageSpeed = JSONData.averageSpeed
-            activeEnergy = JSONData.activeEnergy
-            timeOverHiAlarm = JSONData.timeOverHiAlarm
-            timeUnderLoAlarm = JSONData.timeUnderLoAlarm
-            hiHRLimit = JSONData.hiHRLimit
-            loHRLimit = JSONData.loHRLimit
-            stravaStatus = JSONData.stravaStatus
-            totalAscent = JSONData.totalAscent
-            totalDescent = JSONData.totalDescent
-            tcxFileName = JSONData.tcxFileName
-            JSONFileName = JSONData.JSONFileName
-            toSave = JSONData.toSave
-            toDelete = JSONData.toDelete
-
-            return true
-        }
-        catch {
-            print("error:\(error)")
-            return false
-        }
-    }
-
-    
-    /// Remove temporary .json file from cache folder
-    func deleteJSON() {
-        guard let jFile = JSONFileName else { return }
-        guard let jURL = CacheURL(fileName: jFile) else { return }
-
-        do {
-            try FileManager.default.removeItem(at: jURL)
-                print("JSON file has been deleted")
-        } catch {
-            print(error)
-        }
-    }
-
-
-}
-
-
-// MARK: - Management of list of track points within ActivityRecord
-
-/// Extension for serialising / de-serialising activity record to JSON file
-extension ActivityRecord {
     
     /// Add data as a track point
     func addTrackPoint() {
@@ -934,49 +875,32 @@ extension ActivityRecord {
 
 class ActivityDataManager: NSObject, ObservableObject {
     
-    var container: CKContainer!
-    var database: CKDatabase!
-    var zoneID: CKRecordZone.ID!
     var settingsManager: SettingsManager!
-    @Published var isBusy: Bool = false
-    @Published var fetched: Bool = false
     @Published var recordSet: [ActivityRecord] = []
 
     var liveActivityRecord: ActivityRecord?
-    var deferredSaveTimer: Timer?
 
     // Dummy activity record used for previews
     var dummyActivityRecord: ActivityRecord
     
-    var dataCache: DataCache = DataCache()
+    var dataCache: DataCache
 
     init(settingsManager: SettingsManager) {
         self.settingsManager = settingsManager
         dummyActivityRecord = ActivityRecord(settingsManager: settingsManager)
+        dataCache = DataCache()
+
         super.init()
-        
-        container = CKContainer(identifier: "iCloud.CloudKitLesson")
-        database = container.privateCloudDatabase
-        zoneID = CKRecordZone.ID(zoneName: "CKL_Zone")
-        /*
-        Task {
-            do {
-                try await createCKZoneIfNeeded()
-            } catch {
-                print("error \(error)")
-            }
 
-        }
-         */
-
-// !!        fetchAll()
-        recordSet = dataCache.cache()
+        dataCache.setActivityDataManager(activityDataManager: self)
         
-        // if starts and has unsaved records - attenmpt to save
-// !!        if deferredSaveRequired() { startDeferredSave() }
+        updateUI()
+        
     }
     
-
+    func updateUI() {
+        recordSet = dataCache.cache()
+    }
     
     /// Start an activity and initiate data collection
     func start(activityProfile: ActivityProfile, startDate: Date) {
@@ -1098,142 +1022,16 @@ class ActivityDataManager: NSObject, ObservableObject {
         }
     }
     
-    
-    private func createCKZoneIfNeeded() async throws {
-        print("in create zone")
- //       UserDefaults.standard.set(false, forKey: "zoneCreated")
-        guard !UserDefaults.standard.bool(forKey: "zoneCreated") else {
-            return
-        }
 
-        print("creating zone")
-        let newZone = CKRecordZone(zoneID: zoneID)
-        _ = try await database.modifyRecordZones(saving: [newZone], deleting: [])
-
-        UserDefaults.standard.set(true, forKey: "zoneCreated")
-    }
- 
-    
     func saveActivityRecord() {
 
         if liveActivityRecord != nil {
             liveActivityRecord!.save(dataCache: dataCache)
-            recordSet = dataCache.cache()
+            updateUI()
         }
     }
 
-    
-    func saveActivityRecordtoCK(activityRecord: ActivityRecord) {
-
-        let CKRecord = activityRecord.asCKRecord()
-
-        isBusy = true
-            
-        database.save(CKRecord) { [self] record, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    switch error {
-                    case CKError.accountTemporarilyUnavailable,
-                        CKError.networkFailure,
-                        CKError.networkUnavailable,
-                        CKError.serviceUnavailable,
-                        CKError.zoneBusy:
-                        
-                        print("temporary error - set up retry")
-                        self.startDeferredSave()
-                        
-                    default:
-                        print("permanent error - not retrying")
- //                       self.stopDeferredSave()
-                    }
-                    
-                    print("\(error)")
-                    self.isBusy = false
-                } else {
-                    print("Saved")
-
-                    self.isBusy = false
-                    activityRecord.deleteTrackRecord()
-                    activityRecord.deleteJSON()
-                    
-                    // set up a deferred save if there are still records to save
-                    if self.deferredSaveRequired() {
-                        self.startDeferredSave()
-                    }
-//                    else {
-//                        self.stopDeferredSave()
-//                    }
-                }
-            }
-        }
-        
-    }
-    
-    func deferredSaveRequired() -> Bool {
-        
-        let jsonPaths = deferredFileList()
-        if jsonPaths.count > 0 {
-            return true
-            
-        }
-        return false
-        
-    }
-    
-    func startDeferredSave() {
-        
-        if deferredSaveRequired() {
-//            if deferredSaveTimer == nil {
-                print("starting deferred timer")
-                deferredSaveTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(deferredSave), userInfo: nil, repeats: false)
-                deferredSaveTimer!.tolerance = 5
-                print("Timer initialised")
-//            }
-        }
-    }
-
-    func stopDeferredSave() {
-        
-        if deferredSaveTimer != nil {
-            deferredSaveTimer!.invalidate()
-            deferredSaveTimer = nil
-        }
-    }
-
-    func deferredFileList() -> [URL] {
-
-        let fm = FileManager.default
-        guard let cacheDirectory = getCacheDirectory() else { return [] }
-        
-        do {
-            let files = try fm.contentsOfDirectory(atPath: cacheDirectory.path)
-            let paths = files.map { cacheDirectory.appendingPathComponent($0) }
-            let jsonPaths = paths.filter{ $0.pathExtension == "json" }
-            print("jsonpaths : \(jsonPaths)")
-            return jsonPaths
-
-        } catch {
-            // failed to read directory
-            print("Directory search failed!")
-            return []
-
-        }
-    }
-    
-    @objc func deferredSave() {
-        
-        let jsonPaths = deferredFileList()
-
-        if jsonPaths.count > 0 {
-            let deferredActivityRecord = ActivityRecord(fromJSONURL: jsonPaths[0])
-            print("executing deferred save on \(deferredActivityRecord)")
-            saveActivityRecordtoCK(activityRecord: deferredActivityRecord)
-        }
-//        else {
-//            stopDeferredSave()
-//        }
-    }
-
+ 
     func clearCache() {
         let fm = FileManager.default
 
@@ -1257,100 +1055,12 @@ class ActivityDataManager: NSObject, ObservableObject {
         }
     }
 
-    func fetchAll() {
-        query()
-    }
-    
-    @objc func query() {
-        
-        isBusy = true
-        recordSet = []
-        
-        let pred = NSPredicate(value: true)
-        let sort = NSSortDescriptor(key: "creationDate", ascending: false)
-        let query = CKQuery(recordType: "activity", predicate: pred)
-        query.sortDescriptors = [sort]
-
-        let operation = CKQueryOperation(query: query)
-
-        operation.desiredKeys = ["name", "type", "sportType", "startDateLocal", "elapsedTime", "pausedTime", "movingTime",
-                                 "activityDescription", "distance", "totalAscent", "totalDescent",
-                                 "averageHeartRate", "averageCadence", "averagePower", "averageSpeed", "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit" ]
-        operation.resultsLimit = 50
-        operation.configuration.timeoutIntervalForRequest = 30
-
-
-        operation.recordMatchedBlock = { recordID, result in
-            switch result {
-            case .success(let record):
-                // TODO: Do something with the record that was received.
-                let myRecord = ActivityRecord(fromCKRecord: record)
-
-                DispatchQueue.main.async {
-                    print("Adding to recordSet : \(myRecord)")
-                    self.recordSet.append(myRecord)
-                }
-                break
-                
-            case .failure(let error):
-                // TODO: Handle per-record failure, perhaps retry fetching it manually in case an asset failed to download or something like that.
-                print( "Fetch failed \(String(describing: error))")
-                
-                break
-            }
-        }
-            
-        operation.queryResultBlock = { result in
-
-            switch result {
-            case .success:
-                // TODO: Yay, the operation was successful, now do something. Perhaps reload your awesome UI.
-                //                    self.fetched = true
-
-                for record in self.recordSet {
-                    print( record.description() )
-                }
-                break
-                    
-            case .failure(let error):
-
-                switch error {
-                case CKError.accountTemporarilyUnavailable,
-                    CKError.networkFailure,
-                    CKError.networkUnavailable,
-                    CKError.serviceUnavailable,
-                    CKError.zoneBusy:
-//                    CKError.notAuthenticated: //REMOVE!!
-                    
-                    print("temporary query error - set up retry")
-                    self.startDeferredQuery()
-                    
-                default:
-                    print("permanent query error - not retrying")
-                }
-                print( "Fetch failed \(String(describing: error))")
-                break
-            }
-            DispatchQueue.main.async {
-                self.isBusy = false
-            }
-        }
-        
-        database.add(operation)
-
-    }
-    
-    func startDeferredQuery() {
-        let deferredTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(query), userInfo: nil, repeats: false)
-        deferredTimer.tolerance = 5
-    }
-
     
     func delete(recordID: CKRecord.ID) {
         
         dataCache.delete(recordID: recordID)
         
-        recordSet = dataCache.cache()
+        updateUI()
         
     }
 
