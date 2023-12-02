@@ -9,16 +9,16 @@ import SwiftUI
 
 struct ActivitySaveView: View {
    
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var activityDataManager: ActivityDataManager
 
 //    @State var activityRecord: ActivityRecord
     
     @Environment(\.dismiss) private var dismiss
 
-    init(workoutManager: WorkoutManager) {
-        self.workoutManager = workoutManager
-        self.activityDataManager = workoutManager.activityDataManager
+    init(liveActivityManager: LiveActivityManager) {
+        self.liveActivityManager = liveActivityManager
+        self.activityDataManager = liveActivityManager.activityDataManager
     }
     
     
@@ -54,11 +54,11 @@ struct ActivitySaveView_Previews: PreviewProvider {
 
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
     
 
     static var previews: some View {
-        ActivitySaveView(workoutManager: workoutManager)
+        ActivitySaveView(liveActivityManager: liveActivityManager)
     }
 }

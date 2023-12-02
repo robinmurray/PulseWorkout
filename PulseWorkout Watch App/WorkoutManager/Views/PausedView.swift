@@ -9,10 +9,10 @@ import SwiftUI
 
 struct PausedView: View {
 
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
 
-    init(workoutManager: WorkoutManager) {
-        self.workoutManager = workoutManager
+    init(liveActivityManager: LiveActivityManager) {
+        self.liveActivityManager = liveActivityManager
     }
 
 
@@ -37,7 +37,7 @@ struct PausedView: View {
 
                 VStack{
 
-                        Button(action: workoutManager.resumeWorkout) {
+                        Button(action: liveActivityManager.resumeWorkout) {
                             Image(systemName: "playpause.circle.fill")
                         }
                         .foregroundColor(Color.green)
@@ -53,7 +53,7 @@ struct PausedView: View {
                 Spacer()
 
                 VStack{
-                    Button(action: workoutManager.endWorkout) {
+                    Button(action: liveActivityManager.endWorkout) {
                         Image(systemName: "stop.circle")
                     }
                     .foregroundColor(Color.red)
@@ -78,7 +78,7 @@ struct PausedView: View {
     
     func lockAndResumeWorkout() {
         WKInterfaceDevice.current().enableWaterLock()
-        workoutManager.resumeWorkout()
+        liveActivityManager.resumeWorkout()
     }
 }
 
@@ -89,10 +89,10 @@ struct PausedView_Previews: PreviewProvider {
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
     
     static var previews: some View {
-        PausedView(workoutManager: workoutManager)
+        PausedView(liveActivityManager: liveActivityManager)
     }
 }

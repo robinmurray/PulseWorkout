@@ -15,12 +15,12 @@ let BTconnectedColour: [Bool: Color] =
 
 struct BTDeviceBarView: View {
     
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
 
     let screenWidth = WKInterfaceDevice.current().screenBounds.width
     
-    init(workoutManager: WorkoutManager) {
-        self.workoutManager = workoutManager
+    init(liveActivityManager: LiveActivityManager) {
+        self.liveActivityManager = liveActivityManager
     }
 
     func getBatteryImage(batteryLevel: Int?) -> String{
@@ -61,13 +61,13 @@ struct BTDeviceBarView: View {
     var body: some View {
         HStack {
             Image(systemName:"heart.fill")
-                .foregroundColor(BTconnectedColour[workoutManager.BTHRMConnected])
-            Image(systemName:getBatteryImage(batteryLevel: workoutManager.BTHRMBatteryLevel))
-                .foregroundColor(getBatteryColor(batteryLevel: workoutManager.BTHRMBatteryLevel))
+                .foregroundColor(BTconnectedColour[liveActivityManager.BTHRMConnected])
+            Image(systemName:getBatteryImage(batteryLevel: liveActivityManager.BTHRMBatteryLevel))
+                .foregroundColor(getBatteryColor(batteryLevel: liveActivityManager.BTHRMBatteryLevel))
             Image(systemName:"bolt")
-                .foregroundColor(BTconnectedColour[workoutManager.BTcyclePowerConnected])
-            Image(systemName:getBatteryImage(batteryLevel: workoutManager.BTcyclePowerBatteryLevel))
-                .foregroundColor(getBatteryColor(batteryLevel: workoutManager.BTcyclePowerBatteryLevel))
+                .foregroundColor(BTconnectedColour[liveActivityManager.BTcyclePowerConnected])
+            Image(systemName:getBatteryImage(batteryLevel: liveActivityManager.BTcyclePowerBatteryLevel))
+                .foregroundColor(getBatteryColor(batteryLevel: liveActivityManager.BTcyclePowerBatteryLevel))
             Image(systemName:"arrow.clockwise.circle")
                 .foregroundColor(Color.gray)
             Image(systemName:"battery.100.bolt")
@@ -85,10 +85,10 @@ struct BTDevicesView_Previews: PreviewProvider {
 
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
     
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
     
     static var previews: some View {
-        BTDeviceBarView(workoutManager: workoutManager)
+        BTDeviceBarView(liveActivityManager: liveActivityManager)
     }
 }

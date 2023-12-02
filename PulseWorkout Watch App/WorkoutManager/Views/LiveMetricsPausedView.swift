@@ -9,7 +9,7 @@ import SwiftUI
 
 struct LiveMetricsPausedView: View {
     
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
 
     var body: some View {
         ZStack {
@@ -35,11 +35,11 @@ struct LiveMetricsPausedView: View {
                  
                 HStack {
                     
-                    TimelineView(MetricsTimelineSchedule(from: workoutManager.locationManager.autoPauseStart ?? Date(),
+                    TimelineView(MetricsTimelineSchedule(from: liveActivityManager.locationManager.autoPauseStart ?? Date(),
                                                          isPaused: false)) { context in
                         VStack {
                             HStack {
-                                ElapsedTimeView(elapsedTime: workoutManager.currentPauseDurationAt(at: context.date),
+                                ElapsedTimeView(elapsedTime: liveActivityManager.currentPauseDurationAt(at: context.date),
                                                 showSubseconds: context.cadence == .live)
                                     .foregroundStyle(.black)
                                     .padding(.horizontal)
@@ -47,7 +47,7 @@ struct LiveMetricsPausedView: View {
                             }
 
                             HStack {
-                                ElapsedTimeView(elapsedTime: workoutManager.elapsedTime(at: context.date),
+                                ElapsedTimeView(elapsedTime: liveActivityManager.elapsedTime(at: context.date),
                                                 showSubseconds: context.cadence == .live)
                                 .foregroundStyle(Color.white)
                                     .padding(.horizontal)
@@ -76,17 +76,17 @@ struct LiveMetricsPausedView_Previews: PreviewProvider {
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
 
     static var previews: some View {
         HStack {
             VStack {
                 HStack {
-                    TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
-                                                         isPaused: workoutManager.session?.state == .paused)) { context in
+                    TimelineView(MetricsTimelineSchedule(from: liveActivityManager.builder?.startDate ?? Date(),
+                                                         isPaused: liveActivityManager.session?.state == .paused)) { context in
                         
-                        ElapsedTimeView(elapsedTime: workoutManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
+                        ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
                             .foregroundStyle(.yellow)
                         }
                     Spacer()
@@ -116,7 +116,7 @@ struct LiveMetricsPausedView_Previews: PreviewProvider {
             
             Spacer()
 
-            LiveMetricsPausedView(workoutManager: workoutManager)
+            LiveMetricsPausedView(liveActivityManager: liveActivityManager)
         }
 
     }

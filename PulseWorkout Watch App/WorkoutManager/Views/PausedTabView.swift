@@ -15,19 +15,19 @@ struct PausedTabView: View {
         case paused, nowPlaying
     }
 
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
 
     @State private var selection: Tab = .paused
     
-    init(workoutManager: WorkoutManager) {
-        self.workoutManager = workoutManager
+    init(liveActivityManager: LiveActivityManager) {
+        self.liveActivityManager = liveActivityManager
     }
 
 
     var body: some View {
         TabView(selection: $selection) {
 
-            PausedView(workoutManager: workoutManager)
+            PausedView(liveActivityManager: liveActivityManager)
                 .tag(Tab.paused)
             
             NowPlayingView()
@@ -44,11 +44,11 @@ struct PausedTabView_Previews: PreviewProvider {
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
     
     static var previews: some View {
-        PausedTabView(workoutManager: workoutManager)
+        PausedTabView(liveActivityManager: liveActivityManager)
     }
 }
 

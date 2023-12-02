@@ -10,7 +10,7 @@ import SwiftUI
 struct ProfileListView: View {
 
     @ObservedObject var profileManager: ActivityProfiles
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var activityDataManager: ActivityDataManager
 
      @State private var navigateToNewView : Bool = false
@@ -25,7 +25,7 @@ struct ProfileListView: View {
                 // Pass binding to item into DetailsView
                 ProfileListItemView(profile:  self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id })!],
                                     profileManager: profileManager,
-                                    workoutManager: workoutManager,
+                                    liveActivityManager: liveActivityManager,
                                     activityDataManager: activityDataManager)
             }
             
@@ -56,13 +56,13 @@ struct ProfileListView_Previews: PreviewProvider {
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
 
     
     static var previews: some View {
         ProfileListView(profileManager: profileManager,
-                        workoutManager: workoutManager,
+                        liveActivityManager: liveActivityManager,
                         activityDataManager: activityDataManager)
     }
 }

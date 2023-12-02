@@ -43,7 +43,7 @@ struct AlarmStyling {
 
 struct LiveMetricsView: View {
     
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
     var activityData: ActivityRecord
 
     // to manage fixed height scrolling view
@@ -64,10 +64,10 @@ struct LiveMetricsView: View {
      true: AlarmStyling(colour: Color.orange)]
 
     
-    init(workoutManager: WorkoutManager) {
-        self.workoutManager = workoutManager
-        self.activityData = workoutManager.activityDataManager.liveActivityRecord ??
-            workoutManager.activityDataManager.dummyActivityRecord
+    init(liveActivityManager: LiveActivityManager) {
+        self.liveActivityManager = liveActivityManager
+        self.activityData = liveActivityManager.activityDataManager.liveActivityRecord ??
+        liveActivityManager.activityDataManager.dummyActivityRecord
         
     }
     
@@ -89,10 +89,10 @@ struct LiveMetricsView: View {
                     
                     HStack {
 
-                        TimelineView(MetricsTimelineSchedule(from: workoutManager.builder?.startDate ?? Date(),
-                                                                 isPaused: workoutManager.session?.state == .paused)) { context in
+                        TimelineView(MetricsTimelineSchedule(from: liveActivityManager.builder?.startDate ?? Date(),
+                                                                 isPaused: liveActivityManager.session?.state == .paused)) { context in
                                 
-                                ElapsedTimeView(elapsedTime: workoutManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
+                                ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
                                     .foregroundStyle(.yellow)
                             }
                             
@@ -180,17 +180,17 @@ struct LiveMetricsView: View {
                     
                     Spacer().frame(maxWidth: .infinity)
                     
-                    Text((workoutManager.heartRate ?? 0)
+                    Text((liveActivityManager.heartRate ?? 0)
                         .formatted(.number.precision(.fractionLength(0))))
                         .fontWeight(.bold)
-                        .foregroundColor(HRDisplay[workoutManager.hrState]?.colour)
+                        .foregroundColor(HRDisplay[liveActivityManager.hrState]?.colour)
                         .frame(width: 140.0, height: 60.0)
                         .font(.system(size: 60))
                 }
                 
-                if (workoutManager.locationManager.isPaused == true) &&
-                    (workoutManager.currentPauseDuration() > 0) {
-                    LiveMetricsPausedView(workoutManager: workoutManager)
+                if (liveActivityManager.locationManager.isPaused == true) &&
+                    (liveActivityManager.currentPauseDuration() > 0) {
+                    LiveMetricsPausedView(liveActivityManager: liveActivityManager)
 
                 }
 
@@ -201,7 +201,7 @@ struct LiveMetricsView: View {
             Spacer().frame(maxWidth: .infinity)
        
             
-            BTDeviceBarView(workoutManager: workoutManager)
+            BTDeviceBarView(liveActivityManager: liveActivityManager)
 
         }
         .padding(.horizontal)
@@ -219,12 +219,12 @@ struct LiveMetricsView_Previews: PreviewProvider {
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
 
     
     static var previews: some View {
-        LiveMetricsView(workoutManager: workoutManager)
+        LiveMetricsView(liveActivityManager: liveActivityManager)
     }
 }
 

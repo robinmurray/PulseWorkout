@@ -13,7 +13,7 @@ struct ProfileListItemView: View {
     
     @Binding var profile: ActivityProfile
     @ObservedObject var profileManager: ActivityProfiles
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var activityDataManager: ActivityDataManager
 
     @State private var navigateToDetailView : Bool = false
@@ -36,7 +36,7 @@ struct ProfileListItemView: View {
     
     func startWorkout() {
         print("ProfileListItemView starting workout with profile \(profile.name)")
-        workoutManager.startWorkout(activityProfile: profile)
+        liveActivityManager.startWorkout(activityProfile: profile)
     }
     
     var body: some View {
@@ -86,7 +86,7 @@ struct ProfileListItemView: View {
                     VStack {
                         Button {
                             
-                            workoutManager.startWorkout(activityProfile: profile)
+                            liveActivityManager.startWorkout(activityProfile: profile)
                             
                             // Set last used date on profile and save to user defaults
                             // Do this after starting workout as may change list binding!!
@@ -112,7 +112,7 @@ struct ProfileListItemView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .navigationDestination(isPresented: $navigateToLiveView) {
-                        LiveTabView(profileName: profile.name, workoutManager: workoutManager, activityDataManager: activityDataManager)
+                        LiveTabView(profileName: profile.name, liveActivityManager: liveActivityManager, activityDataManager: activityDataManager)
                     }
                 }
             }
@@ -152,7 +152,7 @@ struct ProfileListItemView: View {
          static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
          static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-         static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+         static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
              settingsManager: settingsManager)
          static var profileManager = ActivityProfiles()
 
@@ -162,7 +162,7 @@ struct ProfileListItemView: View {
 
             ProfileListItemView(profile: .constant(profileManager.profiles[0]),
                                 profileManager: profileManager,
-                                workoutManager: workoutManager,
+                                liveActivityManager: liveActivityManager,
                                 activityDataManager: activityDataManager)
                  
          }

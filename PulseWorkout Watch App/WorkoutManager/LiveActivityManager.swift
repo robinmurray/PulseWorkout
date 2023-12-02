@@ -1,5 +1,5 @@
 //
-//  WorkoutManager.swift
+//  LiveAcivityManager.swift
 //  PulseWorkout Watch App
 //
 //  Created by Robin Murray on 23/12/2022.
@@ -19,7 +19,7 @@ enum AppState {
 }
 
 
-class WorkoutManager : NSObject, ObservableObject {
+class LiveActivityManager : NSObject, ObservableObject {
 
 //    var locationManager: LocationManager
     
@@ -451,7 +451,7 @@ class WorkoutManager : NSObject, ObservableObject {
 
 
 // MARK: - HKWorkoutSessionDelegate
-extension WorkoutManager: HKWorkoutSessionDelegate {
+extension LiveActivityManager: HKWorkoutSessionDelegate {
     func workoutSession(_ workoutSession: HKWorkoutSession, didChangeTo toState: HKWorkoutSessionState,
                         from fromState: HKWorkoutSessionState, date: Date) {
         DispatchQueue.main.async {
@@ -483,7 +483,7 @@ extension WorkoutManager: HKWorkoutSessionDelegate {
 }
 
 // MARK: - HKLiveWorkoutBuilderDelegate
-extension WorkoutManager: HKLiveWorkoutBuilderDelegate {
+extension LiveActivityManager: HKLiveWorkoutBuilderDelegate {
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
 
     }

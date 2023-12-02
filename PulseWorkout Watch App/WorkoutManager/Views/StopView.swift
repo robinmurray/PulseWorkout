@@ -9,11 +9,11 @@ import SwiftUI
 
 struct StopView: View {
 
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
     @State private var navigateToSummaryView : Bool = false
     
-    init(workoutManager: WorkoutManager) {
-        self.workoutManager = workoutManager
+    init(liveActivityManager: LiveActivityManager) {
+        self.liveActivityManager = liveActivityManager
     }
 
     
@@ -38,7 +38,7 @@ struct StopView: View {
                     
                     VStack{
                         
-                        Button(action: workoutManager.pauseWorkout) {
+                        Button(action: liveActivityManager.pauseWorkout) {
                             Image(systemName: "pause.circle")
                         }
                         .foregroundColor(Color.yellow)
@@ -55,7 +55,7 @@ struct StopView: View {
                     
                     VStack {
                         Button {
-                            workoutManager.endWorkout()
+                            liveActivityManager.endWorkout()
                             navigateToSummaryView = true
                         } label: {
                             VStack{
@@ -76,7 +76,7 @@ struct StopView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .navigationDestination(isPresented: $navigateToSummaryView) {
-                        ActivitySaveView(workoutManager: workoutManager)
+                        ActivitySaveView(liveActivityManager: liveActivityManager)
                     }
                     
                     Spacer()
@@ -89,7 +89,7 @@ struct StopView: View {
     
     func lockScreen() {
         WKInterfaceDevice.current().enableWaterLock()
-        workoutManager.liveTabSelection = LiveScreenTab.liveMetrics
+        liveActivityManager.liveTabSelection = LiveScreenTab.liveMetrics
     }
 }
 
@@ -99,11 +99,11 @@ struct StopView_Previews: PreviewProvider {
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
 
 
     static var previews: some View {
-        StopView(workoutManager: workoutManager)
+        StopView(liveActivityManager: liveActivityManager)
     }
 }

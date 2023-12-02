@@ -15,7 +15,7 @@ struct PulseWorkout_Watch_AppApp: App {
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var locationManager: LocationManager
     @ObservedObject var activityDataManager: ActivityDataManager
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var settingsManager: SettingsManager
 
     init() {
@@ -23,7 +23,7 @@ struct PulseWorkout_Watch_AppApp: App {
         let myActivityDataManager = ActivityDataManager(settingsManager: mySettingsManager)
         let myLocationManager = LocationManager(activityDataManager: myActivityDataManager, settingsManager: mySettingsManager)
         locationManager = myLocationManager
-        workoutManager = WorkoutManager(locationManager: myLocationManager,
+        liveActivityManager = LiveActivityManager(locationManager: myLocationManager,
                                         activityDataManager: myActivityDataManager,
                                         settingsManager: mySettingsManager)
         profileManager = ActivityProfiles()
@@ -34,7 +34,7 @@ struct PulseWorkout_Watch_AppApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView(workoutManager: workoutManager,
+            ContentView(liveActivityManager: liveActivityManager,
                         profileManager: profileManager,
                         activityDataManager: activityDataManager,
                         settingsManager: settingsManager,
@@ -43,11 +43,11 @@ struct PulseWorkout_Watch_AppApp: App {
         .onChange(of: scenePhase) { phase in
             switch phase {
                 case .active:
-                    workoutManager.appActive()
+                    liveActivityManager.appActive()
                 case .inactive:
-                    workoutManager.appInactive()
+                    liveActivityManager.appInactive()
                 case .background:
-                    workoutManager.appBackground()
+                    liveActivityManager.appBackground()
                 default:
                     print(">> do something else in future")
             }

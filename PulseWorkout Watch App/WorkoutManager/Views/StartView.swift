@@ -14,25 +14,18 @@ import SwiftUI
 
 struct StartView: View {
 
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var activityDataManager: ActivityDataManager
 
-/*
-    init(workoutManager: WorkoutManager,
-         profileManager: ActivityProfiles) {
-        self.workoutManager = workoutManager
-        self.profileManager = profileManager
-    }
-*/
     
     var body: some View {
         VStack {
             ProfileListView(profileManager: profileManager,
-                            workoutManager: workoutManager,
+                            liveActivityManager: liveActivityManager,
                             activityDataManager: activityDataManager)
 
-            BTDeviceBarView(workoutManager: workoutManager)
+            BTDeviceBarView(liveActivityManager: liveActivityManager)
 
             }
             .padding(.horizontal)
@@ -47,12 +40,12 @@ struct StartView_Previews: PreviewProvider {
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
     static var profileManager = ActivityProfiles()
 
     static var previews: some View {
-        StartView(workoutManager: workoutManager,
+        StartView(liveActivityManager: liveActivityManager,
                   profileManager: profileManager,
                   activityDataManager: activityDataManager)
     }

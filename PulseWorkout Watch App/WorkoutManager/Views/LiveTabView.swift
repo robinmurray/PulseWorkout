@@ -16,20 +16,20 @@ enum LiveScreenTab {
 struct LiveTabView: View {
     
     var profileName: String
-    @ObservedObject var workoutManager: WorkoutManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var activityDataManager: ActivityDataManager
 
     var body: some View {
 
-            TabView(selection: $workoutManager.liveTabSelection) {
+            TabView(selection: $liveActivityManager.liveTabSelection) {
                 
-                StopView(workoutManager: workoutManager)
+                StopView(liveActivityManager: liveActivityManager)
                     .tag(LiveScreenTab.stop)
                 
-                LiveMetricsView(workoutManager: workoutManager)
+                LiveMetricsView(liveActivityManager: liveActivityManager)
                     .tag(LiveScreenTab.liveMetrics)
                 
-                LocationView(locationManager: workoutManager.locationManager)
+                LocationView(locationManager: liveActivityManager.locationManager)
                     .tag(LiveScreenTab.location)
 
 
@@ -56,11 +56,11 @@ struct LiveTabView_Previews: PreviewProvider {
     static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
     static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
 
-    static var workoutManager = WorkoutManager(locationManager: locationManager, activityDataManager: activityDataManager,
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
         settingsManager: settingsManager)
 
     static var previews: some View {
-        LiveTabView(profileName: "Preview Profile", workoutManager: workoutManager, activityDataManager: activityDataManager)
+        LiveTabView(profileName: "Preview Profile", liveActivityManager: liveActivityManager, activityDataManager: activityDataManager)
     }
 }
 
