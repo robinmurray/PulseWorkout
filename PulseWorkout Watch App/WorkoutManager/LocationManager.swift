@@ -39,13 +39,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var headingsOk: Bool
     var location: CLLocation?
     var lastGeoLocation: CLLocation?
-    var activityDataManager: ActivityDataManager
+
     var settingsManager: SettingsManager
     @Published var pinnedLocation: CLLocation?
     var pinnedPlaceName: String?
     var pinnedLocationDistance: Double?
     var prevSmoothedAltitude: Double?
-    
+    var liveActivityRecord: ActivityRecord?
 
     
     /// When latest auto-pause started
@@ -54,9 +54,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     let GeoLocationAccuracy: Double = 10
     
     
-    init(activityDataManager: ActivityDataManager, settingsManager: SettingsManager) {
+    init(settingsManager: SettingsManager) {
 
-        self.activityDataManager = activityDataManager
         self.settingsManager = settingsManager
         locManager = CLLocationManager()
         headingsOk = CLLocationManager.headingAvailable()
@@ -154,7 +153,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
         autoPauseStart = nil
         isPaused = false
-        activityDataManager.set(isPaused: false)
+        if liveActivityRecord != nil {
+            liveActivityRecord!.isPaused = false
+        }
         locManager.allowsBackgroundLocationUpdates = true
 
         if authStatusOk {
@@ -182,7 +183,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         autoPauseStart = nil
         isPaused = false
-        activityDataManager.set(isPaused: false)
+        if liveActivityRecord != nil {
+            liveActivityRecord!.isPaused = false
+        }
         
     }
     
@@ -190,13 +193,15 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func stopLocationSession() {
         
         if isPaused && (autoPauseStart != nil) {
-            activityDataManager.increment(pausedTime: Date().timeIntervalSince(autoPauseStart!))
+            liveActivityRecord!.increment(pausedTime: Date().timeIntervalSince(autoPauseStart!))
 
         }
         stopBGLocationServices()
         autoPauseStart = nil
         isPaused = false
-        activityDataManager.set(isPaused: false)
+        if liveActivityRecord != nil {
+            liveActivityRecord!.isPaused = false
+        }
 
     }
     
@@ -325,7 +330,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     // if auto-pause starting...
                     if isNowPaused && !isPaused {
                         isPaused = true
-                        activityDataManager.set(isPaused: true)
+                        if liveActivityRecord != nil {
+                            liveActivityRecord!.isPaused = true
+                        }
                         autoPauseStart = Date()
                     }
                     
@@ -333,23 +340,29 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     if !isNowPaused && isPaused {
                         let pauseDuration = currentPauseDuration()
                         isPaused = false
-                        activityDataManager.set(isPaused: false)
+                        if liveActivityRecord != nil {
+                            liveActivityRecord!.isPaused = false
+                            liveActivityRecord!.increment(pausedTime: pauseDuration)
+                        }
                         autoPauseStart = nil
-                        activityDataManager.increment(pausedTime: pauseDuration)
+                        
                         
                     }
                 } else {
                     isPaused = false
-                    activityDataManager.set(isPaused: false)
+                    if liveActivityRecord != nil {
+                        liveActivityRecord!.isPaused = false
+                    }
                 }
                 
+                if liveActivityRecord != nil {
+                    liveActivityRecord!.set(speed: speed)
+                    liveActivityRecord!.set(latitude: latitude)
+                    liveActivityRecord!.set(longitude: longitude)
+                    liveActivityRecord!.set(totalAscent: totalAscent)
+                    liveActivityRecord!.set(totalDescent: totalDescent)
+                }
                 
-                activityDataManager.set(speed: speed)
-                activityDataManager.set(latitude: latitude)
-                activityDataManager.set(longitude: longitude)
-                activityDataManager.set(totalAscent: totalAscent)
-                activityDataManager.set(totalDescent: totalDescent)
-
             }
              
 

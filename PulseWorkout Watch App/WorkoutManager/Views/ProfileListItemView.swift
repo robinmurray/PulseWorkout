@@ -14,7 +14,7 @@ struct ProfileListItemView: View {
     @Binding var profile: ActivityProfile
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var activityDataManager: ActivityDataManager
+    @ObservedObject var dataCache: DataCache
 
     @State private var navigateToDetailView : Bool = false
     @State private var navigateToLiveView : Bool = false
@@ -112,7 +112,7 @@ struct ProfileListItemView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .navigationDestination(isPresented: $navigateToLiveView) {
-                        LiveTabView(profileName: profile.name, liveActivityManager: liveActivityManager, activityDataManager: activityDataManager)
+                        LiveTabView(profileName: profile.name, liveActivityManager: liveActivityManager)
                     }
                 }
             }
@@ -149,11 +149,11 @@ struct ProfileListItemView: View {
      struct ProfileListItemView_Previews: PreviewProvider {
      
          static var settingsManager = SettingsManager()
-         static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
-         static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
-
-         static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
-             settingsManager: settingsManager)
+         static var dataCache = DataCache()
+         static var locationManager = LocationManager(settingsManager: settingsManager)
+         
+         static var liveActivityManager = LiveActivityManager(locationManager: locationManager,
+             settingsManager: settingsManager, dataCache: dataCache)
          static var profileManager = ActivityProfiles()
 
          
@@ -163,7 +163,7 @@ struct ProfileListItemView: View {
             ProfileListItemView(profile: .constant(profileManager.profiles[0]),
                                 profileManager: profileManager,
                                 liveActivityManager: liveActivityManager,
-                                activityDataManager: activityDataManager)
+                                dataCache: dataCache)
                  
          }
      }

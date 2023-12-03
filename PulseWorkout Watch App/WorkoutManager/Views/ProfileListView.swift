@@ -11,7 +11,7 @@ struct ProfileListView: View {
 
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var activityDataManager: ActivityDataManager
+    @ObservedObject var dataCache: DataCache
 
      @State private var navigateToNewView : Bool = false
 
@@ -26,7 +26,7 @@ struct ProfileListView: View {
                 ProfileListItemView(profile:  self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id })!],
                                     profileManager: profileManager,
                                     liveActivityManager: liveActivityManager,
-                                    activityDataManager: activityDataManager)
+                                    dataCache: dataCache)
             }
             
             NavigationStack {
@@ -53,17 +53,16 @@ struct ProfileListView_Previews: PreviewProvider {
 
     static var profileManager = ActivityProfiles()
     static var settingsManager = SettingsManager()
-    static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
-    static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
-
-    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
-        settingsManager: settingsManager)
+    static var locationManager = LocationManager(settingsManager: settingsManager)
+    static var dataCache = DataCache()
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, settingsManager: settingsManager,
+        dataCache: dataCache)
 
     
     static var previews: some View {
         ProfileListView(profileManager: profileManager,
                         liveActivityManager: liveActivityManager,
-                        activityDataManager: activityDataManager)
+                        dataCache: dataCache)
     }
 }
 

@@ -14,21 +14,21 @@ struct PulseWorkout_Watch_AppApp: App {
     
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var locationManager: LocationManager
-    @ObservedObject var activityDataManager: ActivityDataManager
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var dataCache: DataCache
 
     init() {
         let mySettingsManager = SettingsManager()
-        let myActivityDataManager = ActivityDataManager(settingsManager: mySettingsManager)
-        let myLocationManager = LocationManager(activityDataManager: myActivityDataManager, settingsManager: mySettingsManager)
+        let myLocationManager = LocationManager(settingsManager: mySettingsManager)
+        let myDataCache = DataCache()
         locationManager = myLocationManager
         liveActivityManager = LiveActivityManager(locationManager: myLocationManager,
-                                        activityDataManager: myActivityDataManager,
-                                        settingsManager: mySettingsManager)
+                                                  settingsManager: mySettingsManager,
+                                                  dataCache: myDataCache)
         profileManager = ActivityProfiles()
-        activityDataManager = myActivityDataManager
         settingsManager = mySettingsManager
+        dataCache = myDataCache
         
     }
 
@@ -36,7 +36,7 @@ struct PulseWorkout_Watch_AppApp: App {
         WindowGroup {
             ContentView(liveActivityManager: liveActivityManager,
                         profileManager: profileManager,
-                        activityDataManager: activityDataManager,
+                        dataCache: dataCache,
                         settingsManager: settingsManager,
                         locationManager: locationManager)
         }

@@ -18,7 +18,7 @@ struct ContentView: View {
     
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var profileManager: ActivityProfiles
-    @ObservedObject var activityDataManager: ActivityDataManager
+    @ObservedObject var dataCache: DataCache
     @ObservedObject var settingsManager: SettingsManager
     @ObservedObject var locationManager: LocationManager
     
@@ -30,17 +30,17 @@ struct ContentView: View {
 
                 StartView(liveActivityManager: liveActivityManager,
                           profileManager: profileManager,
-                          activityDataManager: activityDataManager)
+                          dataCache: dataCache)
                     .tag(Tab.start)
                 
                 LocationView(locationManager: locationManager)
 
-                ActivityHistoryView(activityDataManager: activityDataManager)
+                ActivityHistoryView(dataCache: dataCache)
                     .tag(Tab.activityHistory)
                 
                 NowPlayingView().tag(Tab.nowPlaying)
 
-                SettingsView(bluetoothManager: liveActivityManager.bluetoothManager!, settingsManager: settingsManager, activityDataManager: activityDataManager).tag(Tab.settings)
+                SettingsView(bluetoothManager: liveActivityManager.bluetoothManager!, settingsManager: settingsManager).tag(Tab.settings)
             }
             .tabViewStyle(.page(indexDisplayMode: .always))
             .indexViewStyle(.page(backgroundDisplayMode: .automatic))
@@ -53,15 +53,15 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var settingsManager = SettingsManager()
-    static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
-    static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
-    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
-        settingsManager: settingsManager)
+    static var locationManager = LocationManager(settingsManager: settingsManager)
+    static var dataCache = DataCache()
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, settingsManager: settingsManager,
+        dataCache: dataCache)
     static var profileManager = ActivityProfiles()
 
     
     static var previews: some View {
-        ContentView(liveActivityManager: liveActivityManager, profileManager:             profileManager, activityDataManager: activityDataManager,
+        ContentView(liveActivityManager: liveActivityManager, profileManager:             profileManager, dataCache: dataCache,
                     settingsManager: settingsManager,
                     locationManager: locationManager)
     }

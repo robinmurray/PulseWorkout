@@ -1,422 +1,15 @@
 //
-//  ActivityDataManager.swift
+//  ActivityRecord.swift
 //  PulseWorkout Watch App
 //
-//  Created by Robin Murray on 30/06/2023.
+//  Created by Robin Murray on 03/12/2023.
 //
 
-
 import Foundation
-import CloudKit
 import Gzip
+import CloudKit
 
 
-
-func getCacheDirectory() -> URL? {
-
-    let cachePath = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("pulseWorkout")
-    do {
-        try FileManager.default.createDirectory(at: cachePath, withIntermediateDirectories: true)
-    } catch {
-        print("error \(error)")
-        return nil
-    }
-
-    return cachePath
-}
-
-
-class DataCache: NSObject, Codable {
-    
-    var container: CKContainer!
-    var database: CKDatabase!
-    var zoneID: CKRecordZone.ID!
-    
-    // Callback function to update UI if/when cache changes
-    var activityDataManager: ActivityDataManager?
-    
-    let cacheSize = 50
-    let cacheFile = "activityCache.act"
-    private var activities: [ActivityRecord] = []
-    private var refreshList: [ActivityRecord] = []
-    private var synchTimer: Timer?
-   
-    // set CodingKeys to define which variables are stored to JSON file
-    private enum CodingKeys: String, CodingKey {
-        case activities
-    }
-
-    init(readCache: Bool = true) {
-
-        super.init()
-        
-        container = CKContainer(identifier: "iCloud.CloudKitLesson")
-        database = container.privateCloudDatabase
-        zoneID = CKRecordZone.ID(zoneName: "CKL_Zone")
-        
-        
-        Task {
-            do {
-                try await createCKZoneIfNeeded()
-            } catch {
-                print("error \(error)")
-            }
-
-        }
-        
-
-        if readCache {
-            _ = read()
-            
-            
-            if !dirty() {
-                refresh()
-            }
-        }
-        
-        synchTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(synch), userInfo: nil, repeats: true)
-        synchTimer!.tolerance = 5
-
-    }
-
-    func setActivityDataManager( activityDataManager: ActivityDataManager ) {
-        self.activityDataManager = activityDataManager
-    }
-    
-    private func createCKZoneIfNeeded() async throws {
-
-        guard !UserDefaults.standard.bool(forKey: "zoneCreated") else {
-            return
-        }
-
-        print("creating zone")
-        let newZone = CKRecordZone(zoneID: zoneID)
-        _ = try await database.modifyRecordZones(saving: [newZone], deleting: [])
-
-        UserDefaults.standard.set(true, forKey: "zoneCreated")
-    }
- 
-
-    func add(activityRecord: ActivityRecord) {
-        
-        activityRecord.toSave = true
-        activities.insert(activityRecord, at: 0)
-        
-        if cache().count > cacheSize {
-            activities.removeLast()
-        }
-        
-        _ = write()
-
-    }
-    
-    func delete(recordID: CKRecord.ID) {
-               
-        guard let index = activities.firstIndex(where: { $0.recordName == recordID.recordName }) else {
-            print("DELETION not Found!! ")
-            return
-        }
-
-        activities[index].toDelete = true
-        activities[index].deleteTrackRecord()
-        
-        print("DELETED OK :\(index) \(recordID.recordName)")
-        _ = write()
-        
-    }
-    
-    /// Remove item from cache - call once deleted from cloudkit
-    func remove(recordID: CKRecord.ID) {
-        
-        guard let index = activities.firstIndex(where: { $0.recordName == recordID.recordName }) else {
-            return
-        }
-
-        activities.remove(at: index)
-        
-        _ = write()
-        
-    }
-
-    /// Returns list of to-be-saved activity records
-    func toBeSaved() -> [ActivityRecord] {
-        
-        return activities.filter{ ($0.toSave == true) && ($0.toDelete == false) }
-
-    }
-
-    /// Returns list of to-be-deleted activity records
-    func toBeDeleted() -> [ActivityRecord] {
-        
-        return activities.filter{ $0.toDelete == true }
-
-    }
-    
-    func cache() -> [ActivityRecord] {
-        
-        return activities.filter{ $0.toDelete == false }
-        
-    }
-    
-    /// Does the cache have outstanding additions or deletions to be written to CloudKit?
-    func dirty() -> Bool {
-        
-        return (toBeSaved().count > 0) || (toBeDeleted().count > 0)
-        
-    }
-    
-    /// Get URL for JSON file
-    func CacheURL(fileName: String) -> URL? {
-
-        guard let cachePath = getCacheDirectory() else { return nil }
-
-        return cachePath.appendingPathComponent(fileName)
-    }
-
-
-    /// Read cache from JSON file in cache folder
-    func read() -> Bool {
-
-        guard let cacheURL = CacheURL(fileName: cacheFile) else { return false }
-
-        do {
-            let data = try Data(contentsOf: cacheURL)
-            let decoder = JSONDecoder()
-            let JSONData = try decoder.decode(DataCache.self, from: data)
-            activities = []
-            
-            for activity in JSONData.activities {
-                print("activity \(activity.recordName ?? "xxx")  toBeSaved status \(activity.toSave) -- toDelete status \(activity.toDelete)")
-                // create recordID from recordName as recordID not serialised to JSON
-                activity.recordID = CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
-                activities.append(activity)
-            }
-            
-            return true
-        }
-        catch {
-            print("error:\(error)")
-            return false
-        }
-    }
-    
-    
-    /// Write entire cache to JSON file in cache folder
-    func write() -> Bool {
-        
-        guard let cacheURL = CacheURL(fileName: cacheFile) else { return false }
-        
-        print("Writing cache to JSON file")
-        print("Activities \(activities)")
-        do {
-            let data = try JSONEncoder().encode(self)
-//            let jsonString = String(data: data, encoding: .utf8)
-//            print("JSON : \(String(describing: jsonString))")
-            do {
-                try data.write(to: cacheURL)
-                
-                if activityDataManager != nil {
-                    activityDataManager!.updateUI()
-                }
-
-                return true
-            }
-            catch {
-                print("error \(error)")
-                return false
-            }
-
-        } catch {
-            print("Error enconding cache")
-            return false
-        }
-
-    }
-
-    
-    @objc func refresh() {
-        
-        refreshList = []
-        let pred = NSPredicate(value: true)
-        let sort = NSSortDescriptor(key: "creationDate", ascending: false)
-        let query = CKQuery(recordType: "activity", predicate: pred)
-        query.sortDescriptors = [sort]
-
-        let operation = CKQueryOperation(query: query)
-
-        operation.desiredKeys = ["name", "type", "sportType", "startDateLocal", "elapsedTime", "pausedTime", "movingTime",
-                                 "activityDescription", "distance", "totalAscent", "totalDescent",
-                                 "averageHeartRate", "averageCadence", "averagePower", "averageSpeed", "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit" ]
-        operation.resultsLimit = cacheSize
-// FIX?        operation.configuration.timeoutIntervalForRequest = 30
-
-
-        operation.recordMatchedBlock = { recordID, result in
-            switch result {
-            case .success(let record):
-                // TODO: Do something with the record that was received.
-                let myRecord = ActivityRecord(fromCKRecord: record)
-
-                DispatchQueue.main.async {
-                    print("Adding to cache : \(myRecord)")
-                    self.refreshList.append(myRecord)
-                }
-                break
-                
-            case .failure(let error):
-                // TODO: Handle per-record failure, perhaps retry fetching it manually in case an asset failed to download or something like that.
-                print( "Fetch failed \(String(describing: error))")
-                
-                break
-            }
-        }
-            
-        operation.queryResultBlock = { result in
-
-            switch result {
-            case .success:
-
-                for record in self.refreshList {
-                    print( record.description() )
-                }
-                
-                // copy temporary array to main array and write to local cache
-                // only if no unsaved / undeleted items in local cache otherwise cloud view is out of date!
-                DispatchQueue.main.async {
-                    if !self.dirty() {
-                        self.activities = self.refreshList
-                        _ = self.write()
-                    }
-                }
-
-
-                break
-                    
-            case .failure(let error):
-
-                switch error {
-                case CKError.accountTemporarilyUnavailable,
-                    CKError.networkFailure,
-                    CKError.networkUnavailable,
-                    CKError.serviceUnavailable,
-                    CKError.zoneBusy:
-//                    CKError.notAuthenticated: //REMOVE!!
-                    
-                    print("temporary refresh error - set up retry")
-                        self.startDeferredRefresh()
-                    
-                default:
-                    print("permanent refresh error - not retrying")
-                }
-                print( "Fetch failed \(String(describing: error))")
-                break
-            }
-
-        }
-        
-        database.add(operation)
-
-    }
-
-    func startDeferredRefresh() {
-        let deferredTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(refresh), userInfo: nil, repeats: false)
-        deferredTimer.tolerance = 5
-    }
-
-    
-    
-    func CKDelete(recordID: CKRecord.ID) {
-        
-        print("deleting \(recordID)")
-        
-        database.delete(withRecordID: recordID) { (ckRecordID, error) in
-            
-            if let error = error {
-                print(error.localizedDescription)
-                
-                switch error {
-                case CKError.unknownItem:
-                    print("item being deleted had not been saved")
-                    self.remove(recordID: recordID)
-                    return
-                default:
-                    return
-                }
-                
-            }
-            
-            guard let id = ckRecordID else {
-                return
-            }
-            
-            print("deleted and removed \(id)")
-            self.remove(recordID: recordID)
-            
-        }
-    }
-
-    func CKSave(activityRecord: ActivityRecord) {
-
-        let CKRecord = activityRecord.asCKRecord()
-        print("saving \(activityRecord.recordID!)")
-
-        database.save(CKRecord) { record, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    switch error {
-                    case CKError.accountTemporarilyUnavailable,
-                        CKError.networkFailure,
-                        CKError.networkUnavailable,
-                        CKError.serviceUnavailable,
-                        CKError.zoneBusy:
-                        
-                        print("temporary error")
-                    
-                    case CKError.serverRecordChanged:
-                        // Record alreday exists- shouldn't happen, but!
-                        print("record already exists!")
-                        activityRecord.deleteTrackRecord()
-                        activityRecord.toSave = false
-                        
-                        _ = self.write()
-                        
-                    default:
-                        print("permanent error")
-
-                    }
-                    
-                    print("\(error)")
-
-                } else {
-                    print("Saved")
-
-                    activityRecord.deleteTrackRecord()
-                    activityRecord.toSave = false
-                    
-                    _ = self.write()
-                }
-            }
-        }
-        
-    }
- 
-    @objc func synch() {
-        
-        if !dirty() { return }
-        
-        if toBeDeleted().count > 0 {
-            CKDelete(recordID: toBeDeleted()[0].recordID)
-            return
-        }
-        
-        if toBeSaved().count > 0 {
-            CKSave(activityRecord: toBeSaved()[0])
-        }
-        
-        
-        
-    }
-}
 
 class ActivityRecord: NSObject, Identifiable, Codable {
     
@@ -870,198 +463,118 @@ extension ActivityRecord {
     
 }
 
+// MARK: - Set Values
 
-// MARK: - ActivityDataManager
 
-class ActivityDataManager: NSObject, ObservableObject {
+extension ActivityRecord {
     
-    var settingsManager: SettingsManager!
-    @Published var recordSet: [ActivityRecord] = []
 
-    var liveActivityRecord: ActivityRecord?
-
-    // Dummy activity record used for previews
-    var dummyActivityRecord: ActivityRecord
-    
-    var dataCache: DataCache
-
-    init(settingsManager: SettingsManager) {
-        self.settingsManager = settingsManager
-        dummyActivityRecord = ActivityRecord(settingsManager: settingsManager)
-        dataCache = DataCache()
-
-        super.init()
-
-        dataCache.setActivityDataManager(activityDataManager: self)
-        
-        updateUI()
-        
-    }
-    
-    func updateUI() {
-        recordSet = dataCache.cache()
-    }
-    
-    /// Start an activity and initiate data collection
-    func start(activityProfile: ActivityProfile, startDate: Date) {
-        
-        liveActivityRecord = ActivityRecord(settingsManager: settingsManager)
-        liveActivityRecord?.start(activityProfile: activityProfile, startDate: startDate)
-    }
     
     func set(heartRate: Double?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.heartRate = heartRate
-        }
+
+        self.heartRate = heartRate
+    
     }
     
     func set(elapsedTime: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.elapsedTime = elapsedTime
-            liveActivityRecord!.movingTime = max(elapsedTime - liveActivityRecord!.pausedTime, 0)
-            setAverageSpeed()
-        }
+
+        self.elapsedTime = elapsedTime
+        movingTime = max(elapsedTime - pausedTime, 0)
+        setAverageSpeed()
+
     }
 
     private func setAverageSpeed() {
-        if liveActivityRecord!.movingTime != 0 {
-            liveActivityRecord!.averageSpeed = liveActivityRecord!.distanceMeters / liveActivityRecord!.movingTime
+        if movingTime != 0 {
+            averageSpeed = distanceMeters / movingTime
         }
     }
     
     func increment(pausedTime: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.pausedTime += pausedTime
-            liveActivityRecord!.movingTime = max(liveActivityRecord!.elapsedTime - liveActivityRecord!.pausedTime, 0)
 
-        }
+        self.pausedTime += pausedTime
+        movingTime = max(elapsedTime - pausedTime, 0)
+
     }
 
     func set(watts: Int?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.watts = watts
-        }
+
+        self.watts = watts
+
     }
     
     func set(cadence:Int?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.cadence = cadence
-        }
+        
+        self.cadence = cadence
+
     }
     
     func set(averageHeartRate: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.averageHeartRate = averageHeartRate
-        }
+
+        self.averageHeartRate = averageHeartRate
+
     }
     
     func set(activeEnergy: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.activeEnergy = activeEnergy
-        }
+        
+        self.activeEnergy = activeEnergy
+
     }
     
     func set(distanceMeters: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.distanceMeters = distanceMeters
-            setAverageSpeed()
-        }
+        
+        self.distanceMeters = distanceMeters
+        setAverageSpeed()
+
     }
 
     func set(speed: Double?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.speed = speed
-        }
+        
+        self.speed = speed
+
     }
     
     func set(latitude: Double?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.latitude = latitude
-        }
+        
+        self.latitude = latitude
+
     }
     
     func set(longitude: Double?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.longitude = longitude
-        }
+        
+        self.longitude = longitude
+
     }
 
     func set(totalAscent: Double?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.totalAscent = totalAscent
-        }
+        
+        self.totalAscent = totalAscent
+
     }
 
     func set(totalDescent: Double?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.totalDescent = totalDescent
-        }
+        
+        self.totalDescent = totalDescent
+
     }
 
     func set(isPaused: Bool) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.isPaused = isPaused
-        }
+        
+        self.isPaused = isPaused
+
     }
 
     func increment(timeOverHiAlarm: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.timeOverHiAlarm += timeOverHiAlarm
-        }
+        
+        self.timeOverHiAlarm += timeOverHiAlarm
+
     }
     
     func increment(timeUnderLoAlarm: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.timeUnderLoAlarm += timeUnderLoAlarm
-        }
-    }
-    
-    func addTrackPoint() {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.addTrackPoint()
-        }
-    }
-    
+        
+        self.timeUnderLoAlarm += timeUnderLoAlarm
 
-    func saveActivityRecord() {
-
-        if liveActivityRecord != nil {
-            liveActivityRecord!.save(dataCache: dataCache)
-            updateUI()
-        }
-    }
-
- 
-    func clearCache() {
-        let fm = FileManager.default
-
-        do {
-            let files = try fm.contentsOfDirectory(atPath: getCacheDirectory()!.path)
-//            let jsonFiles = files.filter{ $0.pathExtension == "json" }
-            for file in files {
-                let path = getCacheDirectory()!.appendingPathComponent(file)
-                do {
-                    try FileManager.default.removeItem(at: path)
-
-                } catch {
-                    print(error)
-                }
-
-                
-            }
-        } catch {
-            print("Directory search failed!")
-            // failed to read directory – bad permissions, perhaps?
-        }
     }
 
     
-    func delete(recordID: CKRecord.ID) {
-        
-        dataCache.delete(recordID: recordID)
-        
-        updateUI()
-        
-    }
-
 }

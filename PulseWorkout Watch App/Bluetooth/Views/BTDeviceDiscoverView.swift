@@ -45,10 +45,10 @@ struct BTDeviceDiscoverView: View {
 struct BTDeviceDiscoverView_Previews: PreviewProvider {
     
     static var settingsManager = SettingsManager()
-    static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
-    static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
-    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
-        settingsManager: settingsManager)
+    static var locationManager = LocationManager(settingsManager: settingsManager)
+    static var dataCache = DataCache()
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, settingsManager: settingsManager,
+        dataCache: dataCache)
     static var bluetoothManager = liveActivityManager.bluetoothManager
     
     static var previews: some View {

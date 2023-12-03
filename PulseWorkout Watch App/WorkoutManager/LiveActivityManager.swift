@@ -63,21 +63,24 @@ class LiveActivityManager : NSObject, ObservableObject {
     var session: HKWorkoutSession?
     var builder: HKLiveWorkoutBuilder?
 
+    var liveActivityRecord: ActivityRecord?
+    
     @Published var activityProfiles = ActivityProfiles()
     @Published var liveActivityProfile: ActivityProfile?
     
     var locationManager: LocationManager
-    @Published var activityDataManager: ActivityDataManager
+
     var settingsManager: SettingsManager
+    var dataCache: DataCache
 
     init(profileName: String = "",
          locationManager: LocationManager,
-         activityDataManager: ActivityDataManager,
-         settingsManager: SettingsManager) {
+         settingsManager: SettingsManager,
+         dataCache: DataCache) {
 
         self.locationManager = locationManager
-        self.activityDataManager = activityDataManager
         self.settingsManager = settingsManager
+        self.dataCache = dataCache
         
         
         super.init()
@@ -144,7 +147,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     /// Return total moving time = elapsed time - total auto-pause - current active auto-pause
     func movingTime(at: Date) -> TimeInterval {
 
-        return max((builder?.elapsedTime(at: at) ?? 0) - (activityDataManager.liveActivityRecord?.pausedTime ?? 0)
+        return max((builder?.elapsedTime(at: at) ?? 0) - (liveActivityRecord?.pausedTime ?? 0)
                 - currentPauseDurationAt(at: at), 0)
     }
     
@@ -163,8 +166,9 @@ class LiveActivityManager : NSObject, ObservableObject {
         alarmRepeatCount = 0
         
         let startDate = Date()
-        self.activityDataManager.start(activityProfile: self.liveActivityProfile!, startDate: startDate)
-
+        liveActivityRecord = ActivityRecord(settingsManager: settingsManager)
+        liveActivityRecord?.start(activityProfile: activityProfile, startDate: startDate)
+        
         startHRMonitor()
 
         let configuration = HKWorkoutConfiguration()
@@ -202,7 +206,6 @@ class LiveActivityManager : NSObject, ObservableObject {
                 print("Workout start Failed with error: \(String(describing: error))")
             } else {
                 print("Workout Started")
- //               self.activityDataManager.start(activityProfile: self.liveActivityProfile!, startDate: startDate)
             }
         }
         
@@ -213,7 +216,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     }
     
     func endWorkout() {
-        self.activityDataManager.set(elapsedTime: self.builder?.elapsedTime(at: Date()) ?? 0)
+        self.set(elapsedTime: self.builder?.elapsedTime(at: Date()) ?? 0)
         session?.end()
         
         stopHRMonitor()
@@ -232,6 +235,14 @@ class LiveActivityManager : NSObject, ObservableObject {
         session?.pause()
         appState = .paused
     }
+
+    func saveLiveActivityRecord() {
+
+        if liveActivityRecord != nil {
+            liveActivityRecord!.save(dataCache: dataCache)
+
+        }
+    }
     
     func setHeartRate(heartRate: Double, hrSource: HRSource) {
              
@@ -245,7 +256,7 @@ class LiveActivityManager : NSObject, ObservableObject {
 
         }
 
-        activityDataManager.set(heartRate: heartRate)
+        set(heartRate: heartRate)
         
     }
     
@@ -287,7 +298,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         }
         
         let cyclingPower = (powerDict["instantaneousPower"] ?? 0) as? Int ?? 0
-        activityDataManager.set(watts: cyclingPower)
+        set(watts: cyclingPower)
 
         
         var cyclingCadence: Int?
@@ -305,7 +316,7 @@ class LiveActivityManager : NSObject, ObservableObject {
                     cyclingCadence = 0
                 }
                 
-                activityDataManager.set(cadence: cyclingCadence)
+                set(cadence: cyclingCadence)
 
             }
             
@@ -350,14 +361,14 @@ class LiveActivityManager : NSObject, ObservableObject {
     @objc func fireTimer() {
         
         // add a track point for tcx file creation every time timer fires...
-        activityDataManager.addTrackPoint()
+        self.addTrackPoint()
         
         let maxAlarmRepeat = (liveActivityProfile!.constantRepeat ? settingsManager.maxAlarmRepeatCount : 1)
         
         if (self.liveActivityProfile!.hiLimitAlarmActive) &&
            (Int(self.heartRate ?? 0) >= self.liveActivityProfile!.hiLimitAlarm) {
             
-            activityDataManager.increment(timeOverHiAlarm: 2)
+            self.increment(timeOverHiAlarm: 2)
             self.hrState = HRState.hiAlarm
             
             if alarmRepeatCount < maxAlarmRepeat {
@@ -379,7 +390,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         } else if (self.liveActivityProfile!.loLimitAlarmActive) &&
                     (Int(self.heartRate ?? 999) <= self.liveActivityProfile!.loLimitAlarm) {
  
-            activityDataManager.increment(timeUnderLoAlarm: 2)
+            increment(timeUnderLoAlarm: 2)
             self.hrState = HRState.loAlarm
             
             if liveActivityProfile!.playSound && (alarmRepeatCount < maxAlarmRepeat) {
@@ -431,13 +442,13 @@ class LiveActivityManager : NSObject, ObservableObject {
                 let heartRateUnit = HKUnit.count().unitDivided(by: HKUnit.minute())
                 self.setHeartRate( heartRate: statistics.mostRecentQuantity()?.doubleValue(for: heartRateUnit) ?? 0,
                                    hrSource: .healthkit )
-                self.activityDataManager.set(averageHeartRate: statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0)
+                self.set(averageHeartRate: statistics.averageQuantity()?.doubleValue(for: heartRateUnit) ?? 0)
             case HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned):
                 let energyUnit = HKUnit.kilocalorie()
-                self.activityDataManager.set(activeEnergy: statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0)
+                self.set(activeEnergy: statistics.sumQuantity()?.doubleValue(for: energyUnit) ?? 0)
             case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning), HKQuantityType.quantityType(forIdentifier: .distanceCycling):
                 let meterUnit = HKUnit.meter()
-                self.activityDataManager.set(distanceMeters: statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0)
+                self.set(distanceMeters: statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0)
             default:
                 return
             }
@@ -504,4 +515,123 @@ extension LiveActivityManager: HKLiveWorkoutBuilderDelegate {
             print("Updating statistics")
         }
     }
+}
+
+
+extension LiveActivityManager {
+    
+    func addTrackPoint() {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.addTrackPoint()
+        }
+    }
+    
+    func set(heartRate: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.heartRate = heartRate
+        }
+    }
+    
+    func set(elapsedTime: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.elapsedTime = elapsedTime
+            liveActivityRecord!.movingTime = max(elapsedTime - liveActivityRecord!.pausedTime, 0)
+            setAverageSpeed()
+        }
+    }
+
+    private func setAverageSpeed() {
+        if liveActivityRecord!.movingTime != 0 {
+            liveActivityRecord!.averageSpeed = liveActivityRecord!.distanceMeters / liveActivityRecord!.movingTime
+        }
+    }
+    
+    func increment(pausedTime: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.pausedTime += pausedTime
+            liveActivityRecord!.movingTime = max(liveActivityRecord!.elapsedTime - liveActivityRecord!.pausedTime, 0)
+
+        }
+    }
+
+    func set(watts: Int?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.watts = watts
+        }
+    }
+    
+    func set(cadence:Int?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.cadence = cadence
+        }
+    }
+    
+    func set(averageHeartRate: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.averageHeartRate = averageHeartRate
+        }
+    }
+    
+    func set(activeEnergy: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.activeEnergy = activeEnergy
+        }
+    }
+    
+    func set(distanceMeters: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.distanceMeters = distanceMeters
+            setAverageSpeed()
+        }
+    }
+
+    func set(speed: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.speed = speed
+        }
+    }
+    
+    func set(latitude: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.latitude = latitude
+        }
+    }
+    
+    func set(longitude: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.longitude = longitude
+        }
+    }
+
+    func set(totalAscent: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.totalAscent = totalAscent
+        }
+    }
+
+    func set(totalDescent: Double?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.totalDescent = totalDescent
+        }
+    }
+
+    func set(isPaused: Bool) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.isPaused = isPaused
+        }
+    }
+
+    func increment(timeOverHiAlarm: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.timeOverHiAlarm += timeOverHiAlarm
+        }
+    }
+    
+    func increment(timeUnderLoAlarm: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.timeUnderLoAlarm += timeUnderLoAlarm
+        }
+    }
+
+    
 }

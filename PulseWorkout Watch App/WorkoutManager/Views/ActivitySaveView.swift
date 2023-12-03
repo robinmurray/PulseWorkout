@@ -10,22 +10,17 @@ import SwiftUI
 struct ActivitySaveView: View {
    
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var activityDataManager: ActivityDataManager
-
-//    @State var activityRecord: ActivityRecord
-    
     @Environment(\.dismiss) private var dismiss
 
     init(liveActivityManager: LiveActivityManager) {
         self.liveActivityManager = liveActivityManager
-        self.activityDataManager = liveActivityManager.activityDataManager
     }
     
     
     var body: some View {
         VStack(alignment: .leading) {
-            ActivityHeaderView(activityRecord: self.activityDataManager.liveActivityRecord ??
-                               self.activityDataManager.dummyActivityRecord)
+            ActivityHeaderView(activityRecord: liveActivityManager.liveActivityRecord ??
+                               ActivityRecord(settingsManager: liveActivityManager.settingsManager))
             Divider()
             Button(action: SaveActivity) {
                 Text("Done").padding([.leading, .trailing], 40)
@@ -40,8 +35,7 @@ struct ActivitySaveView: View {
     }
     
     func SaveActivity() {
-        activityDataManager.saveActivityRecord()
-                
+        liveActivityManager.saveLiveActivityRecord()
         dismiss()
     }
 
@@ -50,12 +44,13 @@ struct ActivitySaveView: View {
 struct ActivitySaveView_Previews: PreviewProvider {
     static var settingsManager = SettingsManager()
     static var record = ActivityRecord(settingsManager: settingsManager)
-    static var activityDataManager = ActivityDataManager(settingsManager: settingsManager)
 
-    static var locationManager = LocationManager(activityDataManager: activityDataManager, settingsManager: settingsManager)
+    static var locationManager = LocationManager(settingsManager: settingsManager)
+    
+    static var dataCache = DataCache()
 
-    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, activityDataManager: activityDataManager,
-        settingsManager: settingsManager)
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, settingsManager: settingsManager,
+        dataCache: dataCache)
     
 
     static var previews: some View {
