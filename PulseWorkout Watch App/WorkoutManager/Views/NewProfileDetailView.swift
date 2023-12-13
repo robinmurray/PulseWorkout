@@ -44,7 +44,7 @@ struct NewProfileDetailView: View {
 
         }
         .navigationTitle("New Profile")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
         .onDisappear {
             if !cancelPressed {
                 _ = profileManager.add(activityProfile: newProfile)

@@ -40,6 +40,13 @@ struct AlarmStyling {
     var colour: Color
 }
 
+let speedIcon = "speedometer"
+let distanceIcon = "arrowshape.forward"
+let ascentIcon = "arrow.up.right.circle"
+let cadenceIcon = "arrow.clockwise.circle"
+let powerIcon = "bolt"
+let heartRateIcon = "heart.fill"
+let meanIcon = "arrow.up.and.line.horizontal.and.arrow.down"
 
 struct LiveMetricsView: View {
     
@@ -109,9 +116,9 @@ struct LiveMetricsView: View {
                                                       scrollItems: 4) {
                                 case 0:
                                     LiveMetricCarouselItem(
-                                        metric1: (image: "arrowshape.forward",
+                                        metric1: (image: distanceIcon,
                                                   text: distanceFormatter(distance: activityData.distanceMeters)),
-                                        metric2: (image: "arrow.up.right.circle",
+                                        metric2: (image: ascentIcon,
                                                   text: distanceFormatter(distance: activityData.totalAscent ?? 0,
                                                                               forceMeters: true))
                                     )
@@ -121,9 +128,9 @@ struct LiveMetricsView: View {
                                 case 1:
                                     // Speed and Average Speed
                                     LiveMetricCarouselItem(
-                                        metric1: (image: "speedometer",
+                                        metric1: (image: speedIcon,
                                                   text: speedFormatter(speed: activityData.speed ?? 0)),
-                                        metric2: (image: "arrow.up.and.line.horizontal.and.arrow.down",
+                                        metric2: (image: meanIcon,
                                                   text: speedFormatter(speed: activityData.averageSpeed))
                                     )
                                         .modifier(GetHeightModifier(height: $scrollStackheight))
@@ -131,9 +138,9 @@ struct LiveMetricsView: View {
                                 case 2:
                                     // Power and Average Power
                                     LiveMetricCarouselItem(
-                                        metric1: (image: "bolt",
+                                        metric1: (image: powerIcon,
                                                   text: String(activityData.watts ?? 0) + " w"),
-                                        metric2: (image: "arrow.up.and.line.horizontal.and.arrow.down",
+                                        metric2: (image: meanIcon,
                                                   text: String(activityData.averagePower ) + " w")
                                     )
                                     .modifier(GetHeightModifier(height: $scrollStackheight))
@@ -142,18 +149,18 @@ struct LiveMetricsView: View {
                                 case 3:
                                     // Cadence and Average Cadence
                                     LiveMetricCarouselItem(
-                                        metric1: (image: "arrow.clockwise.circle",
+                                        metric1: (image: cadenceIcon,
                                                   text: String(activityData.cadence ?? 0)),
-                                        metric2: (image: "arrow.up.and.line.horizontal.and.arrow.down",
+                                        metric2: (image: meanIcon,
                                                   text: String(activityData.averageCadence))
                                     )
                                     .modifier(GetHeightModifier(height: $scrollStackheight))
                                        
                                 default:
                                     LiveMetricCarouselItem(
-                                        metric1: (image: "arrowshape.forward",
+                                        metric1: (image: distanceIcon,
                                                   text: distanceFormatter(distance: activityData.distanceMeters)),
-                                        metric2: (image: "arrow.up.right.circle",
+                                        metric2: (image: ascentIcon,
                                                   text: distanceFormatter(distance: activityData.totalAscent ?? 0,
                                                                               forceMeters: true))
                                     )

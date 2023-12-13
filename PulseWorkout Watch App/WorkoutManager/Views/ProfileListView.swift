@@ -12,10 +12,9 @@ struct ProfileListView: View {
     @ObservedObject var profileManager: ActivityProfiles
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
-
-     @State private var navigateToNewView : Bool = false
-
-    @State var newProfileIndex: Int = 0
+    
+    @State private var navigateToNewView : Bool = false
+    @State private var navigateToTopMenuView : Bool = false
     
     
     var body: some View {
@@ -28,22 +27,41 @@ struct ProfileListView: View {
                                     liveActivityManager: liveActivityManager,
                                     dataCache: dataCache)
             }
-            
-            NavigationStack {
-                VStack {
-                    Button {
-                        navigateToNewView = true
-                    } label: {
-                        Text("New Profile")
+        }
+        .padding(.horizontal)
+        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle {
+            Text("Profiles").foregroundColor(.green)
+        }
+        .toolbar {
+            ToolbarItemGroup(placement: .topBarLeading) {
+                HStack{
+                    
+                    NavigationStack {
+                        Button {
+                             navigateToTopMenuView = true
+                        } label: {
+                            Label("Add", systemImage: "list.triangle")
+                        }
                     }
-                    .buttonStyle(.borderedProminent)
-                    .tint(Color.green)
+                    .navigationDestination(isPresented: $navigateToTopMenuView) {
+                        TopMenuView( profileManager: profileManager, liveActivityManager: liveActivityManager, dataCache: dataCache)
+                    }
+                    
+                    NavigationStack {
+                        Button {
+                            navigateToNewView = true
+                        } label: {
+                            Label("Add", systemImage: "plus")
+                        }
+                    }
+                    .navigationDestination(isPresented: $navigateToNewView) {
+                        NewProfileDetailView(profileManager: profileManager)
+                    }
+
                 }
-                .navigationDestination(isPresented: $navigateToNewView) {
-                    NewProfileDetailView(profileManager: profileManager)
-                }
+
             }
-            
         }
     }
 }

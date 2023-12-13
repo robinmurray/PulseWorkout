@@ -45,7 +45,7 @@ struct BTDetailDeviceView: View {
             }
             .foregroundStyle(.blue)
             .navigationTitle("Back")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
 
             Section(header: Text("Device Information")) {
                 HStack {

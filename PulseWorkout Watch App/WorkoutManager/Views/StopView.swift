@@ -82,7 +82,7 @@ struct StopView: View {
                     Spacer()
                 }
                 .navigationTitle("Workout Control")
-                .navigationBarTitleDisplayMode(.inline)
+                .navigationBarTitleDisplayMode(.large)
             }
         }
     }

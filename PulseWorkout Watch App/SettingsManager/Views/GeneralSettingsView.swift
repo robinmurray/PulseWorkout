@@ -173,7 +173,7 @@ struct GeneralSettingsView: View {
 
             }
             .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
             .onDisappear(perform: settingsManager.save)
 
         }

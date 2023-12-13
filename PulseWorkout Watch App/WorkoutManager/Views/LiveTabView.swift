@@ -24,22 +24,28 @@ struct LiveTabView: View {
                 
                 StopView(liveActivityManager: liveActivityManager)
                     .tag(LiveScreenTab.stop)
+                    .navigationTitle("Stop")
                 
                 LiveMetricsView(liveActivityManager: liveActivityManager)
                     .tag(LiveScreenTab.liveMetrics)
+                    .navigationTitle(profileName)
                 
                 LocationView(locationManager: liveActivityManager.locationManager)
                     .tag(LiveScreenTab.location)
+                    .navigationTitle("Location")
 
-
+/*
                 NowPlayingView()
                     .tag(LiveScreenTab.nowPlaying)
-                
+                    .navigationTitle("Now Playing")
+*/
             }
-            .tabViewStyle(.page(indexDisplayMode: .always))
-            .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+            .tabViewStyle(.verticalPage)
+//            .tabViewStyle(.page(indexDisplayMode: .always))
+//            .indexViewStyle(.page(backgroundDisplayMode: .automatic))
             .navigationBarBackButtonHidden(true)
-            .navigationTitle(profileName)
+//            .navigationTitle(profileName)
+
 
     }
     

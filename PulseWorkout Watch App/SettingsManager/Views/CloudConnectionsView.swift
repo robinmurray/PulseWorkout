@@ -29,7 +29,7 @@ struct CloudConnectionsView: View {
                 Text("Save activities and routes to Strava.")
                     .font(.footnote).foregroundColor(.gray)
                 
-                Button("Clear Unsaved Activities") {
+                Button("Clear local cache") {
                     clearCache()
                 }.buttonStyle(.borderedProminent)
                     .tint(Color.blue)
@@ -39,7 +39,7 @@ struct CloudConnectionsView: View {
 
             }
             .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
             .onDisappear(perform: settingsManager.save)
         }
         

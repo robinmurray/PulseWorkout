@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E40306812B1F1D7900658A80 /* ActivityRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40306802B1F1D7900658A80 /* ActivityRecordTest.swift */; };
+		E40306832B22211000658A80 /* TopMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40306822B22211000658A80 /* TopMenuView.swift */; };
 		E40F88302A97AAF500E00F25 /* ActivitySaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */; };
 		E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F886A2AA5D31400E00F25 /* SimpleXML.swift */; };
 		E41CFBA72AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */; };
@@ -101,6 +103,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E40306802B1F1D7900658A80 /* ActivityRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecordTest.swift; sourceTree = "<group>"; };
+		E40306822B22211000658A80 /* TopMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopMenuView.swift; sourceTree = "<group>"; };
 		E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySaveView.swift; sourceTree = "<group>"; };
 		E40F886A2AA5D31400E00F25 /* SimpleXML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleXML.swift; sourceTree = "<group>"; };
 		E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricCarouselItem.swift; sourceTree = "<group>"; };
@@ -255,6 +259,7 @@
 			isa = PBXGroup;
 			children = (
 				E46EF09429537CA3006FA603 /* PulseWorkout_Watch_AppTests.swift */,
+				E40306802B1F1D7900658A80 /* ActivityRecordTest.swift */,
 			);
 			path = "PulseWorkout Watch AppTests";
 			sourceTree = "<group>";
@@ -337,6 +342,7 @@
 				E46EF0C52955C836006FA603 /* PausedTabView.swift */,
 				E46EF0B929537E24006FA603 /* StartView.swift */,
 				E468DC8029E931A10002FEA9 /* ProfileListView.swift */,
+				E40306822B22211000658A80 /* TopMenuView.swift */,
 				E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */,
 				E468DC8229E9B5050002FEA9 /* ProfileDetailView.swift */,
 				E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */,
@@ -528,6 +534,7 @@
 				E4C11F5329C632DB008DB769 /* BTDetailDeviceView.swift in Sources */,
 				E46121FA2AB315E600E07749 /* LocationView.swift in Sources */,
 				E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */,
+				E40306832B22211000658A80 /* TopMenuView.swift in Sources */,
 				E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */,
 				E468DC8129E931A10002FEA9 /* ProfileListView.swift in Sources */,
 				E46EF0C229543FEA006FA603 /* StopView.swift in Sources */,
@@ -563,6 +570,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E46EF09529537CA3006FA603 /* PulseWorkout_Watch_AppTests.swift in Sources */,
+				E40306812B1F1D7900658A80 /* ActivityRecordTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -741,7 +749,7 @@
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
 		};
@@ -782,7 +790,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				VALIDATE_PRODUCT = YES;
-				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};
@@ -840,7 +848,7 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PulseWorkout Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PulseWorkout Watch App";
-				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Debug;
 		};
@@ -862,7 +870,7 @@
 				TARGETED_DEVICE_FAMILY = 4;
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PulseWorkout Watch App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PulseWorkout Watch App";
 				VALIDATE_PRODUCT = YES;
-				WATCHOS_DEPLOYMENT_TARGET = 9.1;
+				WATCHOS_DEPLOYMENT_TARGET = 10.0;
 			};
 			name = Release;
 		};

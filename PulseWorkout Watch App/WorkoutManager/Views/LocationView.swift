@@ -26,7 +26,7 @@ struct LocationView: View {
             if !locationManager.authStatusOk {
                 LocationNotAuthView()
                     .navigationTitle("Location")
-                    .navigationBarTitleDisplayMode(.inline)
+                    .navigationBarTitleDisplayMode(.large)
             }
             else {
                 VStack {
@@ -116,6 +116,11 @@ struct LocationView: View {
                                 }
                             }
                         }
+                        .padding(.horizontal)
+                        .navigationBarTitleDisplayMode(.large)
+                        .navigationTitle {
+                            Text("Location").foregroundColor(.green)
+                        }
                         
                         
                         if locationManager.pinnedLocation != nil {
@@ -179,6 +184,7 @@ struct LocationView: View {
                 .onDisappear(perform: locationManager.stopFGLocationServices)
                 
             }
+
         }
     }
         

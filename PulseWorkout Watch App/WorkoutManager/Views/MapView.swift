@@ -33,7 +33,7 @@ struct MapView: View {
                    tint: Color.yellow)
         })
         .navigationTitle("Location")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
     }
         
 }

@@ -16,7 +16,7 @@ struct ActivityHistoryView: View {
     var body: some View {
         
 
-        VStack {
+ //       VStack {
 
             NavigationStack {
                 List{
@@ -40,11 +40,11 @@ struct ActivityHistoryView: View {
                     
 
             }
-                
-        }
-        .padding()
-        .navigationTitle("History")
-        .navigationBarTitleDisplayMode(.inline)
+            .padding()
+            .navigationTitle("History")
+            .navigationBarTitleDisplayMode(.large)
+//        }
+
     }
 }
 

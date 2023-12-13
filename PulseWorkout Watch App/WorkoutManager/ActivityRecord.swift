@@ -10,6 +10,11 @@ import Gzip
 import CloudKit
 
 
+enum StravaSaveStatus: Int {
+    case dontSave = 0
+    case toSave = 1
+    case saved = 2
+}
 
 class ActivityRecord: NSObject, Identifiable, Codable {
     
@@ -26,7 +31,7 @@ class ActivityRecord: NSObject, Identifiable, Codable {
     var timeUnderLoAlarm: Double = 0
     var hiHRLimit: Int?
     var loHRLimit: Int?
-    var stravaStatus: Bool = false
+    var stravaSaveStatus: Int = StravaSaveStatus.dontSave.rawValue
     var tcxFileName: String?    // Temporary cache file for tcx file
     var JSONFileName: String?   // Temporary cache file for JSON serialisation of activity record
     
@@ -252,7 +257,7 @@ extension ActivityRecord {
         case recordName, name, type, sportType, startDateLocal,
              elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
              averageHeartRate, averageCadence, averagePower, averageSpeed, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
-             stravaStatus, totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete
+             stravaSaveStatus, totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete
     }
     
 }
@@ -272,14 +277,14 @@ extension ActivityRecord {
     }
     
     /// Add data as a track point
-    func addTrackPoint() {
+    func addTrackPoint(trackPointTime: Date = Date()) {
 
         guard let SM = settingsManager else {
             print("Settings manager not set")
             return
         }
         
-        trackPoints.append(TrackPoint(time: Date(),
+        trackPoints.append(TrackPoint(time: trackPointTime,
                                       heartRate: heartRate,
                                       latitude: latitude,
                                       longitude: longitude,
@@ -300,17 +305,8 @@ extension ActivityRecord {
     }
 
 
-    func saveTrackRecord() -> Bool {
-
-        // get files for gzipped tcx file
-        guard let gzFile = tcxFileName else { return false }
-        guard let gzURL = CacheURL(fileName: gzFile) else { return false }
-        
-        print("testing file at \(gzURL.path)")
-        if FileManager.default.fileExists(atPath: gzURL.path) {
-            return true
-        }
-        print("file not found!")
+    func trackRecordXML() -> XMLDocument {
+       
         let tcxXMLDoc = XMLDocument()
         
         tcxXMLDoc.addProlog(prolog: "xml version=\"1.0\" encoding=\"UTF-8\"")
@@ -330,18 +326,36 @@ extension ActivityRecord {
         let lapNode = activityNode.addNode(name: "Lap", attributes: ["StartTime" : startDateLocal.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash))])
         lapNode.addValue(name: "TotalTimeSeconds", value: String(format: "%.1f", elapsedTime))
         lapNode.addValue(name: "DistanceMeters", value: String(format: "%.1f", distanceMeters))
+        
         /// USE Cadence for average cadence, probably extension for power...
         let aveHRNode = lapNode.addNode(name: "AverageHeartRate")
         aveHRNode.addValue(name: "Value", value: String(Int(averageHeartRate)))
         lapNode.addValue(name: "TriggerMethod", value: "Manual")
+        
         let trackNode = lapNode.addNode(name: "Track")
         for trackPoint in trackPoints {
             trackPoint.addXMLtoNode(node: trackNode)
         }
+
+        return tcxXMLDoc
+
+    }
+    
+    func saveTrackRecord() -> Bool {
+
+        // get files for gzipped tcx file
+        guard let gzFile = tcxFileName else { return false }
+        guard let gzURL = CacheURL(fileName: gzFile) else { return false }
+        
+        print("testing file at \(gzURL.path)")
+        if FileManager.default.fileExists(atPath: gzURL.path) {
+            return true
+        }
+        print("file not found!")
         
         do {
-//            try tcxXMLDoc.serialize().write(to: tURL, atomically: true, encoding: .utf8)
-            guard let tcxData = tcxXMLDoc.serialize().data(using: .utf8) else {return false}
+
+            guard let tcxData = trackRecordXML().serialize().data(using: .utf8) else {return false}
             
             let compressedData: Data = try tcxData.gzipped()
             try compressedData.write(to: gzURL)
@@ -411,6 +425,7 @@ extension ActivityRecord {
         if loHRLimit != nil {
             activityRecord["loHRLimit"] = loHRLimit! as CKRecordValue
         }
+        activityRecord["stravaSaveStatus"] = stravaSaveStatus as CKRecordValue
 
         
         if saveTrackRecord() {
@@ -450,12 +465,13 @@ extension ActivityRecord {
         loHRLimit = activityRecord["loHRLimit"] as Int?
         totalAscent = activityRecord["totalAscent"] as Double?
         totalDescent = activityRecord["totalDescent"] as Double?
+        stravaSaveStatus = (activityRecord["stravaSaveStatus"] ?? StravaSaveStatus.dontSave.rawValue) as Int
         
         toSave = false
         toDelete = false
         tcxFileName = ""
         JSONFileName = ""
-        stravaStatus = false
+
 
         
     }
@@ -487,6 +503,8 @@ extension ActivityRecord {
     private func setAverageSpeed() {
         if movingTime != 0 {
             averageSpeed = distanceMeters / movingTime
+        } else {
+            averageSpeed = 0
         }
     }
     

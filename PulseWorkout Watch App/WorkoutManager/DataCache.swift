@@ -49,7 +49,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     var container: CKContainer!
     var database: CKDatabase!
-    var zoneID: CKRecordZone.ID!
+//    var zoneID: CKRecordZone.ID!
     
     @Published var UIRecordSet: [ActivityRecord] = []
        
@@ -70,9 +70,9 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         container = CKContainer(identifier: "iCloud.CloudKitLesson")
         database = container.privateCloudDatabase
-        zoneID = CKRecordZone.ID(zoneName: "CKL_Zone")
+//        zoneID = CKRecordZone.ID(zoneName: "CKL_Zone")
         
-        
+/*
         Task {
             do {
                 try await createCKZoneIfNeeded()
@@ -81,7 +81,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             }
 
         }
-        
+  */
 
         if readCache {
             _ = read()
@@ -97,7 +97,7 @@ class DataCache: NSObject, Codable, ObservableObject {
 
     }
     
-    private func createCKZoneIfNeeded() async throws {
+    private func createCKZoneIfNeeded(zoneID: CKRecordZone.ID) async throws {
 
         guard !UserDefaults.standard.bool(forKey: "zoneCreated") else {
             return
@@ -214,7 +214,9 @@ class DataCache: NSObject, Codable, ObservableObject {
             for activity in JSONData.activities {
                 print("activity \(activity.recordName ?? "xxx")  toBeSaved status \(activity.toSave) -- toDelete status \(activity.toDelete)")
                 // create recordID from recordName as recordID not serialised to JSON
-                activity.recordID = CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
+//                activity.recordID = CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
+                activity.recordID = CKRecord.ID(recordName: activity.recordName)
+
                 activities.append(activity)
             }
             

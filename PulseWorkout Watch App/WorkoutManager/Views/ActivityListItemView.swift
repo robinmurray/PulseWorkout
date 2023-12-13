@@ -18,9 +18,20 @@ struct ActivityListItemView: View {
                 Text(activityRecord.name)
                     .foregroundStyle(.yellow)
                 Spacer()
-                if activityRecord.toSave {
-                    Image(systemName: "icloud.slash.fill").foregroundColor(.red)
+                VStack {
+                    if activityRecord.toSave {
+                        Image(systemName: "icloud.slash.fill").foregroundColor(.red)
+                    }
+                    switch activityRecord.stravaSaveStatus {
+                    case StravaSaveStatus.saved.rawValue:
+                        Image(systemName: "paperplane.circle").foregroundColor(.green)
+                    case StravaSaveStatus.saved.rawValue:
+                        Image(systemName: "paperplane.circle").foregroundColor(.orange)
+                    default:
+                        Image(systemName: "paperplane.circle").foregroundColor(.gray)
+                    }
                 }
+
                 
             }
             

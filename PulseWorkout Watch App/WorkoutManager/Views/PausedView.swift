@@ -72,7 +72,7 @@ struct PausedView: View {
 
         }
         .navigationTitle("Workout Paused")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
     }
 
     

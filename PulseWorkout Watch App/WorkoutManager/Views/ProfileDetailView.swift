@@ -146,7 +146,7 @@ struct ProfileDetailView: View {
                 }
             }
             .navigationTitle("Edit Profile")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
             .onDisappear {
                 if deleteProfile {
                     profileManager.remove(activityProfile: profile)

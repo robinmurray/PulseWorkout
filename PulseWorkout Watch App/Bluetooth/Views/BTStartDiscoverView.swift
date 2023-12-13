@@ -36,7 +36,7 @@ struct BTStartDiscoverView: View {
 
             }
             .navigationTitle("Sensors")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
         }
 
         }

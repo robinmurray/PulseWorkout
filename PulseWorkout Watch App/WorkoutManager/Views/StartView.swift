@@ -28,11 +28,9 @@ struct StartView: View {
             BTDeviceBarView(liveActivityManager: liveActivityManager)
 
             }
-            .padding(.horizontal)
-            .navigationTitle("Profiles")
-            .navigationBarTitleDisplayMode(.inline)
-        }
+
     }
+}
 
 
 struct StartView_Previews: PreviewProvider {

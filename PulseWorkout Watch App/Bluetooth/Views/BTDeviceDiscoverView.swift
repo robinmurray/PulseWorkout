@@ -31,7 +31,7 @@ struct BTDeviceDiscoverView: View {
             
         }
         .navigationTitle("Back")
-        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.large)
         .onAppear {
             bluetoothManager.discoverDevices()
         }
