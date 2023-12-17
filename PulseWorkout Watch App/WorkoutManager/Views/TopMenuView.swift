@@ -105,17 +105,26 @@ struct TopMenuView: View {
                 Spacer()
                 
                 NavigationStack {
-                    Button {
-                        navigateToHistoryView = true
-                    } label: {
-                        Image(systemName: "book.circle")
+                    VStack {
+                        Button {
+                            navigateToHistoryView = true
+                        } label: {
+                            VStack {
+                                Image(systemName: "book.circle")
+                                    .foregroundColor(Color.black)
+                                    .font(.title)
+                                    .frame(width: 60, height: 60)
+                                    .background(Color.orange)
+                                    .clipShape(Circle())
+                                Text("History")
+                                    .foregroundColor(Color.orange)
+                            }
+
+                        }
+                        .buttonStyle(PlainButtonStyle())
+
                     }
-                    .foregroundColor(Color.black)
-                    .font(.title)
-                    .frame(width: 60, height: 60)
-                    .background(Color.orange)
-                    .clipShape(Circle())
-                    .buttonStyle(PlainButtonStyle())
+
                 }
                 .navigationDestination(isPresented: $navigateToHistoryView) {
                     ActivityHistoryView(dataCache: dataCache)
@@ -127,13 +136,20 @@ struct TopMenuView: View {
                     Button {
                         navigateToLocationView = true
                     } label: {
-                        Image(systemName: "location.circle")
+                        VStack {
+                            Image(systemName: "location.circle")
+                                .foregroundColor(Color.black)
+                                .font(.title)
+                                .frame(width: 60, height: 60)
+                                .background(Color.blue)
+                                .clipShape(Circle())
+                            
+                            Text("Location")
+                                .foregroundColor(Color.blue)
+                            
+                        }
+                        
                     }
-                    .foregroundColor(Color.black)
-                    .font(.title)
-                    .frame(width: 60, height: 60)
-                    .background(Color.blue)
-                    .clipShape(Circle())
                     .buttonStyle(PlainButtonStyle())
                 }
                 .navigationDestination(isPresented: $navigateToLocationView) {
@@ -150,13 +166,18 @@ struct TopMenuView: View {
                     Button {
                         navigateToNowPlayingView = true
                     } label: {
-                        Image(systemName: "music.note.list")
+                        VStack {
+                            Image(systemName: "music.note.list")
+                                .foregroundColor(Color.black)
+                                .font(.title)
+                                .frame(width: 60, height: 60)
+                                .background(Color.red)
+                                .clipShape(Circle())
+                            Text("Music")
+                                .foregroundColor(Color.red)
+                        }
+                        
                     }
-                    .foregroundColor(Color.black)
-                    .font(.title)
-                    .frame(width: 60, height: 60)
-                    .background(Color.red)
-                    .clipShape(Circle())
                     .buttonStyle(PlainButtonStyle())
                 }
                 .navigationDestination(isPresented: $navigateToNowPlayingView) {
@@ -169,13 +190,18 @@ struct TopMenuView: View {
                     Button {
                         navigateToSettingsView = true
                     } label: {
-                        Image(systemName: "gear")
+                        VStack {
+                            Image(systemName: "gear")
+                                .foregroundColor(Color.black)
+                                .font(.title)
+                                .frame(width: 60, height: 60)
+                                .background(Color.gray)
+                                .clipShape(Circle())
+                            Text("Settings")
+                                .foregroundColor(Color.gray)
+                        }
+                        
                     }
-                    .foregroundColor(Color.black)
-                    .font(.title)
-                    .frame(width: 60, height: 60)
-                    .background(Color.gray)
-                    .clipShape(Circle())
                     .buttonStyle(PlainButtonStyle())
                 }
                 .navigationDestination(isPresented: $navigateToSettingsView) {

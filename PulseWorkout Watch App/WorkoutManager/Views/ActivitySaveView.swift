@@ -32,6 +32,7 @@ struct ActivitySaveView: View {
 
 
         }
+        .navigationBarBackButtonHidden(true)
     }
     
     func SaveActivity() {

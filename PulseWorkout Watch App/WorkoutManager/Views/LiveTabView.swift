@@ -29,7 +29,7 @@ struct LiveTabView: View {
                 LiveMetricsView(liveActivityManager: liveActivityManager)
                     .tag(LiveScreenTab.liveMetrics)
                     .navigationTitle(profileName)
-                
+
                 LocationView(locationManager: liveActivityManager.locationManager)
                     .tag(LiveScreenTab.location)
                     .navigationTitle("Location")

@@ -40,8 +40,8 @@ struct PulseWorkout_Watch_AppApp: App {
                         settingsManager: settingsManager,
                         locationManager: locationManager)
         }
-        .onChange(of: scenePhase) { phase in
-            switch phase {
+        .onChange(of: scenePhase) { oldScenePhase, newScenePhase in
+            switch newScenePhase {
                 case .active:
                     liveActivityManager.appActive()
                 case .inactive:
