@@ -9,6 +9,7 @@ import Foundation
 import HealthKit
 import AVFoundation
 import WatchKit
+import os
 
 enum HRSource {
     case healthkit, bluetooth
@@ -72,6 +73,9 @@ class LiveActivityManager : NSObject, ObservableObject {
 
     var settingsManager: SettingsManager
     var dataCache: DataCache
+    
+    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                        category: "liveActivityManager")
 
     init(profileName: String = "",
          locationManager: LocationManager,
@@ -110,7 +114,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     }
     
     func appActive() {
-        print("App becoming active")
+        logger.log("App becoming active")
         if (appInBackground && (appState != .live)) {
             bluetoothManager!.connectDevices()
         }
@@ -118,11 +122,11 @@ class LiveActivityManager : NSObject, ObservableObject {
     }
     
     func appInactive() {
-        print("App becoming Inactive")
+        logger.log("App becoming Inactive")
     }
     
     func appBackground() {
-        print("App becoming Background")
+        logger.log("App becoming Background")
         if appState != .live {
             bluetoothManager!.disconnectKnownDevices()
         }
@@ -179,7 +183,7 @@ class LiveActivityManager : NSObject, ObservableObject {
             session = try HKWorkoutSession( healthStore: healthStore, configuration: configuration)
             builder = session?.associatedWorkoutBuilder()
         } catch {
-            print("Failed to start Workout Session")
+            logger.error("Failed to start Workout Session")
             return
         }
         
@@ -195,7 +199,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         
         // If an outdoor activity then start location services
         if activityProfile.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
-            locationManager.startBGLocationServices()
+            locationManager.startBGLocationServices(liveActityRecord: liveActivityRecord!)
         }
 
         session?.startActivity(with: startDate)
@@ -203,9 +207,9 @@ class LiveActivityManager : NSObject, ObservableObject {
             // The workout has started.
             if !success {
                             // Handle the error here.
-                print("Workout start Failed with error: \(String(describing: error))")
+                self.logger.error("Workout start Failed with error: \(String(describing: error))")
             } else {
-                print("Workout Started")
+                self.logger.log("Workout Started")
             }
         }
         
@@ -216,14 +220,18 @@ class LiveActivityManager : NSObject, ObservableObject {
     }
     
     func endWorkout() {
-        self.set(elapsedTime: self.builder?.elapsedTime(at: Date()) ?? 0)
-        session?.end()
         
-        stopHRMonitor()
-        
+        // Finished pause if currently paused
         if liveActivityProfile!.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
             locationManager.stopLocationSession()
         }
+
+        self.set(elapsedTime: self.builder?.elapsedTime(at: Date()) ?? 0)
+
+        session?.end()
+        
+        stopHRMonitor()
+
     }
     
     func resumeWorkout() {
@@ -262,7 +270,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     
     func setBTHeartRate(value: Any) {
         guard let heartRate = value as? Double else {
-            print("API misuse - callback should return value that can be cast to Double")
+            logger.error("API misuse - callback should return value that can be cast to Double")
             return
         }
         
@@ -271,7 +279,7 @@ class LiveActivityManager : NSObject, ObservableObject {
 
     func BTHRMServiceConnected(connected: Bool) {
         
-        print("Setting BTHRMConnected to \(connected)")
+        logger.debug("Setting BTHRMConnected to \(connected)")
         // Callback function provided to bluetooth manager to notify when HRM service connects/disconnects
         BTHRMConnected = connected
         if !BTHRMConnected {BTHRMBatteryLevel = nil}
@@ -279,21 +287,21 @@ class LiveActivityManager : NSObject, ObservableObject {
     
     func BTcyclePowerServiceConnected(connected: Bool) {
         
-        print("Setting BTcyclePowerConnected to \(connected)")
+        logger.debug("Setting BTcyclePowerConnected to \(connected)")
         // Callback function provided to bluetooth manager to notify when HRM service connects/disconnects
         BTcyclePowerConnected = connected
         if !BTcyclePowerConnected {BTcyclePowerBatteryLevel = nil}
     }
     
     func setBTHRMBatteryLevel(batteryLevel: Int) {
-        print("Setting HR battery level to \(batteryLevel)")
+        logger.debug("Setting HR battery level to \(batteryLevel)")
         
         BTHRMBatteryLevel = batteryLevel
     }
 
     func setCyclingPower(value: Any) {
         guard let powerDict = value as? [String:Any] else {
-            print("API misuse - callback should return value that can be cast to dictionary")
+            logger.error("API misuse - callback should return value that can be cast to dictionary")
             return
         }
         
@@ -327,16 +335,16 @@ class LiveActivityManager : NSObject, ObservableObject {
     }
     
     func setBTcyclePowerMeterBatteryLevel(batteryLevel: Int) {
-        print("Setting PM battery level to \(batteryLevel)")
+        logger.debug("Setting PM battery level to \(batteryLevel)")
         
         BTcyclePowerBatteryLevel = batteryLevel
     }
     
     func startHRMonitor() {
-        print("Initialising timer")
+        logger.debug("Initialising timer")
         self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         self.timer!.tolerance = 0.2
-        print("Timer initialised")
+        logger.debug("Timer initialised")
         HRMonitorActive = true
         self.hrState = HRState.normal
         
@@ -344,7 +352,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     }
     
     func stopHRMonitor() {
-        print("stopping timer")
+        logger.debug("stopping timer")
         self.timer?.invalidate()
         HRMonitorActive = false
         self.hrState = HRState.inactive
@@ -374,12 +382,12 @@ class LiveActivityManager : NSObject, ObservableObject {
             if alarmRepeatCount < maxAlarmRepeat {
                 if liveActivityProfile!.playSound {
                     WKInterfaceDevice.current().play(settingsManager.hapticType)
-                    print("playing sound 1")
+                    logger.debug("playing sound 1")
                 }
                 /*
                 if liveActivityProfile!.playHaptic {
                     WKInterfaceDevice.current().play(settingsManager.hapticType)
-                    print("playing sound 2")
+                    logger.debug("playing sound 2")
                     
                 }
                 */
@@ -395,7 +403,7 @@ class LiveActivityManager : NSObject, ObservableObject {
             
             if liveActivityProfile!.playSound && (alarmRepeatCount < maxAlarmRepeat) {
                 WKInterfaceDevice.current().play(settingsManager.hapticType)
-                print("playing sound 3")
+                logger.debug("playing sound 3")
                 alarmRepeatCount += 1
             }
             
@@ -423,7 +431,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         healthStore.requestAuthorization(toShare: typesToShare, read: typesToRead)  { (success, error) in
             if !success {
                 // Handle the error here.
-                print("Authorisation Failed with error: \(String(describing: error))")
+                self.logger.error("Authorisation Failed with error: \(String(describing: error))")
             }
         }
     }
@@ -432,10 +440,10 @@ class LiveActivityManager : NSObject, ObservableObject {
     // MARK: - Workout Metrics
     func updateForStatistics(_ statistics: HKStatistics?) {
         guard let statistics = statistics else { return }
-        print("In Update for Statistics")
+        logger.debug("In Update for Statistics")
         
         DispatchQueue.main.async {
-            print("in DespatchQueue")
+            self.logger.debug("in DespatchQueue")
                         
             switch statistics.quantityType {
             case HKQuantityType.quantityType(forIdentifier: .heartRate):
@@ -501,7 +509,7 @@ extension LiveActivityManager: HKLiveWorkoutBuilderDelegate {
 
     func workoutBuilder(_ workoutBuilder: HKLiveWorkoutBuilder, didCollectDataOf collectedTypes: Set<HKSampleType>) {
         
-        print("In workoutBuilder")
+        logger.debug("In workoutBuilder")
         for type in collectedTypes {
             guard let quantityType = type as? HKQuantityType else {
                 return // Nothing to do.
@@ -512,7 +520,7 @@ extension LiveActivityManager: HKLiveWorkoutBuilderDelegate {
             // Update the published values.
             updateForStatistics(statistics)
             
-            print("Updating statistics")
+            logger.debug("Updating statistics")
         }
     }
 }
@@ -549,7 +557,7 @@ extension LiveActivityManager {
     func increment(pausedTime: Double) {
         if liveActivityRecord != nil {
             liveActivityRecord!.pausedTime += pausedTime
-            liveActivityRecord!.movingTime = max(liveActivityRecord!.elapsedTime - liveActivityRecord!.pausedTime, 0)
+//            liveActivityRecord!.movingTime = max(liveActivityRecord!.elapsedTime - liveActivityRecord!.pausedTime, 0)
 
         }
     }

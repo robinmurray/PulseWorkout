@@ -7,6 +7,7 @@
 
 import Foundation
 import HealthKit
+import os
 
 
 /** The main data structure for maintaining workout / profile infromation */
@@ -59,6 +60,8 @@ class ActivityProfiles: NSObject, ObservableObject {
     @Published var profiles: [ActivityProfile] = []
     private var lastSavedProfiles: [ActivityProfile] = []
     
+    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                        category: "activityProfiles")
     override init() {
 
         super.init()
@@ -206,7 +209,7 @@ class ActivityProfiles: NSObject, ObservableObject {
     }
     
     func read() {
-        print("Trying decode profiles")
+        logger.debug("Trying decode profiles")
         
         // Initialise empty dictionary
         // try to read from userDefaults in to this - if fails then use defaults
@@ -214,7 +217,7 @@ class ActivityProfiles: NSObject, ObservableObject {
         if let savedProfiles = UserDefaults.standard.object(forKey: "ActivityProfiles") as? Data {
             let decoder = JSONDecoder()
             if let loadedProfiles = try? decoder.decode(type(of: profiles), from: savedProfiles) {
-                print(loadedProfiles)
+                logger.debug("\(loadedProfiles)")
                 profiles = loadedProfiles
                 lastSavedProfiles = loadedProfiles
                 
@@ -226,7 +229,7 @@ class ActivityProfiles: NSObject, ObservableObject {
     
     func write(sortBeforeWrite: Bool = true) {
         
-        print("Writing profile!")
+        logger.debug("Writing profile!")
         if sortBeforeWrite {
             let epochDate = NSDate(timeIntervalSince1970: 0) as Date
             profiles = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
@@ -236,10 +239,10 @@ class ActivityProfiles: NSObject, ObservableObject {
         do {
             let data = try JSONEncoder().encode(profiles)
             let jsonString = String(data: data, encoding: .utf8)
-            print("JSON : \(String(describing: jsonString))")
+            logger.debug("JSON : \(String(describing: jsonString))")
             UserDefaults.standard.set(data, forKey: "ActivityProfiles")
         } catch {
-            print("Error enconding")
+            logger.error("Error enconding")
         }
 
     }

@@ -23,7 +23,7 @@ struct ConnectView: View {
                 Image(systemName: "link.circle")
             }
             .foregroundColor(Color.yellow)
-            .font(.title)
+            .font(.title2)
             .frame(width: 40, height: 40)
             .background(Color.clear)
             .clipShape(Circle())
@@ -51,7 +51,7 @@ struct ConnectedView: View {
         VStack {
             Image(systemName: "link.circle")
                 .foregroundColor(Color.blue)
-                .font(.title)
+                .font(.title2)
                 .frame(width: 40, height: 40)
 
         }
@@ -77,7 +77,7 @@ struct ConnectingView: View {
             Button(action: cancelConnect) {
                 ProgressView()
             }
-            .font(.title)
+            .font(.title2)
             .frame(width: 40, height: 40)
             .background(Color.clear)
             .clipShape(Circle())

@@ -32,8 +32,18 @@ struct MapView: View {
             MapMarker(coordinate: place.coordinate,
                    tint: Color.yellow)
         })
-        .navigationTitle("Location")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle {
+            HStack {
+                Image(systemName: "map.circle")
+                    .foregroundColor(Color.blue)
+                    .clipShape(Circle())
+
+                Text("Pinned Location")
+                    .foregroundColor(Color.blue)
+            }
+        }
+
+
     }
         
 }

@@ -9,8 +9,7 @@ import Foundation
 import CoreBluetooth
 import WatchKit
 import UIKit
-
-
+import os
 
 // User Defaults Key
 let knownDeviceKey: String = "KnownBTDevices"
@@ -66,6 +65,9 @@ class BTDevicesController: NSObject, ObservableObject {
     var characteristicCallback: [CBUUID: (Any) -> Void] = [:]
     var serviceConnectCallback: [CBUUID: (Bool) -> Void] = [:]
     var batteryLevelCallback: [CBUUID: (Int) -> Void] = [:]
+    
+    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                        category: "BTDevicesController")
 
     init(requestedServices: [CBUUID]?) {
         
@@ -147,7 +149,7 @@ class BTDevicesController: NSObject, ObservableObject {
 
     func removeActivePeripheral(peripheral: CBPeripheral) {
 
-        print("removing active peripheral \(peripheral)")
+        logger.debug("removing active peripheral \(peripheral)")
         if let index = activePeripherals.firstIndex(where: { $0.identifier == peripheral.identifier }) {
             activePeripherals.remove(at: index)
         }
@@ -168,8 +170,8 @@ class BTDevicesController: NSObject, ObservableObject {
     
     func disconnectKnownDevices() {
         
-        print("Disconnecting known devices")
-        print("Active peripherals : \(activePeripherals)")
+        logger.log("Disconnecting known devices")
+        logger.debug("Active peripherals : \(self.activePeripherals)")
 
         if self.centralManager.state == .poweredOn {
             self.centralManager.stopScan()
@@ -187,29 +189,30 @@ class BTDevicesController: NSObject, ObservableObject {
 }
 
 extension BTDevicesController: CBCentralManagerDelegate {
+    
     func centralManagerDidUpdateState(_ central: CBCentralManager) {
         switch central.state {
 
         case .unknown:
-            print("central.state is .unknown")
+            logger.log("central.state is .unknown")
         case .resetting:
-            print("central.state is .resetting")
+            logger.log("central.state is .resetting")
             // TO CHANGE!!
 //            serviceConnectCallback[heartRateServiceCBUUID]!(false)
         case .unsupported:
-            print("central.state is .unsupported")
+            logger.log("central.state is .unsupported")
         case .unauthorized:
-            print("central.state is .unauthorized")
+            logger.log("central.state is .unauthorized")
         case .poweredOff:
-            print("central.state is .poweredOff")
+            logger.log("central.state is .poweredOff")
             // TO CHANGE!!
 //            serviceConnectCallback[heartRateServiceCBUUID]!(false)
         case .poweredOn:
-            print("central.state is .poweredOn")
+            logger.log("central.state is .poweredOn")
             scanForDevices()
             
         @unknown default:
-            print("central.state is .default")
+            logger.log("central.state is .default")
         }
     }
     
@@ -242,12 +245,12 @@ extension BTDevicesController: CBCentralManagerDelegate {
     func connectIfKnown(peripheral: CBPeripheral) {
         
         if connectableDevices.contains(peripheral: peripheral) {
-            print("found device \(peripheral) in known devices - attempt to connect!!")
+            logger.debug("found device \(peripheral) in known devices - attempt to connect!!")
 
             knownDevices.setConnectionState(peripheral: peripheral, connectionState: .connecting)
             discoveredDevices.setConnectionState(peripheral: peripheral, connectionState: .connecting)
             let index = addActivePeripheral(peripheral: peripheral)
-            print("peripheral index = \(index)")
+            logger.debug("peripheral index = \(index)")
             activePeripherals[index].delegate = self
             centralManager.connect(activePeripherals[index])
         }
@@ -255,15 +258,14 @@ extension BTDevicesController: CBCentralManagerDelegate {
     }
 
     func connectDevice(device: BTDevice) {
-        print("attempting to connect device \(device)")
-        print("Active peripherals \(activePeripherals)")
+        logger.log("attempting to connect device")
+        logger.debug("Active peripherals \(self.activePeripherals)")
         
         connectableDevices.add(device: device)
 
-        print("Connectable devices \(connectableDevices)")
         if let index = activePeripherals.firstIndex(where: { $0.identifier == device.id }) {
             activePeripherals[index].delegate = self
-            print("connecting...")
+            logger.log("connecting...")
             centralManager.connect(activePeripherals[index])
         }
     }
@@ -277,14 +279,14 @@ extension BTDevicesController: CBCentralManagerDelegate {
         else {
             if !knownDevices.contains(peripheral: peripheral) {
                 discoveredDevices.add(peripheral: peripheral)
-                print("discoveredBTDevices = \(discoveredDevices)")
+                logger.debug("discoveredBTDevices = \(self.discoveredDevices)")
             }
         }
     }
     
     func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
 
-        print("Connected!")
+        logger.log("Connected!")
         knownDevices.add(peripheral: peripheral)
         knownDevices.write(key: knownDeviceKey)
 
@@ -300,7 +302,7 @@ extension BTDevicesController: CBCentralManagerDelegate {
             services! += [batteryServiceCBUUID]
         }
         let index = activePeripheralIndex(peripheral: peripheral)
-        print(" connected index : \(index ?? -1)")
+        logger.debug(" connected index : \(index ?? -1)")
                 
         if index != nil {
             activePeripherals[index!].discoverServices(services)
@@ -312,14 +314,14 @@ extension BTDevicesController: CBCentralManagerDelegate {
     }
     
     func centralManager(_ central: CBCentralManager, didFailToConnect peripheral: CBPeripheral, error: Error?) {
-        print("Connect failed with error \(String(describing: error))")
+        logger.error("Connect failed with error \(String(describing: error))")
         
         knownDevices.setConnectionState(peripheral: peripheral, connectionState: .disconnected)
 
     }
     
     func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
-        print("Disconnected with error \(String(describing: error))")
+        logger.error("Disconnected with error \(String(describing: error))")
         
         knownDevices.setConnectionState(peripheral: peripheral, connectionState: .disconnected)
 
@@ -342,8 +344,8 @@ extension BTDevicesController: CBPeripheralDelegate {
 
         // make sure all services registered before discovering characteristics
         for service in services {
-            print("Service for peripheral \(peripheral) : \(service)")
-            print("UUID : \(service.uuid.uuidString)  description: \(service.uuid.description)")
+            logger.debug("Service for peripheral \(peripheral) : \(service)")
+            logger.debug("UUID : \(service.uuid.uuidString)  description: \(service.uuid.description)")
             knownDevices.addService(peripheral: peripheral, service: service.uuid.uuidString)
             peripheral.discoverCharacteristics(nil, for: service)
         }
@@ -360,13 +362,13 @@ extension BTDevicesController: CBPeripheralDelegate {
         guard let characteristics = service.characteristics else { return }
         
         for characteristic in characteristics {
-            print(characteristic)
+            logger.debug("\(characteristic)")
             if characteristic.properties.contains(.read) {
-                print("\(characteristic.uuid): properties contains .read")
+                logger.debug("\(characteristic.uuid): properties contains .read")
                 peripheral.readValue(for: characteristic)
             }
             if characteristic.properties.contains(.notify) {
-                print("\(characteristic.uuid): properties contains .notify")
+                logger.debug("\(characteristic.uuid): properties contains .notify")
                 peripheral.setNotifyValue(true, for: characteristic)
             }
         }
@@ -380,20 +382,20 @@ extension BTDevicesController: CBPeripheralDelegate {
         switch characteristic.uuid {
         case bodySensorLocationCharacteristicCBUUID:
             let bodySensorLocation = bodyLocation(from: characteristic)
-            print("bodySensorLocation \(bodySensorLocation)")
+            logger.debug("bodySensorLocation \(bodySensorLocation)")
             // returnValue as String
             returnValue = bodySensorLocation
             
         case heartRateMeasurementCharacteristicCBUUID:
             bpm = heartRate(from: characteristic)
-            print("bpm = \(bpm)")
+            logger.debug("bpm = \(self.bpm)")
             // returnValue as Double
             returnValue = Double(bpm)
             
         case batteryLevelCharacteristicCBUUID:
-            print("battery level characteristic \(characteristic) for peripheral \(peripheral)")
+            logger.debug("battery level characteristic \(characteristic) for peripheral \(peripheral)")
             let batteryLevel = batteryLevel(from: characteristic)
-            print("battery level = \(batteryLevel)")
+            logger.debug("battery level = \(batteryLevel)")
             
             for service in knownDevices.services(peripheral: peripheral) {
                 if (batteryLevelCallback[service] != nil) {
@@ -405,39 +407,39 @@ extension BTDevicesController: CBPeripheralDelegate {
             returnValue = batteryLevel
  
         case firmwareRevisionStringCharacteristicCBUUID:
-            print("firmware revision characteristic \(characteristic) for peripheral \(peripheral)")
+            logger.debug("firmware revision characteristic \(characteristic) for peripheral \(peripheral)")
             knownDevices.setDeviceInfo(peripheral: peripheral, key: "Firmware Revision", value: stringCharacteristic(from: characteristic))
             knownDevices.write(key: knownDeviceKey)
             
         case hardwareRevisionStringCharacteristicCBUUID:
-            print("hardware revision characteristic \(characteristic) for peripheral \(peripheral)")
+            logger.debug("hardware revision characteristic \(characteristic) for peripheral \(peripheral)")
             knownDevices.setDeviceInfo(peripheral: peripheral, key: "Hardware Revision", value: stringCharacteristic(from: characteristic))
             knownDevices.write(key: knownDeviceKey)
             
         case softwareRevisionStringCharacteristicCBUUID:
-            print("software revision characteristic \(characteristic) for peripheral \(peripheral)")
+            logger.debug("software revision characteristic \(characteristic) for peripheral \(peripheral)")
             knownDevices.setDeviceInfo(peripheral: peripheral, key: "Software Revision", value: stringCharacteristic(from: characteristic))
             knownDevices.write(key: knownDeviceKey)
             
         case manufacturerNameStringCharacteristicCBUUID:
-            print("manufacturer name characteristic \(characteristic) for peripheral \(peripheral)")
+            logger.debug("manufacturer name characteristic \(characteristic) for peripheral \(peripheral)")
             knownDevices.setDeviceInfo(peripheral: peripheral, key: "Manufacturer", value: stringCharacteristic(from: characteristic))
             knownDevices.write(key: knownDeviceKey)
 
         case cyclingPowerFeatureCBUUID:
-            print("cyclingPowerFeatureCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
+            logger.debug("cyclingPowerFeatureCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
         case sensorLocationCBUUID:
-            print("sensorLocationCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
+            logger.debug("sensorLocationCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
         case cyclingPowerMeasurementCBUUID:
-            print("cyclingPowerMeasurementCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
+            logger.debug("cyclingPowerMeasurementCBUUID characteristic \(characteristic) for peripheral \(peripheral)")
             
             // return value is a dict [String: Any]
             returnValue = cyclingPower(from: characteristic)
 //            let instantaneousPower = returnValue as [String: Any]["instantaneousPower"]
-//            print("Instantaneous Power \(instantaneousPower ?? -1)")
+//            logger.debug("Instantaneous Power \(instantaneousPower ?? -1)")
             
         default:
-            print("Unhandled Characteristic: \(characteristic) for peripheral \(peripheral)")
+            logger.debug("Unhandled Characteristic: \(characteristic) for peripheral \(peripheral)")
             
         }
         
@@ -527,7 +529,7 @@ extension BTDevicesController: CBPeripheralDelegate {
             flags[flagRule.flag] = (byteArray[flagRule.byte] & flagRule.bitmap != 0)
         }
 
-        print("Cycling Power meter flags : \(flags)")
+        logger.debug("Cycling Power meter flags : \(flags)")
         
         // Unit is in watts with a resolution of 1. - Mandatory
         byteIndex = 2
@@ -613,7 +615,7 @@ extension BTDevicesController: CBPeripheralDelegate {
         }
 
         
-        print("powerMeterValues: \(powerMeterValues)")
+        logger.debug("powerMeterValues: \(powerMeterValues)")
         
         return powerMeterValues
 //        return powerMeterValues["instantaneousPower"] as! Int

@@ -108,68 +108,66 @@ struct LiveMetricsView: View {
 
                     TimelineView(.periodic(from: Date(), by: 1)) { context in
                         
-                        ScrollView {
-                            VStack {
+                        VStack {
 
-                                switch scrollPosition(scrollDate: context.date,
-                                                      scrollInterval: 2,
-                                                      scrollItems: 4) {
-                                case 0:
-                                    LiveMetricCarouselItem(
-                                        metric1: (image: distanceIcon,
-                                                  text: distanceFormatter(distance: activityData.distanceMeters)),
-                                        metric2: (image: ascentIcon,
-                                                  text: distanceFormatter(distance: activityData.totalAscent ?? 0,
-                                                                              forceMeters: true))
-                                    )
-                                        .modifier(GetHeightModifier(height: $scrollStackheight))
-
-                                        
-                                case 1:
-                                    // Speed and Average Speed
-                                    LiveMetricCarouselItem(
-                                        metric1: (image: speedIcon,
-                                                  text: speedFormatter(speed: activityData.speed ?? 0)),
-                                        metric2: (image: meanIcon,
-                                                  text: speedFormatter(speed: activityData.averageSpeed))
-                                    )
-                                        .modifier(GetHeightModifier(height: $scrollStackheight))
- 
-                                case 2:
-                                    // Power and Average Power
-                                    LiveMetricCarouselItem(
-                                        metric1: (image: powerIcon,
-                                                  text: String(activityData.watts ?? 0) + " w"),
-                                        metric2: (image: meanIcon,
-                                                  text: String(activityData.averagePower ) + " w")
-                                    )
+                            switch scrollPosition(scrollDate: context.date,
+                                                  scrollInterval: 2,
+                                                  scrollItems: 4) {
+                            case 0:
+                                LiveMetricCarouselItem(
+                                    metric1: (image: distanceIcon,
+                                              text: distanceFormatter(distance: activityData.distanceMeters)),
+                                    metric2: (image: ascentIcon,
+                                              text: distanceFormatter(distance: activityData.totalAscent ?? 0,
+                                                                          forceMeters: true))
+                                )
                                     .modifier(GetHeightModifier(height: $scrollStackheight))
 
-                                        
-                                case 3:
-                                    // Cadence and Average Cadence
-                                    LiveMetricCarouselItem(
-                                        metric1: (image: cadenceIcon,
-                                                  text: String(activityData.cadence ?? 0)),
-                                        metric2: (image: meanIcon,
-                                                  text: String(activityData.averageCadence))
-                                    )
-                                    .modifier(GetHeightModifier(height: $scrollStackheight))
-                                       
-                                default:
-                                    LiveMetricCarouselItem(
-                                        metric1: (image: distanceIcon,
-                                                  text: distanceFormatter(distance: activityData.distanceMeters)),
-                                        metric2: (image: ascentIcon,
-                                                  text: distanceFormatter(distance: activityData.totalAscent ?? 0,
-                                                                              forceMeters: true))
-                                    )
-                                        .modifier(GetHeightModifier(height: $scrollStackheight))
-                                        
-                                }
                                     
-                             }
-                            
+                            case 1:
+                                // Speed and Average Speed
+                                LiveMetricCarouselItem(
+                                    metric1: (image: speedIcon,
+                                              text: speedFormatter(speed: activityData.speed ?? 0)),
+                                    metric2: (image: meanIcon,
+                                              text: speedFormatter(speed: activityData.averageSpeed))
+                                )
+                                    .modifier(GetHeightModifier(height: $scrollStackheight))
+
+                            case 2:
+                                // Power and Average Power
+                                LiveMetricCarouselItem(
+                                    metric1: (image: powerIcon,
+                                              text: String(activityData.watts ?? 0) + " w"),
+                                    metric2: (image: meanIcon,
+                                              text: String(activityData.averagePower ) + " w")
+                                )
+                                .modifier(GetHeightModifier(height: $scrollStackheight))
+
+                                    
+                            case 3:
+                                // Cadence and Average Cadence
+                                LiveMetricCarouselItem(
+                                    metric1: (image: cadenceIcon,
+                                              text: String(activityData.cadence ?? 0)),
+                                    metric2: (image: meanIcon,
+                                              text: String(activityData.averageCadence))
+                                )
+                                .modifier(GetHeightModifier(height: $scrollStackheight))
+                                   
+                            default:
+                                LiveMetricCarouselItem(
+                                    metric1: (image: distanceIcon,
+                                              text: distanceFormatter(distance: activityData.distanceMeters)),
+                                    metric2: (image: ascentIcon,
+                                              text: distanceFormatter(distance: activityData.totalAscent ?? 0,
+                                                                          forceMeters: true))
+                                )
+                                    .modifier(GetHeightModifier(height: $scrollStackheight))
+                                    
+                            }
+                                
+
                         }
                         .frame(height: scrollStackheight)
  

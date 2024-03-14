@@ -45,7 +45,7 @@ struct LocationView: View {
                                     Image(systemName: "mappin.circle")
                                 }
                                 .foregroundColor(Color.yellow)
-                                .font(.title)
+                                .font(.title2)
                                 .frame(width: 40, height: 40)
                                 .background(Color.clear)
                                 .clipShape(Circle())
@@ -117,9 +117,16 @@ struct LocationView: View {
                             }
                         }
                         .padding(.horizontal)
-                        .navigationBarTitleDisplayMode(.large)
                         .navigationTitle {
-                            Text("Location").foregroundColor(.green)
+                            HStack {
+                                Image(systemName: "location.circle")
+                                    .foregroundColor(Color.black)
+                                    .background(Color.blue)
+                                    .clipShape(Circle())
+
+                                Text("Location")
+                                    .foregroundColor(Color.blue)
+                            }
                         }
                         
                         
@@ -137,7 +144,7 @@ struct LocationView: View {
                                             Image(systemName: "mappin.slash.circle")
                                         }
                                         .foregroundColor(Color.blue)
-                                        .font(.title)
+                                        .font(.title2)
                                         .frame(width: 40, height: 40)
                                         .background(Color.clear)
                                         .clipShape(Circle())
@@ -165,7 +172,7 @@ struct LocationView: View {
 
                                                                          Image(systemName: "map.circle")
                                                                              .foregroundColor(Color.blue)
-                                                                             .font(.title)
+                                                                             .font(.title2)
                                                                              .frame(width: 40, height: 40)
                                                                      }
                                                                      

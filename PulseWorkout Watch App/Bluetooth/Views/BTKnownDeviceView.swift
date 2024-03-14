@@ -26,7 +26,7 @@ struct BTKnownDeviceView: View {
                 
             }
             .foregroundColor(Color.blue)
-            .font(.title)
+            .font(.title2)
             .frame(width: 40, height: 40)
             .background(Color.clear)
             .clipShape(Circle())

@@ -11,6 +11,17 @@ struct ActivityListItemView: View {
     
     @State var activityRecord: ActivityRecord
     
+    func stravaColour(stravaSaveStatus: Int) -> Color {
+        switch stravaSaveStatus {
+        case StravaSaveStatus.saved.rawValue:
+            return Color.green
+        case StravaSaveStatus.toSave.rawValue:
+            return Color.orange
+        default:
+            return Color.clear
+        }
+    }
+    
     var body: some View {
         VStack {
 
@@ -22,14 +33,9 @@ struct ActivityListItemView: View {
                     if activityRecord.toSave {
                         Image(systemName: "icloud.slash.fill").foregroundColor(.red)
                     }
-                    switch activityRecord.stravaSaveStatus {
-                    case StravaSaveStatus.saved.rawValue:
-                        Image(systemName: "paperplane.circle").foregroundColor(.green)
-                    case StravaSaveStatus.saved.rawValue:
-                        Image(systemName: "paperplane.circle").foregroundColor(.orange)
-                    default:
-                        Image(systemName: "paperplane.circle").foregroundColor(.gray)
-                    }
+                    Image(systemName: "paperplane.circle").foregroundColor(
+                        stravaColour(stravaSaveStatus: activityRecord.stravaSaveStatus))
+
                 }
 
                 

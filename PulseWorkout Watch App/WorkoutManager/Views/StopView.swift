@@ -25,7 +25,7 @@ struct StopView: View {
                 }
                 .foregroundColor(Color.blue)
                 .frame(width: 40, height: 40)
-                .font(.title)
+                .font(.title2)
                 .background(Color.clear)
                 .clipShape(Circle())
                 
@@ -43,7 +43,7 @@ struct StopView: View {
                         }
                         .foregroundColor(Color.yellow)
                         .frame(width: 40, height: 40)
-                        .font(.title)
+                        .font(.title2)
                         .background(Color.clear)
                         .clipShape(Circle())
                         
@@ -61,7 +61,7 @@ struct StopView: View {
                             VStack{
                                 Image(systemName: "stop.circle")
                                     .foregroundColor(Color.red)
-                                    .font(.title)
+                                    .font(.title2)
                                     .frame(width: 40, height: 40)
                                     .background(Color.clear)
                                     .clipShape(Circle())

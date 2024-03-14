@@ -56,7 +56,11 @@ struct BTDevice: Identifiable, Codable {
     }
 }
 
-struct DeviceList {
+struct DeviceList: CustomStringConvertible {
+    var description: String {
+        return "Device List description <HERE>"
+    }
+    
     var devices: [BTDevice]
     var serviceConnectCallback: [CBUUID: (Bool) -> Void] = [:]
 

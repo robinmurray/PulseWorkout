@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreBluetooth
+import os
 
 
 
@@ -32,22 +33,26 @@ extension BTPeripheralManager: CBPeripheralManagerDelegate {
 
     
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
-    switch peripheral.state {
-        case .unknown:
-            print("Bluetooth Peripheral Device is UNKNOWN")
-        case .unsupported:
-            print("Bluetooth Peripheral Device is UNSUPPORTED")
-        case .unauthorized:
-            print("Bluetooth Peripheral Device is UNAUTHORIZED")
-        case .resetting:
-            print("Bluetooth Peripheral Device is RESETTING")
-        case .poweredOff:
-            print("Bluetooth Peripheral Device is POWERED OFF")
-        case .poweredOn:
-            print("Bluetooth Peripheral Device is POWERED ON")
-//            addServices()
-        @unknown default:
-            print("Bluetooth Peripheral Device Unknown State")
+        
+        let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                            category: "BTPeripheralManager")
+
+        switch peripheral.state {
+            case .unknown:
+                logger.log("Bluetooth Peripheral Device is UNKNOWN")
+            case .unsupported:
+                logger.log("Bluetooth Peripheral Device is UNSUPPORTED")
+            case .unauthorized:
+                logger.log("Bluetooth Peripheral Device is UNAUTHORIZED")
+            case .resetting:
+                logger.log("Bluetooth Peripheral Device is RESETTING")
+            case .poweredOff:
+                logger.log("Bluetooth Peripheral Device is POWERED OFF")
+            case .poweredOn:
+                logger.log("Bluetooth Peripheral Device is POWERED ON")
+    //            addServices()
+            @unknown default:
+                logger.log("Bluetooth Peripheral Device Unknown State")
         }
     }
     

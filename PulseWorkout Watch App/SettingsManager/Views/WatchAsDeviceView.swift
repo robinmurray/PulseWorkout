@@ -29,8 +29,11 @@ struct WatchAsDeviceView: View {
                     .font(.footnote).foregroundColor(.gray)
 
             }
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle {
+                Label("Watch as Sensor", systemImage: "applewatch.radiowaves.left.and.right")
+                    .foregroundColor(.mint)
+            }
+
             .onDisappear(perform: settingsManager.save)
         }
         

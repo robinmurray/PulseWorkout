@@ -27,7 +27,7 @@ struct BTStartDiscoverView: View {
                 .listStyle(.carousel)
 
                 NavigationLink(destination: BTDeviceDiscoverView(bluetoothManager: bluetoothManager)) {
-                    Text("Discover Devices")
+                    Text("Discover Sensors")
                     
                 }
                 .buttonStyle(.borderedProminent)
@@ -35,8 +35,11 @@ struct BTStartDiscoverView: View {
                 .disabled(bluetoothManager.centralManager.state != .poweredOn)
 
             }
-            .navigationTitle("Sensors")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle {
+                Label("Sensors", systemImage: "badge.plus.radiowaves.right")
+                    .foregroundColor(.blue)
+            }
+
         }
 
         }

@@ -35,7 +35,6 @@ struct ProfileListItemView: View {
      true: AlarmStyling(colour: Color.orange)]
     
     func startWorkout() {
-        print("ProfileListItemView starting workout with profile \(profile.name)")
         liveActivityManager.startWorkout(activityProfile: profile)
     }
     
@@ -57,7 +56,7 @@ struct ProfileListItemView: View {
                             VStack{
                                 Image(systemName: "pencil.circle")
                                     .foregroundColor(Color.green)
-                                    .font(.title)
+                                    .font(.title2)
                                     .frame(width: 40, height: 40)
                                     .background(Color.clear)
                                     .clipShape(Circle())
@@ -97,7 +96,7 @@ struct ProfileListItemView: View {
                             VStack{
                                 Image(systemName: "play.circle")
                                     .foregroundColor(Color.green)
-                                    .font(.title)
+                                    .font(.title2)
                                     .frame(width: 40, height: 40)
                                     .background(Color.clear)
                                     .clipShape(Circle())

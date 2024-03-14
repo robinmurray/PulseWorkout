@@ -7,6 +7,7 @@
 
 import Foundation
 import CoreLocation
+import os
 
 
 
@@ -52,6 +53,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var autoPauseStart: Date?
     
     let GeoLocationAccuracy: Double = 10
+    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                        category: "locationManager")
     
     
     init(settingsManager: SettingsManager) {
@@ -124,22 +127,22 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
             switch manager.authorizationStatus {
             case .notDetermined:
-                print("When user did not yet determine")
+                logger.debug("When user did not yet determine")
                 authStatusOk = false
             case .restricted:
-                print("Restricted by parental control")
+                logger.debug("Restricted by parental control")
                 authStatusOk = false
             case .denied:
-                print("When user select option Dont't Allow")
+                logger.debug("When user select option Dont't Allow")
                 authStatusOk = false
             case .authorizedWhenInUse:
-                print("When user select option Allow While Using App or Allow Once")
+                logger.debug("When user select option Allow While Using App or Allow Once")
                 authStatusOk = false
             case .authorizedAlways:
-                print("When user select option always")
+                logger.debug("When user select option always")
                 authStatusOk = true
             @unknown default:
-                print("default")
+                logger.debug("default")
                 authStatusOk = false
             }
         }
@@ -147,10 +150,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     /// Start location services with background updates switched on.
     /// Use this for location service for workouts when background app updating is needed.
-    func startBGLocationServices() {
+    func startBGLocationServices(liveActityRecord: ActivityRecord) {
         
-        print("starting BG location services")
-    
+        logger.debug("starting BG location services")
+
+        self.liveActivityRecord = liveActityRecord
         autoPauseStart = nil
         isPaused = false
         if liveActivityRecord != nil {
@@ -193,16 +197,19 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     func stopLocationSession() {
         
         if isPaused && (autoPauseStart != nil) {
-            liveActivityRecord!.increment(pausedTime: Date().timeIntervalSince(autoPauseStart!))
-
+            if liveActivityRecord != nil {
+                liveActivityRecord!.increment(pausedTime: Date().timeIntervalSince(autoPauseStart!))
+            }
         }
-        stopBGLocationServices()
+
         autoPauseStart = nil
         isPaused = false
         if liveActivityRecord != nil {
             liveActivityRecord!.isPaused = false
         }
-
+        stopBGLocationServices()
+        
+        
     }
     
     
@@ -216,6 +223,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
 
             resetLocationData()
         }
+        liveActivityRecord = nil
 
     }
 
@@ -275,7 +283,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         _ manager: CLLocationManager,
         didUpdateLocations locations: [CLLocation]
     ) {
-        print("Update location \(locations)")
+        logger.debug("Update location \(locations)")
         // Handle location update
         location = locations.last
         if location != nil {
@@ -383,11 +391,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         _ manager: CLLocationManager,
         didFailWithError error: Error
     ) {
-        print("Failed to get user location with error \(error)")
+        logger.error("Failed to get user location with error \(error)")
         // Handle failure to get a user’s location
         
         if error._code == CLError.Code.locationUnknown.rawValue {
-            print("Location unknown - retrying")
+            logger.error("Location unknown - retrying")
         }
 
     }
@@ -450,7 +458,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     func pinnedLocationCompletion(placemark: CLPlacemark?) {
         if placemark != nil {
-            print("Setting pinned place name")
+            logger.debug("Setting pinned place name")
             pinnedPlaceName = placemark?.name
             UserDefaults().set( pinnedPlaceName, forKey: "pinnedLocationPlaceName")
         } else { setDeferredGetPinnedLocation() }

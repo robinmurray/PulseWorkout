@@ -22,49 +22,46 @@ struct SettingsView: View {
                     destination: GeneralSettingsView(settingsManager: settingsManager)) {
                         HStack {
                             Label("General", systemImage: "folder")
+                                .foregroundColor(.white)
                             Spacer()
                         }
                         
                     }
- //                   .buttonStyle(.borderedProminent)
- //               .tint(Color.blue)
 
                 NavigationLink(
                     destination: BTContentView(bluetoothManager: bluetoothManager)) {
                         HStack {
                             Label("Sensors", systemImage: "badge.plus.radiowaves.right")
+                                .foregroundColor(.blue)
                             Spacer()
                         }
                     }
- //                   .buttonStyle(.borderedProminent)
- //               .tint(Color.blue)
 
                 NavigationLink(
                     destination: WatchAsDeviceView(settingsManager: settingsManager)) {
                         HStack {
                             Label("Watch as Sensor", systemImage: "applewatch.radiowaves.left.and.right")
+                                .foregroundColor(.mint)
                             Spacer()
                         }
 
                 }
- //               .buttonStyle(.borderedProminent)
- //               .tint(Color.blue)
-
 
                 NavigationLink(
                     destination: CloudConnectionsView(settingsManager: settingsManager)) {
                         HStack {
                             Label("Cloud Connections", systemImage: "cloud")
+                                .foregroundColor(.gray)
                             Spacer()
                         }
                     }
-//                    .buttonStyle(.borderedProminent)
-//                .tint(Color.blue)
-
 
             }
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle {
+                Label("Settings", systemImage: "gear")
+                    .foregroundColor(.gray)
+            }
+
         }
 
         }

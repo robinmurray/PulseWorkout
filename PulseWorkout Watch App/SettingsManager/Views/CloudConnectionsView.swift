@@ -38,8 +38,10 @@ struct CloudConnectionsView: View {
                     .font(.footnote).foregroundColor(.gray)
 
             }
-            .navigationTitle("Settings")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle {
+                Label("Cloud Connections", systemImage: "cloud")
+                    .foregroundColor(.gray)
+            }
             .onDisappear(perform: settingsManager.save)
         }
         

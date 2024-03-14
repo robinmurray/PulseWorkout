@@ -16,205 +16,94 @@ struct TopMenuView: View {
     @ObservedObject var dataCache: DataCache
 
            
-    @State var navigateToNowPlayingView: Bool = false
-    @State var navigateToLocationView: Bool = false
-    @State var navigateToHistoryView: Bool = false
-    @State var navigateToSettingsView: Bool = false
+//    @State var navigateToNowPlayingView: Bool = false
+//    @State var navigateToLocationView: Bool = false
+//    @State var navigateToHistoryView: Bool = false
+//    @State var navigateToSettingsView: Bool = false
 
-    @State var selectedOption: Int = 0
+//    @State var selectedOption: Int = 0
     
     var body: some View {
-        /*
-        NavigationSplitView {
-            
-            VStack {
-                
-                HStack {
-                    Button {
-                        navigateTo = 0
-                    } label: {
-                        Image(systemName: "figure.outdoor.cycle")
-                    }
-                    .foregroundColor(Color.black)
-                    .font(.title)
-                    .frame(width: 60, height: 60)
-                    .background(Color.green)
-                    .clipShape(Circle())
-                    .buttonStyle(PlainButtonStyle())
-                    .padding([.bottom], 20)
-                    
-                    
-                    Button {
-                        navigateTo = 1
-                    } label: {
-                        Image(systemName: "location.circle")
-                    }
-                    .foregroundColor(Color.black)
-                    .font(.title)
-                    .frame(width: 60, height: 60)
-                    .background(Color.blue)
-                    .clipShape(Circle())
-                    .buttonStyle(PlainButtonStyle())
-                    .padding([.bottom], 20)
-                }
-                
-                
-                HStack {
-                    
-                    Button {
-                        navigateTo = 2
-                    } label: {
-                        Image(systemName: "book.circle")
-                    }
-                    .foregroundColor(Color.black)
-                    .font(.title)
-                    .frame(width: 60, height: 60)
-                    .background(Color.yellow)
-                    .clipShape(Circle())
-                    .buttonStyle(PlainButtonStyle())
-                    .padding([.bottom], 40)
-                    
-                    Button {
-                        navigateToSettingsView = true
-                    } label: {
-                        Image(systemName: "gear")
-                    }
-                    .foregroundColor(Color.black)
-                    .font(.title)
-                    .frame(width: 60, height: 60)
-                    .background(Color.gray)
-                    .clipShape(Circle())
-                    .buttonStyle(PlainButtonStyle())
-                    .padding([.bottom], 40)
-                }
-                
-            }
-        } detail : {
-            
-            if navigateTo == 0 {StartView(liveActivityManager: liveActivityManager,
-                                         profileManager: profileManager,
-                                         dataCache: dataCache)}
-        }
-*/
 
-        VStack {
-            
-            Spacer()
+        NavigationStack {
 
-            HStack {
-                Spacer()
+            ScrollView {
                 
-                NavigationStack {
-                    VStack {
-                        Button {
-                            navigateToHistoryView = true
-                        } label: {
-                            VStack {
-                                Image(systemName: "book.circle")
-                                    .foregroundColor(Color.black)
-                                    .font(.title)
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.orange)
-                                    .clipShape(Circle())
-                                Text("History")
-                                    .foregroundColor(Color.orange)
-                            }
-
+                VStack {
+                    
+                    NavigationLink(
+                        destination: ActivityHistoryView(dataCache: dataCache)) {
+                        HStack {
+//                               Label("History", systemImage: "book.circle")
+//                                    .foregroundColor(Color.yellow)
+                            Image(systemName: "book.circle")
+                                .foregroundColor(Color.black)
+                                .font(.title2)
+                                .background(Color.yellow)
+                                .clipShape(Circle())
+                            Text("History")
+                                .foregroundColor(Color.yellow)
+                            
+                            Spacer()
                         }
-                        .buttonStyle(PlainButtonStyle())
-
                     }
 
-                }
-                .navigationDestination(isPresented: $navigateToHistoryView) {
-                    ActivityHistoryView(dataCache: dataCache)
-                }
-                
-                Spacer()
-                
-                NavigationStack {
-                    Button {
-                        navigateToLocationView = true
-                    } label: {
-                        VStack {
+                    NavigationLink(
+                        destination: LocationView(locationManager: liveActivityManager.locationManager)) {
+                        HStack {
                             Image(systemName: "location.circle")
                                 .foregroundColor(Color.black)
-                                .font(.title)
-                                .frame(width: 60, height: 60)
+                                .font(.title2)
                                 .background(Color.blue)
                                 .clipShape(Circle())
-                            
+
                             Text("Location")
                                 .foregroundColor(Color.blue)
-                            
+
+                            Spacer()
+
                         }
-                        
                     }
-                    .buttonStyle(PlainButtonStyle())
-                }
-                .navigationDestination(isPresented: $navigateToLocationView) {
-                    LocationView(locationManager: liveActivityManager.locationManager)
-                }
-                Spacer()
-            }
-            
-            Spacer()
-            
-            HStack {
-                Spacer()
-                NavigationStack {
-                    Button {
-                        navigateToNowPlayingView = true
-                    } label: {
-                        VStack {
+
+                    NavigationLink(
+                        destination: NowPlayingView()) {
+                        HStack {
                             Image(systemName: "music.note.list")
                                 .foregroundColor(Color.black)
-                                .font(.title)
-                                .frame(width: 60, height: 60)
+                                .font(.title2)
                                 .background(Color.red)
                                 .clipShape(Circle())
+
                             Text("Music")
                                 .foregroundColor(Color.red)
-                        }
-                        
-                    }
-                    .buttonStyle(PlainButtonStyle())
-                }
-                .navigationDestination(isPresented: $navigateToNowPlayingView) {
-                    NowPlayingView()
-                }
 
-                Spacer()
-                
-                NavigationStack {
-                    Button {
-                        navigateToSettingsView = true
-                    } label: {
-                        VStack {
+                            Spacer()
+
+                        }
+                    }
+                    
+                    NavigationLink(
+                        destination: SettingsView(bluetoothManager: liveActivityManager.bluetoothManager!,
+                                                  settingsManager: liveActivityManager.settingsManager)) {
+                        HStack {
                             Image(systemName: "gear")
                                 .foregroundColor(Color.black)
-                                .font(.title)
-                                .frame(width: 60, height: 60)
+                                .font(.title2)
                                 .background(Color.gray)
                                 .clipShape(Circle())
+                            
                             Text("Settings")
                                 .foregroundColor(Color.gray)
+                                
+                            Spacer()
+                                
                         }
-                        
                     }
-                    .buttonStyle(PlainButtonStyle())
                 }
-                .navigationDestination(isPresented: $navigateToSettingsView) {
-                    SettingsView(bluetoothManager: liveActivityManager.bluetoothManager!,
-                                 settingsManager: liveActivityManager.settingsManager)
-                }
-                
-                Spacer()
             }
-
-            Spacer()
         }
     }
+
 }
 
 struct TopMenuView_Previews: PreviewProvider {

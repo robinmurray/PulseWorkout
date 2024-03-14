@@ -30,8 +30,10 @@ struct BTDeviceDiscoverView: View {
             }
             
         }
-        .navigationTitle("Back")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle {
+            Label("Discover Sensors", systemImage: "badge.plus.radiowaves.right")
+                .foregroundColor(.blue)
+        }
         .onAppear {
             bluetoothManager.discoverDevices()
         }

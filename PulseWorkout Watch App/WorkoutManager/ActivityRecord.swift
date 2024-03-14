@@ -8,7 +8,7 @@
 import Foundation
 import Gzip
 import CloudKit
-
+import os
 
 enum StravaSaveStatus: Int {
     case dontSave = 0
@@ -53,6 +53,9 @@ class ActivityRecord: NSObject, Identifiable, Codable {
     var isPaused: Bool = false
 
     private var settingsManager: SettingsManager?
+    
+    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                        category: "activityRecord")
     
     // Create new activity record - create recordID and recordName
     init(settingsManager: SettingsManager) {
@@ -280,7 +283,7 @@ extension ActivityRecord {
     func addTrackPoint(trackPointTime: Date = Date()) {
 
         guard let SM = settingsManager else {
-            print("Settings manager not set")
+            logger.error("Settings manager not set")
             return
         }
         
@@ -347,11 +350,11 @@ extension ActivityRecord {
         guard let gzFile = tcxFileName else { return false }
         guard let gzURL = CacheURL(fileName: gzFile) else { return false }
         
-        print("testing file at \(gzURL.path)")
+        logger.debug("testing file at \(gzURL.path)")
         if FileManager.default.fileExists(atPath: gzURL.path) {
             return true
         }
-        print("file not found!")
+        logger.debug("file not found!")
         
         do {
 
@@ -363,7 +366,7 @@ extension ActivityRecord {
         }
         catch {
 //            error as any Error
-            print("error \(error)")
+            logger.error("error \(error)")
             return false
         }
 
@@ -376,9 +379,9 @@ extension ActivityRecord {
 
         do {
             try FileManager.default.removeItem(at: tURL)
-                print("tcx has been deleted")
+                logger.debug("tcx has been deleted")
         } catch {
-            print(error)
+            logger.error("error \(error)")
         }
     }
     
@@ -429,7 +432,7 @@ extension ActivityRecord {
 
         
         if saveTrackRecord() {
-            print("creating asset!")
+            logger.debug("creating asset!")
             guard let tFile = tcxFileName else { return activityRecord }
             guard let tURL = CacheURL(fileName: tFile) else { return activityRecord }
             activityRecord["tcx"] = CKAsset(fileURL: tURL)

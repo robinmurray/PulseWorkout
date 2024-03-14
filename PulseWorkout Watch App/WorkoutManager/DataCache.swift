@@ -7,6 +7,7 @@
 
 import Foundation
 import CloudKit
+import os
 
 func getCacheDirectory() -> URL? {
 
@@ -55,6 +56,8 @@ class DataCache: NSObject, Codable, ObservableObject {
        
     let cacheSize = 50
     let cacheFile = "activityCache.act"
+    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                        category: "dataCache")
     private var activities: [ActivityRecord] = []
     private var refreshList: [ActivityRecord] = []
     private var synchTimer: Timer?
@@ -77,7 +80,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             do {
                 try await createCKZoneIfNeeded()
             } catch {
-                print("error \(error)")
+                logger.error("error \(error)")
             }
 
         }
@@ -90,10 +93,10 @@ class DataCache: NSObject, Codable, ObservableObject {
             if !dirty() {
                 refresh()
             }
+            else {
+                startSynchTimer()
+            }
         }
-        
-        synchTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(synch), userInfo: nil, repeats: true)
-        synchTimer!.tolerance = 5
 
     }
     
@@ -103,7 +106,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             return
         }
 
-        print("creating zone")
+        logger.log("creating zone")
         let newZone = CKRecordZone(zoneID: zoneID)
         _ = try await database.modifyRecordZones(saving: [newZone], deleting: [])
 
@@ -131,23 +134,27 @@ class DataCache: NSObject, Codable, ObservableObject {
         _ = write()
         
         updateUI()
+        
+        startSynchTimer()
 
     }
     
     func delete(recordID: CKRecord.ID) {
                
         guard let index = activities.firstIndex(where: { $0.recordName == recordID.recordName }) else {
-            print("DELETION not Found!! ")
+            logger.log("DELETION not Found!! ")
             return
         }
 
         activities[index].toDelete = true
         activities[index].deleteTrackRecord()
         
-        print("DELETED OK :\(index) \(recordID.recordName)")
+        logger.debug("DELETED OK :\(index) \(recordID.recordName)")
         _ = write()
         
         updateUI()
+        
+        startSynchTimer()
         
     }
     
@@ -212,7 +219,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             activities = []
             
             for activity in JSONData.activities {
-                print("activity \(activity.recordName ?? "xxx")  toBeSaved status \(activity.toSave) -- toDelete status \(activity.toDelete)")
+                logger.log("activity \(activity.recordName ?? "xxx")  toBeSaved status \(activity.toSave) -- toDelete status \(activity.toDelete)")
                 // create recordID from recordName as recordID not serialised to JSON
 //                activity.recordID = CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
                 activity.recordID = CKRecord.ID(recordName: activity.recordName)
@@ -225,7 +232,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             return true
         }
         catch {
-            print("error:\(error)")
+            logger.error("error:\(error)")
             return false
         }
     }
@@ -236,12 +243,12 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         guard let cacheURL = CacheURL(fileName: cacheFile) else { return false }
         
-        print("Writing cache to JSON file")
-        print("Activities \(activities)")
+        logger.log("Writing cache to JSON file")
+        logger.debug("Activities \(self.activities)")
         do {
             let data = try JSONEncoder().encode(self)
 //            let jsonString = String(data: data, encoding: .utf8)
-//            print("JSON : \(String(describing: jsonString))")
+//            logger.log("JSON : \(String(describing: jsonString))")
             do {
                 try data.write(to: cacheURL)
                 
@@ -250,12 +257,12 @@ class DataCache: NSObject, Codable, ObservableObject {
                 return true
             }
             catch {
-                print("error \(error)")
+                logger.error("error \(error)")
                 return false
             }
 
         } catch {
-            print("Error enconding cache")
+            logger.error("Error enconding cache")
             return false
         }
 
@@ -286,14 +293,14 @@ class DataCache: NSObject, Codable, ObservableObject {
                 let myRecord = ActivityRecord(fromCKRecord: record)
 
                 DispatchQueue.main.async {
-                    print("Adding to cache : \(myRecord)")
+                    self.logger.debug("Adding to cache : \(myRecord)")
                     self.refreshList.append(myRecord)
                 }
                 break
                 
             case .failure(let error):
                 // TODO: Handle per-record failure, perhaps retry fetching it manually in case an asset failed to download or something like that.
-                print( "Fetch failed \(String(describing: error))")
+                self.logger.error( "Fetch failed \(String(describing: error))")
                 
                 break
             }
@@ -305,7 +312,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             case .success:
 
                 for record in self.refreshList {
-                    print( record.description() )
+                    self.logger.debug( "\(record.description())" )
                 }
                 
                 // copy temporary array to main array and write to local cache
@@ -330,13 +337,13 @@ class DataCache: NSObject, Codable, ObservableObject {
                     CKError.zoneBusy:
 //                    CKError.notAuthenticated: //REMOVE!!
                     
-                    print("temporary refresh error - set up retry")
+                    self.logger.log("temporary refresh error - set up retry")
                         self.startDeferredRefresh()
                     
                 default:
-                    print("permanent refresh error - not retrying")
+                    self.logger.error("permanent refresh error - not retrying")
                 }
-                print( "Fetch failed \(String(describing: error))")
+                self.logger.error( "Fetch failed \(String(describing: error))")
                 break
             }
 
@@ -355,16 +362,16 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     func CKDelete(recordID: CKRecord.ID) {
         
-        print("deleting \(recordID)")
+        self.logger.log("deleting \(recordID)")
         
         database.delete(withRecordID: recordID) { (ckRecordID, error) in
             
             if let error = error {
-                print(error.localizedDescription)
+                self.logger.error("\(error.localizedDescription)")
                 
                 switch error {
                 case CKError.unknownItem:
-                    print("item being deleted had not been saved")
+                    self.logger.debug("item being deleted had not been saved")
                     self.remove(recordID: recordID)
                     return
                 default:
@@ -377,7 +384,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                 return
             }
             
-            print("deleted and removed \(id)")
+            self.logger.log("deleted and removed \(id)")
             self.remove(recordID: recordID)
             
         }
@@ -386,7 +393,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     func CKSave(activityRecord: ActivityRecord) {
 
         let CKRecord = activityRecord.asCKRecord()
-        print("saving \(activityRecord.recordID!)")
+        logger.log("saving \(activityRecord.recordID!)")
 
         database.save(CKRecord) { record, error in
             DispatchQueue.main.async {
@@ -398,25 +405,25 @@ class DataCache: NSObject, Codable, ObservableObject {
                         CKError.serviceUnavailable,
                         CKError.zoneBusy:
                         
-                        print("temporary error")
+                        self.logger.log("temporary error")
                     
                     case CKError.serverRecordChanged:
                         // Record alreday exists- shouldn't happen, but!
-                        print("record already exists!")
+                        self.logger.error("record already exists!")
                         activityRecord.deleteTrackRecord()
                         activityRecord.toSave = false
                         
                         _ = self.write()
                         
                     default:
-                        print("permanent error")
+                        self.logger.error("permanent error")
 
                     }
                     
-                    print("\(error)")
+                    self.logger.error("\(error)")
 
                 } else {
-                    print("Saved")
+                    self.logger.log("Saved")
 
                     activityRecord.deleteTrackRecord()
                     activityRecord.toSave = false
@@ -427,10 +434,33 @@ class DataCache: NSObject, Codable, ObservableObject {
         }
         
     }
- 
+
+    
+    func startSynchTimer() {
+        if self.synchTimer == nil {
+            self.synchTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(synch), userInfo: nil, repeats: true)
+            self.synchTimer!.tolerance = 5
+            logger.log("Starting synch timer")
+        }
+    }
+    
+    func stopSynchTimer() {
+        
+        DispatchQueue.main.async {
+            if self.synchTimer != nil {
+                self.synchTimer!.invalidate()
+                self.synchTimer = nil
+                self.logger.log("Stopping synch timer")
+            }
+        }
+    }
+    
     @objc func synch() {
         
-        if !dirty() { return }
+        if !dirty() {
+            stopSynchTimer()
+            return
+        }
         
         if toBeDeleted().count > 0 {
             CKDelete(recordID: toBeDeleted()[0].recordID)

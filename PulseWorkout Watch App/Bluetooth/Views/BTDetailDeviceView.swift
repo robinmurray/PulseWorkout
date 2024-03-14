@@ -28,7 +28,7 @@ struct BTDetailDeviceView: View {
         
         Form {
                 
-            Section(header: Text("Device")) {
+            Section(header: Text("Sensor")) {
                 HStack {
                     Text(btDevice.name)
                         .fontWeight(.bold)
@@ -44,10 +44,12 @@ struct BTDetailDeviceView: View {
                 }
             }
             .foregroundStyle(.blue)
-            .navigationTitle("Back")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle{
+                Label(btDevice.name, systemImage: "badge.plus.radiowaves.right")
+                    .foregroundColor(.blue)
+            }
 
-            Section(header: Text("Device Information")) {
+            Section(header: Text("Sensor Information")) {
                 HStack {
                     List {
                         ForEach((btDevice.deviceInfo).sorted(by: >), id: \.key) { key, value in
@@ -78,7 +80,7 @@ struct BTDetailDeviceView: View {
 
             Section() {
                 HStack {
-                    Text("Forget Device")
+                    Text("Forget Sensor")
                         .foregroundColor(Color.yellow)
                     
                     Spacer()
@@ -87,7 +89,7 @@ struct BTDetailDeviceView: View {
                         Image(systemName: "trash.circle")
                     }
                     .foregroundColor(Color.yellow)
-                    .font(.title)
+                    .font(.title2)
                     .frame(width: 40, height: 40)
                     .background(Color.clear)
                     .clipShape(Circle())

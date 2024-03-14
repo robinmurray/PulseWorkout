@@ -142,8 +142,7 @@ struct GeneralSettingsView: View {
                         .foregroundColor(Color.blue)
                         .fontWeight(.bold)
                         .listStyle(.carousel)
-                        .onChange(of: settingsManager.hapticType,
-                                  perform: {newValue in WKInterfaceDevice.current().play(settingsManager.hapticType)} )
+                        .onChange(of: settingsManager.hapticType) { oldValue, newValue in WKInterfaceDevice.current().play(settingsManager.hapticType)}
                         
                         Spacer()
                     }
@@ -172,7 +171,10 @@ struct GeneralSettingsView: View {
 
 
             }
-            .navigationTitle("Settings")
+            .navigationTitle{
+                Label("General", systemImage: "folder")
+                    .foregroundColor(.white)
+            }
             .navigationBarTitleDisplayMode(.large)
             .onDisappear(perform: settingsManager.save)
 

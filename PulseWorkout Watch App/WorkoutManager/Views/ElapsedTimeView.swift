@@ -24,7 +24,7 @@ struct ElapsedTimeView: View {
 class ElapsedTimeFormatter: Formatter {
     let componentsFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.minute, .second]
+        formatter.allowedUnits = [.hour, .minute, .second]
         formatter.zeroFormattingBehavior = .pad
         return formatter
     }()

@@ -15,9 +15,6 @@ struct ActivityHistoryView: View {
  
     var body: some View {
         
-
- //       VStack {
-
             NavigationStack {
                 List{
                     ForEach(dataCache.UIRecordSet) {activityRecord in
@@ -41,9 +38,16 @@ struct ActivityHistoryView: View {
 
             }
             .padding()
-            .navigationTitle("History")
-            .navigationBarTitleDisplayMode(.large)
-//        }
+            .navigationTitle {
+                HStack {
+                    Image(systemName: "book.circle")
+                        .foregroundColor(Color.black)
+                        .background(Color.yellow)
+                        .clipShape(Circle())
+                    Text("History")
+                        .foregroundColor(Color.yellow)
+                }
+            }
 
     }
 }

@@ -23,7 +23,7 @@ struct PausedView: View {
             }
             .foregroundColor(Color.blue)
             .frame(width: 40, height: 40)
-            .font(.title)
+            .font(.title2)
             .background(Color.clear)
             .clipShape(Circle())
             
@@ -42,7 +42,7 @@ struct PausedView: View {
                         }
                         .foregroundColor(Color.green)
                         .frame(width: 40, height: 40)
-                        .font(.title)
+                        .font(.title2)
                         .background(Color.clear)
                         .clipShape(Circle())
                         
@@ -58,7 +58,7 @@ struct PausedView: View {
                     }
                     .foregroundColor(Color.red)
                     .frame(width: 40, height: 40)
-                    .font(.title)
+                    .font(.title2)
                     .background(Color.clear)
                     .clipShape(Circle())
                     
