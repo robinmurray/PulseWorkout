@@ -28,10 +28,10 @@ struct ProfileListView: View {
                                     dataCache: dataCache)
             }
         }
-        .padding(.horizontal)
         .navigationBarTitleDisplayMode(.large)
         .navigationTitle {
-            Text("Profiles").foregroundColor(.green)
+            Label("Profiles", systemImage: "figure.run")
+                .foregroundColor(.orange)
         }
         .toolbar {
             ToolbarItemGroup(placement: .topBarLeading) {

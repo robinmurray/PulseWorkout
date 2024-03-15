@@ -43,8 +43,10 @@ struct NewProfileDetailView: View {
             }
 
         }
-        .navigationTitle("New Profile")
-        .navigationBarTitleDisplayMode(.large)
+        .navigationTitle {
+            Label("New Profile", systemImage: "figure.run")
+                .foregroundColor(.orange)
+        }
         .onDisappear {
             if !cancelPressed {
                 _ = profileManager.add(activityProfile: newProfile)

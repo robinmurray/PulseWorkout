@@ -6,7 +6,7 @@
 //
 
 import SwiftUI
-
+import HealthKit
 
 
 struct ProfileListItemView: View {
@@ -40,83 +40,70 @@ struct ProfileListItemView: View {
     
     var body: some View {
         VStack {
-            Text(profile.name)
-                .font(.system(size: 15))
-                .fontWeight(.bold)
-                .foregroundStyle(.yellow)
-
-  
-            HStack {
-                
-                NavigationStack {
-                    VStack {
-                        Button {
-                            navigateToDetailView = true
-                        } label: {
-                            VStack{
-                                Image(systemName: "pencil.circle")
-                                    .foregroundColor(Color.green)
-                                    .font(.title2)
-                                    .frame(width: 40, height: 40)
-                                    .background(Color.clear)
-                                    .clipShape(Circle())
-                                    .buttonStyle(PlainButtonStyle())
-                                
-                                Text("Edit")
-                                    .foregroundColor(Color.green)
-                            }
-                            
+            NavigationStack {
+                HStack {
+                    Button {
+                        navigateToDetailView = true
+                    } label: {
+                        VStack{
+                            Image(systemName: "square.and.pencil")
+                                .foregroundColor(Color.blue)
+                                .background(Color.clear)
+                                .clipShape(Circle())
+                                .buttonStyle(PlainButtonStyle())
                         }
-                        .tint(Color.green)
-                        .buttonStyle(BorderlessButtonStyle())
+                        
                     }
+                    .tint(Color.blue)
+                    .buttonStyle(BorderlessButtonStyle())
                     .navigationDestination(isPresented: $navigateToDetailView) {
                         ProfileDetailView(profileManager: profileManager,
                                           profile: self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id }) ?? 0] )
                     }
-                }
-
-                
-                 
-                Spacer().frame(maxWidth: .infinity)
-
-
-                NavigationStack {
-                    VStack {
-                        Button {
+                    
+                    
+                    Button {
+                        
+                        liveActivityManager.startWorkout(activityProfile: profile)
+                        
+                        // Set last used date on profile and save to user defaults
+                        // Do this after starting workout as may change list binding!!
+                        profileManager.update(activityProfile: profile, onlyIfChanged: false)
+                        
+                        navigateToLiveView = true
+                    } label: {
+                        HStack{
                             
-                            liveActivityManager.startWorkout(activityProfile: profile)
+                            Text(profile.name)
+//                                .font(.system(size: 15))
+//                                .fontWeight(.bold)
+                                .foregroundStyle(.orange)
                             
-                            // Set last used date on profile and save to user defaults
-                            // Do this after starting workout as may change list binding!!
-                            profileManager.update(activityProfile: profile, onlyIfChanged: false)
-
-                            navigateToLiveView = true
-                        } label: {
-                            VStack{
-                                Image(systemName: "play.circle")
-                                    .foregroundColor(Color.green)
-                                    .font(.title2)
-                                    .frame(width: 40, height: 40)
-                                    .background(Color.clear)
-                                    .clipShape(Circle())
-                                    .buttonStyle(PlainButtonStyle())
-                                
-                                Text("Start")
-                                    .foregroundColor(Color.green)
-                            }
+                            Spacer()
+                            
+                            Image(systemName: HKWorkoutActivityType( rawValue: profile.workoutTypeId )!.iconImage)
+                                .foregroundColor(Color.orange)
+ //                               .font(.title2)
+//                                .frame(width: 40, height: 40)
+//                                .background(Color.clear)
+//                                .clipShape(Circle())
+                            //                            .buttonStyle(PlainButtonStyle())
                             
                         }
-                        .tint(Color.green)
-                        .buttonStyle(BorderlessButtonStyle())
+                        
                     }
+                    .tint(Color.green)
+                    .buttonStyle(BorderlessButtonStyle())
                     .navigationDestination(isPresented: $navigateToLiveView) {
                         LiveTabView(profileName: profile.name, liveActivityManager: liveActivityManager)
                     }
                 }
+
             }
+            
         
 
+            /*
                 HStack {
                     Image(systemName:"heart.fill")
                         .foregroundColor(Color.red)
@@ -137,6 +124,8 @@ struct ProfileListItemView: View {
                         .foregroundColor(hiAlarmDisplay[profile.hiLimitAlarmActive]?.colour)
                         .font(.system(size: 15))
                 }
+            
+            */
             }
         .onAppear(perform: resetNavigationFlags)
         }

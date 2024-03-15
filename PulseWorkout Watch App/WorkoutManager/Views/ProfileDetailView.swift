@@ -26,21 +26,24 @@ struct ProfileDetailForm: View {
             )
             .font(.system(size: 15))
             .fontWeight(.bold)
-            .foregroundStyle(.yellow)
+            .foregroundStyle(.orange)
                 
         }
             
         Section(header: Text("Workout type")) {
-                
+            
             Picker("Workout Type", selection: $profile.workoutTypeId) {
                 ForEach(workoutTypes) { workoutType in
-                    Text(workoutType.name).tag(workoutType.self)
+                    Label(workoutType.name, systemImage: workoutType.iconImage).tag(workoutType.self)
                 }
             }
             .font(.headline)
             .foregroundColor(Color.blue)
             .fontWeight(.bold)
             .listStyle(.carousel)
+            .onChange(of: profile.workoutTypeId) {
+                
+            }
                 
                 
             Picker("Workout Location", selection: $profile.workoutLocationId) {
@@ -145,8 +148,10 @@ struct ProfileDetailView: View {
 
                 }
             }
-            .navigationTitle("Edit Profile")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationTitle {
+                Label("Edit Profile", systemImage: "figure.run")
+                    .foregroundColor(.orange)
+            }
             .onDisappear {
                 if deleteProfile {
                     profileManager.remove(activityProfile: profile)

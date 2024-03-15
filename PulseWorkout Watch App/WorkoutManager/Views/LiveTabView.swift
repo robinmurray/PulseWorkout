@@ -8,6 +8,7 @@
 //import Foundation
 import SwiftUI
 import WatchKit
+import HealthKit
 
 enum LiveScreenTab {
     case stop, liveMetrics, location, nowPlaying
@@ -28,7 +29,12 @@ struct LiveTabView: View {
                 
                 LiveMetricsView(liveActivityManager: liveActivityManager)
                     .tag(LiveScreenTab.liveMetrics)
-                    .navigationTitle(profileName)
+                    .navigationTitle {
+                        Label(profileName, 
+                              systemImage: HKWorkoutActivityType( rawValue: liveActivityManager.liveActivityProfile!.workoutTypeId)!.iconImage )
+                        .foregroundColor(.orange)
+                    }
+
 
                 LocationView(locationManager: liveActivityManager.locationManager)
                     .tag(LiveScreenTab.location)

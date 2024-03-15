@@ -276,6 +276,27 @@ extension HKWorkoutActivityType: Identifiable {
             return ""
         }
     }
+    
+    var iconImage: String {
+        switch self {
+        case .crossTraining:
+            return "figure.cross.training"
+        case .cycling:
+            return "figure.outdoor.cycle"
+        case .mixedCardio:
+            return "figure.run.square.stack"
+        case .paddleSports:
+            return "oar.2.crossed"
+        case .rowing:
+            return "oar.2.crossed"
+        case .running:
+            return "figure.run"
+        case .walking:
+            return "figure.walk"
+        default:
+            return "figure.run"
+        }
+    }
 }
 
 
