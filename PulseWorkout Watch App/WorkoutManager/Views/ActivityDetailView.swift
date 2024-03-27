@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import HealthKit
 
 func distanceFormatter (distance: Double, forceMeters: Bool = false) -> String {
     var unit = UnitLength.meters
@@ -72,6 +73,48 @@ struct ActivityHeaderView: View {
     }
 }
 
+struct GraphButtonView: View {
+    
+    @State var buttonColor: Color
+    @State var activityRecord: ActivityRecord
+    
+    var body: some View {
+        
+        VStack {
+            Spacer()
+
+            NavigationStack {
+                NavigationLink(destination: ChartView(activityRecord: activityRecord)) {
+                    
+                    Image(systemName: "chart.xyaxis.line")
+                        .foregroundColor(buttonColor)
+                        .font(.title2)
+                        .frame(width: 40, height: 40)
+                }
+                .buttonStyle(BorderlessButtonStyle())
+                
+                NavigationLink(destination: MapView(routeCoordinates: activityRecord.routeCoordinates(maxPoints: 1000))) {
+                    
+                    Image(systemName: "chart.bar.xaxis")
+                        .foregroundColor(buttonColor)
+                        .font(.title2)
+                        .frame(width: 40, height: 40)
+                }
+                .buttonStyle(BorderlessButtonStyle())
+            
+                NavigationLink(destination: MapView(routeCoordinates: activityRecord.routeCoordinates(maxPoints: 1000))) {
+                    
+                    Image(systemName: "map.circle")
+                        .foregroundColor(buttonColor)
+                        .font(.title2)
+                        .frame(width: 40, height: 40)
+                }
+                .buttonStyle(BorderlessButtonStyle())
+            }
+        }
+
+    }
+}
 
 struct ActivityDetailView: View {
     
@@ -83,164 +126,181 @@ struct ActivityDetailView: View {
         formatter.zeroFormattingBehavior = .pad
         return formatter
     }()
-
+    
     
     var body: some View {
-           
+        
         TabView {
-            VStack(alignment: .leading) {
-                HStack {
-                    Text(activityRecord.name)
-                        .foregroundStyle(.yellow)
-                    Spacer()
-                }
+            HStack {
+                VStack(alignment: .leading) {
+                    
+                    HStack {
+                        Image(systemName:"stopwatch")
+                            .foregroundColor(Color.green)
+                        Spacer()
+                        Text(durationFormatter.string(from: activityRecord.movingTime) ?? "")
+                            .foregroundStyle(.green)
+                            .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
+                    }
+                    Divider()
+                    
+                    HStack {
+                        Image(systemName: distanceIcon)
+                            .foregroundColor(Color.blue)
+                        Spacer()
+                        Text(distanceFormatter(distance: activityRecord.distanceMeters))
+                            .foregroundStyle(.blue)
+                            .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
+                    }
+                    Divider()
+                    
+                    HStack {
+                        Image(systemName: speedIcon)
+                            .foregroundColor(Color.blue)
+                        Spacer()
+                        Text(speedFormatter(speed: activityRecord.averageSpeed))
+                            .foregroundStyle(.blue)
+                            .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
+                    }
+                    Divider()
 
-                HStack {
-                    Text(activityRecord.startDateLocal.formatted(
-                        Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
-                            .day(.twoDigits)
-                            .month(.abbreviated)
-                            .hour(.defaultDigits(amPM: .omitted))
-                            .minute(.twoDigits)
-                            .hour(.conversationalDefaultDigits(amPM: .abbreviated))
-                    ))
-                    Spacer()
-                }
-                
-                Divider()
-                
-                HStack {
-                    Image(systemName:"stopwatch")
-                        .foregroundColor(Color.green)
-                    Spacer()
-                    Text(durationFormatter.string(from: activityRecord.movingTime) ?? "")
-                        .foregroundStyle(.green)
-                        .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
-                }
-                Divider()
-
-                HStack {
-                    Image(systemName: distanceIcon)
-                        .foregroundColor(Color.blue)
-                    Spacer()
-                    Text(distanceFormatter(distance: activityRecord.distanceMeters))
-                        .foregroundStyle(.blue)
-                        .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
-                }
-                Divider()
-                
-                HStack {
-                    Image(systemName: speedIcon)
-                        .foregroundColor(Color.blue)
-                    Spacer()
-                    Text(speedFormatter(speed: activityRecord.averageSpeed))
-                        .foregroundStyle(.blue)
-                        .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
-                }
-                Divider()
-
-                HStack {
-                    Image(systemName: heartRateIcon)
-                        .foregroundColor(Color.red)
-                    Spacer()
-                    Text(activityRecord.averageHeartRate
-                        .formatted(.number.precision(.fractionLength(0))) + " bpm")
+                    HStack {
+                        Image(systemName: heartRateIcon)
+                            .foregroundColor(Color.red)
+                        Spacer()
+                        Text(activityRecord.averageHeartRate
+                            .formatted(.number.precision(.fractionLength(0))) + " bpm")
                         .foregroundStyle(.red)
                         .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
+                    }
+                    Divider()
+                    
                 }
-                Divider()
+            
+                GraphButtonView(buttonColor: .blue, activityRecord: activityRecord)
 
             }
-            .navigationTitle("Summary")
-
-            VStack(alignment: .leading) {
+            
+            HStack {
+                VStack(alignment: .leading) {
+                    
+                    SummaryMetricView(title: "Moving Time",
+                                      value: durationFormatter.string(from: activityRecord.movingTime) ?? "")
+                    .foregroundStyle(.yellow)
+                    
+                    
+                    SummaryMetricView(title: "Paused Time",
+                                      value: durationFormatter.string(from: activityRecord.pausedTime) ?? "")
+                    .foregroundStyle(.yellow)
+                    
+                    HStack {
+                        SummaryMetricView(title: "Elapsed Time",
+                                          value: durationFormatter.string(from: activityRecord.elapsedTime) ?? "")
+                        .foregroundStyle(.yellow)
                         
-                SummaryMetricView(title: "Moving Time",
-                                  value: durationFormatter.string(from: activityRecord.movingTime) ?? "")
-                    .foregroundStyle(.yellow)
-
                         
-                SummaryMetricView(title: "Paused Time",
-                                  value: durationFormatter.string(from: activityRecord.pausedTime) ?? "")
-                    .foregroundStyle(.yellow)
-
-                SummaryMetricView(title: "Elapsed Time",
-                                  value: durationFormatter.string(from: activityRecord.elapsedTime) ?? "")
-                    .foregroundStyle(.yellow)
-
+                    }
+                    
+                }
+                
+                GraphButtonView(buttonColor: .green, activityRecord: activityRecord)
                 
             }
-            .navigationTitle("Times")
             .containerBackground(.green.gradient, for: .tabView)
-
-
-            VStack {
-                SummaryMetricView(title: "Average Speed",
-                                  value: speedFormatter(speed: activityRecord.averageSpeed))
+            
+            HStack {
+                VStack {
+                    SummaryMetricView(title: "Average Speed",
+                                      value: speedFormatter(speed: activityRecord.averageSpeed))
                     .foregroundStyle(.yellow)
+                    
+                    SummaryMetricView(title: "Distance",
+                                      value: distanceFormatter(distance: activityRecord.distanceMeters))
+                    .foregroundStyle(.yellow)
+                    
+                    SummaryMetricView(title: "Ascent / Descent",
+                                      value: (distanceFormatter(distance: activityRecord.totalAscent ?? 0, forceMeters: true)) + " / " +
+                                      (distanceFormatter(distance: activityRecord.totalDescent ?? 0, forceMeters: true)))
+                    .foregroundStyle(.yellow)
+                    
+                }
                 
-                SummaryMetricView(title: "Distance",
-                                  value: distanceFormatter(distance: activityRecord.distanceMeters))
-                    .foregroundStyle(.yellow)
-
-                SummaryMetricView(title: "Ascent / Descent",
-                                  value: (distanceFormatter(distance: activityRecord.totalAscent ?? 0, forceMeters: true)) + " / " +
-                                        (distanceFormatter(distance: activityRecord.totalDescent ?? 0, forceMeters: true)))
-                    .foregroundStyle(.yellow)
-
+                GraphButtonView(buttonColor: .blue, activityRecord: activityRecord)
+                
             }
             .navigationTitle("Distance")
             .containerBackground(.blue.gradient, for: .tabView)
-
-            VStack {
-                SummaryMetricView(title: "Average",
-                                  value: activityRecord.averageHeartRate
-                                     .formatted(.number.precision(.fractionLength(0))) + " bpm")
+            
+            HStack {
+                VStack {
+                    SummaryMetricView(title: "Average",
+                                      value: activityRecord.averageHeartRate
+                        .formatted(.number.precision(.fractionLength(0))) + " bpm")
                     .foregroundStyle(.yellow)
-
-                SummaryMetricView(title: activityRecord.hiHRLimit == nil ? "Time Over High Limit" : "Time Over High Limit (\(activityRecord.hiHRLimit!))",
-                                  value: durationFormatter.string(from: activityRecord.timeOverHiAlarm) ?? "0")
+                    
+                    SummaryMetricView(title: activityRecord.hiHRLimit == nil ? "Time Over High Limit" : "Time Over High Limit (\(activityRecord.hiHRLimit!))",
+                                      value: durationFormatter.string(from: activityRecord.timeOverHiAlarm) ?? "0")
                     .foregroundStyle(.yellow)
-
-                SummaryMetricView(title: activityRecord.loHRLimit == nil ? "Time Under Low Limit"   : "Time Under Low Limit (\(activityRecord.loHRLimit!))",
-                                  value: durationFormatter.string(from: activityRecord.timeUnderLoAlarm) ?? "0")
+                    
+                    SummaryMetricView(title: activityRecord.loHRLimit == nil ? "Time Under Low Limit"   : "Time Under Low Limit (\(activityRecord.loHRLimit!))",
+                                      value: durationFormatter.string(from: activityRecord.timeUnderLoAlarm) ?? "0")
                     .foregroundStyle(.yellow)
-
+                    
+                }
+                
+                GraphButtonView(buttonColor: .red, activityRecord: activityRecord)
+                
             }
             .navigationTitle("Heart Rate")
             .containerBackground(.red.gradient, for: .tabView)
             
-            VStack {
-
-                SummaryMetricView(title: "Average Power",
-                                  value: Measurement(value: activityRecord.averagePower.rounded(),
-                                                     unit: UnitPower.watts)
-                                    .formatted(.measurement(width: .abbreviated,
-                                                            usage: .asProvided)
-                                    ))
+            HStack {
+                VStack {
+                    
+                    SummaryMetricView(title: "Average Power",
+                                      value: Measurement(value: activityRecord.averagePower.rounded(),
+                                                         unit: UnitPower.watts)
+                                        .formatted(.measurement(width: .abbreviated,
+                                                                usage: .asProvided)
+                                        ))
                     .foregroundStyle(.yellow)
+                    
+                    SummaryMetricView(title: "Average Cadence",
+                                      value: activityRecord.averageCadence
+                        .formatted(.number.precision(.fractionLength(0))))
+                    .foregroundStyle(.yellow)
+                    
+                    SummaryMetricView(title: "Energy",
+                                      value: Measurement(value: activityRecord.activeEnergy,
+                                                         unit: UnitEnergy.kilocalories).formatted(.measurement(
+                                                            width: .abbreviated,
+                                                            usage: .workout)))
+                    .foregroundStyle(.yellow)
+                    
+                }
                 
-                SummaryMetricView(title: "Average Cadence",
-                                  value: activityRecord.averageCadence
-                                    .formatted(.number.precision(.fractionLength(0))))
-                    .foregroundStyle(.yellow)
-            
-                SummaryMetricView(title: "Energy",
-                                  value: Measurement(value: activityRecord.activeEnergy,
-                                                     unit: UnitEnergy.kilocalories).formatted(.measurement(
-                                                        width: .abbreviated,
-                                                        usage: .workout)))
-                    .foregroundStyle(.yellow)
-
+                GraphButtonView(buttonColor: .orange, activityRecord: activityRecord)
+                
             }
             .navigationTitle("Power")
             .containerBackground(.orange.gradient, for: .tabView)
 
         }
         .tabViewStyle(.verticalPage)
-        .navigationTitle("Activity Detail")
-
+        .navigationTitle {
+            Label( activityRecord.startDateLocal.formatted(
+                Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
+                .day(.twoDigits)
+                .month(.abbreviated)
+                .hour(.defaultDigits(amPM: .omitted))
+                .minute(.twoDigits)
+                ),
+                   systemImage: HKWorkoutActivityType( rawValue: activityRecord.workoutTypeId)!.iconImage )
+            .foregroundColor(.white)
+        }
+        
     }
+
 }
 
 

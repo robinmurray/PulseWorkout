@@ -16,11 +16,23 @@ enum StravaSaveStatus: Int {
     case saved = 2
 }
 
+struct ChartTracePoint {
+    var elapsedSeconds: Int
+    var value: Double
+}
+
 class ActivityRecord: NSObject, Identifiable, Codable {
+    
+    /// Apple HK workout type.
+    var workoutTypeId: UInt = 1
+    
+    /// Apple HK workout location.
+    var workoutLocationId: Int = 1
     
     var name: String = "Morning Ride"
     var type: String = "Ride"
     var sportType = "Ride"
+    
     var startDateLocal: Date = Date()
     var elapsedTime: Double = 0
     var pausedTime: Double = 0
@@ -180,7 +192,24 @@ class ActivityRecord: NSObject, Identifiable, Codable {
 
     private var trackPoints: [TrackPoint] = []
     
+    func routeCoordinates(maxPoints: Int) -> [CLLocationCoordinate2D] {
+        
+        // Create list of non-null locations
+        let y = trackPoints.filter({$0.latitude != nil && $0.longitude != nil}).map({CLLocationCoordinate2D(latitude: $0.latitude!, longitude: $0.longitude!)})
+
+        return y
+    }
+
     
+    func heartRateTrace(maxPoints: Int) -> [ChartTracePoint] {
+        
+        
+        // Create list of non-null locations
+        let y = trackPoints.filter({$0.heartRate != nil}).map({ChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)), value: Double($0.heartRate!))})
+
+        return y
+    }
+
     func start(activityProfile: ActivityProfile, startDate: Date) {
     
         type = "Ride"
@@ -188,7 +217,8 @@ class ActivityRecord: NSObject, Identifiable, Codable {
         startDateLocal = startDate
         hiHRLimit = activityProfile.hiLimitAlarmActive ? activityProfile.hiLimitAlarm : nil
         loHRLimit = activityProfile.loLimitAlarmActive ? activityProfile.loLimitAlarm : nil
-
+        workoutTypeId = activityProfile.workoutTypeId
+        workoutLocationId = activityProfile.workoutLocationId
         
         var localStartHour = Int(startDateLocal.formatted(
             Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
@@ -257,7 +287,7 @@ extension ActivityRecord {
 
     // set CodingKeys to define which variables are stored to JSON file
     private enum CodingKeys: String, CodingKey {
-        case recordName, name, type, sportType, startDateLocal,
+        case recordName, name, workoutTypeId, workoutLocationId, type, sportType, startDateLocal,
              elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
              averageHeartRate, averageCadence, averagePower, averageSpeed, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
              stravaSaveStatus, totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete
@@ -403,6 +433,9 @@ extension ActivityRecord {
         let activityRecord = CKRecord(recordType: recordType, recordID: recordID)
         activityRecord["name"] = name as CKRecordValue
         activityRecord["type"] = type as CKRecordValue
+        activityRecord["workoutTypeId"] = workoutTypeId as CKRecordValue
+        activityRecord["workoutLocationId"] = workoutLocationId as CKRecordValue
+
         activityRecord["sportType"] = sportType as CKRecordValue
         activityRecord["startDateLocal"] = startDateLocal as CKRecordValue
         activityRecord["elapsedTime"] = elapsedTime as CKRecordValue
@@ -447,6 +480,8 @@ extension ActivityRecord {
         recordName = recordID.recordName
         name = activityRecord["name"] ?? "" as String
         type = activityRecord["type"] ?? "" as String
+        workoutTypeId = activityRecord["workoutTypeId"] ?? 1 as UInt
+        workoutLocationId = activityRecord["workoutLocationId"] ?? 1 as Int
         sportType = activityRecord["sportType"] ?? "" as String
         startDateLocal = activityRecord["startDateLocal"] ?? Date() as Date
         elapsedTime = activityRecord["elapsedTime"] ?? 0 as Double

@@ -19,9 +19,21 @@ struct ActivitySaveView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
+ /*           ScrollView {
+                ActivityDetailView(activityRecord: liveActivityManager.liveActivityRecord ??
+                                   ActivityRecord(settingsManager: liveActivityManager.settingsManager))
+ //           }
+*/
             ActivityHeaderView(activityRecord: liveActivityManager.liveActivityRecord ??
                                ActivityRecord(settingsManager: liveActivityManager.settingsManager))
             Divider()
+            
+            NavigationStack {
+                NavigationLink("Summary",
+                               destination: ActivityDetailView(activityRecord: liveActivityManager.liveActivityRecord ??
+                                                               ActivityRecord(settingsManager: liveActivityManager.settingsManager)))
+            }
+            
             Button(action: SaveActivity) {
                 Text("Done").padding([.leading, .trailing], 40)
 
