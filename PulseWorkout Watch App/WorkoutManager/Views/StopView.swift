@@ -10,11 +10,8 @@ import SwiftUI
 struct StopView: View {
 
     @ObservedObject var liveActivityManager: LiveActivityManager
+    @ObservedObject var dataCache: DataCache
     @State private var navigateToSummaryView : Bool = false
-    
-    init(liveActivityManager: LiveActivityManager) {
-        self.liveActivityManager = liveActivityManager
-    }
 
     
     var body: some View {
@@ -76,12 +73,13 @@ struct StopView: View {
                         .buttonStyle(BorderlessButtonStyle())
                     }
                     .navigationDestination(isPresented: $navigateToSummaryView) {
-                        ActivitySaveView(liveActivityManager: liveActivityManager)
+                        ActivitySaveView(liveActivityManager: liveActivityManager,
+                                         dataCache: dataCache)
                     }
                     
                     Spacer()
                 }
-                .navigationTitle("Workout Control")
+                .navigationTitle("Activity Control")
                 .navigationBarTitleDisplayMode(.large)
             }
         }
@@ -103,6 +101,6 @@ struct StopView_Previews: PreviewProvider {
 
 
     static var previews: some View {
-        StopView(liveActivityManager: liveActivityManager)
+        StopView(liveActivityManager: liveActivityManager, dataCache: dataCache)
     }
 }

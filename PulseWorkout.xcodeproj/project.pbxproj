@@ -9,9 +9,12 @@
 /* Begin PBXBuildFile section */
 		E40306812B1F1D7900658A80 /* ActivityRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40306802B1F1D7900658A80 /* ActivityRecordTest.swift */; };
 		E40306832B22211000658A80 /* TopMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40306822B22211000658A80 /* TopMenuView.swift */; };
+		E406C7C32C667EDA0015C4F3 /* GeneralUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */; };
+		E406C7C52C667F6F0015C4F3 /* GeneralUtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E406C7C42C667F6F0015C4F3 /* GeneralUtilitiesTest.swift */; };
 		E40F88302A97AAF500E00F25 /* ActivitySaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */; };
 		E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F886A2AA5D31400E00F25 /* SimpleXML.swift */; };
 		E41281672BB33A5300996E1C /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41281662BB33A5300996E1C /* ChartView.swift */; };
+		E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41281682BBD4CCF00996E1C /* MapRouteView.swift */; };
 		E41CFBA72AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */; };
 		E420D7862B03D55300C0D7B2 /* LocationNotAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */; };
 		E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */; };
@@ -31,7 +34,7 @@
 		E46122012ACB1CA500E07749 /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = E46122002ACB1CA500E07749 /* Gzip */; };
 		E468DC8129E931A10002FEA9 /* ProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E468DC8029E931A10002FEA9 /* ProfileListView.swift */; };
 		E468DC8329E9B5050002FEA9 /* ProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E468DC8229E9B5050002FEA9 /* ProfileDetailView.swift */; };
-		E46EE68D2B067A01008F54CD /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EE68C2B067A01008F54CD /* MapView.swift */; };
+		E46EE68D2B067A01008F54CD /* MapPinView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EE68C2B067A01008F54CD /* MapPinView.swift */; };
 		E46EF07F29537CA1006FA603 /* PulseWorkout Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = E46EF07E29537CA1006FA603 /* PulseWorkout Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E46EF08429537CA1006FA603 /* PulseWorkoutApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */; };
 		E46EF08629537CA1006FA603 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF08529537CA1006FA603 /* ContentView.swift */; };
@@ -106,9 +109,12 @@
 /* Begin PBXFileReference section */
 		E40306802B1F1D7900658A80 /* ActivityRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecordTest.swift; sourceTree = "<group>"; };
 		E40306822B22211000658A80 /* TopMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopMenuView.swift; sourceTree = "<group>"; };
+		E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralUtilities.swift; sourceTree = "<group>"; };
+		E406C7C42C667F6F0015C4F3 /* GeneralUtilitiesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralUtilitiesTest.swift; sourceTree = "<group>"; };
 		E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySaveView.swift; sourceTree = "<group>"; };
 		E40F886A2AA5D31400E00F25 /* SimpleXML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleXML.swift; sourceTree = "<group>"; };
 		E41281662BB33A5300996E1C /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		E41281682BBD4CCF00996E1C /* MapRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRouteView.swift; sourceTree = "<group>"; };
 		E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricCarouselItem.swift; sourceTree = "<group>"; };
 		E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationNotAuthView.swift; sourceTree = "<group>"; };
 		E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceDiscoverView.swift; sourceTree = "<group>"; };
@@ -127,7 +133,7 @@
 		E46121F92AB315E600E07749 /* LocationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationView.swift; sourceTree = "<group>"; };
 		E468DC8029E931A10002FEA9 /* ProfileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListView.swift; sourceTree = "<group>"; };
 		E468DC8229E9B5050002FEA9 /* ProfileDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileDetailView.swift; sourceTree = "<group>"; };
-		E46EE68C2B067A01008F54CD /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		E46EE68C2B067A01008F54CD /* MapPinView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPinView.swift; sourceTree = "<group>"; };
 		E46EF07829537CA1006FA603 /* PulseWorkout.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PulseWorkout.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46EF07E29537CA1006FA603 /* PulseWorkout Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PulseWorkout Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E46EF08329537CA1006FA603 /* PulseWorkoutApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PulseWorkoutApp.swift; sourceTree = "<group>"; };
@@ -262,6 +268,7 @@
 			children = (
 				E46EF09429537CA3006FA603 /* PulseWorkout_Watch_AppTests.swift */,
 				E40306802B1F1D7900658A80 /* ActivityRecordTest.swift */,
+				E406C7C42C667F6F0015C4F3 /* GeneralUtilitiesTest.swift */,
 			);
 			path = "PulseWorkout Watch AppTests";
 			sourceTree = "<group>";
@@ -316,6 +323,7 @@
 				E46EF0C92955F615006FA603 /* LiveActivityManager.swift */,
 				E421295F29A21922001B8AA9 /* ActivityProfile.swift */,
 				E4BAA2402B1C7D560053C065 /* ActivityRecord.swift */,
+				E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */,
 				E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */,
 				E46121F72AB1A0AD00E07749 /* LocationManager.swift */,
 				E40F886A2AA5D31400E00F25 /* SimpleXML.swift */,
@@ -336,7 +344,8 @@
 				E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */,
 				E46EF0B329537D63006FA603 /* LiveTabView.swift */,
 				E46121F92AB315E600E07749 /* LocationView.swift */,
-				E46EE68C2B067A01008F54CD /* MapView.swift */,
+				E46EE68C2B067A01008F54CD /* MapPinView.swift */,
+				E41281682BBD4CCF00996E1C /* MapRouteView.swift */,
 				E41281662BB33A5300996E1C /* ChartView.swift */,
 				E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */,
 				E46EF08529537CA1006FA603 /* ContentView.swift */,
@@ -543,11 +552,12 @@
 				E468DC8129E931A10002FEA9 /* ProfileListView.swift in Sources */,
 				E46EF0C229543FEA006FA603 /* StopView.swift in Sources */,
 				E4C25BAE2A4F55FB002F315D /* ActivityListItemView.swift in Sources */,
+				E406C7C32C667EDA0015C4F3 /* GeneralUtilities.swift in Sources */,
 				E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */,
 				E46EF0B429537D63006FA603 /* LiveTabView.swift in Sources */,
 				E4BAA2412B1C7D560053C065 /* ActivityRecord.swift in Sources */,
 				E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */,
-				E46EE68D2B067A01008F54CD /* MapView.swift in Sources */,
+				E46EE68D2B067A01008F54CD /* MapPinView.swift in Sources */,
 				E4A0839729AA18E7007B50D3 /* BTDiscoveredDeviceView.swift in Sources */,
 				E468DC8329E9B5050002FEA9 /* ProfileDetailView.swift in Sources */,
 				E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */,
@@ -556,6 +566,7 @@
 				E46EF08429537CA1006FA603 /* PulseWorkoutApp.swift in Sources */,
 				E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */,
 				E4C11F5B29CCCC43008DB769 /* DeviceList.swift in Sources */,
+				E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */,
 				E46121F22AAE178700E07749 /* BTPeripheralManager.swift in Sources */,
 				E46121F02AADC86F00E07749 /* SettingsManager.swift in Sources */,
 				E46121EA2AAB5F9A00E07749 /* SettingsView.swift in Sources */,
@@ -573,6 +584,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E406C7C52C667F6F0015C4F3 /* GeneralUtilitiesTest.swift in Sources */,
 				E46EF09529537CA3006FA603 /* PulseWorkout_Watch_AppTests.swift in Sources */,
 				E40306812B1F1D7900658A80 /* ActivityRecordTest.swift in Sources */,
 			);

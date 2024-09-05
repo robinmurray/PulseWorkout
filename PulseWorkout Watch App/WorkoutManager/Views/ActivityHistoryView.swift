@@ -19,7 +19,8 @@ struct ActivityHistoryView: View {
                 List{
                     ForEach(dataCache.UIRecordSet) {activityRecord in
                         NavigationLink {
-                            ActivityDetailView(activityRecord: activityRecord)
+                            ActivityDetailView(activityRecord: activityRecord,
+                                               dataCache: dataCache)
                         } label : {
                             ActivityListItemView(activityRecord: activityRecord)
                         }

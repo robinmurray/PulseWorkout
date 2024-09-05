@@ -34,9 +34,12 @@ struct LiveMetricsPausedView: View {
 
                  
                 HStack {
-                    
-                    TimelineView(MetricsTimelineSchedule(from: liveActivityManager.locationManager.autoPauseStart ?? Date(),
-                                                         isPaused: false)) { context in
+                    TimelineView(MetricsTimelineSchedule(
+                        from: liveActivityManager.locationManager.autoPauseStart ?? Date(),
+                        isPaused: false,
+                        lowFrequencyTimeInterval: 1.0,
+                        highFrequencyTimeInterval: 1.0 / 30.0)
+                        ) { context in
                         VStack {
                             HStack {
                                 ElapsedTimeView(elapsedTime: liveActivityManager.currentPauseDurationAt(at: context.date),
@@ -82,8 +85,13 @@ struct LiveMetricsPausedView_Previews: PreviewProvider {
         HStack {
             VStack {
                 HStack {
-                    TimelineView(MetricsTimelineSchedule(from: liveActivityManager.builder?.startDate ?? Date(),
-                                                         isPaused: liveActivityManager.session?.state == .paused)) { context in
+                    
+                    TimelineView(MetricsTimelineSchedule(
+                        from: liveActivityManager.builder?.startDate ?? Date(),
+                        isPaused: liveActivityManager.session?.state == .paused,
+                        lowFrequencyTimeInterval: 1.0,
+                        highFrequencyTimeInterval: 1.0 / 30.0)
+                        ) { context in
                         
                         ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
                             .foregroundStyle(.yellow)

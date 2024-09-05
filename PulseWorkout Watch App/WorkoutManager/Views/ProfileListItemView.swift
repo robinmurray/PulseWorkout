@@ -95,7 +95,9 @@ struct ProfileListItemView: View {
                     .tint(Color.green)
                     .buttonStyle(BorderlessButtonStyle())
                     .navigationDestination(isPresented: $navigateToLiveView) {
-                        LiveTabView(profileName: profile.name, liveActivityManager: liveActivityManager)
+                        LiveTabView(profileName: profile.name,
+                                    liveActivityManager: liveActivityManager,
+                                    dataCache: dataCache)
                     }
                 }
 

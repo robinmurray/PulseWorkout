@@ -18,12 +18,13 @@ struct LiveTabView: View {
     
     var profileName: String
     @ObservedObject var liveActivityManager: LiveActivityManager
+    @ObservedObject var dataCache: DataCache
 
     var body: some View {
 
             TabView(selection: $liveActivityManager.liveTabSelection) {
                 
-                StopView(liveActivityManager: liveActivityManager)
+                StopView(liveActivityManager: liveActivityManager, dataCache: dataCache)
                     .tag(LiveScreenTab.stop)
                     .navigationTitle("Stop")
                 
@@ -71,7 +72,9 @@ struct LiveTabView_Previews: PreviewProvider {
         dataCache: dataCache)
 
     static var previews: some View {
-        LiveTabView(profileName: "Preview Profile", liveActivityManager: liveActivityManager)
+        LiveTabView(profileName: "Preview Profile",
+                    liveActivityManager: liveActivityManager,
+                    dataCache: dataCache)
     }
 }
 

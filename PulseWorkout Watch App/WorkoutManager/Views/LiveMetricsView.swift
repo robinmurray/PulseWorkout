@@ -96,8 +96,12 @@ struct LiveMetricsView: View {
                     
                     HStack {
 
-                        TimelineView(MetricsTimelineSchedule(from: liveActivityManager.builder?.startDate ?? Date(),
-                                                                 isPaused: liveActivityManager.session?.state == .paused)) { context in
+                        TimelineView(MetricsTimelineSchedule(
+                            from: liveActivityManager.builder?.startDate ?? Date(),
+                            isPaused: liveActivityManager.session?.state == .paused,
+                            lowFrequencyTimeInterval: 1.0,
+                            highFrequencyTimeInterval: 1.0 / 30.0)
+                            ) { context in
                                 
                                 ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
                                     .foregroundStyle(.yellow)
@@ -106,8 +110,14 @@ struct LiveMetricsView: View {
                         Spacer()
                     }
 
-                    TimelineView(.periodic(from: Date(), by: 1)) { context in
-                        
+//                    TimelineView(.periodic(from: Date(), by: 1)) { context in
+                    TimelineView(MetricsTimelineSchedule(
+                        from: liveActivityManager.builder?.startDate ?? Date(),
+                        isPaused: false,
+                        lowFrequencyTimeInterval: 60.0,
+                        highFrequencyTimeInterval: 5.0)
+                        )  { context in
+
                         VStack {
 
                             switch scrollPosition(scrollDate: context.date,
@@ -236,15 +246,22 @@ struct LiveMetricsView_Previews: PreviewProvider {
 struct MetricsTimelineSchedule: TimelineSchedule {
     var startDate: Date
     var isPaused: Bool
+    var lowFrequencyTimeInterval: TimeInterval
+    var highFrequencyTimeInterval: TimeInterval
 
-    init(from startDate: Date, isPaused: Bool) {
+    init(from startDate: Date,
+         isPaused: Bool,
+         lowFrequencyTimeInterval: TimeInterval,
+         highFrequencyTimeInterval: TimeInterval) {
         self.startDate = startDate
         self.isPaused = isPaused
+        self.lowFrequencyTimeInterval = lowFrequencyTimeInterval
+        self.highFrequencyTimeInterval = highFrequencyTimeInterval
     }
 
     func entries(from startDate: Date, mode: TimelineScheduleMode) -> AnyIterator<Date> {
         var baseSchedule = PeriodicTimelineSchedule(from: self.startDate,
-                                                    by: (mode == .lowFrequency ? 1.0 : 1.0 / 30.0))
+                                                    by: (mode == .lowFrequency ? lowFrequencyTimeInterval : highFrequencyTimeInterval))
             .entries(from: startDate, mode: mode)
         
         return AnyIterator<Date> {

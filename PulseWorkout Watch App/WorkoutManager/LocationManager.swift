@@ -369,6 +369,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     liveActivityRecord!.set(longitude: longitude)
                     liveActivityRecord!.set(totalAscent: totalAscent)
                     liveActivityRecord!.set(totalDescent: totalDescent)
+                    liveActivityRecord!.set(altitudeMeters: altitude)
                 }
                 
             }

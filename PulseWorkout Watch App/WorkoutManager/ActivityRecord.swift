@@ -21,6 +21,152 @@ struct ChartTracePoint {
     var value: Double
 }
 
+struct HeartRateChartTracePoint {
+    var elapsedSeconds: Int
+    var heartRate: Double
+    var altitude: Double
+    var scaledAltitude: Double   // altitude trace, scaled by scale factor to fit as background to heart rate
+}
+
+struct HeartRateChartData {
+    var heartRateAxisMarks: [Int]
+    var altitudeAxisMarks: [String]
+    var altitudeScaleFactor: Int
+    var altitudeOffest: Int
+    var tracePoints: [HeartRateChartTracePoint]
+}
+
+extension ActivityRecord: XMLParserDelegate {
+    
+    
+    func parserDidStartDocument(_ parser: XMLParser) {
+        print("Started parsing document")
+    }
+    
+    func parserDidEndDocument(_ parser: XMLParser) {
+        print("Ended parsing document : \(trackPoints.count) trackpoints created")
+    }
+    
+    func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
+        tagPath.append(elementName)
+        
+        switch elementName {
+        case "Trackpoint":
+            parsedTime = nil
+            heartRate = nil
+            cadence = nil
+            watts = nil
+            speed = nil
+            latitude = nil
+            longitude = nil
+            totalAscent = nil
+            totalDescent = nil
+            altitudeMeters = nil
+            distanceMeters = 0
+            break
+            
+        default:
+            // Do Nothing!
+            break
+        }
+    }
+    
+    func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?) {
+        tagPath.removeLast()
+        
+        switch elementName {
+        case "Trackpoint":
+            if parsedTime != nil {
+                trackPoints.append(TrackPoint(time: parsedTime!,
+                                              heartRate: heartRate,
+                                              latitude: latitude,
+                                              longitude: longitude,
+                                              altitudeMeters: altitudeMeters,
+                                              distanceMeters: distanceMeters,
+                                              cadence: cadence,
+                                              speed: speed,
+                                              watts: watts
+                                             )
+                                    )
+            }
+            break
+            
+        default:
+            // Do Nothing!
+            break
+        }
+
+    }
+    
+    func parser(_ parser: XMLParser, foundCharacters string: String) {
+        
+        switch tagPath.joined(separator: "/") {
+        case "TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Time":
+            // trackPointNode.addValue(name: "Time", value: time.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))
+//            self.logger.info("* Time : \(string)")
+            let dateFormatter = ISO8601DateFormatter ()
+            parsedTime = dateFormatter.date(from: string)
+
+//            self.logger.info("* parsedTime : \(self.parsedTime?.timeIntervalSince1970 ?? 0)")
+
+            break
+            
+        case "TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/DistanceMeters":
+            // trackPointNode.addValue(name: "DistanceMeters", value: String(Int(distanceMeters!)))
+//            self.logger.info("* DistanceMeters : \(string)")
+            distanceMeters = Double(string) ?? 0
+            break
+            
+        case "TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Cadence":
+            // trackPointNode.addValue(name: "Cadence", value: String(cadence!))
+//            self.logger.info("* Cadence : \(string)")
+            cadence = Int(string)
+            break
+            
+        case "TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Position/LongitudeDegrees":
+//            self.logger.info("* LongitudeDegrees : \(string)")
+            longitude = Double(string)
+            break
+            
+        case "TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Position/LatitudeDegrees":
+//            self.logger.info("* LatitudeDegrees : \(string)")
+            latitude = Double(string)
+            break
+            
+        case "TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/AltitudeMeters":
+            // IS ALTITUDE INTERGER OR NOT!!??
+            // trackPointNode.addValue(name: "AltitudeMeters", value: String(format: "%.1f", altitudeMeters!))
+//            self.logger.info("* AltitudeMeters : \(string)")
+            altitudeMeters = Double(string)
+            break
+
+        case "TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/TPX/Speed":
+            // tpxNode.addValue(name: "Speed", value: String(format: "%.1f", speed!))
+//            self.logger.info("* Speed : \(string)")
+            speed = Double(string)
+            break
+            
+        case "TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/Extensions/TPX/Watts":
+            // tpxNode.addValue(name: "Watts", value: String(watts!))
+//            self.logger.info("* Watts : \(string)")
+            watts = Int(string)
+            break
+
+        case "TrainingCenterDatabase/Activities/Activity/Lap/Track/Trackpoint/HeartRateBpm/Value":
+              // HRNode.addValue(name: "Value", value: String(Int(heartRate!)))
+//            self.logger.info("* HeartRateBpm : \(string)")
+            heartRate = Double(string)
+            break
+
+            
+        default:
+            // Do Nothing!
+            break
+        }
+    }
+    
+}
+
 class ActivityRecord: NSObject, Identifiable, Codable {
     
     /// Apple HK workout type.
@@ -66,6 +212,11 @@ class ActivityRecord: NSObject, Identifiable, Codable {
 
     private var settingsManager: SettingsManager?
     
+    // tag path during XML parse
+    private var tagPath: [String] = []
+    private var parsedTime: Date?
+
+    
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "activityRecord")
     
@@ -88,6 +239,48 @@ class ActivityRecord: NSObject, Identifiable, Codable {
         self.fromCKRecord(activityRecord: fromCKRecord)
     }
   
+    // Initialise from another Acivity Record and take a deep copy -- NOTE will have same recordID!
+    init(fromActivityRecord: ActivityRecord) {
+        super.init()
+
+        recordID = fromActivityRecord.recordID
+        recordName = fromActivityRecord.recordName
+        name = fromActivityRecord.name
+        type = fromActivityRecord.type
+        workoutTypeId = fromActivityRecord.workoutTypeId
+        workoutLocationId = fromActivityRecord.workoutLocationId
+        sportType = fromActivityRecord.sportType
+        startDateLocal = fromActivityRecord.startDateLocal
+        elapsedTime = fromActivityRecord.elapsedTime
+        pausedTime = fromActivityRecord.pausedTime
+        movingTime = fromActivityRecord.movingTime
+        activityDescription = fromActivityRecord.activityDescription
+        distanceMeters = fromActivityRecord.distanceMeters
+        totalAscent = fromActivityRecord.totalAscent
+        totalDescent = fromActivityRecord.totalDescent
+
+        averageHeartRate = fromActivityRecord.averageHeartRate
+        averageCadence = fromActivityRecord.averageCadence
+        averagePower = fromActivityRecord.averagePower
+        averageSpeed = fromActivityRecord.averageSpeed
+        activeEnergy = fromActivityRecord.activeEnergy
+        timeOverHiAlarm = fromActivityRecord.timeOverHiAlarm
+        timeUnderLoAlarm = fromActivityRecord.timeUnderLoAlarm
+        hiHRLimit = fromActivityRecord.hiHRLimit
+        loHRLimit = fromActivityRecord.loHRLimit
+        totalAscent = fromActivityRecord.totalAscent
+        totalDescent = fromActivityRecord.totalDescent
+        stravaSaveStatus = fromActivityRecord.stravaSaveStatus
+        
+        toSave = fromActivityRecord.toSave
+        toDelete = fromActivityRecord.toDelete
+        tcxFileName = fromActivityRecord.tcxFileName
+        JSONFileName = fromActivityRecord.JSONFileName
+        
+        // This should take a copy!
+        trackPoints = fromActivityRecord.trackPoints
+    }
+    
 
     // Calculated averages
     struct analysedVariable {
@@ -166,10 +359,6 @@ class ActivityRecord: NSObject, Identifiable, Codable {
                 trackPointNode.addValue(name: "DistanceMeters", value: String(Int(distanceMeters!)))
             }
 
-            if altitudeMeters != nil {
-                trackPointNode.addValue(name: "AltitudeMeters", value: String(Int(altitudeMeters!)))
-            }
-
             if cadence != nil {
                 trackPointNode.addValue(name: "Cadence", value: String(cadence!))
             }
@@ -195,20 +384,72 @@ class ActivityRecord: NSObject, Identifiable, Codable {
     func routeCoordinates(maxPoints: Int) -> [CLLocationCoordinate2D] {
         
         // Create list of non-null locations
-        let y = trackPoints.filter({$0.latitude != nil && $0.longitude != nil}).map({CLLocationCoordinate2D(latitude: $0.latitude!, longitude: $0.longitude!)})
+        return trackPoints.filter({$0.latitude != nil && $0.longitude != nil}).map({CLLocationCoordinate2D(latitude: $0.latitude!, longitude: $0.longitude!)})
 
-        return y
     }
 
     
-    func heartRateTrace(maxPoints: Int) -> [ChartTracePoint] {
+    func heartRateTrace(maxPoints: Int) -> HeartRateChartData {
         
+        let numAxisSteps = 4
+        let maxHR = Int( trackPoints.map( {$0.heartRate ?? 0} ).max() ?? 150 )
+        let HRAxisMarks = getAxisMarksForStepMultiple(max: Double(maxHR), stepMultiple: 10, intervals: numAxisSteps)
         
-        // Create list of non-null locations
-        let y = trackPoints.filter({$0.heartRate != nil}).map({ChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)), value: Double($0.heartRate!))})
 
-        return y
+        let altTrace = altitudeTrace(maxPoints: maxPoints)
+        let alts = altTrace.map { $0.value }
+
+        let maxAltitude = alts.max() ?? 200
+        let altitudeAxisMarkInts = getAxisMarksFor125(max: maxAltitude, intervals: numAxisSteps)
+        let altitudeAxisMarkStrings = altitudeAxisMarkInts.map({ String($0) + "M"})
+        
+        let altScale = getScaleFactor(axisMarks1: HRAxisMarks, axisMarks2: altitudeAxisMarkInts)
+        
+        let x: HeartRateChartData = HeartRateChartData (
+            heartRateAxisMarks: HRAxisMarks,
+            altitudeAxisMarks: altitudeAxisMarkStrings,
+            altitudeScaleFactor: Int(altScale),
+            altitudeOffest: 0,
+            tracePoints: trackPoints.filter({$0.heartRate != nil && $0.altitudeMeters != nil}).map(
+                {HeartRateChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)),
+                                          heartRate: Double($0.heartRate!),
+                                          altitude: Double($0.altitudeMeters!),
+                                          scaledAltitude: (Double($0.altitudeMeters!) * altScale))})
+        )
+        
+        return x
+        /*
+        // Create list of non-null locations
+        return trackPoints.filter({$0.heartRate != nil && $0.altitudeMeters != nil}).map(
+            {HeartRateChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)),
+                                      heartRate: Double($0.heartRate!),
+                                      altitude: ((Double($0.altitudeMeters!) - minAltitude) * altScale))})
+
+         */
     }
+
+    func altitudeTrace(maxPoints: Int) -> [ChartTracePoint] {
+        
+        // Create list of non-null altitudes
+        return trackPoints.filter({$0.altitudeMeters != nil}).map({ChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)), value: Double($0.altitudeMeters!))})
+
+    }
+
+    func totalAscentTrace(maxPoints: Int) -> [ChartTracePoint] {
+        
+        // Create ascent trace
+        return trackPoints.filter({$0.altitudeMeters != nil}).map({ChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)), value: Double($0.altitudeMeters! / 2 ))})
+
+    }
+
+    func totalDescentTrace(maxPoints: Int) -> [ChartTracePoint] {
+        
+        // Create ascent trace
+        return trackPoints.filter({$0.altitudeMeters != nil}).map({ChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)), value: Double($0.altitudeMeters! * 2 ))})
+
+    }
+
+    
 
     func start(activityProfile: ActivityProfile, startDate: Date) {
     
@@ -510,7 +751,32 @@ extension ActivityRecord {
         tcxFileName = ""
         JSONFileName = ""
 
+        if activityRecord["tcx"] != nil {
+            self.logger.info("Parsing track data")
+            let asset = activityRecord["tcx"]! as CKAsset
+            let fileURL = asset.fileURL!
+            
+            do {
+                let tcxZipData = try Data(contentsOf: fileURL)
+                self.logger.log("Got tcx data of size \(tcxZipData.count)")
+                
+                do {
+                    let tcxData: Data = try tcxZipData.gunzipped()
+                    self.logger.log("Unzipped data to size \(tcxData.count)")
+                    
+                    let parser = XMLParser(data: tcxData)
 
+                    parser.delegate = self
+                    parser.parse()
+                } catch {
+                    self.logger.error("Unzip failed")
+                }
+                
+//                return data
+            } catch {
+                self.logger.error("Can't get data at url:\(fileURL)")
+            }
+        }
         
     }
 
@@ -614,6 +880,12 @@ extension ActivityRecord {
 
     }
 
+    func set(altitudeMeters: Double?) {
+        
+        self.altitudeMeters = altitudeMeters
+
+    }
+    
     func set(isPaused: Bool) {
         
         self.isPaused = isPaused

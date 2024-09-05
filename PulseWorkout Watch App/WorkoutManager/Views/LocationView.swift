@@ -163,8 +163,8 @@ struct LocationView: View {
                                     
                                     NavigationStack {
                                         NavigationLink(
-                                            destination: MapView(pinLatitude: locationManager.pinnedLocation!.coordinate.latitude,
-                                                                 pinLongitude: locationManager.pinnedLocation!.coordinate.longitude)) {
+                                            destination: MapPinView(pinLatitude: locationManager.pinnedLocation!.coordinate.latitude,
+                                                                    pinLongitude: locationManager.pinnedLocation!.coordinate.longitude)) {
                                                                      HStack {
                                                                          Text("Map")
 

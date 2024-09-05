@@ -8,6 +8,9 @@
 import Foundation
 import CloudKit
 import os
+import Accelerate
+import MapKit
+import SwiftUI
 
 func getCacheDirectory() -> URL? {
 
@@ -53,6 +56,26 @@ class DataCache: NSObject, Codable, ObservableObject {
 //    var zoneID: CKRecordZone.ID!
     
     @Published var UIRecordSet: [ActivityRecord] = []
+    
+    /// Indicator to show ongoing fetch & processing of track record and bulding chart traces
+    @Published var buildingChartTraces: Bool = false
+
+    @Published var heartRateChartData: HeartRateChartData = HeartRateChartData (
+        heartRateAxisMarks: [0, 50, 100, 150, 200],
+        altitudeAxisMarks: ["", "", "", "", ""],
+        altitudeScaleFactor: 1,
+        altitudeOffest: 0,
+        tracePoints: []
+    )
+    
+    @Published var altitudeTrace: [ChartTracePoint] = []
+    @Published var totalAscentTrace: [ChartTracePoint] = []
+    @Published var totalDescentTrace: [ChartTracePoint] = []
+    @Published var routeCoordinates: [CLLocationCoordinate2D] = []
+    @Published var cameraPos: MapCameraPosition = MapCameraPosition.region( MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)) )
+    
+    /// Activity record fetched and used in detail display
+    var displayActivityRecord: ActivityRecord?
        
     let cacheSize = 50
     let cacheFile = "activityCache.act"
@@ -474,4 +497,102 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         
     }
+    
+    func setAllChartTraces(activityRecord: ActivityRecord, maxPoints: Int) {
+        DispatchQueue.main.async {
+            self.altitudeTrace = activityRecord.altitudeTrace(maxPoints: maxPoints)
+            self.heartRateChartData = activityRecord.heartRateTrace(maxPoints: maxPoints)
+
+            self.totalAscentTrace = activityRecord.totalAscentTrace(maxPoints: maxPoints)
+            self.totalDescentTrace = activityRecord.totalDescentTrace(maxPoints: maxPoints)
+
+            self.routeCoordinates = activityRecord.routeCoordinates(maxPoints: maxPoints)
+            
+            let latitudes = self.routeCoordinates.map({$0.latitude})
+            let longitudes = self.routeCoordinates.map({$0.longitude})
+            let meanLatitude = vDSP.mean(latitudes)
+            let meanLongitude = vDSP.mean(longitudes)
+            let routeCenter = CLLocationCoordinate2D(latitude: meanLatitude,
+                                                      longitude: meanLongitude)
+            
+            self.cameraPos = MapCameraPosition.region(
+                MKCoordinateRegion(center: routeCenter,
+                                   span: MKCoordinateSpan(latitudeDelta: 0.05,  longitudeDelta: 0.05)))
+
+        }
+        
+    }
+    
+    func buildChartTraces(recordID: CKRecord.ID) {
+
+        self.logger.log("Fetching track file for record: \(recordID)")
+        buildingChartTraces = true
+        
+        // check if this record already cached
+        if displayActivityRecord != nil {
+            if displayActivityRecord!.recordID == recordID {
+                self.logger.log("Required record already cached")
+                setAllChartTraces(activityRecord: displayActivityRecord!, maxPoints: 1000)
+                buildingChartTraces = false
+                return
+            }
+        }
+        
+        // TODO - check if record not saved yet!!!
+        let unsavedActivity = activities.filter({$0.recordID == recordID && $0.toSave})
+        if unsavedActivity.count != 0 {
+            self.logger.log("Required record not yet saved, so copying existing object")
+            displayActivityRecord = ActivityRecord(fromActivityRecord: unsavedActivity[0])
+
+            setAllChartTraces(activityRecord: displayActivityRecord!, maxPoints: 1000)
+            buildingChartTraces = false
+            return
+        }
+
+        self.logger.log("fetching required record from cloudkit")
+        // CKRecordID contains the zone from which the records should be retrieved
+        let fetchRecordsOperation = CKFetchRecordsOperation(recordIDs: [recordID])
+        
+        // recordFetched is a function that gets called for each record retrieved
+        fetchRecordsOperation.perRecordResultBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
+            switch result {
+            case .success(let record):
+                // populate displayActivityRecord - NOTE tcx asset was fetched, so will parse entire track record
+                self.displayActivityRecord = ActivityRecord(fromCKRecord: record)
+
+                self.setAllChartTraces(activityRecord: self.displayActivityRecord!, maxPoints: 1000)
+                DispatchQueue.main.async {
+                    self.buildingChartTraces = false
+                }
+                break
+                
+            case .failure(let error):
+                self.logger.error( "Fetch failed \(String(describing: error))")
+                
+                break
+            }
+            
+
+        }
+        
+        fetchRecordsOperation.fetchRecordsResultBlock = { (operationResult : Result<Void, any Error>) in
+        
+            switch operationResult {
+            case .success:
+                self.logger.info("Record fetch completed")
+                break
+                
+            case .failure(let error):
+                self.logger.error( "Fetch failed \(String(describing: error))")
+                break
+            }
+
+        }
+        
+        self.database.add(fetchRecordsOperation)
+
+    }
+    
+    
+
 }

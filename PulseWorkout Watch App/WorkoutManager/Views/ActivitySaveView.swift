@@ -10,12 +10,13 @@ import SwiftUI
 struct ActivitySaveView: View {
    
     @ObservedObject var liveActivityManager: LiveActivityManager
+    @ObservedObject var dataCache: DataCache
     @Environment(\.dismiss) private var dismiss
 
-    init(liveActivityManager: LiveActivityManager) {
+/*    init(liveActivityManager: LiveActivityManager) {
         self.liveActivityManager = liveActivityManager
     }
-    
+  */
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -31,7 +32,8 @@ struct ActivitySaveView: View {
             NavigationStack {
                 NavigationLink("Summary",
                                destination: ActivityDetailView(activityRecord: liveActivityManager.liveActivityRecord ??
-                                                               ActivityRecord(settingsManager: liveActivityManager.settingsManager)))
+                                                               ActivityRecord(settingsManager: liveActivityManager.settingsManager),
+                                                              dataCache: dataCache))
             }
             
             Button(action: SaveActivity) {
@@ -67,6 +69,7 @@ struct ActivitySaveView_Previews: PreviewProvider {
     
 
     static var previews: some View {
-        ActivitySaveView(liveActivityManager: liveActivityManager)
+        ActivitySaveView(liveActivityManager: liveActivityManager,
+                         dataCache: dataCache)
     }
 }

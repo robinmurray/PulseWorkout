@@ -380,17 +380,11 @@ class LiveActivityManager : NSObject, ObservableObject {
             self.hrState = HRState.hiAlarm
             
             if alarmRepeatCount < maxAlarmRepeat {
-                if liveActivityProfile!.playSound {
+                if (liveActivityProfile!.playSound || liveActivityProfile!.playHaptic) {
                     WKInterfaceDevice.current().play(settingsManager.hapticType)
                     logger.debug("playing sound 1")
                 }
-                /*
-                if liveActivityProfile!.playHaptic {
-                    WKInterfaceDevice.current().play(settingsManager.hapticType)
-                    logger.debug("playing sound 2")
-                    
-                }
-                */
+
                 alarmRepeatCount += 1
             }
 
@@ -401,7 +395,7 @@ class LiveActivityManager : NSObject, ObservableObject {
             increment(timeUnderLoAlarm: 2)
             self.hrState = HRState.loAlarm
             
-            if liveActivityProfile!.playSound && (alarmRepeatCount < maxAlarmRepeat) {
+            if (liveActivityProfile!.playSound || liveActivityProfile!.playHaptic) && (alarmRepeatCount < maxAlarmRepeat) {
                 WKInterfaceDevice.current().play(settingsManager.hapticType)
                 logger.debug("playing sound 3")
                 alarmRepeatCount += 1

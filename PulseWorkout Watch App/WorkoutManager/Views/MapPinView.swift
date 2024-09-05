@@ -1,5 +1,5 @@
 //
-//  MapView.swift
+//  MapPinView.swift
 //  PulseWorkout Watch App
 //
 //  Created by Robin Murray on 16/11/2023.
@@ -9,7 +9,7 @@ import SwiftUI
 import MapKit
 import Accelerate
 
-struct MapView: View {
+struct MapPinView: View {
     
     var pinLocation: CLLocationCoordinate2D?
     // @State private
@@ -28,7 +28,8 @@ struct MapView: View {
         displayUserAnnotation = true
 
     }
-    
+ 
+    /*
     init(routeCoordinates: [CLLocationCoordinate2D]) {
 
         var localCameraPos: MapCameraPosition
@@ -57,15 +58,10 @@ struct MapView: View {
         cameraPos = localCameraPos
         displayUserAnnotation = false
     }
+     */
     
     var body: some View {
-        /*
-        Map(coordinateRegion: $region,
-            interactionModes: .zoom,
-            annotationItems: [Location(coordinate: pinLocation)], annotationContent: { place in
-            MapMarker(coordinate: place.coordinate,
-                   tint: Color.yellow)
-        }) */
+
         Map(position: $cameraPos, interactionModes: [.pan, .zoom]) {
 
             // Display current location
@@ -76,11 +72,6 @@ struct MapView: View {
             // Display pinned location if there is one
             if let displayPinLocation = pinLocation {
                 Marker("Pinned location", coordinate: displayPinLocation)
-            }
-            
-            // Display route if there is one
-            if let displayRoute = route {
-                displayRoute.stroke(.blue, lineWidth: 5).mapOverlayLevel(level: .aboveRoads)
             }
             
         }
@@ -98,12 +89,12 @@ struct MapView: View {
 }
 
 
-struct MapView_Previews: PreviewProvider {
+struct MapPinView_Previews: PreviewProvider {
     
     static var latitude = 0.123
     static var longitude = 20.234
     
     static var previews: some View {
-        MapView(pinLatitude: latitude, pinLongitude: longitude)
+        MapPinView(pinLatitude: latitude, pinLongitude: longitude)
     }
 }

@@ -77,6 +77,7 @@ struct GraphButtonView: View {
     
     @State var buttonColor: Color
     @State var activityRecord: ActivityRecord
+    @ObservedObject var dataCache: DataCache
     
     var body: some View {
         
@@ -84,7 +85,8 @@ struct GraphButtonView: View {
             Spacer()
 
             NavigationStack {
-                NavigationLink(destination: ChartView(activityRecord: activityRecord)) {
+                NavigationLink(destination: ChartView(activityRecord: activityRecord,
+                                                     dataCache: dataCache)) {
                     
                     Image(systemName: "chart.xyaxis.line")
                         .foregroundColor(buttonColor)
@@ -93,7 +95,8 @@ struct GraphButtonView: View {
                 }
                 .buttonStyle(BorderlessButtonStyle())
                 
-                NavigationLink(destination: MapView(routeCoordinates: activityRecord.routeCoordinates(maxPoints: 1000))) {
+                NavigationLink(destination: ChartView(activityRecord: activityRecord,
+                                                      dataCache: dataCache)) {
                     
                     Image(systemName: "chart.bar.xaxis")
                         .foregroundColor(buttonColor)
@@ -102,7 +105,8 @@ struct GraphButtonView: View {
                 }
                 .buttonStyle(BorderlessButtonStyle())
             
-                NavigationLink(destination: MapView(routeCoordinates: activityRecord.routeCoordinates(maxPoints: 1000))) {
+                NavigationLink(destination: MapRouteView(activityRecord: activityRecord,
+                                                         dataCache: dataCache)) {
                     
                     Image(systemName: "map.circle")
                         .foregroundColor(buttonColor)
@@ -119,6 +123,7 @@ struct GraphButtonView: View {
 struct ActivityDetailView: View {
     
     @State var activityRecord: ActivityRecord
+    @ObservedObject var dataCache: DataCache
     
     @State private var durationFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
@@ -177,7 +182,9 @@ struct ActivityDetailView: View {
                     
                 }
             
-                GraphButtonView(buttonColor: .blue, activityRecord: activityRecord)
+                GraphButtonView(buttonColor: .blue,
+                                activityRecord: activityRecord,
+                                dataCache: dataCache)
 
             }
             
@@ -203,7 +210,9 @@ struct ActivityDetailView: View {
                     
                 }
                 
-                GraphButtonView(buttonColor: .green, activityRecord: activityRecord)
+                GraphButtonView(buttonColor: .green,
+                                activityRecord: activityRecord,
+                                dataCache: dataCache)
                 
             }
             .containerBackground(.green.gradient, for: .tabView)
@@ -225,7 +234,9 @@ struct ActivityDetailView: View {
                     
                 }
                 
-                GraphButtonView(buttonColor: .blue, activityRecord: activityRecord)
+                GraphButtonView(buttonColor: .blue,
+                                activityRecord: activityRecord,
+                                dataCache: dataCache)
                 
             }
             .navigationTitle("Distance")
@@ -248,7 +259,9 @@ struct ActivityDetailView: View {
                     
                 }
                 
-                GraphButtonView(buttonColor: .red, activityRecord: activityRecord)
+                GraphButtonView(buttonColor: .red,
+                                activityRecord: activityRecord,
+                                dataCache: dataCache)
                 
             }
             .navigationTitle("Heart Rate")
@@ -279,7 +292,9 @@ struct ActivityDetailView: View {
                     
                 }
                 
-                GraphButtonView(buttonColor: .orange, activityRecord: activityRecord)
+                GraphButtonView(buttonColor: .orange,
+                                activityRecord: activityRecord,
+                                dataCache: dataCache)
                 
             }
             .navigationTitle("Power")
@@ -331,10 +346,11 @@ struct ActivityDetailView_Previews: PreviewProvider {
     
     static var settingsManager = SettingsManager()
     static var record = ActivityRecord(settingsManager: settingsManager)
+    static var dataCache = DataCache()
     
     static var previews: some View {
         if #available(watchOS 10.0, *) {
-            ActivityDetailView(activityRecord: record)
+            ActivityDetailView(activityRecord: record, dataCache: dataCache)
         } else {
             // Fallback on earlier versions
         }
