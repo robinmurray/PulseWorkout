@@ -25,7 +25,6 @@ class LiveActivityManager : NSObject, ObservableObject {
 //    var locationManager: LocationManager
     
     @Published var hrState: HRState = HRState.inactive
-    @Published var HRMonitorActive: Bool = false
     @Published var appState: AppState = .initial
     @Published var workoutType: HKWorkoutActivityType = HKWorkoutActivityType.cycling
     @Published var workoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
@@ -164,7 +163,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     }
 
     func startWorkout(activityProfile: ActivityProfile) {
-        
+
         liveActivityProfile = activityProfile
         liveTabSelection = LiveScreenTab.liveMetrics
         alarmRepeatCount = 0
@@ -172,7 +171,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         let startDate = Date()
         liveActivityRecord = ActivityRecord(settingsManager: settingsManager)
         liveActivityRecord?.start(activityProfile: activityProfile, startDate: startDate)
-        
+
         startHRMonitor()
 
         let configuration = HKWorkoutConfiguration()
@@ -186,7 +185,7 @@ class LiveActivityManager : NSObject, ObservableObject {
             logger.error("Failed to start Workout Session")
             return
         }
-        
+
         // Setup session and builder.
         session?.delegate = self
         builder?.delegate = self
@@ -212,7 +211,7 @@ class LiveActivityManager : NSObject, ObservableObject {
                 self.logger.log("Workout Started")
             }
         }
-        
+
         if self.liveActivityProfile!.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
             Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(delayedEnableWaterLock), userInfo: nil, repeats: false)
         }
@@ -345,7 +344,6 @@ class LiveActivityManager : NSObject, ObservableObject {
         self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         self.timer!.tolerance = 0.2
         logger.debug("Timer initialised")
-        HRMonitorActive = true
         self.hrState = HRState.normal
         
         self.appState = .live
@@ -354,7 +352,6 @@ class LiveActivityManager : NSObject, ObservableObject {
     func stopHRMonitor() {
         logger.debug("stopping timer")
         self.timer?.invalidate()
-        HRMonitorActive = false
         self.hrState = HRState.inactive
         self.appState = .initial
     }
@@ -368,44 +365,47 @@ class LiveActivityManager : NSObject, ObservableObject {
     
     @objc func fireTimer() {
         
-        // add a track point for tcx file creation every time timer fires...
-        self.addTrackPoint()
-        
-        let maxAlarmRepeat = (liveActivityProfile!.constantRepeat ? settingsManager.maxAlarmRepeatCount : 1)
-        
-        if (self.liveActivityProfile!.hiLimitAlarmActive) &&
-           (Int(self.heartRate ?? 0) >= self.liveActivityProfile!.hiLimitAlarm) {
+        if self.hrState != HRState.inactive {
+            // add a track point for tcx file creation every time timer fires...
+            self.addTrackPoint()
             
-            self.increment(timeOverHiAlarm: 2)
-            self.hrState = HRState.hiAlarm
-            
-            if alarmRepeatCount < maxAlarmRepeat {
-                if (liveActivityProfile!.playSound || liveActivityProfile!.playHaptic) {
-                    WKInterfaceDevice.current().play(settingsManager.hapticType)
-                    logger.debug("playing sound 1")
+            let maxAlarmRepeat = (liveActivityProfile!.constantRepeat ? settingsManager.maxAlarmRepeatCount : 1)
+
+            if (self.liveActivityProfile!.hiLimitAlarmActive) &&
+               (Int(self.heartRate ?? 0) >= self.liveActivityProfile!.hiLimitAlarm) {
+                
+                self.increment(timeOverHiAlarm: 2)
+                self.hrState = HRState.hiAlarm
+                
+                if self.alarmRepeatCount < maxAlarmRepeat {
+                    if (liveActivityProfile!.playSound || liveActivityProfile!.playHaptic) {
+                        WKInterfaceDevice.current().play(settingsManager.hapticType)
+                        logger.debug("playing sound 1")
+                    }
+
+                    self.alarmRepeatCount += 1
                 }
 
-                alarmRepeatCount += 1
+                
+            } else if (self.liveActivityProfile!.loLimitAlarmActive) &&
+                        (Int(self.heartRate ?? 999) <= self.liveActivityProfile!.loLimitAlarm) {
+     
+                increment(timeUnderLoAlarm: 2)
+                self.hrState = HRState.loAlarm
+                
+                if (liveActivityProfile!.playSound || liveActivityProfile!.playHaptic) && (self.alarmRepeatCount < maxAlarmRepeat) {
+                    WKInterfaceDevice.current().play(settingsManager.hapticType)
+                    logger.debug("playing sound 3")
+                    self.alarmRepeatCount += 1
+                }
+                
+            } else {
+                self.hrState = HRState.normal
+                self.alarmRepeatCount = 0
             }
 
-            
-        } else if (self.liveActivityProfile!.loLimitAlarmActive) &&
-                    (Int(self.heartRate ?? 999) <= self.liveActivityProfile!.loLimitAlarm) {
- 
-            increment(timeUnderLoAlarm: 2)
-            self.hrState = HRState.loAlarm
-            
-            if (liveActivityProfile!.playSound || liveActivityProfile!.playHaptic) && (alarmRepeatCount < maxAlarmRepeat) {
-                WKInterfaceDevice.current().play(settingsManager.hapticType)
-                logger.debug("playing sound 3")
-                alarmRepeatCount += 1
-            }
-            
-        } else {
-            self.hrState = HRState.normal
-            alarmRepeatCount = 0
         }
-        
+
     }
 
     func requestAuthorization() {

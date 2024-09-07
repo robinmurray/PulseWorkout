@@ -43,6 +43,7 @@ struct LiveMetricsPausedView: View {
                         VStack {
                             HStack {
                                 ElapsedTimeView(elapsedTime: liveActivityManager.currentPauseDurationAt(at: context.date),
+                                                showSeconds: true,
                                                 showSubseconds: context.cadence == .live)
                                     .foregroundStyle(.black)
                                     .padding(.horizontal)
@@ -51,6 +52,7 @@ struct LiveMetricsPausedView: View {
 
                             HStack {
                                 ElapsedTimeView(elapsedTime: liveActivityManager.elapsedTime(at: context.date),
+                                                showSeconds: true,
                                                 showSubseconds: context.cadence == .live)
                                 .foregroundStyle(Color.white)
                                     .padding(.horizontal)
@@ -93,7 +95,9 @@ struct LiveMetricsPausedView_Previews: PreviewProvider {
                         highFrequencyTimeInterval: 1.0 / 30.0)
                         ) { context in
                         
-                        ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: context.date), showSubseconds: context.cadence == .live)
+                        ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at:                         context.date), 
+                                        showSeconds: true,
+                                        showSubseconds: context.cadence == .live)
                             .foregroundStyle(.yellow)
                         }
                     Spacer()

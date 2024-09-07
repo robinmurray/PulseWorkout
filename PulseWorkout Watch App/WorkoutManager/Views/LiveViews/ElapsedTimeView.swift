@@ -9,6 +9,7 @@ import SwiftUI
 
 struct ElapsedTimeView: View {
     var elapsedTime: TimeInterval = 0
+    var showSeconds: Bool = true
     var showSubseconds: Bool = true
     @State private var timeFormatter = ElapsedTimeFormatter()
 
@@ -18,23 +19,44 @@ struct ElapsedTimeView: View {
             .onChange(of: showSubseconds) { oldState, newState in
                 timeFormatter.showSubseconds = newState
             }
+            .onAppear(perform: {timeFormatter.showSeconds = showSeconds})
     }
+
 }
 
 class ElapsedTimeFormatter: Formatter {
-    let componentsFormatter: DateComponentsFormatter = {
+
+    var showSeconds: Bool = true
+    var showSubseconds = true
+
+    
+    var componentsFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
         formatter.zeroFormattingBehavior = .pad
         return formatter
     }()
-    var showSubseconds = true
-
+    
+    var noMinutesComponentsFormatter: DateComponentsFormatter = {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = [.hour, .minute]
+        formatter.zeroFormattingBehavior = .pad
+        return formatter
+    }()
+    
     override func string(for value: Any?) -> String? {
         guard let time = value as? TimeInterval else {
             return nil
         }
 
+        if !showSeconds {
+            guard let formattedString = noMinutesComponentsFormatter.string(from: time) else {
+                return nil
+            }
+            
+            return formattedString + ":__"
+        }
+        
         guard let formattedString = componentsFormatter.string(from: time) else {
             return nil
         }

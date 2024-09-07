@@ -65,6 +65,8 @@
 		E4C25BAC2A4F5554002F315D /* ActivityHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */; };
 		E4C25BAE2A4F55FB002F315D /* ActivityListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */; };
 		E4C25BB02A4F562B002F315D /* ActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */; };
+		E4D41B2F2C8A20E50014C1D9 /* LiveAlwaysOnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */; };
+		E4D41B312C8A230F0014C1D9 /* LiveMetricsCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */; };
 		E4E4DFEE29E88A6200979AA2 /* ProfileListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */; };
 /* End PBXBuildFile section */
 
@@ -169,6 +171,8 @@
 		E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryView.swift; sourceTree = "<group>"; };
 		E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListItemView.swift; sourceTree = "<group>"; };
 		E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
+		E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveAlwaysOnView.swift; sourceTree = "<group>"; };
+		E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsCarouselView.swift; sourceTree = "<group>"; };
 		E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListItemView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -335,14 +339,11 @@
 		E4C11F5929CCCA8E008DB769 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E4D41B2D2C8A202C0014C1D9 /* LiveViews */,
 				E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */,
 				E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */,
 				E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */,
 				E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */,
-				E46EF0BF29538811006FA603 /* LiveMetricsView.swift */,
-				E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */,
-				E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */,
-				E46EF0B329537D63006FA603 /* LiveTabView.swift */,
 				E46121F92AB315E600E07749 /* LocationView.swift */,
 				E46EE68C2B067A01008F54CD /* MapPinView.swift */,
 				E41281682BBD4CCF00996E1C /* MapRouteView.swift */,
@@ -358,10 +359,23 @@
 				E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */,
 				E468DC8229E9B5050002FEA9 /* ProfileDetailView.swift */,
 				E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */,
-				E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */,
 				E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		E4D41B2D2C8A202C0014C1D9 /* LiveViews */ = {
+			isa = PBXGroup;
+			children = (
+				E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */,
+				E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */,
+				E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */,
+				E46EF0BF29538811006FA603 /* LiveMetricsView.swift */,
+				E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */,
+				E46EF0B329537D63006FA603 /* LiveTabView.swift */,
+				E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */,
+			);
+			path = LiveViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -546,6 +560,7 @@
 				E40F88302A97AAF500E00F25 /* ActivitySaveView.swift in Sources */,
 				E4C11F5329C632DB008DB769 /* BTDetailDeviceView.swift in Sources */,
 				E46121FA2AB315E600E07749 /* LocationView.swift in Sources */,
+				E4D41B2F2C8A20E50014C1D9 /* LiveAlwaysOnView.swift in Sources */,
 				E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */,
 				E40306832B22211000658A80 /* TopMenuView.swift in Sources */,
 				E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */,
@@ -554,6 +569,7 @@
 				E4C25BAE2A4F55FB002F315D /* ActivityListItemView.swift in Sources */,
 				E406C7C32C667EDA0015C4F3 /* GeneralUtilities.swift in Sources */,
 				E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */,
+				E4D41B312C8A230F0014C1D9 /* LiveMetricsCarouselView.swift in Sources */,
 				E46EF0B429537D63006FA603 /* LiveTabView.swift in Sources */,
 				E4BAA2412B1C7D560053C065 /* ActivityRecord.swift in Sources */,
 				E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */,
