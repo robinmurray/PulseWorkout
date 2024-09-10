@@ -147,7 +147,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     func add(activityRecord: ActivityRecord) {
         
-        activityRecord.toSave = true
+        activityRecord.setToSave(true)
         activities.insert(activityRecord, at: 0)
         
         if cache().count > cacheSize {
@@ -247,6 +247,8 @@ class DataCache: NSObject, Codable, ObservableObject {
 //                activity.recordID = CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
                 activity.recordID = CKRecord.ID(recordName: activity.recordName)
 
+                // set toSavePublished equal to toSave
+                activity.setToSave(activity.toSave)
                 activities.append(activity)
             }
             
@@ -434,8 +436,8 @@ class DataCache: NSObject, Codable, ObservableObject {
                         // Record alreday exists- shouldn't happen, but!
                         self.logger.error("record already exists!")
                         activityRecord.deleteTrackRecord()
-                        activityRecord.toSave = false
-                        
+                        activityRecord.setToSave(false)
+
                         _ = self.write()
                         
                     default:
@@ -449,7 +451,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                     self.logger.log("Saved")
 
                     activityRecord.deleteTrackRecord()
-                    activityRecord.toSave = false
+                    activityRecord.setToSave(false)
                     
                     _ = self.write()
                 }

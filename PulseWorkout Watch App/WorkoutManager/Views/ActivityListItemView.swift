@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ActivityListItemView: View {
     
-    @State var activityRecord: ActivityRecord
+    @ObservedObject var activityRecord: ActivityRecord
     
     func stravaColour(stravaSaveStatus: Int) -> Color {
         switch stravaSaveStatus {
@@ -30,7 +30,7 @@ struct ActivityListItemView: View {
                     .foregroundStyle(.yellow)
                 Spacer()
                 VStack {
-                    if activityRecord.toSave {
+                    if activityRecord.toSavePublished {
                         Image(systemName: "icloud.slash.fill").foregroundColor(.red)
                     }
                     Image(systemName: "paperplane.circle").foregroundColor(

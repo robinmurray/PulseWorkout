@@ -167,7 +167,7 @@ extension ActivityRecord: XMLParserDelegate {
     
 }
 
-class ActivityRecord: NSObject, Identifiable, Codable {
+class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
     /// Apple HK workout type.
     var workoutTypeId: UInt = 1
@@ -195,6 +195,7 @@ class ActivityRecord: NSObject, Identifiable, Codable {
     
     var toSave: Bool = false        // cache status - record still to be saved to CK
     var toDelete: Bool = false      // cache status - record to be deleted from CK (and removed from cache)
+    @Published var toSavePublished: Bool = false    // published version of to be saved
     
     // Instantaneous data fields
     var heartRate: Double?
@@ -272,7 +273,8 @@ class ActivityRecord: NSObject, Identifiable, Codable {
         totalDescent = fromActivityRecord.totalDescent
         stravaSaveStatus = fromActivityRecord.stravaSaveStatus
         
-        toSave = fromActivityRecord.toSave
+        setToSave(fromActivityRecord.toSave)
+
         toDelete = fromActivityRecord.toDelete
         tcxFileName = fromActivityRecord.tcxFileName
         JSONFileName = fromActivityRecord.JSONFileName
@@ -281,6 +283,10 @@ class ActivityRecord: NSObject, Identifiable, Codable {
         trackPoints = fromActivityRecord.trackPoints
     }
     
+    func setToSave( _ newStatus: Bool ) {
+        toSave = newStatus
+        toSavePublished = newStatus
+    }
 
     // Calculated averages
     struct analysedVariable {
@@ -534,6 +540,7 @@ extension ActivityRecord {
              stravaSaveStatus, totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete
     }
     
+    
 }
 
 
@@ -746,7 +753,7 @@ extension ActivityRecord {
         totalDescent = activityRecord["totalDescent"] as Double?
         stravaSaveStatus = (activityRecord["stravaSaveStatus"] ?? StravaSaveStatus.dontSave.rawValue) as Int
         
-        toSave = false
+        setToSave(false)
         toDelete = false
         tcxFileName = ""
         JSONFileName = ""
