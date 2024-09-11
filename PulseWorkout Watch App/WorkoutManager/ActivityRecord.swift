@@ -209,6 +209,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var altitudeMeters: Double?
     var distanceMeters: Double = 0
     
+    var autoPause: Bool = true
     var isPaused: Bool = false
 
     private var settingsManager: SettingsManager?
@@ -278,6 +279,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         toDelete = fromActivityRecord.toDelete
         tcxFileName = fromActivityRecord.tcxFileName
         JSONFileName = fromActivityRecord.JSONFileName
+        autoPause = fromActivityRecord.autoPause
         
         // This should take a copy!
         trackPoints = fromActivityRecord.trackPoints
@@ -466,6 +468,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         loHRLimit = activityProfile.loLimitAlarmActive ? activityProfile.loLimitAlarm : nil
         workoutTypeId = activityProfile.workoutTypeId
         workoutLocationId = activityProfile.workoutLocationId
+        autoPause = activityProfile.autoPause
         
         var localStartHour = Int(startDateLocal.formatted(
             Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)

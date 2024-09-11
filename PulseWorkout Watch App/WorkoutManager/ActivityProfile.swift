@@ -50,6 +50,9 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
     
     /// The date the profile was last used or edited.
     var lastUsed: Date?
+    
+    /// Whether to enable auto-pause on this profile
+    var autoPause: Bool
 
 }
 
@@ -89,7 +92,8 @@ class ActivityProfiles: NSObject, ObservableObject {
                                 playSound: false,
                                 playHaptic: false,
                                 constantRepeat: false,
-                                lockScreen: false)
+                                lockScreen: false,
+                                autoPause: true)
         
     }
     
@@ -104,40 +108,43 @@ class ActivityProfiles: NSObject, ObservableObject {
     func addDefaults() {
 
         _ = add(activityProfile: ActivityProfile ( name: "Race",
-                                               workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
-                                               workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
-                                               hiLimitAlarmActive: true,
-                                               hiLimitAlarm: 160,
-                                               loLimitAlarmActive: false,
-                                               loLimitAlarm: 100,
-                                               playSound: true,
-                                               playHaptic: true,
-                                               constantRepeat: false,
-                                               lockScreen: false))
+                                                   workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
+                                                   workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
+                                                   hiLimitAlarmActive: true,
+                                                   hiLimitAlarm: 160,
+                                                   loLimitAlarmActive: false,
+                                                   loLimitAlarm: 100,
+                                                   playSound: true,
+                                                   playHaptic: true,
+                                                   constantRepeat: false,
+                                                   lockScreen: false,
+                                                   autoPause: true))
 
         _ = add(activityProfile: ActivityProfile ( name: "Aerobic",
-                                               workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
-                                               workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
-                                               hiLimitAlarmActive: true,
-                                               hiLimitAlarm: 140,
-                                               loLimitAlarmActive: false,
-                                               loLimitAlarm: 100,
-                                               playSound: true,
-                                               playHaptic: true,
-                                               constantRepeat: false,
-                                               lockScreen: false))
+                                                   workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
+                                                   workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
+                                                   hiLimitAlarmActive: true,
+                                                   hiLimitAlarm: 140,
+                                                   loLimitAlarmActive: false,
+                                                   loLimitAlarm: 100,
+                                                   playSound: true,
+                                                   playHaptic: true,
+                                                   constantRepeat: false,
+                                                   lockScreen: false,
+                                                   autoPause: true))
 
         _ = add(activityProfile: ActivityProfile ( name: "Recovery",
-                                               workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
-                                               workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
-                                               hiLimitAlarmActive: true,
-                                               hiLimitAlarm: 130,
-                                               loLimitAlarmActive: false,
-                                               loLimitAlarm: 100,
-                                               playSound: true,
-                                               playHaptic: true,
-                                               constantRepeat: false,
-                                               lockScreen: false))
+                                                   workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
+                                                   workoutLocationId: HKWorkoutSessionLocationType.outdoor.rawValue,
+                                                   hiLimitAlarmActive: true,
+                                                   hiLimitAlarm: 130,
+                                                   loLimitAlarmActive: false,
+                                                   loLimitAlarm: 100,
+                                                   playSound: true,
+                                                   playHaptic: true,
+                                                   constantRepeat: false,
+                                                   lockScreen: false,
+                                                   autoPause: true))
 
     }
 

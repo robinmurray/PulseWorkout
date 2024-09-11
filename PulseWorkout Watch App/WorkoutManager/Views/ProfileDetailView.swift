@@ -16,6 +16,7 @@ struct ProfileDetailForm: View {
     var workoutTypes: [HKWorkoutActivityType] = [.crossTraining, .cycling, .mixedCardio, .paddleSports, .rowing, .running, .walking]
     var workoutLocations: [HKWorkoutSessionLocationType] = [.indoor, .outdoor]
 
+    
     var body: some View {
  
 
@@ -57,12 +58,19 @@ struct ProfileDetailForm: View {
             .listStyle(.carousel)
                 
         }
-            
-        Section(header: Text("Heart Rate Profile")) {
-                
+
+        Section(header: Text("Actions")) {
+
+            Toggle(isOn: $profile.autoPause) {
+                Text("Auto-Pause")
+            }
+              
             Toggle(isOn: $profile.lockScreen) {
                 Text("Lock Screen")
             }
+        }
+        
+        Section(header: Text("Heart Rate Profile")) {
                 
             Toggle(isOn: $profile.hiLimitAlarmActive) {
                 Text("High Limit Alarm")
@@ -112,7 +120,9 @@ struct ProfileDetailForm: View {
             .disabled(!(profile.hiLimitAlarmActive || profile.loLimitAlarmActive))
                 
         }
+
     }
+
 }
 
 struct ProfileDetailView: View {

@@ -30,9 +30,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     
     var lastAltitude: Double?
     
-    // Hold last 5 altitude readings to take moving average to smooth out errors
-    var smoothedAltitudeList: [Double] = []
-
     var locManager: CLLocationManager
     var backgroundActive: Bool = false
     var foregroundActive: Bool = false
@@ -45,7 +42,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     @Published var pinnedLocation: CLLocation?
     var pinnedPlaceName: String?
     var pinnedLocationDistance: Double?
-    var prevSmoothedAltitude: Double?
     var liveActivityRecord: ActivityRecord?
 
     
@@ -176,8 +172,6 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         longitude = nil
         altitude = nil
         lastAltitude = nil
-        smoothedAltitudeList = []
-        prevSmoothedAltitude = nil
         totalAscent = nil
         totalDescent = nil
         speed = nil
@@ -295,42 +289,26 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             verticalAccuracy = location!.verticalAccuracy
             direction = location!.course
 
-            /*
-            if altitude != nil && lastAltitude != nil {
-                if altitude! > lastAltitude! {
-                    totalAscent = (totalAscent ?? 0) + (altitude! - lastAltitude!)
-                } else {
-                    totalDescent = (totalDescent ?? 0) + (lastAltitude! - altitude!)
-                }
-            }
-            
-            lastAltitude = altitude
-            */
-            
+            // backgroundActive => workout is active
             if backgroundActive {
-                if altitude != nil {
-                    let smoothingLength = 5
-
-                    smoothedAltitudeList.append(altitude!)
-                    
-                    if smoothedAltitudeList.count == smoothingLength {
-                        let thisSmoothedAltitude = smoothedAltitudeList.reduce(0, +) / Double(smoothingLength)
-                        
-                        if prevSmoothedAltitude != nil {
-                            if thisSmoothedAltitude >= prevSmoothedAltitude! {
-                                totalAscent = (totalAscent ?? 0) + (thisSmoothedAltitude - prevSmoothedAltitude!)
-                            } else {
-                                totalDescent = (totalDescent ?? 0) + (prevSmoothedAltitude! - thisSmoothedAltitude)
-                            }
-                        }
-
-                        prevSmoothedAltitude = thisSmoothedAltitude
-                        smoothedAltitudeList = []
+                
+                // Calculate ascent and descent taking to account vertical accuracy
+                if altitude != nil && lastAltitude != nil && verticalAccuracy != nil {
+                    // Only update altitude if change is greater than current accuracy
+                    if abs(altitude! - lastAltitude!) < abs(verticalAccuracy!) {
+                        altitude = lastAltitude
+                    }
+                    if altitude! > lastAltitude! {
+                        totalAscent = (totalAscent ?? 0) + (altitude! - lastAltitude!)
+                    } else {
+                        totalDescent = (totalDescent ?? 0) + (lastAltitude! - altitude!)
                     }
                 }
                 
+                lastAltitude = altitude
+                
                 // auto pause if configured and speed < pause speed
-                if settingsManager.autoPause == true {
+                if liveActivityRecord!.autoPause == true {
                     let speedKPH = (speed ?? 999) * 3.6
                     let isNowPaused = (speedKPH <= settingsManager.autoPauseSpeed) ||
                                        ((isPaused == true) && (speedKPH < settingsManager.autoResumeSpeed) ) ? true : false

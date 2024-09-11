@@ -18,10 +18,7 @@ class SettingsManager: NSObject, ObservableObject  {
     
     @Published var saveAppleHealth: Bool
     @Published var saveStrava: Bool
-    
-    /// Whether to enable auto-pause on speed dropping below a limit
-    @Published var autoPause: Bool
-    
+       
     /// If auto-pause enabled, pause activity if speed drops below this limit
     @Published var autoPauseSpeed: Double
     
@@ -47,7 +44,6 @@ class SettingsManager: NSObject, ObservableObject  {
         saveAppleHealth = UserDefaults.standard.bool(forKey: "saveAppleHealth")
         saveStrava = UserDefaults.standard.bool(forKey: "saveStrava")
         
-        autoPause = UserDefaults.standard.bool(forKey: "autoPause")
         autoPauseSpeed = UserDefaults.standard.object(forKey: "autoPauseSpeed") != nil ? UserDefaults.standard.double(forKey: "autoPauseSpeed") : 0.2
         autoResumeSpeed = UserDefaults.standard.object(forKey: "autoResumeSpeed") != nil ? UserDefaults.standard.double(forKey: "autoResumeSpeed") : 0.4
         minAutoPauseSeconds = UserDefaults.standard.object(forKey: "minAutoPauseSeconds") != nil ? UserDefaults.standard.integer(forKey: "minAutoPauseSeconds") : 3
@@ -69,7 +65,6 @@ class SettingsManager: NSObject, ObservableObject  {
         UserDefaults.standard.set(saveAppleHealth, forKey: "saveAppleHealth")
         UserDefaults.standard.set(saveStrava, forKey: "saveStrava")
         
-        UserDefaults.standard.set(autoPause, forKey: "autoPause")
         UserDefaults.standard.set(autoPauseSpeed, forKey: "autoPauseSpeed")
         UserDefaults.standard.set(autoResumeSpeed, forKey: "autoResumeSpeed")
         UserDefaults.standard.set(minAutoPauseSeconds, forKey: "minAutoPauseSeconds")
