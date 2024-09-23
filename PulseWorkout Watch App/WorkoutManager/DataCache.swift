@@ -67,9 +67,17 @@ class DataCache: NSObject, Codable, ObservableObject {
         altitudeOffest: 0,
         tracePoints: []
     )
+
+    @Published var totalAscentTrace: AscentChartData = AscentChartData (
+        ascentAxisMarks: [],
+        altitudeAxisMarks: [],
+        altitudeScaleFactor: 1,
+        altitudeOffset: 0,
+        tracePoints: []
+    )
     
     @Published var altitudeTrace: [ChartTracePoint] = []
-    @Published var totalAscentTrace: [ChartTracePoint] = []
+
     @Published var totalDescentTrace: [ChartTracePoint] = []
     @Published var routeCoordinates: [CLLocationCoordinate2D] = []
     @Published var cameraPos: MapCameraPosition = MapCameraPosition.region( MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)) )
@@ -505,7 +513,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             self.altitudeTrace = activityRecord.altitudeTrace(maxPoints: maxPoints)
             self.heartRateChartData = activityRecord.heartRateTrace(maxPoints: maxPoints)
 
-            self.totalAscentTrace = activityRecord.totalAscentTrace(maxPoints: maxPoints)
+            self.totalAscentTrace = activityRecord.ascentTrace(maxPoints: maxPoints)
             self.totalDescentTrace = activityRecord.totalDescentTrace(maxPoints: maxPoints)
 
             self.routeCoordinates = activityRecord.routeCoordinates(maxPoints: maxPoints)

@@ -21,30 +21,16 @@ struct ChartView: View {
             }
             TabView {
                 ZStack {
-/*                    Chart {
-                        ForEach(dataCache.altitudeTrace, id: \.elapsedSeconds) { item in
-                            AreaMark(
-                                x: .value("Elapsed", item.elapsedSeconds),
-                                y: .value("Altitude", item.value),
-                                series: .value("Trace", "Altitude")
-                            )
-                            .foregroundStyle(Gradient(colors: [Color.accentColor, Color.accentColor.opacity(0.1)]))
-                        }
-                    }
-                    .chartXAxis(Visibility.hidden)
- */
-//                    .chartYAxis(Visibility.hidden)
-                    
+    
                     Chart {
                         ForEach(dataCache.heartRateChartData.tracePoints, id: \.elapsedSeconds) { item in
 
                             AreaMark(
                                 x: .value("Elapsed", item.elapsedSeconds),
-                                y: .value("Altitude", item.altitude),
+                                y: .value("Altitude", item.scaledAltitude),
                                 series: .value("Trace", "Altitude")
                             )
                             .foregroundStyle(Gradient(colors: [Color.accentColor, Color.accentColor.opacity(0.1)]))
-//                            .foregroundStyle(by: .value("Value", "Altitude"))
 
                             LineMark(
                                 x: .value("Elapsed", item.elapsedSeconds),
@@ -52,31 +38,14 @@ struct ChartView: View {
                                 series: .value("Trace", "Heart Rate")
                             )
                             .foregroundStyle(.red)
-//                            .foregroundStyle(by: .value("Value", "Heart Rate"))
 
                         }
                     }
+                    .chartScrollableAxes(.horizontal)
                     .chartYAxis {
 
-                        AxisMarks(position: .trailing, values: [0, 50, 100, 150, 200])
+                        AxisMarks(position: .trailing, values: dataCache.heartRateChartData.heartRateAxisMarks)
 
-/*
-                        let alts = dataCache.heartRateTrace.map { $0.altitude }
-                        let min = alts.min() ?? 0
-                        let max = alts.max() ?? 200
-                        let altsStride = Array(stride(from: min,
-                                                                through: max,
-                                                                by: (max - min)/4))
- */
-                         
-/** FIX!
-                        AxisMarks(position: .trailing, values: altsStride) { axis in
-                            AxisGridLine()
-                            let value = costsStride[axis.index]
-                            AxisValueLabel("\(String(format: "%.2F", value)) kr", centered: false)
-                        }
-                        AxisMarks(position: .leading, values: .automatic(desiredCount: 5))
-**/
                     }
                     
                 }
@@ -88,35 +57,32 @@ struct ChartView: View {
                 
                 VStack {
                     Chart {
-                        ForEach(dataCache.altitudeTrace, id: \.elapsedSeconds) { item in
+                        ForEach(dataCache.totalAscentTrace.tracePoints, id: \.elapsedSeconds) { item in
                             AreaMark(
                                 x: .value("Elapsed", item.elapsedSeconds),
-                                y: .value("Altitude", item.value),
+                                y: .value("Altitude", item.scaledAltitude),
                                 series: .value("Trace", "Altitude")
                             )
                             .foregroundStyle(Gradient(colors: [Color.accentColor, Color.accentColor.opacity(0.1)]))
-                        }
 
-                        ForEach(dataCache.totalAscentTrace, id: \.elapsedSeconds) { item in
+
                             LineMark(
                                 x: .value("Elapsed", item.elapsedSeconds),
-                                y: .value("Ascent", item.value),
+                                y: .value("Ascent", item.ascent),
                                 series: .value("Trace", "Ascent")
                             )
                             .foregroundStyle(Color.blue)
                         }
 
-                        ForEach(dataCache.totalDescentTrace, id: \.elapsedSeconds) { item in
-                            LineMark(
-                                x: .value("Elapsed", item.elapsedSeconds),
-                                y: .value("Descent", item.value),
-                                series: .value("Trace", "Descent")
-                            )
-                            .foregroundStyle(Color.indigo)
-                        }
+                    }
+                    .chartScrollableAxes(.horizontal)
+                    .chartYAxis {
+
+                        AxisMarks(position: .trailing, values: dataCache.totalAscentTrace.ascentAxisMarks)
+
                     }
                 }
-                .navigationTitle("Ascent/Descent")
+                .navigationTitle("Ascent")
                 .containerBackground(.blue.gradient, for: .tabView)
                 
             }

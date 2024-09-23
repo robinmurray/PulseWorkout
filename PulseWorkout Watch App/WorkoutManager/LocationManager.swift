@@ -293,9 +293,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             if backgroundActive {
                 
                 // Calculate ascent and descent taking to account vertical accuracy
-                if altitude != nil && lastAltitude != nil && verticalAccuracy != nil {
+                if altitude != nil && lastAltitude != nil && verticalAccuracy != nil  && verticalAccuracy != -1 {
                     // Only update altitude if change is greater than current accuracy
-                    if abs(altitude! - lastAltitude!) < abs(verticalAccuracy!) {
+                    if abs(altitude! - lastAltitude!) > abs(verticalAccuracy!) {
                         altitude = lastAltitude
                     }
                     if altitude! > lastAltitude! {
@@ -303,10 +303,10 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     } else {
                         totalDescent = (totalDescent ?? 0) + (lastAltitude! - altitude!)
                     }
+                    lastAltitude = altitude
                 }
                 
-                lastAltitude = altitude
-                
+
                 // auto pause if configured and speed < pause speed
                 if liveActivityRecord!.autoPause == true {
                     let speedKPH = (speed ?? 999) * 3.6

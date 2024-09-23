@@ -50,3 +50,47 @@ func getScaleFactor(axisMarks1: [Int], axisMarks2: [Int]) -> Double {
     return Double(axisMarks1.max()!) / Double(axisMarks2.max()!)
     
 }
+
+/// Returns array of cumulative ascent from given array of altitudes
+func getAscentFromAltitude(altitudeArray: [Double]) -> [Double] {
+
+    if altitudeArray.count == 0 {
+        return []
+    }
+    
+    var lastValue: Double = altitudeArray[0]
+    var totalAscent: Double = 0
+    
+    let ascentSequence = altitudeArray.publisher.scan( 0, { runningTotal, newValue in
+        if newValue > lastValue {
+            totalAscent = runningTotal + (newValue - lastValue)
+            lastValue = newValue
+        }
+        lastValue = newValue
+        return totalAscent})
+
+    return ascentSequence.sequence
+    
+}
+
+/// Returns array of cumulative descent from given array of altitudes
+func getDescentFromAltitude(altitudeArray: [Double]) -> [Double] {
+
+    if altitudeArray.count == 0 {
+        return []
+    }
+    
+    var lastValue: Double = altitudeArray[0]
+    var totalDescent: Double = 0
+    
+    let descentSequence = altitudeArray.publisher.scan( 0, { runningTotal, newValue in
+        if newValue < lastValue {
+            totalDescent = runningTotal + (lastValue - newValue)
+            lastValue = newValue
+        }
+        lastValue = newValue
+        return totalDescent})
+
+    return descentSequence.sequence
+    
+}

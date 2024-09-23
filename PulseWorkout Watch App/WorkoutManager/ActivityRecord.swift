@@ -28,12 +28,28 @@ struct HeartRateChartTracePoint {
     var scaledAltitude: Double   // altitude trace, scaled by scale factor to fit as background to heart rate
 }
 
+struct AscentChartTracePoint {
+    var elapsedSeconds: Int
+    var ascent: Double
+    var altitude: Double
+    var scaledAltitude: Double   // altitude trace, scaled by scale factor to fit as background to chart
+}
+
+
 struct HeartRateChartData {
     var heartRateAxisMarks: [Int]
     var altitudeAxisMarks: [String]
     var altitudeScaleFactor: Int
     var altitudeOffest: Int
     var tracePoints: [HeartRateChartTracePoint]
+}
+
+struct AscentChartData {
+    var ascentAxisMarks: [Int]
+    var altitudeAxisMarks: [String]
+    var altitudeScaleFactor: Int
+    var altitudeOffset: Int
+    var tracePoints: [AscentChartTracePoint]
 }
 
 extension ActivityRecord: XMLParserDelegate {
@@ -407,33 +423,67 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         let altTrace = altitudeTrace(maxPoints: maxPoints)
         let alts = altTrace.map { $0.value }
 
-        let maxAltitude = alts.max() ?? 200
-        let altitudeAxisMarkInts = getAxisMarksFor125(max: maxAltitude, intervals: numAxisSteps)
+        let maxAltitude = alts.max() ?? 100
+        let minAltitide = alts.min() ?? 0
+        
+        let altitudeAxisMarkInts = getAxisMarksForStepMultiple(max: Double(maxAltitude - minAltitide), stepMultiple: 10, intervals: numAxisSteps)
+
         let altitudeAxisMarkStrings = altitudeAxisMarkInts.map({ String($0) + "M"})
         
         let altScale = getScaleFactor(axisMarks1: HRAxisMarks, axisMarks2: altitudeAxisMarkInts)
-        
+                
         let x: HeartRateChartData = HeartRateChartData (
             heartRateAxisMarks: HRAxisMarks,
             altitudeAxisMarks: altitudeAxisMarkStrings,
             altitudeScaleFactor: Int(altScale),
-            altitudeOffest: 0,
+            altitudeOffest: Int(minAltitide),
             tracePoints: trackPoints.filter({$0.heartRate != nil && $0.altitudeMeters != nil}).map(
                 {HeartRateChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)),
                                           heartRate: Double($0.heartRate!),
                                           altitude: Double($0.altitudeMeters!),
-                                          scaledAltitude: (Double($0.altitudeMeters!) * altScale))})
+                                          scaledAltitude: ((Double($0.altitudeMeters!) - minAltitide) * altScale))})
         )
         
         return x
-        /*
-        // Create list of non-null locations
-        return trackPoints.filter({$0.heartRate != nil && $0.altitudeMeters != nil}).map(
-            {HeartRateChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)),
-                                      heartRate: Double($0.heartRate!),
-                                      altitude: ((Double($0.altitudeMeters!) - minAltitude) * altScale))})
 
-         */
+    }
+
+    func ascentTrace(maxPoints: Int) -> AscentChartData {
+        
+        let altitudeArray = trackPoints.filter({$0.altitudeMeters != nil}).map({$0.altitudeMeters!})
+        let ascentArray = getAscentFromAltitude(altitudeArray: altitudeArray)
+        let numAxisSteps = 4
+        let maxAscent = ascentArray.max() ?? 150
+        let ascentAxisMarks = getAxisMarksForStepMultiple(max: Double(maxAscent), stepMultiple: 10, intervals: numAxisSteps)
+        
+        let altTrace = altitudeTrace(maxPoints: maxPoints)
+
+        let maxAltitude = altitudeArray.max() ?? 100
+        let minAltitide = altitudeArray.min() ?? 0
+        
+        let altitudeAxisMarkInts = getAxisMarksForStepMultiple(max: Double(maxAltitude - minAltitide), stepMultiple: 10, intervals: numAxisSteps)
+
+        let altitudeAxisMarkStrings = altitudeAxisMarkInts.map({ String($0) + "M"})
+        
+        let altScale = getScaleFactor(axisMarks1: ascentAxisMarks, axisMarks2: altitudeAxisMarkInts)
+        
+        let extendedTrackPoints = zip(trackPoints.filter({$0.altitudeMeters != nil}), ascentArray)
+        let tracePoints = extendedTrackPoints.map(
+            {AscentChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)),
+                                      ascent: Double($1),
+                                      altitude: Double($0.altitudeMeters!),
+                                      scaledAltitude: ((Double($0.altitudeMeters!) - minAltitide) * altScale))})
+        
+        let x: AscentChartData = AscentChartData (
+            ascentAxisMarks: ascentAxisMarks,
+            altitudeAxisMarks: altitudeAxisMarkStrings,
+            altitudeScaleFactor: Int(altScale),
+            altitudeOffset: Int(minAltitide),
+            tracePoints: tracePoints
+        )
+        
+        return x
+
     }
 
     func altitudeTrace(maxPoints: Int) -> [ChartTracePoint] {
