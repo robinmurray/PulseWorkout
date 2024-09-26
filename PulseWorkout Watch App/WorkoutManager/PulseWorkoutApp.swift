@@ -8,7 +8,7 @@
 import SwiftUI
 
 @main
-struct PulseWorkout_Watch_AppApp: App {
+struct PulseWorkout_Watch_App: App {
     @Environment(\.scenePhase) private var scenePhase
 
     

@@ -46,7 +46,7 @@ class LiveActivityManager : NSObject, ObservableObject {
 
     var alarmRepeatCount: Int = 0
     
-    var appInBackground = false
+    var appInInactiveState = false
     
     var prevCrankTime: Int = 0
     var prevCrankRevs: Int = 0
@@ -114,22 +114,23 @@ class LiveActivityManager : NSObject, ObservableObject {
     
     func appActive() {
         logger.log("App becoming active")
-        if (appInBackground && (appState != .live)) {
+        if (appInInactiveState && (appState != .live)) {
             bluetoothManager!.connectDevices()
         }
-        appInBackground = false
+        appInInactiveState = false
     }
     
     func appInactive() {
         logger.log("App becoming Inactive")
+        if appState != .live {
+            bluetoothManager!.disconnectKnownDevices()
+        }
+        appInInactiveState = true
     }
     
     func appBackground() {
         logger.log("App becoming Background")
-        if appState != .live {
-            bluetoothManager!.disconnectKnownDevices()
-        }
-        appInBackground = true
+
     }
    
     /// Return total elapsed time for the activity

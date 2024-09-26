@@ -24,7 +24,8 @@ struct LiveMetricCarouselItem: View {
                     .foregroundColor(Color.yellow)
                 Spacer()
             }
-                
+
+
             HStack {
                 Image(systemName: metric2.image)
                     .foregroundColor(Color.yellow)
@@ -35,6 +36,7 @@ struct LiveMetricCarouselItem: View {
                 Spacer()
             }
         }
+
 
     }
 }

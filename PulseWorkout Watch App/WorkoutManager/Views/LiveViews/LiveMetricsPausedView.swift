@@ -10,16 +10,19 @@ import SwiftUI
 struct LiveMetricsPausedView: View {
     
     @ObservedObject var liveActivityManager: LiveActivityManager
-
+    var activityData: ActivityRecord
+    
+    init(liveActivityManager: LiveActivityManager) {
+        self.liveActivityManager = liveActivityManager
+        self.activityData = liveActivityManager.liveActivityRecord ??
+        ActivityRecord(settingsManager: liveActivityManager.settingsManager)
+        
+    }
+    
     var body: some View {
-        ZStack {
-            Image(systemName: "pause.fill")
-                .fontWeight(.bold)
-                .padding(.horizontal)
-                .foregroundColor(Color.orange)
-                .font(.system(size: 50))
 
             VStack {
+                /*
                 HStack {
                     Text("Paused")
                         .fontWeight(.bold)
@@ -30,7 +33,7 @@ struct LiveMetricsPausedView: View {
 
                 }
                 .foregroundColor(Color.black)
-                
+                */
 
                  
                 HStack {
@@ -38,18 +41,49 @@ struct LiveMetricsPausedView: View {
                         from: liveActivityManager.locationManager.autoPauseStart ?? Date(),
                         isPaused: false,
                         lowFrequencyTimeInterval: 1.0,
-                        highFrequencyTimeInterval: 1.0 / 30.0)
+                        highFrequencyTimeInterval: 1.0 / 2.0)
                         ) { context in
                         VStack {
                             HStack {
+                                Image(systemName: "pause.fill")
+                                    .fontWeight(.bold)
+                                    .padding(.horizontal)
+                                    .foregroundColor(Color.orange)
+                                    .font(.system(size: 40))
+
+                                Spacer()
+                                
                                 ElapsedTimeView(elapsedTime: liveActivityManager.currentPauseDurationAt(at: context.date),
                                                 showSeconds: true,
-                                                showSubseconds: context.cadence == .live)
-                                    .foregroundStyle(.black)
-                                    .padding(.horizontal)
-                                Spacer()
-                            }
+                                                showSubseconds: false)
+                                .foregroundStyle(Color.orange)
+                                .font(.system(size: 20))
 
+                            }
+                            
+
+                            
+                            LiveMetricsCarouselView(
+                                activityData: activityData,
+                                contextDate: context.date)
+                            .font(.system(size: 25))
+
+                            HStack {
+                                Spacer().frame(maxWidth: .infinity)
+                                
+                                Image(systemName: "heart.fill").foregroundColor(Color.red)
+                                
+
+                                
+                                Text((liveActivityManager.heartRate ?? 0)
+                                    .formatted(.number.precision(.fractionLength(0))))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(HRDisplay[liveActivityManager.hrState]?.colour)
+                                    .frame(width: 40.0, height: 30.0)
+                                    .font(.system(size: 20))
+                            }
+                            
+                            /*
                             HStack {
                                 ElapsedTimeView(elapsedTime: liveActivityManager.elapsedTime(at: context.date),
                                                 showSeconds: true,
@@ -58,19 +92,19 @@ struct LiveMetricsPausedView: View {
                                     .padding(.horizontal)
                                 Spacer()
                             }
+*/
                         }
                     }
                 }
-            }
-            .background(.gray.opacity(0.8))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
-            .overlay(
-                RoundedRectangle(cornerRadius: 10)
-                    .stroke(Color.orange, lineWidth: 4)
-            )
 
+
+                Spacer().frame(maxWidth: .infinity)
+           
+                BTDeviceBarView(liveActivityManager: liveActivityManager)
         }
 
+
+        
         }
 
 }
@@ -84,51 +118,8 @@ struct LiveMetricsPausedView_Previews: PreviewProvider {
         dataCache: dataCache)
 
     static var previews: some View {
-        HStack {
-            VStack {
-                HStack {
-                    
-                    TimelineView(MetricsTimelineSchedule(
-                        from: liveActivityManager.builder?.startDate ?? Date(),
-                        isPaused: liveActivityManager.session?.state == .paused,
-                        lowFrequencyTimeInterval: 1.0,
-                        highFrequencyTimeInterval: 1.0 / 30.0)
-                        ) { context in
-                        
-                        ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at:                         context.date), 
-                                        showSeconds: true,
-                                        showSubseconds: context.cadence == .live)
-                            .foregroundStyle(.yellow)
-                        }
-                    Spacer()
-                    }
-                    
-                    HStack {
-                        Image(systemName: "arrowshape.forward")
-                            .foregroundColor(Color.yellow)
-                        Text("0 M")
-                                .padding(.trailing, 8)
-                                .foregroundColor(Color.yellow)
-                        Spacer()
-                    }
-                    
-                    HStack {
-                        Image(systemName: "arrow.up.right.circle")
-                            .foregroundColor(Color.yellow)
-                        Text(distanceFormatter(distance:
-                                                0,
-                                              forceMeters: true))
-                                .padding(.trailing, 8)
-                                .foregroundColor(Color.yellow)
-                        Spacer()
-                    }
-            }
-            
-            
-            Spacer()
 
-            LiveMetricsPausedView(liveActivityManager: liveActivityManager)
-        }
+        LiveMetricsPausedView(liveActivityManager: liveActivityManager)
 
     }
 }

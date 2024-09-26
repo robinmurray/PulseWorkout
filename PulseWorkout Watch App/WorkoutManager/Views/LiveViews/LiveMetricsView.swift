@@ -49,16 +49,18 @@ let powerIcon = "bolt"
 let heartRateIcon = "heart.fill"
 let meanIcon = "arrow.up.and.line.horizontal.and.arrow.down"
 
+let HRDisplay: [HRState: HRStyling] =
+[HRState.inactive: HRStyling(HRText: "___", colour: Color.gray),
+ HRState.normal: HRStyling(colour: Color.green),
+ HRState.hiAlarm: HRStyling(colour: Color.red),
+ HRState.loAlarm: HRStyling(colour: Color.orange)]
+
 struct LiveMetricsView: View {
     
     @ObservedObject var liveActivityManager: LiveActivityManager
     var activityData: ActivityRecord
 
-    let HRDisplay: [HRState: HRStyling] =
-    [HRState.inactive: HRStyling(HRText: "___", colour: Color.gray),
-     HRState.normal: HRStyling(colour: Color.green),
-     HRState.hiAlarm: HRStyling(colour: Color.red),
-     HRState.loAlarm: HRStyling(colour: Color.orange)]
+
     
     let hiAlarmDisplay: [Bool: AlarmStyling] =
     [false: AlarmStyling(alarmLevelText: "___", colour: Color.gray),
@@ -90,24 +92,30 @@ struct LiveMetricsView: View {
             switch context.cadence {
             case .live:
 
-                VStack {
-                    HStack {
+                if (liveActivityManager.locationManager.isPaused == true) &&
+                    (liveActivityManager.currentPauseDuration() > 0) {
+                    LiveMetricsPausedView(liveActivityManager: liveActivityManager)
 
-                                ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: context.date),
-                                                showSeconds: true,
-                                                showSubseconds: context.cadence == .live)
-                                    .foregroundStyle(.yellow)
+                }
+                else {
+                    VStack {
+                        HStack {
+
+                                    ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: context.date),
+                                                    showSeconds: true,
+                                                    showSubseconds: context.cadence == .live)
+                                        .foregroundStyle(.yellow)
+
+                            Spacer()
+                        }
+
+                        LiveMetricsCarouselView(
+                            activityData: activityData,
+                            contextDate: context.date)
 
                         Spacer()
-                    }
 
-                    LiveMetricsCarouselView(
-                        activityData: activityData,
-                        contextDate: context.date)
 
-                    Spacer()
-
-                    ZStack {
                         HStack {
                             Image(systemName: "heart.fill").foregroundColor(Color.red)
                             
@@ -120,21 +128,13 @@ struct LiveMetricsView: View {
                                 .frame(width: 140.0, height: 60.0)
                                 .font(.system(size: 60))
                         }
-                        
-                        if (liveActivityManager.locationManager.isPaused == true) &&
-                            (liveActivityManager.currentPauseDuration() > 0) {
-                            LiveMetricsPausedView(liveActivityManager: liveActivityManager)
-
-                        }
-
-                        
+                                            
+                        Spacer().frame(maxWidth: .infinity)
+                   
+                        BTDeviceBarView(liveActivityManager: liveActivityManager)
                     }
-
-                    
-                    Spacer().frame(maxWidth: .infinity)
-               
-                    BTDeviceBarView(liveActivityManager: liveActivityManager)
                 }
+
                 
                 
             default:

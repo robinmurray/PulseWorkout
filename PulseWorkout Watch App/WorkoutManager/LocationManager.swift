@@ -9,6 +9,9 @@ import Foundation
 import CoreLocation
 import os
 
+/// Use for smoothing ascent/descent calculations - only count changes in elevation greater than this (and greater than current GPS vertical accuracy)
+let MIN_VERTICAL_ACCURACY: Double = 2.5
+
 
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
@@ -278,6 +281,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         didUpdateLocations locations: [CLLocation]
     ) {
         logger.debug("Update location \(locations)")
+        
         // Handle location update
         location = locations.last
         if location != nil {
@@ -295,7 +299,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                 // Calculate ascent and descent taking to account vertical accuracy
                 if altitude != nil && lastAltitude != nil && verticalAccuracy != nil  && verticalAccuracy != -1 {
                     // Only update altitude if change is greater than current accuracy
-                    if abs(altitude! - lastAltitude!) > abs(verticalAccuracy!) {
+                    if abs(altitude! - lastAltitude!) < max(abs(verticalAccuracy!), MIN_VERTICAL_ACCURACY) {
                         altitude = lastAltitude
                     }
                     if altitude! > lastAltitude! {
@@ -303,9 +307,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     } else {
                         totalDescent = (totalDescent ?? 0) + (lastAltitude! - altitude!)
                     }
-                    lastAltitude = altitude
                 }
-                
+                lastAltitude = altitude
 
                 // auto pause if configured and speed < pause speed
                 if liveActivityRecord!.autoPause == true {

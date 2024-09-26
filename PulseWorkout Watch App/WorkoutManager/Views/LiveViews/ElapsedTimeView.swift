@@ -19,7 +19,11 @@ struct ElapsedTimeView: View {
             .onChange(of: showSubseconds) { oldState, newState in
                 timeFormatter.showSubseconds = newState
             }
-            .onAppear(perform: {timeFormatter.showSeconds = showSeconds})
+            .onAppear(perform: {
+                timeFormatter.showSeconds = showSeconds
+                timeFormatter.showSubseconds = showSubseconds
+                }
+            )
     }
 
 }
