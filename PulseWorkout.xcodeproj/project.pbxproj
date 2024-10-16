@@ -64,6 +64,7 @@
 		E4C25BAC2A4F5554002F315D /* ActivityHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */; };
 		E4C25BAE2A4F55FB002F315D /* ActivityListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */; };
 		E4C25BB02A4F562B002F315D /* ActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */; };
+		E4C428332CB0431B0069F61D /* ActivityChartTraceBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C428322CB0431B0069F61D /* ActivityChartTraceBuilder.swift */; };
 		E4D41B2F2C8A20E50014C1D9 /* LiveAlwaysOnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */; };
 		E4D41B312C8A230F0014C1D9 /* LiveMetricsCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */; };
 		E4E4DFEE29E88A6200979AA2 /* ProfileListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */; };
@@ -169,6 +170,7 @@
 		E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryView.swift; sourceTree = "<group>"; };
 		E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListItemView.swift; sourceTree = "<group>"; };
 		E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
+		E4C428322CB0431B0069F61D /* ActivityChartTraceBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityChartTraceBuilder.swift; sourceTree = "<group>"; };
 		E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveAlwaysOnView.swift; sourceTree = "<group>"; };
 		E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsCarouselView.swift; sourceTree = "<group>"; };
 		E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListItemView.swift; sourceTree = "<group>"; };
@@ -326,6 +328,7 @@
 				E421295F29A21922001B8AA9 /* ActivityProfile.swift */,
 				E4BAA2402B1C7D560053C065 /* ActivityRecord.swift */,
 				E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */,
+				E4C428322CB0431B0069F61D /* ActivityChartTraceBuilder.swift */,
 				E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */,
 				E46121F72AB1A0AD00E07749 /* LocationManager.swift */,
 				E40F886A2AA5D31400E00F25 /* SimpleXML.swift */,
@@ -572,6 +575,7 @@
 				E46EE68D2B067A01008F54CD /* MapPinView.swift in Sources */,
 				E4A0839729AA18E7007B50D3 /* BTDiscoveredDeviceView.swift in Sources */,
 				E468DC8329E9B5050002FEA9 /* ProfileDetailView.swift in Sources */,
+				E4C428332CB0431B0069F61D /* ActivityChartTraceBuilder.swift in Sources */,
 				E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */,
 				E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */,
 				E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */,

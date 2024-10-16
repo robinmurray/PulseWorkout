@@ -127,7 +127,7 @@ struct ProfileDetailForm: View {
 
 struct ProfileDetailView: View {
 
-    @ObservedObject var profileManager: ActivityProfiles
+    @ObservedObject var profileManager: ProfileManager
 
     @Binding var profile: ActivityProfile
     @State var deleteProfile = false
@@ -180,7 +180,7 @@ struct ProfileDetailView: View {
 
 
 struct ProfileDetailView_Previews: PreviewProvider {
-    static var profileManager = ActivityProfiles()
+    static var profileManager = ProfileManager()
     
     static var previews: some View {
         ProfileDetailView(profileManager: profileManager,

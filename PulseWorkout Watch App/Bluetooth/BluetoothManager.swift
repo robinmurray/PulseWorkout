@@ -66,6 +66,8 @@ class BTDevicesController: NSObject, ObservableObject {
     var serviceConnectCallback: [CBUUID: (Bool) -> Void] = [:]
     var batteryLevelCallback: [CBUUID: (Int) -> Void] = [:]
     
+    let cyclePower3sBuilder = TimeAverageBuilder(seconds: 3)
+    
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "BTDevicesController")
 
@@ -162,7 +164,8 @@ class BTDevicesController: NSObject, ObservableObject {
     }
 
     func connectDevices() {
-        
+
+        logger.log("Connecting known devices if BT powered on")
         if self.centralManager.state == .poweredOn {
             self.centralManager.scanForPeripherals(withServices: requestedServices)
         }
@@ -534,6 +537,8 @@ extension BTDevicesController: CBPeripheralDelegate {
         // Unit is in watts with a resolution of 1. - Mandatory
         byteIndex = 2
         powerMeterValues["instantaneousPower"] = Int(byteArray[byteIndex]) + (Int(byteArray[byteIndex+1]) * 256)
+        powerMeterValues["3sPower"] = Int(cyclePower3sBuilder.addValue(newValue: Double(powerMeterValues["instantaneousPower"] as! Int)))
+        
         byteIndex = 4
         
         // Unit is in percentage with a resolution of 1/2. - Optional
@@ -618,7 +623,6 @@ extension BTDevicesController: CBPeripheralDelegate {
         logger.debug("powerMeterValues: \(powerMeterValues)")
         
         return powerMeterValues
-//        return powerMeterValues["instantaneousPower"] as! Int
 
     }
 }

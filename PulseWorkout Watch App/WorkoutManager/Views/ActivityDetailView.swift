@@ -271,7 +271,7 @@ struct ActivityDetailView: View {
                 VStack {
                     
                     SummaryMetricView(title: "Average Power",
-                                      value: Measurement(value: activityRecord.averagePower.rounded(),
+                                      value: Measurement(value: Double(activityRecord.averagePower),
                                                          unit: UnitPower.watts)
                                         .formatted(.measurement(width: .abbreviated,
                                                                 usage: .asProvided)
@@ -346,7 +346,7 @@ struct ActivityDetailView_Previews: PreviewProvider {
     
     static var settingsManager = SettingsManager()
     static var record = ActivityRecord(settingsManager: settingsManager)
-    static var dataCache = DataCache()
+    static var dataCache = DataCache(settingsManager: settingsManager)
     
     static var previews: some View {
         if #available(watchOS 10.0, *) {

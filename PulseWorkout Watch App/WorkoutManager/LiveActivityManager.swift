@@ -15,7 +15,7 @@ enum HRSource {
     case healthkit, bluetooth
 }
 
-enum AppState {
+enum LiveActivityState {
     case initial, live, paused
 }
 
@@ -25,7 +25,7 @@ class LiveActivityManager : NSObject, ObservableObject {
 //    var locationManager: LocationManager
     
     @Published var hrState: HRState = HRState.inactive
-    @Published var appState: AppState = .initial
+    @Published var liveActivityState: LiveActivityState = .initial
     @Published var workoutType: HKWorkoutActivityType = HKWorkoutActivityType.cycling
     @Published var workoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
 
@@ -46,8 +46,6 @@ class LiveActivityManager : NSObject, ObservableObject {
 
     var alarmRepeatCount: Int = 0
     
-    var appInInactiveState = false
-    
     var prevCrankTime: Int = 0
     var prevCrankRevs: Int = 0
     
@@ -57,7 +55,7 @@ class LiveActivityManager : NSObject, ObservableObject {
 
     var selectedWorkout: HKWorkoutActivityType?
 
-    var bluetoothManager: BTDevicesController?
+    var bluetoothManager: BTDevicesController
     
     let healthStore = HKHealthStore()
     var session: HKWorkoutSession?
@@ -65,7 +63,7 @@ class LiveActivityManager : NSObject, ObservableObject {
 
     var liveActivityRecord: ActivityRecord?
     
-    @Published var activityProfiles = ActivityProfiles()
+    @Published var activityProfiles = ProfileManager()
     @Published var liveActivityProfile: ActivityProfile?
     
     var locationManager: LocationManager
@@ -78,60 +76,40 @@ class LiveActivityManager : NSObject, ObservableObject {
 
     init(profileName: String = "",
          locationManager: LocationManager,
+         bluetoothManager: BTDevicesController,
          settingsManager: SettingsManager,
          dataCache: DataCache) {
 
         self.locationManager = locationManager
         self.settingsManager = settingsManager
         self.dataCache = dataCache
-        
+        self.bluetoothManager = bluetoothManager
         
         super.init()
 
         self.liveActivityProfile = activityProfiles.profiles[0]
 
-        self.bluetoothManager = BTDevicesController(requestedServices: nil)
-
         // Set up call back functions for when required characteristics are read.
-        bluetoothManager!.setCharacteristicCallback(characteristicCBUUID: heartRateMeasurementCharacteristicCBUUID,
+        bluetoothManager.setCharacteristicCallback(characteristicCBUUID: heartRateMeasurementCharacteristicCBUUID,
                                                     callback: setBTHeartRate)
-        bluetoothManager!.setCharacteristicCallback(characteristicCBUUID: cyclingPowerMeasurementCBUUID,
+        bluetoothManager.setCharacteristicCallback(characteristicCBUUID: cyclingPowerMeasurementCBUUID,
                                                     callback: setCyclingPower)
 
         // Set up call back functions for when services connect / disconnect.
-        bluetoothManager!.setServiceConnectCallback(serviceCBUUID: heartRateServiceCBUUID,
+        bluetoothManager.setServiceConnectCallback(serviceCBUUID: heartRateServiceCBUUID,
                                                     callback: BTHRMServiceConnected)
-        bluetoothManager!.setServiceConnectCallback(serviceCBUUID: cyclePowerMeterCBUUID,
+        bluetoothManager.setServiceConnectCallback(serviceCBUUID: cyclePowerMeterCBUUID,
                                                     callback: BTcyclePowerServiceConnected)
 
         // Set up call back functions for when services connect / disconnect.
-        bluetoothManager!.setBatteryLevelCallback(serviceCBUUID: heartRateServiceCBUUID,
+        bluetoothManager.setBatteryLevelCallback(serviceCBUUID: heartRateServiceCBUUID,
                                                   callback: setBTHRMBatteryLevel)
-        bluetoothManager!.setBatteryLevelCallback(serviceCBUUID: cyclePowerMeterCBUUID,
+        bluetoothManager.setBatteryLevelCallback(serviceCBUUID: cyclePowerMeterCBUUID,
                                                   callback: setBTcyclePowerMeterBatteryLevel)
 
     }
     
-    func appActive() {
-        logger.log("App becoming active")
-        if (appInInactiveState && (appState != .live)) {
-            bluetoothManager!.connectDevices()
-        }
-        appInInactiveState = false
-    }
-    
-    func appInactive() {
-        logger.log("App becoming Inactive")
-        if appState != .live {
-            bluetoothManager!.disconnectKnownDevices()
-        }
-        appInInactiveState = true
-    }
-    
-    func appBackground() {
-        logger.log("App becoming Background")
 
-    }
    
     /// Return total elapsed time for the activity
     func elapsedTime(at: Date) -> TimeInterval {
@@ -156,17 +134,18 @@ class LiveActivityManager : NSObject, ObservableObject {
     }
     
     func PauseHRMonitor() {
-        self.appState = .paused
+        self.liveActivityState = .paused
     }
     
     func RestartHRMonitor() {
-        self.appState = .live
+        self.liveActivityState = .live
     }
 
     func startWorkout(activityProfile: ActivityProfile) {
 
         liveActivityProfile = activityProfile
         liveTabSelection = LiveScreenTab.liveMetrics
+
         alarmRepeatCount = 0
         
         let startDate = Date()
@@ -236,12 +215,12 @@ class LiveActivityManager : NSObject, ObservableObject {
     
     func resumeWorkout() {
         session?.resume()
-        appState = .live
+        liveActivityState = .live
     }
     
     func pauseWorkout() {
         session?.pause()
-        appState = .paused
+        liveActivityState = .paused
     }
 
     func saveLiveActivityRecord() {
@@ -304,11 +283,12 @@ class LiveActivityManager : NSObject, ObservableObject {
             logger.error("API misuse - callback should return value that can be cast to dictionary")
             return
         }
-        
-        let cyclingPower = (powerDict["instantaneousPower"] ?? 0) as? Int ?? 0
-        set(watts: cyclingPower)
 
-        
+        let cyclePowerInst = (powerDict["instantaneousPower"] ?? 0) as? Int ?? 0
+        let cyclePower3s = (powerDict["3sPower"] ?? 0) as? Int ?? 0
+
+        set(watts: settingsManager.use3sCyclePower ? cyclePower3s: cyclePowerInst)
+
         var cyclingCadence: Int?
         // lastCrankTime is in seconds with a resolution of 1/1024.
         let lastCrankTime = (powerDict["lastCrankEventTime"] ?? 0) as? Int ?? 0
@@ -347,14 +327,14 @@ class LiveActivityManager : NSObject, ObservableObject {
         logger.debug("Timer initialised")
         self.hrState = HRState.normal
         
-        self.appState = .live
+        self.liveActivityState = .live
     }
     
     func stopHRMonitor() {
         logger.debug("stopping timer")
         self.timer?.invalidate()
         self.hrState = HRState.inactive
-        self.appState = .initial
+        self.liveActivityState = .initial
     }
     
     @objc func delayedEnableWaterLock() {
@@ -571,7 +551,7 @@ extension LiveActivityManager {
     
     func set(averageHeartRate: Double) {
         if liveActivityRecord != nil {
-            liveActivityRecord!.averageHeartRate = averageHeartRate
+            liveActivityRecord!.averageHeartRate = Int(averageHeartRate)
         }
     }
     
@@ -583,8 +563,9 @@ extension LiveActivityManager {
     
     func set(distanceMeters: Double) {
         if liveActivityRecord != nil {
-            liveActivityRecord!.distanceMeters = distanceMeters
+//            liveActivityRecord!.distanceMeters = distanceMeters
             setAverageSpeed()
+            liveActivityRecord!.set(distanceMeters: distanceMeters)
         }
     }
 

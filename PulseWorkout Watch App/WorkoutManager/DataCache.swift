@@ -51,6 +51,8 @@ func clearCache() {
 
 class DataCache: NSObject, Codable, ObservableObject {
     
+    var settingsManager: SettingsManager!
+    
     var container: CKContainer!
     var database: CKDatabase!
 //    var zoneID: CKRecordZone.ID!
@@ -60,25 +62,51 @@ class DataCache: NSObject, Codable, ObservableObject {
     /// Indicator to show ongoing fetch & processing of track record and bulding chart traces
     @Published var buildingChartTraces: Bool = false
 
-    @Published var heartRateChartData: HeartRateChartData = HeartRateChartData (
-        heartRateAxisMarks: [0, 50, 100, 150, 200],
-        altitudeAxisMarks: ["", "", "", "", ""],
-        altitudeScaleFactor: 1,
-        altitudeOffest: 0,
+    @Published var heartRateChartData: ActivityChartTraceData = ActivityChartTraceData (
+        id: "Heart Rate",
+        colorScheme: .red,
+        displayPrimaryAverage: true,
+        timeXAxisMarks: [],
+        timeXVisibleDomain: 10,
+        distanceXAxisMarks: [],
+        distanceXVisibleDomain: 10000,
+        primaryAxisMarks: [0, 50, 100, 150, 200],
+        backgroundAxisMarks: ["", "", "", "", ""],
+        backgroundDataScaleFactor: 1,
+        backgroundDataOffset: 0,
         tracePoints: []
     )
 
-    @Published var totalAscentTrace: AscentChartData = AscentChartData (
-        ascentAxisMarks: [],
-        altitudeAxisMarks: [],
-        altitudeScaleFactor: 1,
-        altitudeOffset: 0,
+    @Published var totalAscentTrace: ActivityChartTraceData = ActivityChartTraceData (
+        id: "Ascent",
+        colorScheme: .blue,
+        displayPrimaryAverage: false,
+        timeXAxisMarks: [],
+        timeXVisibleDomain: 10,
+        distanceXAxisMarks: [],
+        distanceXVisibleDomain: 10000,
+        primaryAxisMarks: [],
+        backgroundAxisMarks: [],
+        backgroundDataScaleFactor: 1,
+        backgroundDataOffset: 0,
+        tracePoints: []
+    )
+
+    @Published var powerTrace: ActivityChartTraceData = ActivityChartTraceData (
+        id: "Power",
+        colorScheme: .yellow,
+        displayPrimaryAverage: true,
+        timeXAxisMarks: [],
+        timeXVisibleDomain: 10,
+        distanceXAxisMarks: [],
+        distanceXVisibleDomain: 10000,
+        primaryAxisMarks: [],
+        backgroundAxisMarks: [],
+        backgroundDataScaleFactor: 1,
+        backgroundDataOffset: 0,
         tracePoints: []
     )
     
-    @Published var altitudeTrace: [ChartTracePoint] = []
-
-    @Published var totalDescentTrace: [ChartTracePoint] = []
     @Published var routeCoordinates: [CLLocationCoordinate2D] = []
     @Published var cameraPos: MapCameraPosition = MapCameraPosition.region( MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)) )
     
@@ -98,9 +126,10 @@ class DataCache: NSObject, Codable, ObservableObject {
         case activities
     }
 
-    init(readCache: Bool = true) {
+    init(settingsManager: SettingsManager, readCache: Bool = true) {
 
         super.init()
+        self.settingsManager = settingsManager
         
         container = CKContainer(identifier: "iCloud.CloudKitLesson")
         database = container.privateCloudDatabase
@@ -323,7 +352,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             switch result {
             case .success(let record):
                 // TODO: Do something with the record that was received.
-                let myRecord = ActivityRecord(fromCKRecord: record)
+                let myRecord = ActivityRecord(fromCKRecord: record, settingsManager: self.settingsManager)
 
                 DispatchQueue.main.async {
                     self.logger.debug("Adding to cache : \(myRecord)")
@@ -510,24 +539,28 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     func setAllChartTraces(activityRecord: ActivityRecord, maxPoints: Int) {
         DispatchQueue.main.async {
-            self.altitudeTrace = activityRecord.altitudeTrace(maxPoints: maxPoints)
             self.heartRateChartData = activityRecord.heartRateTrace(maxPoints: maxPoints)
 
             self.totalAscentTrace = activityRecord.ascentTrace(maxPoints: maxPoints)
-            self.totalDescentTrace = activityRecord.totalDescentTrace(maxPoints: maxPoints)
+             
+            self.powerTrace = activityRecord.powerTrace(maxPoints: maxPoints)
 
             self.routeCoordinates = activityRecord.routeCoordinates(maxPoints: maxPoints)
             
-            let latitudes = self.routeCoordinates.map({$0.latitude})
-            let longitudes = self.routeCoordinates.map({$0.longitude})
-            let meanLatitude = vDSP.mean(latitudes)
-            let meanLongitude = vDSP.mean(longitudes)
-            let routeCenter = CLLocationCoordinate2D(latitude: meanLatitude,
-                                                      longitude: meanLongitude)
-            
-            self.cameraPos = MapCameraPosition.region(
-                MKCoordinateRegion(center: routeCenter,
-                                   span: MKCoordinateSpan(latitudeDelta: 0.05,  longitudeDelta: 0.05)))
+            if self.routeCoordinates.count > 0 {
+                let latitudes = self.routeCoordinates.map({$0.latitude})
+                let longitudes = self.routeCoordinates.map({$0.longitude})
+                let meanLatitude = vDSP.mean(latitudes)
+                let meanLongitude = vDSP.mean(longitudes)
+                let routeCenter = CLLocationCoordinate2D(latitude: meanLatitude,
+                                                          longitude: meanLongitude)
+                let latitudeDelta = latitudes.max()! - latitudes.min()!
+                let longitudeDelta = longitudes.max()! - longitudes.min()!
+
+                self.cameraPos = MapCameraPosition.region(
+                    MKCoordinateRegion(center: routeCenter,
+                                       span: MKCoordinateSpan(latitudeDelta: latitudeDelta,  longitudeDelta: longitudeDelta)))
+            }
 
         }
         
@@ -552,8 +585,9 @@ class DataCache: NSObject, Codable, ObservableObject {
         let unsavedActivity = activities.filter({$0.recordID == recordID && $0.toSave})
         if unsavedActivity.count != 0 {
             self.logger.log("Required record not yet saved, so copying existing object")
-            displayActivityRecord = ActivityRecord(fromActivityRecord: unsavedActivity[0])
-
+            displayActivityRecord = ActivityRecord(fromActivityRecord: unsavedActivity[0],
+                                                   settingsManager: settingsManager)
+            
             setAllChartTraces(activityRecord: displayActivityRecord!, maxPoints: 1000)
             buildingChartTraces = false
             return
@@ -568,7 +602,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             switch result {
             case .success(let record):
                 // populate displayActivityRecord - NOTE tcx asset was fetched, so will parse entire track record
-                self.displayActivityRecord = ActivityRecord(fromCKRecord: record)
+                self.displayActivityRecord = ActivityRecord(fromCKRecord: record, settingsManager: self.settingsManager)
 
                 self.setAllChartTraces(activityRecord: self.displayActivityRecord!, maxPoints: 1000)
                 DispatchQueue.main.async {

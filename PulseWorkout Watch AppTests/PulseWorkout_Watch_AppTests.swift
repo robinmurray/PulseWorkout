@@ -10,8 +10,9 @@ import XCTest
 
 final class PulseWorkout_Watch_AppTests: XCTestCase {
 
-    var dataCache: DataCache = DataCache(readCache: false)
     var settingsManager: SettingsManager?
+    var dataCache: DataCache = DataCache(settingsManager: SettingsManager(), readCache: false)
+
     var dummyActivityRecord: ActivityRecord?
     
 

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ProfileListView: View {
 
-    @ObservedObject var profileManager: ActivityProfiles
+    @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
     
@@ -69,12 +69,15 @@ struct ProfileListView: View {
 
 struct ProfileListView_Previews: PreviewProvider {
 
-    static var profileManager = ActivityProfiles()
+    static var profileManager = ProfileManager()
     static var settingsManager = SettingsManager()
     static var locationManager = LocationManager(settingsManager: settingsManager)
-    static var dataCache = DataCache()
-    static var liveActivityManager = LiveActivityManager(locationManager: locationManager, settingsManager: settingsManager,
-        dataCache: dataCache)
+    static var dataCache = DataCache(settingsManager: settingsManager)
+    static var bluetoothManager = BTDevicesController(requestedServices: nil)
+    static var liveActivityManager = LiveActivityManager(locationManager: locationManager,
+                                                         bluetoothManager: bluetoothManager,
+                                                         settingsManager: settingsManager,
+                                                         dataCache: dataCache)
 
     
     static var previews: some View {

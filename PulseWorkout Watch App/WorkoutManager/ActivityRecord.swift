@@ -16,17 +16,6 @@ enum StravaSaveStatus: Int {
     case saved = 2
 }
 
-struct ChartTracePoint {
-    var elapsedSeconds: Int
-    var value: Double
-}
-
-struct HeartRateChartTracePoint {
-    var elapsedSeconds: Int
-    var heartRate: Double
-    var altitude: Double
-    var scaledAltitude: Double   // altitude trace, scaled by scale factor to fit as background to heart rate
-}
 
 struct AscentChartTracePoint {
     var elapsedSeconds: Int
@@ -36,14 +25,6 @@ struct AscentChartTracePoint {
 }
 
 
-struct HeartRateChartData {
-    var heartRateAxisMarks: [Int]
-    var altitudeAxisMarks: [String]
-    var altitudeScaleFactor: Int
-    var altitudeOffest: Int
-    var tracePoints: [HeartRateChartTracePoint]
-}
-
 struct AscentChartData {
     var ascentAxisMarks: [Int]
     var altitudeAxisMarks: [String]
@@ -51,6 +32,8 @@ struct AscentChartData {
     var altitudeOffset: Int
     var tracePoints: [AscentChartTracePoint]
 }
+
+
 
 extension ActivityRecord: XMLParserDelegate {
     
@@ -252,15 +235,17 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     }
     
     // Initialise record from CloudKt record - will have recordID set
-    init(fromCKRecord: CKRecord) {
+    init(fromCKRecord: CKRecord, settingsManager: SettingsManager) {
         super.init()
+        self.settingsManager = settingsManager
         self.fromCKRecord(activityRecord: fromCKRecord)
     }
   
     // Initialise from another Acivity Record and take a deep copy -- NOTE will have same recordID!
-    init(fromActivityRecord: ActivityRecord) {
+    init(fromActivityRecord: ActivityRecord, settingsManager: SettingsManager) {
         super.init()
 
+        self.settingsManager = settingsManager
         recordID = fromActivityRecord.recordID
         recordName = fromActivityRecord.recordName
         name = fromActivityRecord.name
@@ -335,9 +320,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var cadenceAnalysis: analysedVariable = analysedVariable()
     var powerAnalysis: analysedVariable = analysedVariable()
 
-    var averageHeartRate: Double = 0
-    var averageCadence: Double = 0
-    var averagePower: Double = 0
+    var averageHeartRate: Int = 0
+    var averageCadence: Int = 0
+    var averagePower: Int = 0
     var averageSpeed: Double = 0
     
     
@@ -413,101 +398,53 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     }
 
     
-    func heartRateTrace(maxPoints: Int) -> HeartRateChartData {
+    func heartRateTrace(maxPoints: Int) -> ActivityChartTraceData {
         
-        let numAxisSteps = 4
-        let maxHR = Int( trackPoints.map( {$0.heartRate ?? 0} ).max() ?? 150 )
-        let HRAxisMarks = getAxisMarksForStepMultiple(max: Double(maxHR), stepMultiple: 10, intervals: numAxisSteps)
+        let traceBuilder = ActivityChartTraceBuilder(defaultPrimaryMax: 150, backgroundAxisSuffix: "M")
+        let trace = traceBuilder.build(
+            id: "Heart Rate",
+            colorScheme: .red,
+            displayPrimaryAverage: true,
+            timeDistanceSeries: trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0) } ),
+            primaryDataSeries: trackPoints.map( {$0.heartRate } ),
+            backgroundDataSeries: trackPoints.map( {$0.altitudeMeters } ))
         
-
-        let altTrace = altitudeTrace(maxPoints: maxPoints)
-        let alts = altTrace.map { $0.value }
-
-        let maxAltitude = alts.max() ?? 100
-        let minAltitide = alts.min() ?? 0
-        
-        let altitudeAxisMarkInts = getAxisMarksForStepMultiple(max: Double(maxAltitude - minAltitide), stepMultiple: 10, intervals: numAxisSteps)
-
-        let altitudeAxisMarkStrings = altitudeAxisMarkInts.map({ String($0) + "M"})
-        
-        let altScale = getScaleFactor(axisMarks1: HRAxisMarks, axisMarks2: altitudeAxisMarkInts)
-                
-        let x: HeartRateChartData = HeartRateChartData (
-            heartRateAxisMarks: HRAxisMarks,
-            altitudeAxisMarks: altitudeAxisMarkStrings,
-            altitudeScaleFactor: Int(altScale),
-            altitudeOffest: Int(minAltitide),
-            tracePoints: trackPoints.filter({$0.heartRate != nil && $0.altitudeMeters != nil}).map(
-                {HeartRateChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)),
-                                          heartRate: Double($0.heartRate!),
-                                          altitude: Double($0.altitudeMeters!),
-                                          scaledAltitude: ((Double($0.altitudeMeters!) - minAltitide) * altScale))})
-        )
-        
-        return x
+        return trace
 
     }
 
-    func ascentTrace(maxPoints: Int) -> AscentChartData {
+    func ascentTrace(maxPoints: Int) -> ActivityChartTraceData {
         
-        let altitudeArray = trackPoints.filter({$0.altitudeMeters != nil}).map({$0.altitudeMeters!})
-        let ascentArray = getAscentFromAltitude(altitudeArray: altitudeArray)
-        let numAxisSteps = 4
-        let maxAscent = ascentArray.max() ?? 150
-        let ascentAxisMarks = getAxisMarksForStepMultiple(max: Double(maxAscent), stepMultiple: 10, intervals: numAxisSteps)
+        let traceBuilder = ActivityChartTraceBuilder(defaultPrimaryMax: 100, backgroundAxisSuffix: "M")
+        let trace = traceBuilder.build(
+            id: "Ascent",
+            colorScheme: .blue,
+            displayPrimaryAverage: false,
+            timeDistanceSeries: trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0 ) } ),
+            primaryDataSeries: getAscentFromAltitude(altitudeArray: trackPoints.map( { $0.altitudeMeters } )),
+            backgroundDataSeries: trackPoints.map( {$0.altitudeMeters } ))
         
-        let altTrace = altitudeTrace(maxPoints: maxPoints)
-
-        let maxAltitude = altitudeArray.max() ?? 100
-        let minAltitide = altitudeArray.min() ?? 0
+        return trace
         
-        let altitudeAxisMarkInts = getAxisMarksForStepMultiple(max: Double(maxAltitude - minAltitide), stepMultiple: 10, intervals: numAxisSteps)
-
-        let altitudeAxisMarkStrings = altitudeAxisMarkInts.map({ String($0) + "M"})
-        
-        let altScale = getScaleFactor(axisMarks1: ascentAxisMarks, axisMarks2: altitudeAxisMarkInts)
-        
-        let extendedTrackPoints = zip(trackPoints.filter({$0.altitudeMeters != nil}), ascentArray)
-        let tracePoints = extendedTrackPoints.map(
-            {AscentChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)),
-                                      ascent: Double($1),
-                                      altitude: Double($0.altitudeMeters!),
-                                      scaledAltitude: ((Double($0.altitudeMeters!) - minAltitide) * altScale))})
-        
-        let x: AscentChartData = AscentChartData (
-            ascentAxisMarks: ascentAxisMarks,
-            altitudeAxisMarks: altitudeAxisMarkStrings,
-            altitudeScaleFactor: Int(altScale),
-            altitudeOffset: Int(minAltitide),
-            tracePoints: tracePoints
-        )
-        
-        return x
-
     }
 
-    func altitudeTrace(maxPoints: Int) -> [ChartTracePoint] {
-        
-        // Create list of non-null altitudes
-        return trackPoints.filter({$0.altitudeMeters != nil}).map({ChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)), value: Double($0.altitudeMeters!))})
-
-    }
-
-    func totalAscentTrace(maxPoints: Int) -> [ChartTracePoint] {
-        
-        // Create ascent trace
-        return trackPoints.filter({$0.altitudeMeters != nil}).map({ChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)), value: Double($0.altitudeMeters! / 2 ))})
-
-    }
-
-    func totalDescentTrace(maxPoints: Int) -> [ChartTracePoint] {
-        
-        // Create ascent trace
-        return trackPoints.filter({$0.altitudeMeters != nil}).map({ChartTracePoint(elapsedSeconds: Int($0.time.timeIntervalSince(startDateLocal)), value: Double($0.altitudeMeters! * 2 ))})
-
-    }
-
+    func powerTrace(maxPoints: Int) -> ActivityChartTraceData {
     
+        let traceBuilder = ActivityChartTraceBuilder(defaultPrimaryMax: 100, backgroundAxisSuffix: "M")
+        traceBuilder.rollingAverageCount = max(Int(settingsManager!.cyclePowerGraphSeconds / 2), 1)
+        let trace = traceBuilder.build(
+            id: "Power",
+            colorScheme: .yellow,
+            displayPrimaryAverage: true,
+            timeDistanceSeries: trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0 ) } ),
+            primaryDataSeries: trackPoints.map( { Double($0.watts ?? 0) } ),
+            backgroundDataSeries: trackPoints.map( {$0.altitudeMeters } ))
+        
+        return trace
+
+    }
+
+
 
     func start(activityProfile: ActivityProfile, startDate: Date) {
     
@@ -635,6 +572,10 @@ extension ActivityRecord {
         
         cadenceAnalysis.add(cadence == nil ? nil : Double(cadence!), includeZeros: SM.aveCadenceZeros)
         powerAnalysis.add(cadence == nil ? nil : Double(watts!), includeZeros: SM.avePowerZeros)
+        
+        averageHeartRate = Int(heartRateAnalysis.average)
+        averageCadence = Int(cadenceAnalysis.average)
+        averagePower = Int(powerAnalysis.average)
 
     }
 
@@ -793,9 +734,9 @@ extension ActivityRecord {
         totalAscent = activityRecord["totalAscent"] ?? 0 as Double
         totalDescent = activityRecord["totalDescent"] ?? 0 as Double
 
-        averageHeartRate = activityRecord["averageHeartRate"] ?? 0 as Double
-        averageCadence = activityRecord["averageCadence"] ?? 0 as Double
-        averagePower = activityRecord["averagePower"] ?? 0 as Double
+        averageHeartRate = activityRecord["averageHeartRate"] ?? 0 as Int
+        averageCadence = activityRecord["averageCadence"] ?? 0 as Int
+        averagePower = activityRecord["averagePower"] ?? 0 as Int
         averageSpeed = activityRecord["averageSpeed"] ?? 0 as Double
         activeEnergy = activityRecord["activeEnergy"] ?? 0 as Double
         timeOverHiAlarm = activityRecord["timeOverHiAlarm"] ?? 0 as Double
@@ -893,7 +834,7 @@ extension ActivityRecord {
     
     func set(averageHeartRate: Double) {
 
-        self.averageHeartRate = averageHeartRate
+        self.averageHeartRate = Int(averageHeartRate)
 
     }
     

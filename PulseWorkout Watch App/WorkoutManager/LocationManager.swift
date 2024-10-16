@@ -10,7 +10,7 @@ import CoreLocation
 import os
 
 /// Use for smoothing ascent/descent calculations - only count changes in elevation greater than this (and greater than current GPS vertical accuracy)
-let MIN_VERTICAL_ACCURACY: Double = 2.5
+let MIN_VERTICAL_ACCURACY: Double = 4
 
 
 

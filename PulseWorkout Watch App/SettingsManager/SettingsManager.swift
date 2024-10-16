@@ -31,11 +31,17 @@ class SettingsManager: NSObject, ObservableObject  {
     @Published var aveCadenceZeros: Bool
     @Published var avePowerZeros: Bool
     
-    // whether to include HR in average when pasued - true -> yes, false -> no
+    /// Whether to include HR in average when paused - true -> yes, false -> no
     @Published var aveHRPaused: Bool
     @Published var hapticType: WKHapticType
     @Published var maxAlarmRepeatCount: Int
 
+    /// Whether to use 3-second power or instantanteous power for cycle power meter reading
+    @Published var use3sCyclePower: Bool
+    
+    /// The number of seconds to average power over on the cycle power graph
+    @Published var cyclePowerGraphSeconds: Int
+    
     override init() {
         
         transmitHR = UserDefaults.standard.bool(forKey: "transmitHR")
@@ -53,6 +59,13 @@ class SettingsManager: NSObject, ObservableObject  {
         aveHRPaused = UserDefaults.standard.bool(forKey: "aveHRPaused")
         hapticType = WKHapticType(rawValue: UserDefaults.standard.integer(forKey: "hapticType")) ?? .notification
         maxAlarmRepeatCount = max( UserDefaults.standard.integer(forKey: "maxAlarmRepeatCount"), 1 )
+        
+        // default to true if not set
+        use3sCyclePower = UserDefaults.standard.object(forKey: "use3sCyclePower") != nil ? UserDefaults.standard.bool(forKey: "use3sCyclePower") : true
+        let _cyclePowerGraphSeconds: Int =  UserDefaults.standard.integer(forKey: "cyclePowerGraphSeconds")
+        cyclePowerGraphSeconds = _cyclePowerGraphSeconds == 0 ? 30 : _cyclePowerGraphSeconds
+        
+        
         super.init()
 
     }
@@ -75,12 +88,15 @@ class SettingsManager: NSObject, ObservableObject  {
         UserDefaults.standard.set(hapticType.rawValue, forKey: "hapticType")
         UserDefaults.standard.set(maxAlarmRepeatCount, forKey: "maxAlarmRepeatCount")
 
+        UserDefaults.standard.set(use3sCyclePower, forKey: "use3sCyclePower")
+        UserDefaults.standard.set(cyclePowerGraphSeconds, forKey: "cyclePowerGraphSeconds")
+
     }
     
 }
 
 
-extension WKHapticType: Identifiable {
+extension WKHapticType: @retroactive Identifiable {
     public var id: Int {
         rawValue
     }

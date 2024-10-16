@@ -9,12 +9,12 @@ import SwiftUI
 
 struct NewProfileDetailView: View {
 
-    @ObservedObject var profileManager: ActivityProfiles
+    @ObservedObject var profileManager: ProfileManager
     @State var newProfile: ActivityProfile
     @State var cancelPressed = false
     @Environment(\.dismiss) private var dismiss
     
-    init(profileManager: ActivityProfiles ) {
+    init(profileManager: ProfileManager ) {
         self.profileManager = profileManager
         _newProfile = State(initialValue: profileManager.newProfile())
     }
@@ -58,7 +58,7 @@ struct NewProfileDetailView: View {
 
 struct NewProfileDetailView_Previews: PreviewProvider {
     
-    static var profileManager = ActivityProfiles()
+    static var profileManager = ProfileManager()
     
     static var previews: some View {
         NewProfileDetailView(profileManager: profileManager)

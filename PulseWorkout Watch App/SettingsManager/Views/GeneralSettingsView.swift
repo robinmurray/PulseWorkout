@@ -146,8 +146,50 @@ struct GeneralSettingsView: View {
                 }
                 .font(.subheadline)
                 .foregroundColor(/*@START_MENU_TOKEN@*/.blue/*@END_MENU_TOKEN@*/)
-                
+          
+                Section(header: Text("Cycle Power Settings")) {
+                    
+                    VStack {
+                        Toggle(isOn: $settingsManager.use3sCyclePower) {
+                            Text("Use 3s. Cycle Power")
+                                .foregroundColor(.white)
+                        }
+                        
+                        Text("Use 3 second average cycling power, or instantaneous power.")
+                            .font(.footnote).foregroundColor(.gray)
+                    }
+                    
+                    HStack {
+                        Text("Cycle power chart averages over:")
+                            .foregroundColor(.white)
+                        Spacer()
+                    }
+                    
+                    Stepper {
+                        Text(String(settingsManager.cyclePowerGraphSeconds) + " Sec")
+                            .foregroundColor(.white)
+                            .font(.body)
+                    } onIncrement: {
+                        
+                        settingsManager.cyclePowerGraphSeconds = min(settingsManager.cyclePowerGraphSeconds + 1, 60)
+                            
+                    } onDecrement: {
+                        settingsManager.cyclePowerGraphSeconds = max(settingsManager.cyclePowerGraphSeconds - 1, 1)
 
+                    }
+                    .font(.body)
+                    .fontWeight(.light)
+                    .multilineTextAlignment(.leading)
+                    .minimumScaleFactor(0.2)
+                    .frame(width:140, height: 30, alignment: .topLeading)
+                    .foregroundColor(.white)
+
+                    Text("Smooth the cycling power graph by averaging power output over this number of seconds.")
+                        .font(.footnote).foregroundColor(.gray)
+                }
+                .font(.subheadline)
+                .foregroundColor(.blue)
+                
                 Section(header: Text("Haptics")) {
                     VStack {
                         HStack {

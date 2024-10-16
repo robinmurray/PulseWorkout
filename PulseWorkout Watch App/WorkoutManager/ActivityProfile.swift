@@ -58,7 +58,7 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
 
 
 
-class ActivityProfiles: NSObject, ObservableObject {
+class ProfileManager: NSObject, ObservableObject {
 
     @Published var profiles: [ActivityProfile] = []
     private var lastSavedProfiles: [ActivityProfile] = []
@@ -258,7 +258,7 @@ class ActivityProfiles: NSObject, ObservableObject {
 
 
 
-extension HKWorkoutActivityType: Identifiable {
+extension HKWorkoutActivityType: @retroactive Identifiable {
     public var id: UInt {
         rawValue
     }
@@ -307,7 +307,7 @@ extension HKWorkoutActivityType: Identifiable {
 }
 
 
-extension HKWorkoutSessionLocationType: Identifiable {
+extension HKWorkoutSessionLocationType: @retroactive Identifiable {
     public var id: Int {
         rawValue
     }

@@ -213,7 +213,7 @@ final class ActivityRecordTest: XCTestCase {
         let dateFormatter = ISO8601DateFormatter()
         let date = dateFormatter.date(from:isoDate)!
         
-        let activityProfiles = ActivityProfiles()
+        let activityProfiles = ProfileManager()
         let activityProfile = activityProfiles.newProfile()
         
         activityRecord.start(activityProfile: activityProfile, startDate: date)
