@@ -18,7 +18,10 @@ struct ActivityChartTracePoint {
     var elapsedSeconds: Int                     // the time / x-axis value
     var distanceMeters: Double                  // distance travelled - alternative x-axis
     var primaryValue: Double                    // the foreground / primary trace value
-    var primaryValueSegmentAverage: Double      // eg. 10 min average for primary value
+    var primaryValueTimeSegmentAverage: Double  // eg. 10 min average for primary value
+    var primaryValueDistanceSegmentAverage: Double  // eg. 10k average for primary value
+    var timeSegmentMidpoint: Bool               // whether this is a midpoint of the time average block true / false
+    var distanceSegmentMidpoint: Bool              // whether this is a midpoint of the distance average block true / false
     var backgroundValue: Double                 // the background / secondary trace value
     var scaledBackgroundValue: Double           // altitude trace, scaled by scale factor to fit as background to chart
 }
@@ -45,7 +48,8 @@ class ActivityChartTraceBuilder: NSObject {
 
     var defaultPrimaryMax: Double
     var backgroundAxisSuffix = ""
-    var rollingAverageCount: Int = 1        // Whether to smooth redaings with a rolling average over this number of values
+    var rollingAverageCount: Int = 1        // Whether to smooth readings with a rolling average over this number of values
+    var averagesIncludeZeros: Bool
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "ActivityChartTraceBuilder")
@@ -64,10 +68,11 @@ class ActivityChartTraceBuilder: NSObject {
         backgroundDataOffset: 0,
         tracePoints: [])
     
-    init(defaultPrimaryMax: Double, backgroundAxisSuffix: String?) {
+    init(defaultPrimaryMax: Double, backgroundAxisSuffix: String?, averagesIncludeZeros: Bool) {
     
         self.defaultPrimaryMax = defaultPrimaryMax
         self.backgroundAxisSuffix = backgroundAxisSuffix ?? ""
+        self.averagesIncludeZeros = averagesIncludeZeros
         
     }
     
@@ -80,7 +85,6 @@ class ActivityChartTraceBuilder: NSObject {
         
         var nonNillBackgroundDataSeries: [Double?]
         var smoothedPrimaryDataSeries: [Double?]
-        var primaryValueSegmentAverageSeries: [Double?] = []
         
         if timeDistanceSeries.count != primaryDataSeries.count {
             logger.error("Primary data series different size to time series")
@@ -127,15 +131,45 @@ class ActivityChartTraceBuilder: NSObject {
         // Note - already tested count > 0
         let startDateLocal = timeDistanceSeries[0].time
 
-        primaryValueSegmentAverageSeries = segmentAverageSeries(segmentSeconds: getAxisTimeGap(
-            elapsedTimeSeries: timeDistanceSeries.map( { Int($0.time.timeIntervalSince(startDateLocal)) })),
-                                                                inputSeries: smoothedPrimaryDataSeries)
+        
+        let primaryValueTimeSegmentAverageSeries = segmentAverageSeries(
+            segmentSize: getAxisTimeGap(
+                elapsedTimeSeries: timeDistanceSeries.map( { Int($0.time.timeIntervalSince(startDateLocal)) })),
+            xAxisSeries: timeDistanceSeries.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+            inputSeries: smoothedPrimaryDataSeries,
+            includeZeros: averagesIncludeZeros)
 
-        // zip the 3 data series together and remove nil values
-        let zippedSeries = zip(zip(zip(timeDistanceSeries,
-                                       smoothedPrimaryDataSeries),
-                                   nonNillBackgroundDataSeries),
-                               primaryValueSegmentAverageSeries).map( { ($0.0.0.0, $0.0.0.1, $0.0.1, $0.1)} )
+        let timeSegmentMidpointSeries: [Double] = segmentAverageSeries(
+            segmentSize: getAxisTimeGap(
+                elapsedTimeSeries: timeDistanceSeries.map( { Int($0.time.timeIntervalSince(startDateLocal)) })),
+            xAxisSeries: timeDistanceSeries.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+            inputSeries: smoothedPrimaryDataSeries,
+            includeZeros: averagesIncludeZeros,
+            getMidpoints: true)
+        
+        let primaryValueDistanceSegmentAverageSeries: [Double] = segmentAverageSeries(
+            segmentSize: getAxisMetersGap(
+                distanceMetersSeries: timeDistanceSeries.map( { Int($0.distanceMeters) })),
+            xAxisSeries: timeDistanceSeries.map( { Double($0.distanceMeters) }),
+            inputSeries: smoothedPrimaryDataSeries,
+            includeZeros: averagesIncludeZeros)
+        
+        let distanceSegmentMidpointSeries: [Double] = segmentAverageSeries(
+            segmentSize: getAxisMetersGap(
+                distanceMetersSeries: timeDistanceSeries.map( { Int($0.distanceMeters) })),
+            xAxisSeries: timeDistanceSeries.map( { Double($0.distanceMeters) }),
+            inputSeries: smoothedPrimaryDataSeries,
+            includeZeros: averagesIncludeZeros,
+            getMidpoints: true)
+        
+        // zip the 7 data series together and remove nil values
+        let zippedSeries = zip(zip(zip(zip(zip(zip(timeDistanceSeries,
+                                                   smoothedPrimaryDataSeries),
+                                               nonNillBackgroundDataSeries),
+                                           primaryValueTimeSegmentAverageSeries),
+                                       primaryValueDistanceSegmentAverageSeries),
+                                   timeSegmentMidpointSeries),
+                               distanceSegmentMidpointSeries).map( { ($0.0.0.0.0.0.0, $0.0.0.0.0.0.1, $0.0.0.0.0.1, $0.0.0.0.1, $0.0.0.1, $0.0.1, $0.1) } )
 
         let nonNilSeries = zippedSeries.filter( {$0.1 != nil && $0.2 != nil} )
 
@@ -145,7 +179,10 @@ class ActivityChartTraceBuilder: NSObject {
             {ActivityChartTracePoint(elapsedSeconds: Int($0.0.time.timeIntervalSince(startDateLocal)),
                                      distanceMeters: $0.0.distanceMeters,
                                      primaryValue: Double($0.1!),
-                                     primaryValueSegmentAverage: Double($0.3!),
+                                     primaryValueTimeSegmentAverage: Double($0.3),
+                                     primaryValueDistanceSegmentAverage: Double($0.4),
+                                     timeSegmentMidpoint: Bool($0.5 == 1),
+                                     distanceSegmentMidpoint: Bool($0.6 == 1),
                                      backgroundValue: Double($0.2!),
                                      scaledBackgroundValue: ((Double($0.2!) - minBackgroundValue) * backgroundDataScaleFactor))})
 

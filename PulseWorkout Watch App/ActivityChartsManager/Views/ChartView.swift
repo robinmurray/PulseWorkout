@@ -7,21 +7,31 @@
 
 import SwiftUI
 import Charts
-import CloudKit
-
 
 
 struct ActivityLineChartView: View {
 
     var chartData: ActivityChartTraceData
+    var showDistanceButton: Bool = true
     @State var useDistanceXAxis: Bool = false
+    @State var lastAveVal: Int = 0
     
     func getXAxis( item: ActivityChartTracePoint ) -> Int {
         return useDistanceXAxis ? Int(item.distanceMeters) : item.elapsedSeconds
     }
+
+    func segmentAverage( item: ActivityChartTracePoint ) -> Double {
+        return useDistanceXAxis ? Double(item.primaryValueDistanceSegmentAverage) : item.primaryValueTimeSegmentAverage
+    }
+
+    func isSegmentMidpoint( item: ActivityChartTracePoint ) -> Bool {
+        return useDistanceXAxis ? item.distanceSegmentMidpoint : item.timeSegmentMidpoint
+    }
+
     
-    func getDistanceAxisMarks(values: [Int]) -> any AxisContent {
-        return AxisMarks( values: chartData.distanceXAxisMarks )  as! (any AxisContent)
+    init(chartData: ActivityChartTraceData) {
+        self.chartData = chartData
+        self.showDistanceButton = (chartData.tracePoints.map( { $0.distanceMeters } ).max() ?? 0 > 0 )
     }
     
     var body: some View {
@@ -40,11 +50,28 @@ struct ActivityLineChartView: View {
                     if chartData.displayPrimaryAverage {
                         AreaMark(
                             x: .value("Elapsed", getXAxis(item: item)),
-                            y: .value("Primary Value Average",  item.primaryValueSegmentAverage),
+                            y: .value("Primary Value Average",  segmentAverage(item: item)),
                             series: .value("Trace", "Primary Value Average"),
                             stacking: .unstacked
                         )
                         .foregroundStyle(Gradient(colors: [chartData.colorScheme.opacity(0.5), chartData.colorScheme.opacity(0.1)]))
+                        
+                        if isSegmentMidpoint(item: item) {
+                            PointMark(
+                                x: .value("Elapsed", getXAxis(item: item)),
+                                y: .value("Value", segmentAverage(item: item))
+                                )
+                            .foregroundStyle(.red.opacity(0))
+                            .annotation(position: .bottom,
+                                        alignment: .center,
+                                        spacing: 10) {
+
+                                Text("\(Int(segmentAverage(item: item)))")
+                                    .foregroundStyle(.black)
+                                    .font(.footnote)
+                                    
+                            }
+                        }
                     }
 
                     LineMark(
@@ -53,7 +80,7 @@ struct ActivityLineChartView: View {
                         series: .value("Trace", "Primary Value")
                     )
                     .foregroundStyle(chartData.colorScheme)
-
+ 
                 }
             }
             .chartScrollableAxes(.horizontal)
@@ -65,7 +92,8 @@ struct ActivityLineChartView: View {
             }
             .chartXAxis {
                 if useDistanceXAxis {
-                    AxisMarks( values: chartData.distanceXAxisMarks ) {
+                    AxisMarks(position: .automatic,
+                              values: chartData.distanceXAxisMarks ) {
                         value in
                         let meters = value.as(Int.self)!
 
@@ -75,7 +103,8 @@ struct ActivityLineChartView: View {
                     }
                 }
                 else {
-                    AxisMarks(values: chartData.timeXAxisMarks )
+                    AxisMarks(position: .automatic,
+                              values: chartData.timeXAxisMarks )
                     {
                         value in
                         let seconds = value.as(Int.self)
@@ -88,21 +117,21 @@ struct ActivityLineChartView: View {
 
             }
             
-            
             // Create axis changing button
-            // FIX - only display button if distance data exists
-            VStack{
-                HStack {
-                    Spacer()
-                    Button {
-                        useDistanceXAxis = !useDistanceXAxis
-                    } label: {
-                        Image(systemName: useDistanceXAxis ? "ruler" : "clock.arrow.circlepath")
-                            }.labelStyle(.iconOnly)
-                        .buttonStyle(BorderlessButtonStyle())
+            if showDistanceButton {
+                VStack{
+                    HStack {
+                        Spacer()
+                        Button {
+                            useDistanceXAxis = !useDistanceXAxis
+                        } label: {
+                            Image(systemName: useDistanceXAxis ? "ruler" : "clock.arrow.circlepath")
+                                }.labelStyle(.iconOnly)
+                            .buttonStyle(BorderlessButtonStyle())
+
+                    }
 
                 }
-
             }
 
         }
@@ -114,36 +143,49 @@ struct ActivityLineChartView: View {
 struct ChartView: View {
     
     @State var activityRecord: ActivityRecord
-    @ObservedObject var dataCache: DataCache
+    var dataCache: DataCache
+    @ObservedObject var activityChartsController: ActivityChartsController
+    
+    init(activityRecord: ActivityRecord, dataCache: DataCache) {
+        self.activityRecord = activityRecord
+        self.dataCache = dataCache
+        self.activityChartsController = ActivityChartsController(dataCache: dataCache)
+    }
     
     var body: some View {
         ZStack {
-            if dataCache.buildingChartTraces {
-                ProgressView()
-            }
-            TabView {
-                ForEach([dataCache.heartRateChartData,
-                         dataCache.powerTrace,
-                         dataCache.totalAscentTrace]) {chartData in
+            if activityChartsController.recordFetchFailed {
+                FetchFailedView()
+            } else {
 
-                    VStack {
-                        ActivityLineChartView(chartData: chartData)
-                    }
-     
-                    .navigationTitle {
-                        Text(chartData.id)
-                            .foregroundStyle(chartData.colorScheme)
-                    }
-                    .containerBackground(chartData.colorScheme.gradient, for: .tabView)
-                    
+                if activityChartsController.buildingChartTraces {
+                    ProgressView()
                 }
+                TabView {
+                    ForEach(activityChartsController.chartTraces) {chartData in
 
+                        VStack {
+                            ActivityLineChartView(chartData: chartData)
+                        }
+         
+                        .navigationTitle {
+                            Text(chartData.id)
+                                .foregroundStyle(chartData.colorScheme)
+                        }
+                        .containerBackground(chartData.colorScheme.gradient, for: .tabView)
+                        
+                    }
+
+                }
+                .tabViewStyle(.verticalPage)
+                
             }
-            .tabViewStyle(.verticalPage)
+
             
         }
         .onAppear(perform: {
-            dataCache.buildChartTraces(recordID: activityRecord.recordID) })
+            activityChartsController.buildChartTraces(recordID: activityRecord.recordID) })
+
     }
 }
 
@@ -165,19 +207,28 @@ struct ChartView_Previews: PreviewProvider {
             ActivityChartTracePoint(elapsedSeconds: 0,
                                     distanceMeters: 0,
                                     primaryValue: 20,
-                                    primaryValueSegmentAverage: 15,
+                                    primaryValueTimeSegmentAverage: 30,
+                                    primaryValueDistanceSegmentAverage: 4,
+                                    timeSegmentMidpoint: false,
+                                    distanceSegmentMidpoint: false,
                                     backgroundValue: 10,
                                     scaledBackgroundValue: 10),
             ActivityChartTracePoint(elapsedSeconds: 120,
                                     distanceMeters: 5,
                                     primaryValue: 100,
-                                    primaryValueSegmentAverage: 17,
+                                    primaryValueTimeSegmentAverage: 40,
+                                    primaryValueDistanceSegmentAverage: 6,
+                                    timeSegmentMidpoint: true,
+                                    distanceSegmentMidpoint: true,
                                     backgroundValue: 8,
                                     scaledBackgroundValue: 8),
             ActivityChartTracePoint(elapsedSeconds: 250,
                                     distanceMeters: 7,
                                     primaryValue: 150,
-                                    primaryValueSegmentAverage: 16,
+                                    primaryValueTimeSegmentAverage: 60,
+                                    primaryValueDistanceSegmentAverage: 2,
+                                    timeSegmentMidpoint: false,
+                                    distanceSegmentMidpoint: false,
                                     backgroundValue: 3,
                                     scaledBackgroundValue: 3)
         ])

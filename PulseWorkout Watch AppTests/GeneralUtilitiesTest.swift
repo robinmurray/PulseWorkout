@@ -219,6 +219,58 @@ final class GeneralUtilitiesTest: XCTestCase {
         XCTAssert(durationFormatter(seconds: 3660) == "1:01")
 
     }
+
+    func testSegAveSeries() throws {
+
+        var segmentSize: Int = 5
+        var xAxisSeries: [Double] = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]
+        var inputSeries: [Double] = [2, 4, 4, 2, 3, 6, 6, 10, 10, 8, 1, 2, 3, 0, 0]
+        
+        XCTAssert(segmentAverageSeries( segmentSize: segmentSize,
+                                        xAxisSeries: xAxisSeries,
+                                        inputSeries: inputSeries,
+                                        includeZeros: true) == [3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 1.2, 1.2, 1.2, 1.2, 1.2])
+        XCTAssert(segmentAverageSeries( segmentSize: segmentSize,
+                                        xAxisSeries: xAxisSeries,
+                                        inputSeries: inputSeries,
+                                        includeZeros: false) == [3, 3, 3, 3, 3, 8, 8, 8, 8, 8, 2, 2, 2, 2, 2])
+
+        XCTAssert(segmentAverageSeries( segmentSize: segmentSize,
+                                        xAxisSeries: xAxisSeries,
+                                        inputSeries: inputSeries,
+                                        includeZeros: true,
+                                        getMidpoints: true) == [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0])
+        XCTAssert(segmentAverageSeries( segmentSize: segmentSize,
+                                        xAxisSeries: xAxisSeries,
+                                        inputSeries: inputSeries,
+                                        includeZeros: false,
+                                        getMidpoints: true) == [0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0])
+
+        xAxisSeries = [0, 1, 2, 3, 5, 6, 7, 8, 10, 11, 12, 13, 14, 15, 16]
+        inputSeries = [2, 4, 4, 2, 3, 6, 6, 10, 10, 8, 1, 2, 3, 0, 1]
+
+        XCTAssert(segmentAverageSeries( segmentSize: segmentSize,
+                                xAxisSeries: xAxisSeries,
+                                inputSeries: inputSeries,
+                                includeZeros: true) == [3, 3, 3, 3, 6.25, 6.25, 6.25, 6.25, 4.8, 4.8, 4.8, 4.8, 4.8, 0.5, 0.5])
+        XCTAssert(segmentAverageSeries( segmentSize: segmentSize,
+                                xAxisSeries: xAxisSeries,
+                                inputSeries: inputSeries,
+                                includeZeros: false) == [3, 3, 3, 3, 6.25, 6.25, 6.25, 6.25, 4.8, 4.8, 4.8, 4.8, 4.8, 1, 1])
+
+        XCTAssert(segmentAverageSeries( segmentSize: segmentSize,
+                                        xAxisSeries: xAxisSeries,
+                                        inputSeries: inputSeries,
+                                        includeZeros: true,
+                                        getMidpoints: true) == [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0])
+        XCTAssert(segmentAverageSeries( segmentSize: segmentSize,
+                                        xAxisSeries: xAxisSeries,
+                                        inputSeries: inputSeries,
+                                        includeZeros: false,
+                                        getMidpoints: true) == [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0])
+
+    }
+
 }
 
 

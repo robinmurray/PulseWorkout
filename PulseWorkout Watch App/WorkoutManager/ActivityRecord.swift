@@ -17,24 +17,6 @@ enum StravaSaveStatus: Int {
 }
 
 
-struct AscentChartTracePoint {
-    var elapsedSeconds: Int
-    var ascent: Double
-    var altitude: Double
-    var scaledAltitude: Double   // altitude trace, scaled by scale factor to fit as background to chart
-}
-
-
-struct AscentChartData {
-    var ascentAxisMarks: [Int]
-    var altitudeAxisMarks: [String]
-    var altitudeScaleFactor: Int
-    var altitudeOffset: Int
-    var tracePoints: [AscentChartTracePoint]
-}
-
-
-
 extension ActivityRecord: XMLParserDelegate {
     
     
@@ -388,64 +370,43 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         
     }
 
-    private var trackPoints: [TrackPoint] = []
+    var trackPoints: [TrackPoint] = []
     
-    func routeCoordinates(maxPoints: Int) -> [CLLocationCoordinate2D] {
+    /// Return true / false depending on whether a heart rate trace exists in the tracke points.
+    func heartRateTraceExists() -> Bool {
         
-        // Create list of non-null locations
-        return trackPoints.filter({$0.latitude != nil && $0.longitude != nil}).map({CLLocationCoordinate2D(latitude: $0.latitude!, longitude: $0.longitude!)})
-
+        return trackPoints.map( { $0.heartRate ?? 0 } ).max() ?? Double(0) > 0
+        
     }
-
     
-    func heartRateTrace(maxPoints: Int) -> ActivityChartTraceData {
+    /// Return true / false depending on whether altitude trace exists in the tracke points.
+    func altitudeTraceExists() -> Bool {
         
-        let traceBuilder = ActivityChartTraceBuilder(defaultPrimaryMax: 150, backgroundAxisSuffix: "M")
-        let trace = traceBuilder.build(
-            id: "Heart Rate",
-            colorScheme: .red,
-            displayPrimaryAverage: true,
-            timeDistanceSeries: trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0) } ),
-            primaryDataSeries: trackPoints.map( {$0.heartRate } ),
-            backgroundDataSeries: trackPoints.map( {$0.altitudeMeters } ))
-        
-        return trace
-
-    }
-
-    func ascentTrace(maxPoints: Int) -> ActivityChartTraceData {
-        
-        let traceBuilder = ActivityChartTraceBuilder(defaultPrimaryMax: 100, backgroundAxisSuffix: "M")
-        let trace = traceBuilder.build(
-            id: "Ascent",
-            colorScheme: .blue,
-            displayPrimaryAverage: false,
-            timeDistanceSeries: trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0 ) } ),
-            primaryDataSeries: getAscentFromAltitude(altitudeArray: trackPoints.map( { $0.altitudeMeters } )),
-            backgroundDataSeries: trackPoints.map( {$0.altitudeMeters } ))
-        
-        return trace
+        return trackPoints.map( { $0.altitudeMeters ?? 0 } ).max() ?? Double(0) > 0
         
     }
-
-    func powerTrace(maxPoints: Int) -> ActivityChartTraceData {
     
-        let traceBuilder = ActivityChartTraceBuilder(defaultPrimaryMax: 100, backgroundAxisSuffix: "M")
-        traceBuilder.rollingAverageCount = max(Int(settingsManager!.cyclePowerGraphSeconds / 2), 1)
-        let trace = traceBuilder.build(
-            id: "Power",
-            colorScheme: .yellow,
-            displayPrimaryAverage: true,
-            timeDistanceSeries: trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0 ) } ),
-            primaryDataSeries: trackPoints.map( { Double($0.watts ?? 0) } ),
-            backgroundDataSeries: trackPoints.map( {$0.altitudeMeters } ))
+    /// Return true / false depending on whether distance trace exists in the tracke points.
+    func distanceTraceExists() -> Bool {
         
-        return trace
-
+        return trackPoints.map( { $0.distanceMeters ?? 0 } ).max() ?? Double(0) > 0
+        
     }
 
+    /// Return true / false depending on whether power trace exists in the tracke points.
+    func powerTraceExists() -> Bool {
+        
+        return trackPoints.map( { $0.watts ?? 0 } ).max() ?? 0 > 0
+        
+    }
 
-
+    /// Return true / false depending on whether power trace exists in the tracke points.
+    func cadenceTraceExists() -> Bool {
+        
+        return trackPoints.map( { $0.cadence ?? 0 } ).max() ?? 0 > 0
+        
+    }
+    
     func start(activityProfile: ActivityProfile, startDate: Date) {
     
         type = "Ride"

@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Accelerate
 
 
 /// Return next number greater than input number that is 1, 2 or 5 * 10^n
@@ -121,46 +122,52 @@ func rollingAverage(inputArray: [Double], rollCount: Int) -> [Double] {
     return rollingAverageSequence.sequence
 }
 
+func segmentAverageSeries( segmentSize: Int, xAxisSeries: [Double], inputSeries: [Double?], includeZeros: Bool, getMidpoints: Bool = false) -> [Double] {
 
-func segmentAverageSeries( segmentSeconds: Int, inputSeries: [Double?] ) -> [Double] {
+    var outSequence: [Double] = []
+    var aveVal: Double = 0
+    var aveSeq: [Double] = []
     
-    let minStep10: Int = segmentSeconds / 2
-    var aveSegment: Int = 0
-    var index: Int = 0
-    var segmentSum: Double = 0
-    var segmentAve: Double = 0
-    var nonZeroCount = 0
-    var outputSeries: [Double] = []
-    
-    while (((aveSegment * minStep10) + index) < inputSeries.count) {
+    if xAxisSeries.count != inputSeries.count {
+//        logger.error("input data series different size to time series")
+        return []
+    }
 
-        index = 0
-        var nonZeroCount = 0
-        while (index < minStep10) && (((aveSegment * minStep10) + index) < inputSeries.count) {
-            segmentSum = segmentSum + (inputSeries[(aveSegment * minStep10) + index] ?? 0) // only do non-nil!
-            index += 1
-            if inputSeries[(aveSegment * minStep10) + index] ?? 0 != 0 {
-                nonZeroCount += 1
-            }
-        }
-        if nonZeroCount != 0 {
-            segmentAve = segmentSum / Double(nonZeroCount)
+    if xAxisSeries.count == 0 {
+//        logger.info("No data present for chart trace")
+        return []
+    }
+
+    let segmentCount = Int((Double(xAxisSeries.max() ?? 1) / Double(segmentSize)).rounded(.up))
+    
+    var firstIndex = 0
+    for segmentStart in stride(from: 0, to: segmentCount * segmentSize, by: segmentSize) {
+//        let firstIndex: Int = xAxisSeries.firstIndex(where: { $0 <= Double(segmentStart) })!
+        let lastIndex: Int = xAxisSeries.lastIndex(where: { $0 < Double(segmentStart + segmentSize)}) ?? (xAxisSeries.count - 1)
+        let subSeq: [Double?] = Array(inputSeries[firstIndex...lastIndex])
+        firstIndex = lastIndex + 1
+
+        if !includeZeros {
+            aveVal = vDSP.mean(subSeq.filter( { ($0 ?? 0) != 0 } ) as! [Double])
         } else {
-            segmentAve = 0
+            aveVal = vDSP.mean(subSeq.compactMap( { $0 }))
         }
         
-
-        segmentSum = 0
-        index = 0
-        while (index < minStep10) && (((aveSegment * minStep10) + index) < inputSeries.count) {
-            outputSeries.append(segmentAve)
-            index += 1
+        if getMidpoints {
+            aveSeq = Array(repeating: 0, count: subSeq.count)
+            if subSeq.count != 0 {
+                aveSeq[(subSeq.count - 1)/2] = 1
+            }
+        } else {
+            aveSeq = Array(repeating: aveVal, count: subSeq.count)
         }
-        aveSegment += 1
+
+        outSequence += aveSeq
     }
     
-    return outputSeries
+    return outSequence
 }
+
 
 
 class TimeAverageBuilder {
