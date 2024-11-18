@@ -16,11 +16,19 @@ func getCacheDirectory() -> URL? {
     do {
         try FileManager.default.createDirectory(at: cachePath, withIntermediateDirectories: true)
     } catch {
-        print("error \(error)")
+        print("error \(error.localizedDescription)")
         return nil
     }
 
     return cachePath
+}
+
+/// Get URL for  file in cache directory
+func CacheURL(fileName: String) -> URL? {
+
+    guard let cachePath = getCacheDirectory() else { return nil }
+
+    return cachePath.appendingPathComponent(fileName)
 }
 
 func clearCache() {
@@ -253,7 +261,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             activities = []
             
             for activity in JSONData.activities {
-                logger.log("activity \(activity.recordName ?? "xxx")  toBeSaved status \(activity.toSave) -- toDelete status \(activity.toDelete)")
+//                logger.log("activity \(activity.recordName ?? "xxx")  toBeSaved status \(activity.toSave) -- toDelete status \(activity.toDelete)")
                 // create recordID from recordName as recordID not serialised to JSON
 //                activity.recordID = CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
                 activity.recordID = CKRecord.ID(recordName: activity.recordName)
@@ -268,7 +276,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             return true
         }
         catch {
-            logger.error("error:\(error)")
+            logger.error("error:\(error.localizedDescription)")
             return false
         }
     }
@@ -280,7 +288,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         guard let cacheURL = CacheURL(fileName: cacheFile) else { return false }
         
         logger.log("Writing cache to JSON file")
-        logger.debug("Activities \(self.activities)")
+//        logger.debug("Activities \(self.activities)")
         do {
             let data = try JSONEncoder().encode(self)
 //            let jsonString = String(data: data, encoding: .utf8)
@@ -293,7 +301,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                 return true
             }
             catch {
-                logger.error("error \(error)")
+                logger.error("error \(error.localizedDescription)")
                 return false
             }
 
@@ -317,7 +325,7 @@ class DataCache: NSObject, Codable, ObservableObject {
 
         operation.desiredKeys = ["name", "type", "sportType", "startDateLocal", "elapsedTime", "pausedTime", "movingTime",
                                  "activityDescription", "distance", "totalAscent", "totalDescent",
-                                 "averageHeartRate", "averageCadence", "averagePower", "averageSpeed", "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit" ]
+                                 "averageHeartRate", "averageCadence", "averagePower", "averageSpeed", "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit", "mapSnapshot" ]
         operation.resultsLimit = cacheSize
 // FIX?        operation.configuration.timeoutIntervalForRequest = 30
 
@@ -329,7 +337,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                 let myRecord = ActivityRecord(fromCKRecord: record, settingsManager: self.settingsManager)
 
                 DispatchQueue.main.async {
-                    self.logger.debug("Adding to cache : \(myRecord)")
+//                    self.logger.debug("Adding to cache : \(myRecord)")
                     self.refreshList.append(myRecord)
                 }
                 break
@@ -348,7 +356,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             case .success:
 
                 for record in self.refreshList {
-                    self.logger.debug( "\(record.description())" )
+//                    self.logger.debug( "\(record.description())" )
                 }
                 
                 // copy temporary array to main array and write to local cache
@@ -456,7 +464,7 @@ class DataCache: NSObject, Codable, ObservableObject {
 
                     }
                     
-                    self.logger.error("\(error)")
+                    self.logger.error("\(error.localizedDescription)")
 
                 } else {
                     self.logger.log("Saved")
@@ -469,6 +477,40 @@ class DataCache: NSObject, Codable, ObservableObject {
             }
         }
         
+    }
+
+    func CKForceUpdate(activityCKRecord: CKRecord, completionFunction: @escaping (CKRecord?) -> Void) {
+        logger.log("updating \(activityCKRecord.recordID)")
+        
+        database.modifyRecords(saving: [activityCKRecord], deleting: [], savePolicy: .changedKeys) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let records):
+                    print("Success Records : \(records)")
+ 
+                    for recordResult in records.saveResults {
+    
+                        switch recordResult.value {
+                        case .success(let record):
+                            self.logger.log("Record updated \(record)")
+                            completionFunction(record)
+                            _ = self.write()
+                        case .failure(let error):
+                            self.logger.error("Single Record update failed with error \(error.localizedDescription)")
+                            completionFunction(nil)
+                        }
+
+                    }
+
+                case .failure(let error):
+                    self.logger.error("Batch Record update failed with error \(error.localizedDescription)")
+                    // Delete temporary image file
+                    completionFunction(nil)
+                }
+                
+
+            }
+        }
     }
 
     

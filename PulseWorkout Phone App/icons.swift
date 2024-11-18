@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+
+let speedIcon = "speedometer"
+let distanceIcon = "arrowshape.forward"
+let ascentIcon = "arrow.up.right.circle"
+let cadenceIcon = "arrow.clockwise.circle"
+let powerIcon = "bolt"
+let heartRateIcon = "heart.fill"
+let meanIcon = "arrow.up.and.line.horizontal.and.arrow.down"

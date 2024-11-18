@@ -6,10 +6,10 @@
 //
 
 import Foundation
-import Accelerate
 import CloudKit
 import MapKit
 import SwiftUI
+
 
 class ActivityChartsController: NSObject, ObservableObject {
     
@@ -153,6 +153,8 @@ class ActivityChartsController: NSObject, ObservableObject {
         
     }
     
+
+    
     func setMapTrace(activityRecord: ActivityRecord) {
         
         DispatchQueue.main.async {
@@ -162,10 +164,10 @@ class ActivityChartsController: NSObject, ObservableObject {
             if self.routeCoordinates.count > 0 {
                 let latitudes = self.routeCoordinates.map({$0.latitude})
                 let longitudes = self.routeCoordinates.map({$0.longitude})
-                let meanLatitude = vDSP.mean(latitudes)
-                let meanLongitude = vDSP.mean(longitudes)
-                let routeCenter = CLLocationCoordinate2D(latitude: meanLatitude,
-                                                          longitude: meanLongitude)
+                let midLatitude = (latitudes.max()! + latitudes.min()!) / 2
+                let midLongitude = (longitudes.max()! + longitudes.min()!) / 2
+                let routeCenter = CLLocationCoordinate2D(latitude: midLatitude,
+                                                          longitude: midLongitude)
                 let latitudeDelta = latitudes.max()! - latitudes.min()!
                 let longitudeDelta = longitudes.max()! - longitudes.min()!
 

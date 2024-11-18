@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 56;
+	objectVersion = 70;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,6 +11,20 @@
 		E40306832B22211000658A80 /* TopMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40306822B22211000658A80 /* TopMenuView.swift */; };
 		E406C7C32C667EDA0015C4F3 /* GeneralUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */; };
 		E406C7C52C667F6F0015C4F3 /* GeneralUtilitiesTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E406C7C42C667F6F0015C4F3 /* GeneralUtilitiesTest.swift */; };
+		E4094BB52CD0C6D200915CCB /* ActivityRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BAA2402B1C7D560053C065 /* ActivityRecord.swift */; };
+		E4094BB62CD0C6D200915CCB /* SimpleXML.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F886A2AA5D31400E00F25 /* SimpleXML.swift */; };
+		E4094BB82CD0C6D200915CCB /* DataCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */; };
+		E4094BB92CD0C6D200915CCB /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F72AB1A0AD00E07749 /* LocationManager.swift */; };
+		E4094BBA2CD0C6D200915CCB /* GeneralUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */; };
+		E4094BBC2CD0C6D200915CCB /* ActivityProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295F29A21922001B8AA9 /* ActivityProfile.swift */; };
+		E4094BBE2CD0CB7500915CCB /* Gzip in Frameworks */ = {isa = PBXBuildFile; productRef = E4094BBD2CD0CB7500915CCB /* Gzip */; };
+		E4094BC02CD0CB9700915CCB /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4094BBF2CD0CB9700915CCB /* HealthKit.framework */; };
+		E4094BC22CD0CED600915CCB /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121EF2AADC86F00E07749 /* SettingsManager.swift */; };
+		E4094BC52CD1503600915CCB /* ActivityHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */; };
+		E4094BC82CD1512C00915CCB /* ActivityChartTraceBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C428322CB0431B0069F61D /* ActivityChartTraceBuilder.swift */; };
+		E4094BC92CD1513400915CCB /* ActivityChartsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A333B52CC01EE900995AC4 /* ActivityChartsController.swift */; };
+		E4094BCB2CD1514F00915CCB /* FetchFailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A333B72CC15DA500995AC4 /* FetchFailedView.swift */; };
+		E4094BCC2CD1515A00915CCB /* MapRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41281682BBD4CCF00996E1C /* MapRouteView.swift */; };
 		E40F88302A97AAF500E00F25 /* ActivitySaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */; };
 		E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F886A2AA5D31400E00F25 /* SimpleXML.swift */; };
 		E41281672BB33A5300996E1C /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41281662BB33A5300996E1C /* ChartView.swift */; };
@@ -23,6 +37,9 @@
 		E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295F29A21922001B8AA9 /* ActivityProfile.swift */; };
 		E42AD0912AE82094008E7B05 /* NewProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */; };
 		E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */; };
+		E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */; };
+		E45E3F052CE7B91E001D58B3 /* ActivityListItemExtensionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */; };
+		E45E3F072CE8A461001D58B3 /* ActivityHistoryHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */; };
 		E46121EA2AAB5F9A00E07749 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121E92AAB5F9A00E07749 /* SettingsView.swift */; };
 		E46121EE2AACCF2300E07749 /* WatchAsDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */; };
 		E46121F02AADC86F00E07749 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121EF2AADC86F00E07749 /* SettingsManager.swift */; };
@@ -51,6 +68,29 @@
 		E46EF0CA2955F615006FA603 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C92955F615006FA603 /* LiveActivityManager.swift */; };
 		E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
 		E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */; };
+		E4941E422CD29F8A0063421F /* WatchAsDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */; };
+		E4941E432CD29F920063421F /* CloudConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F32AAF6D1600E07749 /* CloudConnectionsView.swift */; };
+		E4941E452CD29FB30063421F /* BTContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5029C49744008DB769 /* BTContentView.swift */; };
+		E4941E462CD29FBC0063421F /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
+		E4941E472CD29FC30063421F /* BTPeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F12AAE178600E07749 /* BTPeripheralManager.swift */; };
+		E4941E482CD29FCA0063421F /* DeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5A29CCCC43008DB769 /* DeviceList.swift */; };
+		E4941E492CD2A0CF0063421F /* BTStartDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */; };
+		E4941E4A2CD2A0E40063421F /* BTKnownDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */; };
+		E4941E4B2CD2A0F10063421F /* BTDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */; };
+		E4941E4C2CD2A0FC0063421F /* BTDeviceDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */; };
+		E4941E4D2CD2A1030063421F /* BTDetailDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */; };
+		E4941E4E2CD2A10B0063421F /* BTDiscoveredDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */; };
+		E4941E4F2CD2A1120063421F /* BTDeviceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */; };
+		E4941E532CD3EAB80063421F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E512CD3EAB80063421F /* SettingsView.swift */; };
+		E4941E5D2CD4BC5B0063421F /* AutoPauseSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E5C2CD4BC5B0063421F /* AutoPauseSettingsView.swift */; };
+		E4941E5F2CD4CAA90063421F /* AverageSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E5E2CD4CAA90063421F /* AverageSettingsView.swift */; };
+		E4941E622CD4CD2E0063421F /* CyclingPowerSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E612CD4CD2E0063421F /* CyclingPowerSettingsView.swift */; };
+		E4941E652CD76E100063421F /* HapticsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E632CD76E100063421F /* HapticsSettingsView.swift */; };
+		E4941E7F2CD7F3F60063421F /* SummaryMetricView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E7E2CD7F3F60063421F /* SummaryMetricView.swift */; };
+		E4941E802CD7F3F60063421F /* SummaryMetricView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E7E2CD7F3F60063421F /* SummaryMetricView.swift */; };
+		E4941E832CD7F4830063421F /* ActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E812CD7F4830063421F /* ActivityDetailView.swift */; };
+		E4941E862CD7FBC50063421F /* ActivityHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */; };
+		E4941E872CD7FBC50063421F /* ActivityHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */; };
 		E4968AD8296D710100DE0082 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4968AD7296D710000DE0082 /* HealthKit.framework */; };
 		E4A0839329A9FA09007B50D3 /* BTDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */; };
 		E4A0839529AA1790007B50D3 /* BTKnownDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */; };
@@ -67,6 +107,10 @@
 		E4C25BAE2A4F55FB002F315D /* ActivityListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */; };
 		E4C25BB02A4F562B002F315D /* ActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */; };
 		E4C428332CB0431B0069F61D /* ActivityChartTraceBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C428322CB0431B0069F61D /* ActivityChartTraceBuilder.swift */; };
+		E4CC66A72CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CC66A62CDA341100AA2F9E /* ActivityLineChartView.swift */; };
+		E4CC66A82CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CC66A62CDA341100AA2F9E /* ActivityLineChartView.swift */; };
+		E4CC66AD2CDA353300AA2F9E /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CC66AB2CDA353300AA2F9E /* ChartView.swift */; };
+		E4CC66AF2CDBE1A600AA2F9E /* MapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CC66AE2CDBE1A600AA2F9E /* MapManager.swift */; };
 		E4D28B152CC3A7A700F27626 /* DataCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D28B142CC3A7A700F27626 /* DataCacheTest.swift */; };
 		E4D41B2F2C8A20E50014C1D9 /* LiveAlwaysOnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */; };
 		E4D41B312C8A230F0014C1D9 /* LiveMetricsCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */; };
@@ -74,6 +118,20 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		E4094B9B2CD0C22A00915CCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E46EF07229537CA0006FA603 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E4094B8A2CD0C22800915CCB;
+			remoteInfo = "PulseWorkout Phone App";
+		};
+		E4094BA52CD0C22B00915CCB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = E46EF07229537CA0006FA603 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = E4094B8A2CD0C22800915CCB;
+			remoteInfo = "PulseWorkout Phone App";
+		};
 		E46EF08029537CA1006FA603 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = E46EF07229537CA0006FA603 /* Project object */;
@@ -116,6 +174,10 @@
 		E40306822B22211000658A80 /* TopMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopMenuView.swift; sourceTree = "<group>"; };
 		E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralUtilities.swift; sourceTree = "<group>"; };
 		E406C7C42C667F6F0015C4F3 /* GeneralUtilitiesTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralUtilitiesTest.swift; sourceTree = "<group>"; };
+		E4094B8B2CD0C22800915CCB /* PulseWorkout Phone App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "PulseWorkout Phone App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4094B9A2CD0C22A00915CCB /* PulseWorkout Phone AppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PulseWorkout Phone AppTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4094BA42CD0C22B00915CCB /* PulseWorkout Phone AppUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "PulseWorkout Phone AppUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E4094BBF2CD0CB9700915CCB /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySaveView.swift; sourceTree = "<group>"; };
 		E40F886A2AA5D31400E00F25 /* SimpleXML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleXML.swift; sourceTree = "<group>"; };
 		E41281662BB33A5300996E1C /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
@@ -128,6 +190,8 @@
 		E421295F29A21922001B8AA9 /* ActivityProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityProfile.swift; sourceTree = "<group>"; };
 		E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProfileDetailView.swift; sourceTree = "<group>"; };
 		E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsPausedView.swift; sourceTree = "<group>"; };
+		E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListItemExtensionView.swift; sourceTree = "<group>"; };
+		E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryHeaderView.swift; sourceTree = "<group>"; };
 		E46121E92AAB5F9A00E07749 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAsDeviceView.swift; sourceTree = "<group>"; };
 		E46121EF2AADC86F00E07749 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
@@ -160,6 +224,14 @@
 		E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "PulseWorkout-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElapsedTimeView.swift; sourceTree = "<group>"; };
+		E4941E512CD3EAB80063421F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		E4941E5C2CD4BC5B0063421F /* AutoPauseSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoPauseSettingsView.swift; sourceTree = "<group>"; };
+		E4941E5E2CD4CAA90063421F /* AverageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AverageSettingsView.swift; sourceTree = "<group>"; };
+		E4941E612CD4CD2E0063421F /* CyclingPowerSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CyclingPowerSettingsView.swift; sourceTree = "<group>"; };
+		E4941E632CD76E100063421F /* HapticsSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticsSettingsView.swift; sourceTree = "<group>"; };
+		E4941E7E2CD7F3F60063421F /* SummaryMetricView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryMetricView.swift; sourceTree = "<group>"; };
+		E4941E812CD7F4830063421F /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
+		E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHeaderView.swift; sourceTree = "<group>"; };
 		E4968AD7296D710000DE0082 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS9.1.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceView.swift; sourceTree = "<group>"; };
 		E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTKnownDeviceView.swift; sourceTree = "<group>"; };
@@ -176,13 +248,45 @@
 		E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListItemView.swift; sourceTree = "<group>"; };
 		E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
 		E4C428322CB0431B0069F61D /* ActivityChartTraceBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityChartTraceBuilder.swift; sourceTree = "<group>"; };
+		E4CC66A62CDA341100AA2F9E /* ActivityLineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityLineChartView.swift; sourceTree = "<group>"; };
+		E4CC66AB2CDA353300AA2F9E /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		E4CC66AE2CDBE1A600AA2F9E /* MapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapManager.swift; sourceTree = "<group>"; };
 		E4D28B142CC3A7A700F27626 /* DataCacheTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCacheTest.swift; sourceTree = "<group>"; };
 		E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveAlwaysOnView.swift; sourceTree = "<group>"; };
 		E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsCarouselView.swift; sourceTree = "<group>"; };
 		E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListItemView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		E4094B8C2CD0C22800915CCB /* PulseWorkout Phone App */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "PulseWorkout Phone App"; sourceTree = "<group>"; };
+		E4094B9D2CD0C22A00915CCB /* PulseWorkout Phone AppTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "PulseWorkout Phone AppTests"; sourceTree = "<group>"; };
+		E4094BA72CD0C22B00915CCB /* PulseWorkout Phone AppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "PulseWorkout Phone AppUITests"; sourceTree = "<group>"; };
+/* End PBXFileSystemSynchronizedRootGroup section */
+
 /* Begin PBXFrameworksBuildPhase section */
+		E4094B882CD0C22800915CCB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4094BBE2CD0CB7500915CCB /* Gzip in Frameworks */,
+				E4094BC02CD0CB9700915CCB /* HealthKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4094B972CD0C22A00915CCB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4094BA12CD0C22B00915CCB /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E46EF07B29537CA1006FA603 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -221,10 +325,9 @@
 		E46121EC2AAB67DC00E07749 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E46121E92AAB5F9A00E07749 /* SettingsView.swift */,
-				E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */,
-				E46121F32AAF6D1600E07749 /* CloudConnectionsView.swift */,
-				E46121F52AAF6FCB00E07749 /* GeneralSettingsView.swift */,
+				E4941E582CD4B5F10063421F /* shared */,
+				E4941E572CD4B5CF0063421F /* watchOS */,
+				E4941E502CD3EA7F0063421F /* iOS */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -235,6 +338,9 @@
 				E46EF08229537CA1006FA603 /* PulseWorkout Watch App */,
 				E46EF09329537CA3006FA603 /* PulseWorkout Watch AppTests */,
 				E46EF09D29537CA3006FA603 /* PulseWorkout Watch AppUITests */,
+				E4094B8C2CD0C22800915CCB /* PulseWorkout Phone App */,
+				E4094B9D2CD0C22A00915CCB /* PulseWorkout Phone AppTests */,
+				E4094BA72CD0C22B00915CCB /* PulseWorkout Phone AppUITests */,
 				E46EF07929537CA1006FA603 /* Products */,
 				E4968AD6296D710000DE0082 /* Frameworks */,
 			);
@@ -247,6 +353,9 @@
 				E46EF07E29537CA1006FA603 /* PulseWorkout Watch App.app */,
 				E46EF09029537CA3006FA603 /* PulseWorkout Watch AppTests.xctest */,
 				E46EF09A29537CA3006FA603 /* PulseWorkout Watch AppUITests.xctest */,
+				E4094B8B2CD0C22800915CCB /* PulseWorkout Phone App.app */,
+				E4094B9A2CD0C22A00915CCB /* PulseWorkout Phone AppTests.xctest */,
+				E4094BA42CD0C22B00915CCB /* PulseWorkout Phone AppUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -257,6 +366,7 @@
 				E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */,
 				E46EF0CB29560A1F006FA603 /* PulseWorkout Watch App.entitlements */,
 				E4C11F5829CCCA5E008DB769 /* WorkoutManager */,
+				E4941E792CD7F2360063421F /* HistoryManager */,
 				E4A333B22CC01DCC00995AC4 /* ActivityChartsManager */,
 				E46121EB2AAB67C900E07749 /* SettingsManager */,
 				E4C11F5629CCC91F008DB769 /* BluetoothManager */,
@@ -294,9 +404,117 @@
 			path = "PulseWorkout Watch AppUITests";
 			sourceTree = "<group>";
 		};
+		E4941E502CD3EA7F0063421F /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				E4941E512CD3EAB80063421F /* SettingsView.swift */,
+				E4941E5C2CD4BC5B0063421F /* AutoPauseSettingsView.swift */,
+				E4941E5E2CD4CAA90063421F /* AverageSettingsView.swift */,
+				E4941E612CD4CD2E0063421F /* CyclingPowerSettingsView.swift */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		E4941E572CD4B5CF0063421F /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				E46121E92AAB5F9A00E07749 /* SettingsView.swift */,
+				E46121F52AAF6FCB00E07749 /* GeneralSettingsView.swift */,
+				E4941E632CD76E100063421F /* HapticsSettingsView.swift */,
+			);
+			path = watchOS;
+			sourceTree = "<group>";
+		};
+		E4941E582CD4B5F10063421F /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */,
+				E46121F32AAF6D1600E07749 /* CloudConnectionsView.swift */,
+			);
+			path = shared;
+			sourceTree = "<group>";
+		};
+		E4941E592CD4BA8C0063421F /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				E4C11F5029C49744008DB769 /* BTContentView.swift */,
+				E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */,
+				E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */,
+				E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */,
+				E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */,
+				E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */,
+				E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */,
+				E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */,
+			);
+			path = shared;
+			sourceTree = "<group>";
+		};
+		E4941E5A2CD4BABB0063421F /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = watchOS;
+			sourceTree = "<group>";
+		};
+		E4941E5B2CD4BAC70063421F /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
+		E4941E792CD7F2360063421F /* HistoryManager */ = {
+			isa = PBXGroup;
+			children = (
+				E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */,
+				E4CC66AE2CDBE1A600AA2F9E /* MapManager.swift */,
+				E4941E7A2CD7F2710063421F /* Views */,
+			);
+			path = HistoryManager;
+			sourceTree = "<group>";
+		};
+		E4941E7A2CD7F2710063421F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E4941E7B2CD7F2B30063421F /* shared */,
+				E4941E7C2CD7F2EE0063421F /* watchOS */,
+				E4941E7D2CD7F2FB0063421F /* iOS */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E4941E7B2CD7F2B30063421F /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */,
+				E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */,
+				E4941E7E2CD7F3F60063421F /* SummaryMetricView.swift */,
+			);
+			path = shared;
+			sourceTree = "<group>";
+		};
+		E4941E7C2CD7F2EE0063421F /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */,
+			);
+			path = watchOS;
+			sourceTree = "<group>";
+		};
+		E4941E7D2CD7F2FB0063421F /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				E4941E812CD7F4830063421F /* ActivityDetailView.swift */,
+				E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */,
+				E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */,
+			);
+			path = iOS;
+			sourceTree = "<group>";
+		};
 		E4968AD6296D710000DE0082 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				E4094BBF2CD0CB9700915CCB /* HealthKit.framework */,
 				E4968AD7296D710000DE0082 /* HealthKit.framework */,
 			);
 			name = Frameworks;
@@ -315,9 +533,9 @@
 		E4A333B32CC01E6600995AC4 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E41281662BB33A5300996E1C /* ChartView.swift */,
-				E41281682BBD4CCF00996E1C /* MapRouteView.swift */,
-				E4A333B72CC15DA500995AC4 /* FetchFailedView.swift */,
+				E4CC66AA2CDA350B00AA2F9E /* iOS */,
+				E4CC66A92CDA34D300AA2F9E /* watchOS */,
+				E4CC66A52CDA33C200AA2F9E /* shared */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -336,14 +554,9 @@
 		E4C11F5729CCC9FD008DB769 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				E4C11F5029C49744008DB769 /* BTContentView.swift */,
-				E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */,
-				E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */,
-				E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */,
-				E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */,
-				E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */,
-				E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */,
-				E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */,
+				E4941E5B2CD4BAC70063421F /* iOS */,
+				E4941E5A2CD4BABB0063421F /* watchOS */,
+				E4941E592CD4BA8C0063421F /* shared */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -356,7 +569,6 @@
 				E421295F29A21922001B8AA9 /* ActivityProfile.swift */,
 				E4BAA2402B1C7D560053C065 /* ActivityRecord.swift */,
 				E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */,
-				E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */,
 				E46121F72AB1A0AD00E07749 /* LocationManager.swift */,
 				E40F886A2AA5D31400E00F25 /* SimpleXML.swift */,
 				E4C11F5929CCCA8E008DB769 /* Views */,
@@ -368,10 +580,8 @@
 			isa = PBXGroup;
 			children = (
 				E4D41B2D2C8A202C0014C1D9 /* LiveViews */,
-				E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */,
-				E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */,
-				E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */,
 				E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */,
+				E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */,
 				E46121F92AB315E600E07749 /* LocationView.swift */,
 				E46EE68C2B067A01008F54CD /* MapPinView.swift */,
 				E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */,
@@ -387,6 +597,32 @@
 				E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		E4CC66A52CDA33C200AA2F9E /* shared */ = {
+			isa = PBXGroup;
+			children = (
+				E41281682BBD4CCF00996E1C /* MapRouteView.swift */,
+				E4A333B72CC15DA500995AC4 /* FetchFailedView.swift */,
+				E4CC66A62CDA341100AA2F9E /* ActivityLineChartView.swift */,
+			);
+			path = shared;
+			sourceTree = "<group>";
+		};
+		E4CC66A92CDA34D300AA2F9E /* watchOS */ = {
+			isa = PBXGroup;
+			children = (
+				E41281662BB33A5300996E1C /* ChartView.swift */,
+			);
+			path = watchOS;
+			sourceTree = "<group>";
+		};
+		E4CC66AA2CDA350B00AA2F9E /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				E4CC66AB2CDA353300AA2F9E /* ChartView.swift */,
+			);
+			path = iOS;
 			sourceTree = "<group>";
 		};
 		E4D41B2D2C8A202C0014C1D9 /* LiveViews */ = {
@@ -406,6 +642,75 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		E4094B8A2CD0C22800915CCB /* PulseWorkout Phone App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E4094BAC2CD0C22B00915CCB /* Build configuration list for PBXNativeTarget "PulseWorkout Phone App" */;
+			buildPhases = (
+				E4094B872CD0C22800915CCB /* Sources */,
+				E4094B882CD0C22800915CCB /* Frameworks */,
+				E4094B892CD0C22800915CCB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				E4094B8C2CD0C22800915CCB /* PulseWorkout Phone App */,
+			);
+			name = "PulseWorkout Phone App";
+			packageProductDependencies = (
+				E4094BBD2CD0CB7500915CCB /* Gzip */,
+			);
+			productName = "PulseWorkout Phone App";
+			productReference = E4094B8B2CD0C22800915CCB /* PulseWorkout Phone App.app */;
+			productType = "com.apple.product-type.application";
+		};
+		E4094B992CD0C22A00915CCB /* PulseWorkout Phone AppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E4094BAF2CD0C22B00915CCB /* Build configuration list for PBXNativeTarget "PulseWorkout Phone AppTests" */;
+			buildPhases = (
+				E4094B962CD0C22A00915CCB /* Sources */,
+				E4094B972CD0C22A00915CCB /* Frameworks */,
+				E4094B982CD0C22A00915CCB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E4094B9C2CD0C22A00915CCB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E4094B9D2CD0C22A00915CCB /* PulseWorkout Phone AppTests */,
+			);
+			name = "PulseWorkout Phone AppTests";
+			packageProductDependencies = (
+			);
+			productName = "PulseWorkout Phone AppTests";
+			productReference = E4094B9A2CD0C22A00915CCB /* PulseWorkout Phone AppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		E4094BA32CD0C22B00915CCB /* PulseWorkout Phone AppUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = E4094BB22CD0C22B00915CCB /* Build configuration list for PBXNativeTarget "PulseWorkout Phone AppUITests" */;
+			buildPhases = (
+				E4094BA02CD0C22B00915CCB /* Sources */,
+				E4094BA12CD0C22B00915CCB /* Frameworks */,
+				E4094BA22CD0C22B00915CCB /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				E4094BA62CD0C22B00915CCB /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				E4094BA72CD0C22B00915CCB /* PulseWorkout Phone AppUITests */,
+			);
+			name = "PulseWorkout Phone AppUITests";
+			packageProductDependencies = (
+			);
+			productName = "PulseWorkout Phone AppUITests";
+			productReference = E4094BA42CD0C22B00915CCB /* PulseWorkout Phone AppUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 		E46EF07729537CA1006FA603 /* PulseWorkout */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = E46EF0A829537CA3006FA603 /* Build configuration list for PBXNativeTarget "PulseWorkout" */;
@@ -486,9 +791,20 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1420;
+				LastSwiftUpdateCheck = 1600;
 				LastUpgradeCheck = 1420;
 				TargetAttributes = {
+					E4094B8A2CD0C22800915CCB = {
+						CreatedOnToolsVersion = 16.0;
+					};
+					E4094B992CD0C22A00915CCB = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = E4094B8A2CD0C22800915CCB;
+					};
+					E4094BA32CD0C22B00915CCB = {
+						CreatedOnToolsVersion = 16.0;
+						TestTargetID = E4094B8A2CD0C22800915CCB;
+					};
 					E46EF07729537CA1006FA603 = {
 						CreatedOnToolsVersion = 14.2;
 					};
@@ -525,11 +841,35 @@
 				E46EF07D29537CA1006FA603 /* PulseWorkout Watch App */,
 				E46EF08F29537CA3006FA603 /* PulseWorkout Watch AppTests */,
 				E46EF09929537CA3006FA603 /* PulseWorkout Watch AppUITests */,
+				E4094B8A2CD0C22800915CCB /* PulseWorkout Phone App */,
+				E4094B992CD0C22A00915CCB /* PulseWorkout Phone AppTests */,
+				E4094BA32CD0C22B00915CCB /* PulseWorkout Phone AppUITests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		E4094B892CD0C22800915CCB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4094B982CD0C22A00915CCB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4094BA22CD0C22B00915CCB /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E46EF07629537CA1006FA603 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -563,6 +903,65 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		E4094B872CD0C22800915CCB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E4941E5F2CD4CAA90063421F /* AverageSettingsView.swift in Sources */,
+				E4941E4E2CD2A10B0063421F /* BTDiscoveredDeviceView.swift in Sources */,
+				E4941E452CD29FB30063421F /* BTContentView.swift in Sources */,
+				E45E3F052CE7B91E001D58B3 /* ActivityListItemExtensionView.swift in Sources */,
+				E4941E422CD29F8A0063421F /* WatchAsDeviceView.swift in Sources */,
+				E4094BB52CD0C6D200915CCB /* ActivityRecord.swift in Sources */,
+				E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */,
+				E4941E532CD3EAB80063421F /* SettingsView.swift in Sources */,
+				E4941E4A2CD2A0E40063421F /* BTKnownDeviceView.swift in Sources */,
+				E4CC66AF2CDBE1A600AA2F9E /* MapManager.swift in Sources */,
+				E4094BB62CD0C6D200915CCB /* SimpleXML.swift in Sources */,
+				E4941E472CD29FC30063421F /* BTPeripheralManager.swift in Sources */,
+				E4094BB82CD0C6D200915CCB /* DataCache.swift in Sources */,
+				E45E3F072CE8A461001D58B3 /* ActivityHistoryHeaderView.swift in Sources */,
+				E4094BC92CD1513400915CCB /* ActivityChartsController.swift in Sources */,
+				E4941E432CD29F920063421F /* CloudConnectionsView.swift in Sources */,
+				E4094BC52CD1503600915CCB /* ActivityHistoryView.swift in Sources */,
+				E4CC66A82CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */,
+				E4941E462CD29FBC0063421F /* BluetoothManager.swift in Sources */,
+				E4094BB92CD0C6D200915CCB /* LocationManager.swift in Sources */,
+				E4941E482CD29FCA0063421F /* DeviceList.swift in Sources */,
+				E4941E4B2CD2A0F10063421F /* BTDeviceView.swift in Sources */,
+				E4941E5D2CD4BC5B0063421F /* AutoPauseSettingsView.swift in Sources */,
+				E4941E4C2CD2A0FC0063421F /* BTDeviceDiscoverView.swift in Sources */,
+				E4094BCC2CD1515A00915CCB /* MapRouteView.swift in Sources */,
+				E4094BC22CD0CED600915CCB /* SettingsManager.swift in Sources */,
+				E4094BCB2CD1514F00915CCB /* FetchFailedView.swift in Sources */,
+				E4941E4F2CD2A1120063421F /* BTDeviceInfoView.swift in Sources */,
+				E4094BC82CD1512C00915CCB /* ActivityChartTraceBuilder.swift in Sources */,
+				E4CC66AD2CDA353300AA2F9E /* ChartView.swift in Sources */,
+				E4094BBA2CD0C6D200915CCB /* GeneralUtilities.swift in Sources */,
+				E4941E4D2CD2A1030063421F /* BTDetailDeviceView.swift in Sources */,
+				E4094BBC2CD0C6D200915CCB /* ActivityProfile.swift in Sources */,
+				E4941E872CD7FBC50063421F /* ActivityHeaderView.swift in Sources */,
+				E4941E802CD7F3F60063421F /* SummaryMetricView.swift in Sources */,
+				E4941E832CD7F4830063421F /* ActivityDetailView.swift in Sources */,
+				E4941E492CD2A0CF0063421F /* BTStartDiscoverView.swift in Sources */,
+				E4941E622CD4CD2E0063421F /* CyclingPowerSettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4094B962CD0C22A00915CCB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		E4094BA02CD0C22B00915CCB /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		E46EF07A29537CA1006FA603 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -603,6 +1002,7 @@
 				E4A0839729AA18E7007B50D3 /* BTDiscoveredDeviceView.swift in Sources */,
 				E468DC8329E9B5050002FEA9 /* ProfileDetailView.swift in Sources */,
 				E4C428332CB0431B0069F61D /* ActivityChartTraceBuilder.swift in Sources */,
+				E4941E862CD7FBC50063421F /* ActivityHeaderView.swift in Sources */,
 				E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */,
 				E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */,
 				E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */,
@@ -613,11 +1013,14 @@
 				E46121F22AAE178700E07749 /* BTPeripheralManager.swift in Sources */,
 				E46121F02AADC86F00E07749 /* SettingsManager.swift in Sources */,
 				E46121EA2AAB5F9A00E07749 /* SettingsView.swift in Sources */,
+				E4941E7F2CD7F3F60063421F /* SummaryMetricView.swift in Sources */,
 				E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */,
 				E4A0839329A9FA09007B50D3 /* BTDeviceView.swift in Sources */,
 				E421295C299D4D91001B8AA9 /* BTDeviceBarView.swift in Sources */,
 				E46EF0BA29537E24006FA603 /* StartView.swift in Sources */,
+				E4941E652CD76E100063421F /* HapticsSettingsView.swift in Sources */,
 				E4C25BB02A4F562B002F315D /* ActivityDetailView.swift in Sources */,
+				E4CC66A72CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */,
 				E46121F82AB1A0AD00E07749 /* LocationManager.swift in Sources */,
 				E4E4DFEE29E88A6200979AA2 /* ProfileListItemView.swift in Sources */,
 			);
@@ -646,6 +1049,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		E4094B9C2CD0C22A00915CCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E4094B8A2CD0C22800915CCB /* PulseWorkout Phone App */;
+			targetProxy = E4094B9B2CD0C22A00915CCB /* PBXContainerItemProxy */;
+		};
+		E4094BA62CD0C22B00915CCB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = E4094B8A2CD0C22800915CCB /* PulseWorkout Phone App */;
+			targetProxy = E4094BA52CD0C22B00915CCB /* PBXContainerItemProxy */;
+		};
 		E46EF08129537CA1006FA603 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = E46EF07D29537CA1006FA603 /* PulseWorkout Watch App */;
@@ -664,6 +1077,188 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		E4094BAD2CD0C22B00915CCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
+				DEVELOPMENT_TEAM = 4CBW377VZ7;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connect to bluetooth workout devices for workout measurements";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Phone-App";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		E4094BAE2CD0C22B00915CCB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
+				DEVELOPMENT_TEAM = 4CBW377VZ7;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "Connect to bluetooth workout devices for workout measurements";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Phone-App";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E4094BB02CD0C22B00915CCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4CBW377VZ7;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Phone-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PulseWorkout Phone App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PulseWorkout Phone App";
+			};
+			name = Debug;
+		};
+		E4094BB12CD0C22B00915CCB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4CBW377VZ7;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Phone-AppTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/PulseWorkout Phone App.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/PulseWorkout Phone App";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		E4094BB32CD0C22B00915CCB /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4CBW377VZ7;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Phone-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "PulseWorkout Phone App";
+			};
+			name = Debug;
+		};
+		E4094BB42CD0C22B00915CCB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 4CBW377VZ7;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Phone-AppUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "PulseWorkout Phone App";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		E46EF0A229537CA3006FA603 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -980,6 +1575,33 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		E4094BAC2CD0C22B00915CCB /* Build configuration list for PBXNativeTarget "PulseWorkout Phone App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4094BAD2CD0C22B00915CCB /* Debug */,
+				E4094BAE2CD0C22B00915CCB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E4094BAF2CD0C22B00915CCB /* Build configuration list for PBXNativeTarget "PulseWorkout Phone AppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4094BB02CD0C22B00915CCB /* Debug */,
+				E4094BB12CD0C22B00915CCB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		E4094BB22CD0C22B00915CCB /* Build configuration list for PBXNativeTarget "PulseWorkout Phone AppUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E4094BB32CD0C22B00915CCB /* Debug */,
+				E4094BB42CD0C22B00915CCB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		E46EF07529537CA0006FA603 /* Build configuration list for PBXProject "PulseWorkout" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1039,6 +1661,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		E4094BBD2CD0CB7500915CCB /* Gzip */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = E46121FF2ACB1CA500E07749 /* XCRemoteSwiftPackageReference "GzipSwift" */;
+			productName = Gzip;
+		};
 		E46122002ACB1CA500E07749 /* Gzip */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = E46121FF2ACB1CA500E07749 /* XCRemoteSwiftPackageReference "GzipSwift" */;

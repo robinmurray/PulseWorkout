@@ -7,7 +7,9 @@
 
 import Foundation
 import CoreBluetooth
+#if os(watchOS)
 import WatchKit
+#endif
 import UIKit
 import os
 

@@ -8,35 +8,7 @@
 import SwiftUI
 import HealthKit
 
-struct ActivityHeaderView: View {
 
-    @State var activityRecord: ActivityRecord
-
-    var body: some View {
-        
-        VStack(alignment: .leading) {
-            HStack {
-                Text(activityRecord.name)
-                    .foregroundStyle(.yellow)
-                Spacer()
-            }
-
-            HStack {
-                Text(activityRecord.startDateLocal.formatted(
-                    Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
-                        .day(.twoDigits)
-                        .month(.abbreviated)
-                        .hour(.defaultDigits(amPM: .omitted))
-                        .minute(.twoDigits)
-                        .hour(.conversationalDefaultDigits(amPM: .abbreviated))
-                ))
-                Spacer()
-            }
-            
-
-        }
-    }
-}
 
 struct GraphButtonView: View {
     
@@ -180,9 +152,7 @@ struct ActivityDetailView: View {
                                 dataCache: dataCache)
                 
             }
-            #if os(watchOS)
             .containerBackground(.green.gradient, for: .tabView)
-            #endif
             
             HStack {
                 VStack {
@@ -207,9 +177,7 @@ struct ActivityDetailView: View {
                 
             }
             .navigationTitle("Distance")
-            #if os(watchOS)
             .containerBackground(.blue.gradient, for: .tabView)
-            #endif
             
             HStack {
                 VStack {
@@ -234,9 +202,7 @@ struct ActivityDetailView: View {
                 
             }
             .navigationTitle("Heart Rate")
-            #if os(watchOS)
             .containerBackground(.red.gradient, for: .tabView)
-            #endif
             
             HStack {
                 VStack {
@@ -269,12 +235,9 @@ struct ActivityDetailView: View {
                 
             }
             .navigationTitle("Power")
-            #if os(watchOS)
             .containerBackground(.orange.gradient, for: .tabView)
-            #endif
             
         }
-        #if os(watchOS)
         .tabViewStyle(.verticalPage)
         .navigationTitle {
             Label( activityRecord.startDateLocal.formatted(
@@ -287,10 +250,6 @@ struct ActivityDetailView: View {
                    systemImage: HKWorkoutActivityType( rawValue: activityRecord.workoutTypeId)!.iconImage )
             .foregroundColor(.white)
         }
-        #endif
-        #if os(iOS)
-        .tabViewStyle(.page)
-        #endif
         
     }
 

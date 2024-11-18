@@ -8,7 +8,9 @@
 import Foundation
 import HealthKit
 import AVFoundation
+#if os(watchOS)
 import WatchKit
+#endif
 import os
 
 enum HRSource {
@@ -295,8 +297,8 @@ class LiveActivityManager : NSObject, ObservableObject {
         let cumulativeCrankRevolutions = (powerDict["cumulativeCrankRevolutions"] ?? 0) as? Int ?? 0
         if (lastCrankTime != 0) && (cumulativeCrankRevolutions != 0) {
             if (prevCrankTime != 0) && (prevCrankRevs != 0) {
-                let elapsedCrankTime = lastCrankTime - prevCrankTime
-                let newCrankRevs = cumulativeCrankRevolutions - prevCrankRevs
+                let elapsedCrankTime = (lastCrankTime >= prevCrankTime) ? (lastCrankTime - prevCrankTime) : lastCrankTime
+                let newCrankRevs = (cumulativeCrankRevolutions >= prevCrankRevs) ? (cumulativeCrankRevolutions - prevCrankRevs) : cumulativeCrankRevolutions
                 if elapsedCrankTime != 0 {
                     cyclingCadence = Int( 60 * 1024 / elapsedCrankTime) * newCrankRevs
                 }

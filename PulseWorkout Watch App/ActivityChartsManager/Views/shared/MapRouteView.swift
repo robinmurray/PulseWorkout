@@ -41,7 +41,7 @@ struct MapRouteView: View {
                     
                     // Display route if there is one
                     if activityChartsController.routeCoordinates.count > 0 {
-                        MapPolyline(coordinates: activityChartsController.routeCoordinates, contourStyle: .straight).stroke(.blue, lineWidth: 5).mapOverlayLevel(level: .aboveRoads)
+                        MapPolyline(coordinates: activityChartsController.routeCoordinates, contourStyle: .straight).stroke(.red, lineWidth: 1).mapOverlayLevel(level: .aboveRoads)
                     }
                     
                 }

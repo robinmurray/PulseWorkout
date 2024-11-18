@@ -147,11 +147,9 @@ func segmentAverageSeries( segmentSize: Int, xAxisSeries: [Double], inputSeries:
         let subSeq: [Double?] = Array(inputSeries[firstIndex...lastIndex])
         firstIndex = lastIndex + 1
 
-        if !includeZeros {
-            aveVal = vDSP.mean(subSeq.filter( { ($0 ?? 0) != 0 } ) as! [Double])
-        } else {
-            aveVal = vDSP.mean(subSeq.compactMap( { $0 }))
-        }
+        let s = includeZeros ? subSeq.compactMap({ $0 }) : subSeq.filter( { ($0 ?? 0) != 0 } )
+
+        aveVal = (s.count == 0) ? 0 : vDSP.mean(s as! [Double])
         
         if getMidpoints {
             aveSeq = Array(repeating: 0, count: subSeq.count)
@@ -283,4 +281,60 @@ func durationFormatter( seconds: Int ) -> String {
     }
     
     return durationText
+}
+
+
+
+func distanceFormatter (distance: Double, forceMeters: Bool = false) -> String {
+    var unit = UnitLength.meters
+    var displayDistance: Double = distance.rounded()
+    if (distance > 1000) && (!forceMeters) {
+        unit = UnitLength.kilometers
+        displayDistance = distance / 1000
+        if displayDistance > 100 {
+            displayDistance = (displayDistance * 10).rounded() / 10
+        } else if displayDistance > 10 {
+            displayDistance = (displayDistance * 100).rounded() / 100
+        } else {
+            displayDistance = (displayDistance * 10).rounded() / 10
+        }
+
+    }
+    
+    return  Measurement(value: displayDistance,
+                       unit: unit)
+    .formatted(.measurement(width: .abbreviated,
+                            usage: .asProvided
+                           )
+    )
+
+}
+
+func speedFormatter (speed: Double) -> String {
+    // var unit = UnitSpeed.kilometersPerHour
+    var speedKPH = speed * 3.6
+    
+    speedKPH = max(speedKPH, 0)
+    
+    return String(format: "%.1f", speedKPH) + " k/h"
+    
+}
+
+func durationFormatter (elapsedSeconds: Double, minimizeLength: Bool = false) -> String {
+    
+    let formatter = DateComponentsFormatter()
+    formatter.allowedUnits = [.hour, .minute, .second]
+    formatter.zeroFormattingBehavior = .pad
+    if minimizeLength {
+
+        if elapsedSeconds < 3600 {
+            formatter.allowedUnits = [.minute, .second]
+        }
+        if (Int(elapsedSeconds) % 60) == 0 {
+            formatter.allowedUnits = [.hour, .minute]
+        }
+    }
+    
+    
+    return formatter.string(from: elapsedSeconds) ?? ""
 }

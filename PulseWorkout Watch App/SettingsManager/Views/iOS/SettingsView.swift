@@ -19,14 +19,23 @@ struct SettingsView: View {
             Form {
 
                 NavigationLink(
-                    destination: GeneralSettingsView(settingsManager: settingsManager)) {
+                    destination: AutoPauseSettingsView(settingsManager: settingsManager)) {
                         HStack {
-                            Label("General", systemImage: "folder")
+                            Label("Auto-Pause", systemImage: "pause.circle")
+                                .foregroundColor(.orange)
                             Spacer()
                         }
-                        
                     }
-
+                
+                NavigationLink(
+                    destination: AverageSettingsView(settingsManager: settingsManager)) {
+                        HStack {
+                            Label("Average Calculations", systemImage: "arrow.up.and.line.horizontal.and.arrow.down")
+                                .foregroundColor(.green)
+                            Spacer()
+                        }
+                    }
+                
                 NavigationLink(
                     destination: BTContentView(bluetoothManager: bluetoothManager)) {
                         HStack {
@@ -35,7 +44,16 @@ struct SettingsView: View {
                             Spacer()
                         }
                     }
-
+                
+                NavigationLink(
+                    destination: CyclingPowerSettingsView(settingsManager: settingsManager)) {
+                        HStack {
+                            Label("Cycling Power", systemImage: "bolt.circle")
+                                .foregroundColor(.red)
+                            Spacer()
+                        }
+                    }
+                
                 NavigationLink(
                     destination: WatchAsDeviceView(settingsManager: settingsManager)) {
                         HStack {
@@ -45,7 +63,17 @@ struct SettingsView: View {
                         }
 
                 }
+                #if os(watchOS)
+                NavigationLink(
+                    destination: HapticsSettingsView(settingsManager: settingsManager)) {
+                        HStack {
+                            Label("Haptics", systemImage: "applewatch.radiowaves.left.and.right")
+                                .foregroundColor(.teal)
+                            Spacer()
+                        }
 
+                }
+                #endif
                 NavigationLink(
                     destination: CloudConnectionsView(settingsManager: settingsManager)) {
                         HStack {
@@ -67,8 +95,8 @@ struct SettingsView: View {
 
 #Preview {
     
-    var bluetoothManager = BTDevicesController(requestedServices: nil)
-    var settingsManager = SettingsManager()
+    let bluetoothManager = BTDevicesController(requestedServices: nil)
+    let settingsManager = SettingsManager()
     
     SettingsView(bluetoothManager: bluetoothManager,
                  settingsManager: settingsManager)

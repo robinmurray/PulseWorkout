@@ -8,11 +8,37 @@
 import SwiftUI
 
 struct ActivityHeaderView: View {
+
+    @State var activityRecord: ActivityRecord
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        
+        VStack(alignment: .leading) {
+            HStack {
+                Text(activityRecord.name)
+                    .foregroundStyle(.yellow)
+                Spacer()
+            }
+
+            HStack {
+                Text(activityRecord.startDateLocal.formatted(
+                    Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
+                        .day(.twoDigits)
+                        .month(.abbreviated)
+                        .hour(.defaultDigits(amPM: .omitted))
+                        .minute(.twoDigits)
+                        .hour(.conversationalDefaultDigits(amPM: .abbreviated))
+                ))
+                Spacer()
+            }
+            
+
+        }
     }
 }
-
 #Preview {
-    ActivityHeaderView()
+    let settingsManager = SettingsManager()
+    let record = ActivityRecord(settingsManager: settingsManager)
+    
+    ActivityHeaderView(activityRecord: record)
 }

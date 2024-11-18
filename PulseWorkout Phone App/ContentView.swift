@@ -8,17 +8,66 @@
 import SwiftUI
 
 struct ContentView: View {
+//    @ObservedObject var liveActivityManager: LiveActivityManager
+    @ObservedObject var profileManager: ProfileManager
+    @ObservedObject var dataCache: DataCache
+    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var locationManager: LocationManager
+    @ObservedObject var bluetoothManager: BTDevicesController
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        
+        TabView {
+            ActivityHistoryView(dataCache: dataCache)
+                .tabItem {
+                    Label("Home", systemImage: "house")
+                }
+            
+            Text("Activities!")
+                .tabItem {
+                    Label("Activities", systemImage: "figure.run")
+                }
+            
+            VStack {
+                ActivityHistoryHeaderView()
+                Spacer()
+                Text("Statistics!")
+                Spacer()
+            }
+                .tabItem {
+
+                    Label("Stats", systemImage: "person")
+                }
+
+                    
+            SettingsView(bluetoothManager: bluetoothManager,
+                         settingsManager: settingsManager)
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+            }
+
         }
-        .padding()
+        .indexViewStyle(.page(backgroundDisplayMode: .automatic))
+
+//        .onAppear(perform: liveActivityManager.requestAuthorization)
+
     }
+
 }
 
+
+
 #Preview {
-    ContentView()
+
+    let settingsManager = SettingsManager()
+    let locationManager = LocationManager(settingsManager: settingsManager)
+    let dataCache = DataCache(settingsManager: settingsManager)
+    let profileManager = ProfileManager()
+    let bluetoothManager = BTDevicesController(requestedServices: nil)
+    
+    ContentView(profileManager: profileManager,
+                dataCache: dataCache,
+                settingsManager: settingsManager,
+                locationManager: locationManager,
+                bluetoothManager: bluetoothManager)
 }

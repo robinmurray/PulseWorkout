@@ -8,11 +8,64 @@
 import SwiftUI
 
 struct AverageSettingsView: View {
+    
+    @ObservedObject var settingsManager: SettingsManager
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Form {
+
+            VStack {
+                
+                Toggle(isOn: $settingsManager.aveHRPaused) {
+                    Text("Ave. HR - include pauses")
+
+                }
+                HStack {
+                    Text("Include HR in average when auto-paused.")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                    Spacer()
+                }
+
+            }
+            
+            VStack {
+                Toggle(isOn: $settingsManager.avePowerZeros) {
+                    Text("Ave. Power - include zeros")
+                }
+                HStack {
+                    Text("Include zeros in average power calculation.")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+            }
+
+            VStack {
+                Toggle(isOn: $settingsManager.aveCadenceZeros) {
+                    Text("Ave. Cadence - include zeros")
+
+                }
+                HStack {
+                    Text("Include zeros in average cadence calculation.")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+            }
+
+
+        }
+        .navigationTitle("Average Calculations")
+        .onDisappear(perform: settingsManager.save)
+
     }
+        
+
 }
 
+
 #Preview {
-    AverageSettingsView()
+    
+    let settingsManager = SettingsManager()
+    
+    AverageSettingsView(settingsManager: settingsManager)
 }

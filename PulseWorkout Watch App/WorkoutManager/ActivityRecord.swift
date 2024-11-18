@@ -9,6 +9,7 @@ import Foundation
 import Gzip
 import CloudKit
 import os
+import SwiftUI
 
 enum StravaSaveStatus: Int {
     case dontSave = 0
@@ -150,6 +151,9 @@ extension ActivityRecord: XMLParserDelegate {
 
 class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
+    /// stored reference to datacache for storage & retrieval
+    var dataCache: DataCache?
+    
     /// Apple HK workout type.
     var workoutTypeId: UInt = 1
     
@@ -159,6 +163,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var name: String = "Morning Ride"
     var type: String = "Ride"
     var sportType = "Ride"
+    let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
     
     var startDateLocal: Date = Date()
     var elapsedTime: Double = 0
@@ -190,8 +195,16 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var altitudeMeters: Double?
     var distanceMeters: Double = 0
     
+    
     var autoPause: Bool = true
     var isPaused: Bool = false
+    
+    // static image of the route map
+    var mapSnapshotAsset: CKAsset?
+    var mapSnapshotURL: URL?
+    var mapSnapshotFileURL: URL?
+
+    @Published var mapSnapshotImage: UIImage?
 
     private var settingsManager: SettingsManager?
     
@@ -208,7 +221,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         super.init()
         self.settingsManager = settingsManager
         
-        let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
+        
         self.tcxFileName = baseFileName + ".gz"
         self.JSONFileName = baseFileName + ".json"
         self.recordID = CKRecord.ID()
@@ -263,6 +276,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         tcxFileName = fromActivityRecord.tcxFileName
         JSONFileName = fromActivityRecord.JSONFileName
         autoPause = fromActivityRecord.autoPause
+        
+        mapSnapshotURL = fromActivityRecord.mapSnapshotURL
+        mapSnapshotImage = fromActivityRecord.mapSnapshotImage
+        mapSnapshotAsset = fromActivityRecord.mapSnapshotAsset
         
         // This should take a copy!
         trackPoints = fromActivityRecord.trackPoints
@@ -488,7 +505,7 @@ extension ActivityRecord {
         case recordName, name, workoutTypeId, workoutLocationId, type, sportType, startDateLocal,
              elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
              averageHeartRate, averageCadence, averagePower, averageSpeed, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
-             stravaSaveStatus, totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete
+             stravaSaveStatus, totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL
     }
     
     
@@ -500,13 +517,7 @@ extension ActivityRecord {
 /// Extension for managing track points
 extension ActivityRecord {
 
-    /// Get URL for JSON file
-    func CacheURL(fileName: String) -> URL? {
 
-        guard let cachePath = getCacheDirectory() else { return nil }
-
-        return cachePath.appendingPathComponent(fileName)
-    }
     
     /// Add data as a track point
     func addTrackPoint(trackPointTime: Date = Date()) {
@@ -708,6 +719,11 @@ extension ActivityRecord {
         totalDescent = activityRecord["totalDescent"] as Double?
         stravaSaveStatus = (activityRecord["stravaSaveStatus"] ?? StravaSaveStatus.dontSave.rawValue) as Int
         
+        mapSnapshotAsset = activityRecord["mapSnapshot"] as CKAsset?
+        if mapSnapshotAsset != nil {
+            mapSnapshotURL = mapSnapshotAsset!.fileURL
+        }
+
         setToSave(false)
         toDelete = false
         tcxFileName = ""

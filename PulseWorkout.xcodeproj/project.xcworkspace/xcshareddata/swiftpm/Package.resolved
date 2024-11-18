@@ -1,4 +1,5 @@
 {
+  "originHash" : "83ffce27527b281518faad7eba754e9f0ce57b67740a62356e3d9b6ced46e1b2",
   "pins" : [
     {
       "identity" : "gzipswift",
@@ -10,5 +11,5 @@
       }
     }
   ],
-  "version" : 2
+  "version" : 3
 }

@@ -15,23 +15,29 @@ struct HapticsSettingsView: View {
         Form {
 
             VStack {
-                    
+                
                 HStack {
-                        Picker("Haptic Type", selection: $settingsManager.hapticType) {
-                            ForEach(hapticTypes) { hapticType in
-                                Text(hapticType.name).tag(hapticType.self)
-                            }
+                    Picker("Haptic Type", selection: $settingsManager.hapticType) {
+                        ForEach(hapticTypes) { hapticType in
+                            Text(hapticType.name).tag(hapticType.self)
                         }
-                        .font(.headline)
-                        .foregroundColor(Color.blue)
-                        .fontWeight(.bold)
-                        .listStyle(.carousel)
-                        .onChange(of: settingsManager.hapticType) { oldValue, newValue in WKInterfaceDevice.current().play(settingsManager.hapticType)}
-                        
-                        Spacer()
                     }
+                    .font(.headline)
+                    .foregroundColor(Color.blue)
+                    .fontWeight(.bold)
+                    .listStyle(.carousel)
+                    .onChange(of: settingsManager.hapticType) { oldValue, newValue in WKInterfaceDevice.current().play(settingsManager.hapticType)}
+                    
+                    Spacer()
+                }
+                HStack {
                     Text("The haptic to play on heartrate alarm limits.")
                         .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+            }
+            
+            VStack {
                     
                 HStack {
                     Text("Maximum haptic repeat")
@@ -52,12 +58,18 @@ struct HapticsSettingsView: View {
                         .frame(width:160, height: 40, alignment: .topLeading)
                         .foregroundColor(.white)
                 
-                Text("The maximum number of times the haptic will be repeated when heart rate remains above high limit / below low limit.")
-                    .font(.footnote).foregroundColor(.gray)
+                HStack {
+                    Text("The maximum number of times the haptic will be repeated when heart rate remains above high limit / below low limit.")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+
             }
 
         }
-        .navigationTitle("Haptics")
+        .navigationTitle {
+            Label("Haptics", systemImage: "applewatch.radiowaves.left.and.right")
+            .foregroundColor(.teal) }
         .onDisappear(perform: settingsManager.save)
 
     }

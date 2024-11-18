@@ -143,7 +143,7 @@ struct ActivityLineChartView: View {
 
 
 #Preview {
-    var chartData: ActivityChartTraceData = ActivityChartTraceData(
+    let chartData: ActivityChartTraceData = ActivityChartTraceData(
         id: "My Chart",
         colorScheme: .red,
         displayPrimaryAverage: true,
@@ -184,8 +184,6 @@ struct ActivityLineChartView: View {
                                     backgroundValue: 3,
                                     scaledBackgroundValue: 3)
         ])
-    var chartColor: Color = .red
-    var displayPrimaryAverage: Bool = true
 
     
     ActivityLineChartView(chartData: chartData)

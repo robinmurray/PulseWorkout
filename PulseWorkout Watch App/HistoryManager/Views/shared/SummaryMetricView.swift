@@ -8,11 +8,28 @@
 import SwiftUI
 
 struct SummaryMetricView: View {
+    var title: String
+    var value: String
+
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        VStack {
+            HStack {
+                Text(title)
+                    .foregroundStyle(.foreground)
+                Spacer()
+            }
+            HStack {
+                Text(value)
+                    .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
+                Spacer()
+            }
+
+            Divider()
+        }
+
     }
 }
 
 #Preview {
-    SummaryMetricView()
+    SummaryMetricView(title: "Metric Name", value: "10.0")
 }

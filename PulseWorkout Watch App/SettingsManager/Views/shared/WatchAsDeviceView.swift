@@ -13,20 +13,31 @@ struct WatchAsDeviceView: View {
     
     var body: some View {
             Form {
-                
-                Toggle(isOn: $settingsManager.transmitHR) {
-                    Text("Heart Rate")
+                VStack {
+                    Toggle(isOn: $settingsManager.transmitHR) {
+                        Text("Heart Rate")
+                    }
+                    
+                    HStack {
+                        Text("Make Apple watch appear as a bluetooth Heart Rate Monitor, transmitting data either from watch pulse meter or from a connected heart rate monitor.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+
                 }
                 
-                Text("Make Apple watch appear as a bluetooth Heart Rate Monitor, transmitting data either from watch pulse meter or from a connected heart rate monitor.")
-                    .font(.footnote).foregroundColor(.gray)
+                VStack {
+                    Toggle(isOn: $settingsManager.transmitPowerMeter) {
+                        Text("Power Meter")
+                    }
 
-                Toggle(isOn: $settingsManager.transmitPowerMeter) {
-                    Text("Power Meter")
+                    HStack {
+                        Text("Make Apple watch appear as a bluetooth power meter transmitting data from a connected real power meter.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+
                 }
-
-                Text("Make Apple watch appear as a bluetooth power meter transmitting data from a connected real power meter.")
-                    .font(.footnote).foregroundColor(.gray)
 
             }
 #if os(watchOS)
@@ -34,7 +45,9 @@ struct WatchAsDeviceView: View {
                 Label("Watch as Sensor", systemImage: "applewatch.radiowaves.left.and.right")
                     .foregroundColor(.mint)
             }
-        #endif
+#else
+            .navigationTitle("Watch as Sensor")
+#endif
             .onDisappear(perform: settingsManager.save)
         }
         

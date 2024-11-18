@@ -14,28 +14,43 @@ struct CloudConnectionsView: View {
     
     var body: some View {
             Form {
-                
-                Toggle(isOn: $settingsManager.saveAppleHealth) {
-                    Text("Apple Health")
-                }
-                
-                Text("Save activity summaries to apple health.")
-                    .font(.footnote).foregroundColor(.gray)
+                VStack {
+                    Toggle(isOn: $settingsManager.saveAppleHealth) {
+                        Text("Apple Health")
+                    }
+                    HStack {
+                        Text("Save activity summaries to apple health.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
 
-                Toggle(isOn: $settingsManager.saveStrava) {
-                    Text("Strava")
                 }
 
-                Text("Save activities and routes to Strava.")
-                    .font(.footnote).foregroundColor(.gray)
-                
-                Button("Clear local cache") {
-                    clearCache()
-                }.buttonStyle(.borderedProminent)
-                    .tint(Color.blue)
-                
-                Text("Delete locally stored activities that have not been uploaded to cloud storage.")
-                    .font(.footnote).foregroundColor(.gray)
+                VStack {
+                    Toggle(isOn: $settingsManager.saveStrava) {
+                        Text("Strava")
+                    }
+                    HStack {
+                        Text("Save activities and routes to Strava.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+                }
+
+                VStack {
+                    Button("Clear local cache") {
+                        clearCache()
+                    }.buttonStyle(.borderedProminent)
+                        .tint(Color.blue)
+                    
+                    HStack {
+                        Text("Delete locally stored activities that have not been uploaded to cloud storage.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+
+                }
+
 
             }
 #if os(watchOS)
@@ -43,7 +58,9 @@ struct CloudConnectionsView: View {
                 Label("Cloud Connections", systemImage: "cloud")
                     .foregroundColor(.gray)
             }
-        #endif
+#else
+            .navigationTitle("Cloud Connections")
+#endif
             .onDisappear(perform: settingsManager.save)
         }
         

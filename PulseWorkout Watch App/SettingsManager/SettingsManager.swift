@@ -6,10 +6,13 @@
 //
 
 import Foundation
+
+#if os(watchOS)
 import WatchKit
 
 var hapticTypes: [WKHapticType] = [.notification, .directionUp, .directionDown,
     .success, .failure, .retry, .start, .stop, .click]
+#endif
 
 class SettingsManager: NSObject, ObservableObject  {
     
@@ -33,7 +36,10 @@ class SettingsManager: NSObject, ObservableObject  {
     
     /// Whether to include HR in average when paused - true -> yes, false -> no
     @Published var aveHRPaused: Bool
+    
+#if os(watchOS)
     @Published var hapticType: WKHapticType
+#endif
     @Published var maxAlarmRepeatCount: Int
 
     /// Whether to use 3-second power or instantanteous power for cycle power meter reading
@@ -57,7 +63,9 @@ class SettingsManager: NSObject, ObservableObject  {
         aveCadenceZeros = UserDefaults.standard.bool(forKey: "aveCadenceZeros")
         avePowerZeros = UserDefaults.standard.bool(forKey: "avePowerZeros")
         aveHRPaused = UserDefaults.standard.bool(forKey: "aveHRPaused")
+        #if os(watchOS)
         hapticType = WKHapticType(rawValue: UserDefaults.standard.integer(forKey: "hapticType")) ?? .notification
+        #endif
         maxAlarmRepeatCount = max( UserDefaults.standard.integer(forKey: "maxAlarmRepeatCount"), 1 )
         
         // default to true if not set
@@ -85,7 +93,9 @@ class SettingsManager: NSObject, ObservableObject  {
         UserDefaults.standard.set(aveCadenceZeros, forKey: "aveCadenceZeros")
         UserDefaults.standard.set(avePowerZeros, forKey: "avePowerZeros")
         UserDefaults.standard.set(aveHRPaused, forKey: "aveHRPaused")
+        #if os(watchOS)
         UserDefaults.standard.set(hapticType.rawValue, forKey: "hapticType")
+        #endif
         UserDefaults.standard.set(maxAlarmRepeatCount, forKey: "maxAlarmRepeatCount")
 
         UserDefaults.standard.set(use3sCyclePower, forKey: "use3sCyclePower")
@@ -95,7 +105,7 @@ class SettingsManager: NSObject, ObservableObject  {
     
 }
 
-
+#if os(watchOS)
 extension WKHapticType: @retroactive Identifiable {
     public var id: Int {
         rawValue
@@ -136,3 +146,4 @@ extension WKHapticType: @retroactive Identifiable {
         }
     }
 }
+#endif
