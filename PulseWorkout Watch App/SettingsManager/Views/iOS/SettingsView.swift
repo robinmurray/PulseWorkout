@@ -2,7 +2,7 @@
 //  SettingsView.swift
 //  PulseWorkout Watch App
 //
-//  Created by Robin Murray on 08/09/2023.
+//  Created by Robin Murray on 31/10/2024.
 //
 
 import SwiftUI
@@ -13,16 +13,15 @@ struct SettingsView: View {
     @ObservedObject var settingsManager: SettingsManager
     
     var body: some View {
+        
         NavigationStack {
-            ScrollView {
 
-            VStack {
+            Form {
 
                 NavigationLink(
                     destination: GeneralSettingsView(settingsManager: settingsManager)) {
                         HStack {
                             Label("General", systemImage: "folder")
-                                .foregroundColor(.white)
                             Spacer()
                         }
                         
@@ -57,12 +56,8 @@ struct SettingsView: View {
                     }
 
             }
-            .navigationTitle {
-                Label("Settings", systemImage: "gear")
-                    .foregroundColor(.gray)
-            }
-
-        }
+            .navigationTitle("Settings")
+            .navigationBarTitleDisplayMode(.inline)
 
         }
         
@@ -70,12 +65,11 @@ struct SettingsView: View {
 
 }
 
-struct SettingsView_Previews: PreviewProvider {
+#Preview {
     
-    static var bluetoothManager = BTDevicesController(requestedServices: nil)
-    static var settingsManager = SettingsManager()
-
-    static var previews: some View {
-        SettingsView(bluetoothManager: bluetoothManager, settingsManager: settingsManager)
-    }
+    var bluetoothManager = BTDevicesController(requestedServices: nil)
+    var settingsManager = SettingsManager()
+    
+    SettingsView(bluetoothManager: bluetoothManager,
+                 settingsManager: settingsManager)
 }

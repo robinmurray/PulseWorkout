@@ -1,13 +1,12 @@
 //
-//  ChartView.swift
-//  PulseWorkout Watch App
+//  ActivityLineChartView.swift
+//  PulseWorkout
 //
-//  Created by Robin Murray on 26/03/2024.
+//  Created by Robin Murray on 05/11/2024.
 //
 
 import SwiftUI
 import Charts
-
 
 struct ActivityLineChartView: View {
 
@@ -21,6 +20,8 @@ struct ActivityLineChartView: View {
     }
 
     func segmentAverage( item: ActivityChartTracePoint ) -> Double {
+        print("primaryValueDistanceSegmentAverage \(item.primaryValueDistanceSegmentAverage)")
+        print("primaryValueTimeSegmentAverage \(item.primaryValueTimeSegmentAverage)")
         return useDistanceXAxis ? Double(item.primaryValueDistanceSegmentAverage) : item.primaryValueTimeSegmentAverage
     }
 
@@ -140,58 +141,9 @@ struct ActivityLineChartView: View {
     
 }
 
-struct ChartView: View {
-    
-    @State var activityRecord: ActivityRecord
-    var dataCache: DataCache
-    @ObservedObject var activityChartsController: ActivityChartsController
-    
-    init(activityRecord: ActivityRecord, dataCache: DataCache) {
-        self.activityRecord = activityRecord
-        self.dataCache = dataCache
-        self.activityChartsController = ActivityChartsController(dataCache: dataCache)
-    }
-    
-    var body: some View {
-        ZStack {
-            if activityChartsController.recordFetchFailed {
-                FetchFailedView()
-            } else {
 
-                if activityChartsController.buildingChartTraces {
-                    ProgressView()
-                }
-                TabView {
-                    ForEach(activityChartsController.chartTraces) {chartData in
-
-                        VStack {
-                            ActivityLineChartView(chartData: chartData)
-                        }
-         
-                        .navigationTitle {
-                            Text(chartData.id)
-                                .foregroundStyle(chartData.colorScheme)
-                        }
-                        .containerBackground(chartData.colorScheme.gradient, for: .tabView)
-                        
-                    }
-
-                }
-                .tabViewStyle(.verticalPage)
-                
-            }
-
-            
-        }
-        .onAppear(perform: {
-            activityChartsController.buildChartTraces(recordID: activityRecord.recordID) })
-
-    }
-}
-
-struct ChartView_Previews: PreviewProvider {
-    
-    static var chartData: ActivityChartTraceData = ActivityChartTraceData(
+#Preview {
+    var chartData: ActivityChartTraceData = ActivityChartTraceData(
         id: "My Chart",
         colorScheme: .red,
         displayPrimaryAverage: true,
@@ -232,13 +184,10 @@ struct ChartView_Previews: PreviewProvider {
                                     backgroundValue: 3,
                                     scaledBackgroundValue: 3)
         ])
-    static var chartColor: Color = .red
-    static var displayPrimaryAverage: Bool = true
+    var chartColor: Color = .red
+    var displayPrimaryAverage: Bool = true
+
     
-    static var previews: some View {
-        ActivityLineChartView(chartData: chartData)
-    }
-
+    ActivityLineChartView(chartData: chartData)
 }
-
 

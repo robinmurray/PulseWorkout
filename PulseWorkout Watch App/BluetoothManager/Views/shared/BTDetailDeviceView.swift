@@ -44,11 +44,13 @@ struct BTDetailDeviceView: View {
                 }
             }
             .foregroundStyle(.blue)
+            #if os(watchOS)
             .navigationTitle{
                 Label(btDevice.name, systemImage: "badge.plus.radiowaves.right")
                     .foregroundColor(.blue)
             }
-
+            #endif
+            
             Section(header: Text("Sensor Information")) {
                 HStack {
                     List {
@@ -56,7 +58,9 @@ struct BTDetailDeviceView: View {
                             BTDeviceInfoView(key: key, value: value)
                         }
                     }
+                    #if os(watchOS)
                     .listStyle(.carousel)
+                    #endif
                     
                     Spacer()
                 }
@@ -70,7 +74,9 @@ struct BTDetailDeviceView: View {
                             .dynamicTypeSize(.xSmall)
                             .fontWeight(.bold)
                     }
+                    #if os(watchOS)
                     .listStyle(.carousel)
+                    #endif
                     
                     Spacer()
                 }
