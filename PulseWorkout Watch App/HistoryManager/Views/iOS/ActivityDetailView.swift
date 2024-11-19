@@ -34,7 +34,8 @@ struct ActivityDetailView: View {
                         Spacer()
                         Image(uiImage: activityRecord.mapSnapshotImage ?? UIImage(systemName: "map")!.withTintColor(.blue))
                             .resizable()
-                            .aspectRatio(contentMode: .fit)
+//                            .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
                             .frame(width: 360, height: 180, alignment: .topLeading)
                         Spacer()
                         

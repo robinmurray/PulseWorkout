@@ -26,18 +26,6 @@ struct ProfileListItemView: View {
         navigateToLiveView = false
     }
     
-    let hiAlarmDisplay: [Bool: AlarmStyling] =
-    [false: AlarmStyling(alarmLevelText: "___", colour: Color.gray),
-     true: AlarmStyling(colour: Color.red)]
-    
-    let loAlarmDisplay: [Bool: AlarmStyling] =
-    [false: AlarmStyling(alarmLevelText: "___", colour: Color.gray),
-     true: AlarmStyling(colour: Color.orange)]
-    
-    func startWorkout() {
-        liveActivityManager.startWorkout(activityProfile: profile)
-    }
-    
     var body: some View {
         VStack {
             NavigationStack {
@@ -75,19 +63,12 @@ struct ProfileListItemView: View {
                         HStack{
                             
                             Text(profile.name)
-//                                .font(.system(size: 15))
-//                                .fontWeight(.bold)
                                 .foregroundStyle(.orange)
                             
                             Spacer()
                             
                             Image(systemName: HKWorkoutActivityType( rawValue: profile.workoutTypeId )!.iconImage)
                                 .foregroundColor(Color.orange)
- //                               .font(.title2)
-//                                .frame(width: 40, height: 40)
-//                                .background(Color.clear)
-//                                .clipShape(Circle())
-                            //                            .buttonStyle(PlainButtonStyle())
                             
                         }
                         
@@ -102,37 +83,12 @@ struct ProfileListItemView: View {
                 }
 
             }
-            
-        
-
-            /*
-                HStack {
-                    Image(systemName:"heart.fill")
-                        .foregroundColor(Color.red)
-                    
-                    Image(systemName: "arrow.down.to.line.circle.fill")
-                        .foregroundColor(loAlarmDisplay[profile.loLimitAlarmActive]?.colour)
-                        .frame(height: 20)
-                    
-                    Text(loAlarmDisplay[profile.loLimitAlarmActive]?.alarmLevelText ?? String(profile.loLimitAlarm))
-                        .foregroundColor(loAlarmDisplay[profile.loLimitAlarmActive]?.colour)
-                        .font(.system(size: 15))
-                    
-                    Image(systemName: "arrow.up.to.line.circle.fill")
-                        .foregroundColor(hiAlarmDisplay[profile.hiLimitAlarmActive]?.colour)
-                        .frame(height: 20)
-                    
-                    Text(hiAlarmDisplay[profile.hiLimitAlarmActive]?.alarmLevelText ?? String(profile.hiLimitAlarm))
-                        .foregroundColor(hiAlarmDisplay[profile.hiLimitAlarmActive]?.colour)
-                        .font(.system(size: 15))
-                }
-            
-            */
-            }
-        .onAppear(perform: resetNavigationFlags)
+                
         }
-
+        .onAppear(perform: resetNavigationFlags)
     }
+
+}
     
     
     

@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-//    @ObservedObject var liveActivityManager: LiveActivityManager
+    @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var dataCache: DataCache
     @ObservedObject var settingsManager: SettingsManager
@@ -23,10 +23,14 @@ struct ContentView: View {
                     Label("Home", systemImage: "house")
                 }
             
-            Text("Activities!")
-                .tabItem {
-                    Label("Activities", systemImage: "figure.run")
-                }
+            NavigationStack {
+                StartView(liveActivityManager: liveActivityManager,
+                          profileManager: profileManager,
+                          dataCache: dataCache)
+            }
+            .tabItem {
+                Label("New Activity", systemImage: "figure.run")
+            }
             
             VStack {
                 ActivityHistoryHeaderView()
@@ -49,7 +53,7 @@ struct ContentView: View {
         }
         .indexViewStyle(.page(backgroundDisplayMode: .automatic))
 
-//        .onAppear(perform: liveActivityManager.requestAuthorization)
+        .onAppear(perform: liveActivityManager.requestAuthorization)
 
     }
 
@@ -64,8 +68,13 @@ struct ContentView: View {
     let dataCache = DataCache(settingsManager: settingsManager)
     let profileManager = ProfileManager()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
+    let liveActivityManager = LiveActivityManager(locationManager: locationManager,
+                                                  bluetoothManager: bluetoothManager,
+                                                  settingsManager: settingsManager,
+                                                  dataCache: dataCache)
     
-    ContentView(profileManager: profileManager,
+    ContentView(liveActivityManager: liveActivityManager,
+                profileManager: profileManager,
                 dataCache: dataCache,
                 settingsManager: settingsManager,
                 locationManager: locationManager,

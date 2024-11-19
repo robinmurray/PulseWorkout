@@ -17,7 +17,11 @@ struct BTDeviceBarView: View {
     
     @ObservedObject var liveActivityManager: LiveActivityManager
 
+    #if os(watchOS)
     let screenWidth = WKInterfaceDevice.current().screenBounds.width
+    #else
+    let screenWidth = 360
+    #endif
     
     init(liveActivityManager: LiveActivityManager) {
         self.liveActivityManager = liveActivityManager
@@ -60,6 +64,7 @@ struct BTDeviceBarView: View {
     
     var body: some View {
         HStack {
+            Spacer()
             Image(systemName:"heart.fill")
                 .foregroundColor(BTconnectedColour[liveActivityManager.BTHRMConnected])
             Image(systemName:getBatteryImage(batteryLevel: liveActivityManager.BTHRMBatteryLevel))
@@ -72,8 +77,8 @@ struct BTDeviceBarView: View {
                 .foregroundColor(Color.gray)
             Image(systemName:"battery.100.bolt")
                 .foregroundColor(Color.gray)
+            Spacer()
 
-            Spacer().frame(maxWidth: .infinity)
         }.imageScale(screenWidth > 190 ? .medium: .small)
     }
 }

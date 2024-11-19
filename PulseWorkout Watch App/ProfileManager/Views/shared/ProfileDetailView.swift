@@ -41,7 +41,9 @@ struct ProfileDetailForm: View {
             .font(.headline)
             .foregroundColor(Color.blue)
             .fontWeight(.bold)
+            #if os(watchOS)
             .listStyle(.carousel)
+            #endif
             .onChange(of: profile.workoutTypeId) {
                 
             }
@@ -55,7 +57,9 @@ struct ProfileDetailForm: View {
             .font(.headline)
             .foregroundColor(Color.blue)
             .fontWeight(.bold)
+            #if os(watchOS)
             .listStyle(.carousel)
+            #endif
                 
         }
 
@@ -158,10 +162,12 @@ struct ProfileDetailView: View {
 
                 }
             }
+            #if os(watchOS)
             .navigationTitle {
                 Label("Edit Profile", systemImage: "figure.run")
                     .foregroundColor(.orange)
             }
+            #endif
             .onDisappear {
                 if deleteProfile {
                     profileManager.remove(activityProfile: profile)

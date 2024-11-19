@@ -17,6 +17,13 @@ enum HRSource {
     case healthkit, bluetooth
 }
 
+enum HRState {
+    case inactive
+    case normal
+    case hiAlarm
+    case loAlarm
+}
+
 enum LiveActivityState {
     case initial, live, paused
 }
@@ -26,6 +33,7 @@ class LiveActivityManager : NSObject, ObservableObject {
 
 //    var locationManager: LocationManager
     
+
     @Published var hrState: HRState = HRState.inactive
     @Published var liveActivityState: LiveActivityState = .initial
     @Published var workoutType: HKWorkoutActivityType = HKWorkoutActivityType.cycling
@@ -44,7 +52,9 @@ class LiveActivityManager : NSObject, ObservableObject {
     @Published var BTcyclePowerBatteryLevel: Int?
     @Published var BTcyclePowerConnected: Bool = false
 
+    #if os(watchOS)
     @Published var liveTabSelection: LiveScreenTab = .liveMetrics
+    #endif
 
     var alarmRepeatCount: Int = 0
     
@@ -60,8 +70,10 @@ class LiveActivityManager : NSObject, ObservableObject {
     var bluetoothManager: BTDevicesController
     
     let healthStore = HKHealthStore()
+    #if os(watchOS)
     var session: HKWorkoutSession?
     var builder: HKLiveWorkoutBuilder?
+    #endif
 
     var liveActivityRecord: ActivityRecord?
     
@@ -115,7 +127,11 @@ class LiveActivityManager : NSObject, ObservableObject {
    
     /// Return total elapsed time for the activity
     func elapsedTime(at: Date) -> TimeInterval {
+        #if os(watchOS)
         return builder?.elapsedTime(at: at) ?? 0
+        #else
+        return at.timeIntervalSince(liveActivityRecord!.startDateLocal)
+        #endif
     }
 
     /// Return duration of current auto-pause (or zero if not auto-paused)
@@ -131,7 +147,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     /// Return total moving time = elapsed time - total auto-pause - current active auto-pause
     func movingTime(at: Date) -> TimeInterval {
 
-        return max((builder?.elapsedTime(at: at) ?? 0) - (liveActivityRecord?.pausedTime ?? 0)
+        return max(elapsedTime(at: at) - (liveActivityRecord?.pausedTime ?? 0)
                 - currentPauseDurationAt(at: at), 0)
     }
     
@@ -146,7 +162,9 @@ class LiveActivityManager : NSObject, ObservableObject {
     func startWorkout(activityProfile: ActivityProfile) {
 
         liveActivityProfile = activityProfile
+        #if os(watchOS)
         liveTabSelection = LiveScreenTab.liveMetrics
+        #endif
 
         alarmRepeatCount = 0
         
@@ -154,6 +172,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         liveActivityRecord = ActivityRecord(settingsManager: settingsManager)
         liveActivityRecord?.start(activityProfile: activityProfile, startDate: startDate)
 
+        #if os(watchOS)
         startHRMonitor()
 
         let configuration = HKWorkoutConfiguration()
@@ -175,14 +194,14 @@ class LiveActivityManager : NSObject, ObservableObject {
         // Set the workout builder's data source.
         builder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore,
                                                      workoutConfiguration: configuration)
-
+        #endif
         // Start the workout session and begin data collection.
         
         // If an outdoor activity then start location services
         if activityProfile.workoutLocationId == HKWorkoutSessionLocationType.outdoor.rawValue {
             locationManager.startBGLocationServices(liveActityRecord: liveActivityRecord!)
         }
-
+        #if os(watchOS)
         session?.startActivity(with: startDate)
         builder?.beginCollection(withStart: startDate) { (success, error) in
             // The workout has started.
@@ -197,6 +216,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         if self.liveActivityProfile!.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
             Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(delayedEnableWaterLock), userInfo: nil, repeats: false)
         }
+        #endif
 
     }
     
@@ -207,21 +227,27 @@ class LiveActivityManager : NSObject, ObservableObject {
             locationManager.stopLocationSession()
         }
 
-        self.set(elapsedTime: self.builder?.elapsedTime(at: Date()) ?? 0)
+        self.set(elapsedTime: elapsedTime(at: Date()))
 
+        #if os(watchOS)
         session?.end()
+        #endif
         
         stopHRMonitor()
 
     }
     
     func resumeWorkout() {
+#if os(watchOS)
         session?.resume()
+#endif
         liveActivityState = .live
     }
     
     func pauseWorkout() {
+#if os(watchOS)
         session?.pause()
+#endif
         liveActivityState = .paused
     }
 
@@ -340,8 +366,9 @@ class LiveActivityManager : NSObject, ObservableObject {
     }
     
     @objc func delayedEnableWaterLock() {
-        
+        #if os(watchOS)
         WKInterfaceDevice.current().enableWaterLock()
+        #endif
         
     }
     
@@ -362,8 +389,10 @@ class LiveActivityManager : NSObject, ObservableObject {
                 
                 if self.alarmRepeatCount < maxAlarmRepeat {
                     if (liveActivityProfile!.playSound || liveActivityProfile!.playHaptic) {
+#if os(watchOS)
                         WKInterfaceDevice.current().play(settingsManager.hapticType)
                         logger.debug("playing sound 1")
+#endif
                     }
 
                     self.alarmRepeatCount += 1
@@ -377,8 +406,10 @@ class LiveActivityManager : NSObject, ObservableObject {
                 self.hrState = HRState.loAlarm
                 
                 if (liveActivityProfile!.playSound || liveActivityProfile!.playHaptic) && (self.alarmRepeatCount < maxAlarmRepeat) {
+#if os(watchOS)
                     WKInterfaceDevice.current().play(settingsManager.hapticType)
                     logger.debug("playing sound 3")
+#endif
                     self.alarmRepeatCount += 1
                 }
                 
@@ -454,7 +485,7 @@ extension LiveActivityManager: HKWorkoutSessionDelegate {
             self.running = (toState == .running)
         }
         
-        
+        #if os(watchOS)
         // Wait for the session to transition states before ending the builder.
         if toState == .ended {
             
@@ -471,6 +502,7 @@ extension LiveActivityManager: HKWorkoutSessionDelegate {
             }
 
         }
+        #endif
     }
 
     func workoutSession(_ workoutSession: HKWorkoutSession, didFailWithError error: Error) {
@@ -479,6 +511,7 @@ extension LiveActivityManager: HKWorkoutSessionDelegate {
 }
 
 // MARK: - HKLiveWorkoutBuilderDelegate
+#if os(watchOS)
 extension LiveActivityManager: HKLiveWorkoutBuilderDelegate {
     func workoutBuilderDidCollectEvent(_ workoutBuilder: HKLiveWorkoutBuilder) {
 
@@ -501,7 +534,7 @@ extension LiveActivityManager: HKLiveWorkoutBuilderDelegate {
         }
     }
 }
-
+#endif
 
 extension LiveActivityManager {
     

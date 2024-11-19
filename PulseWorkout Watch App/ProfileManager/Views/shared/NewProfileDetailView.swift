@@ -43,10 +43,12 @@ struct NewProfileDetailView: View {
             }
 
         }
+        #if os(watchOS)
         .navigationTitle {
             Label("New Profile", systemImage: "figure.run")
                 .foregroundColor(.orange)
         }
+        #endif
         .onDisappear {
             if !cancelPressed {
                 _ = profileManager.add(activityProfile: newProfile)
