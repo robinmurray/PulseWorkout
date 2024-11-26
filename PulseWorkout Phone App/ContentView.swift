@@ -7,52 +7,62 @@
 
 import SwiftUI
 
+
 struct ContentView: View {
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var dataCache: DataCache
     @ObservedObject var settingsManager: SettingsManager
     @ObservedObject var locationManager: LocationManager
     @ObservedObject var bluetoothManager: BTDevicesController
-
+    
     var body: some View {
-        
-        TabView {
-            ActivityHistoryView(dataCache: dataCache)
-                .tabItem {
-                    Label("Home", systemImage: "house")
-                }
+        TabView(selection: $navigationCoordinator.selectedTab) {
             
-            NavigationStack {
-                StartView(liveActivityManager: liveActivityManager,
+            NavigationStack(path: $navigationCoordinator.homePath) {
+                ActivityHistoryView(navigationCoordinator: navigationCoordinator,
+                                    dataCache: dataCache)
+            }
+            .tabItem {
+                Label("Home", systemImage: "house")
+            }
+            .tag(ContentViewTab.home)
+            
+            NavigationStack(path: $navigationCoordinator.newActivityPath) {
+                StartView(navigationCoordinator: navigationCoordinator,
+                          liveActivityManager: liveActivityManager,
                           profileManager: profileManager,
                           dataCache: dataCache)
             }
             .tabItem {
                 Label("New Activity", systemImage: "figure.run")
             }
+            .tag(ContentViewTab.newActivity)
             
-            VStack {
-                ActivityHistoryHeaderView()
-                Spacer()
-                Text("Statistics!")
-                Spacer()
+            NavigationStack(path: $navigationCoordinator.statsPath) {
+                StatisticsView(navigationCoordinator: navigationCoordinator,
+                               profileManager: profileManager,
+                               liveActivityManager: liveActivityManager,
+                               dataCache: dataCache)
             }
-                .tabItem {
-
-                    Label("Stats", systemImage: "person")
-                }
-
-                    
-            SettingsView(bluetoothManager: bluetoothManager,
-                         settingsManager: settingsManager)
-                .tabItem {
-                    Label("Settings", systemImage: "gearshape")
+            .tabItem {
+                Label("Stats", systemImage: "person")
             }
+            .tag(ContentViewTab.stats)
+
+            NavigationStack(path: $navigationCoordinator.settingsPath) {
+                SettingsView(navigationCoordinator: navigationCoordinator,
+                             bluetoothManager: bluetoothManager,
+                             settingsManager: settingsManager)
+            }
+            .tabItem {
+                Label("Settings", systemImage: "gearshape")
+            }
+            .tag(ContentViewTab.settings)
 
         }
-        .indexViewStyle(.page(backgroundDisplayMode: .automatic))
-
+        .indexViewStyle(.page(backgroundDisplayMode: .always))
         .onAppear(perform: liveActivityManager.requestAuthorization)
 
     }
@@ -72,8 +82,10 @@ struct ContentView: View {
                                                   bluetoothManager: bluetoothManager,
                                                   settingsManager: settingsManager,
                                                   dataCache: dataCache)
+    let navigationCoordinator = NavigationCoordinator()
     
-    ContentView(liveActivityManager: liveActivityManager,
+    ContentView(navigationCoordinator: navigationCoordinator,
+                liveActivityManager: liveActivityManager,
                 profileManager: profileManager,
                 dataCache: dataCache,
                 settingsManager: settingsManager,

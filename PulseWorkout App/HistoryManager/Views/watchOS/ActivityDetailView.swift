@@ -8,57 +8,56 @@
 import SwiftUI
 import HealthKit
 
-
-
+/*
+fileprivate enum NavigationTarget {
+    case MapRouteView
+    case ChartView
+}
+*/
 struct GraphButtonView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @State var buttonColor: Color
     @State var activityRecord: ActivityRecord
     @ObservedObject var dataCache: DataCache
+    
+
     
     var body: some View {
         
         VStack {
             Spacer()
 
-            NavigationStack {
-                NavigationLink(destination: ChartView(activityRecord: activityRecord,
-                                                     dataCache: dataCache)) {
-                    
-                    Image(systemName: "chart.xyaxis.line")
-                        .foregroundColor(buttonColor)
-                        .font(.title2)
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(BorderlessButtonStyle())
-                
-                NavigationLink(destination: ChartView(activityRecord: activityRecord,
-                                                      dataCache: dataCache)) {
-                    
-                    Image(systemName: "chart.bar.xaxis")
-                        .foregroundColor(buttonColor)
-                        .font(.title2)
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(BorderlessButtonStyle())
-            
-                NavigationLink(destination: MapRouteView(activityRecord: activityRecord,
-                                                         dataCache: dataCache)) {
-                    
-                    Image(systemName: "map.circle")
-                        .foregroundColor(buttonColor)
-                        .font(.title2)
-                        .frame(width: 40, height: 40)
-                }
-                .buttonStyle(BorderlessButtonStyle())
+            Button(action: {
+                navigationCoordinator.goToView(targetView: ActivityDetailView.NavigationTarget.ChartView)
+            })
+            {
+                Image(systemName: "chart.xyaxis.line")
+                    .foregroundColor(buttonColor)
+                    .font(.title2)
+                    .frame(width: 40, height: 40)
             }
+            .buttonStyle(BorderlessButtonStyle())
+            
+            Button(action: {
+                navigationCoordinator.goToView(targetView: ActivityDetailView.NavigationTarget.MapRouteView)
+            })
+            {
+                Image(systemName: "map.circle")
+                    .foregroundColor(buttonColor)
+                    .font(.title2)
+                    .frame(width: 40, height: 40)
+            }
+            .buttonStyle(BorderlessButtonStyle())
+            
+            
         }
-
     }
 }
 
 struct ActivityDetailView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @State var activityRecord: ActivityRecord
     @ObservedObject var dataCache: DataCache
     
@@ -69,13 +68,17 @@ struct ActivityDetailView: View {
         return formatter
     }()
     
+    enum NavigationTarget {
+        case MapRouteView
+        case ChartView
+    }
     
     var body: some View {
         
         TabView {
             HStack {
                 VStack(alignment: .leading) {
-                    
+
                     HStack {
                         Image(systemName:"stopwatch")
                             .foregroundColor(Color.green)
@@ -119,7 +122,8 @@ struct ActivityDetailView: View {
                     
                 }
             
-                GraphButtonView(buttonColor: .blue,
+                GraphButtonView(navigationCoordinator: navigationCoordinator,
+                                buttonColor: .blue,
                                 activityRecord: activityRecord,
                                 dataCache: dataCache)
 
@@ -147,7 +151,8 @@ struct ActivityDetailView: View {
                     
                 }
                 
-                GraphButtonView(buttonColor: .green,
+                GraphButtonView(navigationCoordinator: navigationCoordinator,
+                                buttonColor: .green,
                                 activityRecord: activityRecord,
                                 dataCache: dataCache)
                 
@@ -171,7 +176,8 @@ struct ActivityDetailView: View {
                     
                 }
                 
-                GraphButtonView(buttonColor: .blue,
+                GraphButtonView(navigationCoordinator: navigationCoordinator,
+                                buttonColor: .blue,
                                 activityRecord: activityRecord,
                                 dataCache: dataCache)
                 
@@ -196,7 +202,8 @@ struct ActivityDetailView: View {
                     
                 }
                 
-                GraphButtonView(buttonColor: .red,
+                GraphButtonView(navigationCoordinator: navigationCoordinator,
+                                buttonColor: .red,
                                 activityRecord: activityRecord,
                                 dataCache: dataCache)
                 
@@ -229,7 +236,8 @@ struct ActivityDetailView: View {
                     
                 }
                 
-                GraphButtonView(buttonColor: .orange,
+                GraphButtonView(navigationCoordinator: navigationCoordinator,
+                                buttonColor: .orange,
                                 activityRecord: activityRecord,
                                 dataCache: dataCache)
                 
@@ -250,6 +258,23 @@ struct ActivityDetailView: View {
                    systemImage: HKWorkoutActivityType( rawValue: activityRecord.workoutTypeId)!.iconImage )
             .foregroundColor(.white)
         }
+        .navigationDestination(for: NavigationTarget.self) { pathValue in
+
+            if pathValue == .MapRouteView {
+
+                MapRouteView(activityRecord: activityRecord,
+                             dataCache: dataCache)
+            }
+            else if pathValue == .ChartView {
+                
+                ChartView(activityRecord: activityRecord,
+                          dataCache: dataCache)
+            }
+            else {
+                Text("Unknown Target View")
+            }
+            
+        }
         
     }
 
@@ -260,13 +285,16 @@ struct ActivityDetailView: View {
 
 struct ActivityDetailView_Previews: PreviewProvider {
     
+    static var navigationCoordinator = NavigationCoordinator()
     static var settingsManager = SettingsManager()
     static var record = ActivityRecord(settingsManager: settingsManager)
     static var dataCache = DataCache(settingsManager: settingsManager)
     
     static var previews: some View {
         if #available(watchOS 10.0, *) {
-            ActivityDetailView(activityRecord: record, dataCache: dataCache)
+            ActivityDetailView(navigationCoordinator: navigationCoordinator,
+                               activityRecord: record,
+                               dataCache: dataCache)
         } else {
             // Fallback on earlier versions
         }

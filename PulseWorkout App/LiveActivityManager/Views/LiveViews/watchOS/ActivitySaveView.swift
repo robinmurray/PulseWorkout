@@ -12,34 +12,29 @@ import SwiftUI
 
 struct ActivitySaveView: View {
    
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
-    @Environment(\.dismiss) private var dismiss
-
-/*    init(liveActivityManager: LiveActivityManager) {
-        self.liveActivityManager = liveActivityManager
+    
+    enum NavigationTarget {
+        case ActivityDetailView
     }
-  */
+
     
     var body: some View {
         VStack(alignment: .leading) {
- /*           ScrollView {
-                ActivityDetailView(activityRecord: liveActivityManager.liveActivityRecord ??
-                                   ActivityRecord(settingsManager: liveActivityManager.settingsManager))
- //           }
-*/
+
             ActivityHeaderView(activityRecord: liveActivityManager.liveActivityRecord ??
                                ActivityRecord(settingsManager: liveActivityManager.settingsManager))
             Divider()
             
-            NavigationStack {
-                NavigationLink("Summary",
-                               destination: ActivityDetailView(activityRecord: liveActivityManager.liveActivityRecord ??
-                                                               ActivityRecord(settingsManager: liveActivityManager.settingsManager),
-                                                              dataCache: dataCache))
+            Button {
+                navigationCoordinator.goToView(targetView: NavigationTarget.ActivityDetailView)
+            } label: {
+                Text("Summary")
             }
             
-            Button(action: SaveActivity) {
+            Button(action: {navigationCoordinator.home()}) {
                 Text("Done").padding([.leading, .trailing], 40)
 
             }
@@ -50,16 +45,27 @@ struct ActivitySaveView: View {
 
         }
         .navigationBarBackButtonHidden(true)
-    }
-    
-    func SaveActivity() {
-        liveActivityManager.saveLiveActivityRecord()
-        dismiss()
-    }
+        .navigationDestination(for: NavigationTarget.self) { pathValue in
+            
+            if pathValue == .ActivityDetailView {
 
+                ActivityDetailView(
+                    navigationCoordinator: navigationCoordinator,
+                    activityRecord: liveActivityManager.liveActivityRecord ??
+                                                ActivityRecord(settingsManager: liveActivityManager.settingsManager),
+                    dataCache: dataCache)
+            }
+            else
+            {
+                Text("Unknown Target View")
+            }
+        }
+ 
+    }
 }
 
 struct ActivitySaveView_Previews: PreviewProvider {
+    static var navigationCoordinator = NavigationCoordinator()
     static var settingsManager = SettingsManager()
     static var record = ActivityRecord(settingsManager: settingsManager)
     static var locationManager = LocationManager(settingsManager: settingsManager)
@@ -73,7 +79,8 @@ struct ActivitySaveView_Previews: PreviewProvider {
     
 
     static var previews: some View {
-        ActivitySaveView(liveActivityManager: liveActivityManager,
+        ActivitySaveView(navigationCoordinator: navigationCoordinator,
+                         liveActivityManager: liveActivityManager,
                          dataCache: dataCache)
     }
 }

@@ -11,81 +11,66 @@ import HealthKit
 
 struct ProfileListItemView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @Binding var profile: ActivityProfile
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
 
-    @State private var navigateToDetailView : Bool = false
-    @State private var navigateToLiveView : Bool = false
-    
-    // set navigation flags to false when view appears.
-    // this allows view to reappear and navigation to work successfully!
-    func resetNavigationFlags() {
-        navigateToDetailView = false
-        navigateToLiveView = false
-    }
     
     var body: some View {
         VStack {
-            NavigationStack {
-                HStack {
-                    Button {
-                        navigateToDetailView = true
-                    } label: {
-                        VStack{
-                            Image(systemName: "square.and.pencil")
-                                .foregroundColor(Color.blue)
-                                .background(Color.clear)
-                                .clipShape(Circle())
-                                .buttonStyle(PlainButtonStyle())
-                        }
-                        
-                    }
-                    .tint(Color.blue)
-                    .buttonStyle(BorderlessButtonStyle())
-                    .navigationDestination(isPresented: $navigateToDetailView) {
-                        ProfileDetailView(profileManager: profileManager,
-                                          profile: self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id }) ?? 0] )
-                    }
-                    
-                    
-                    Button {
-                        
-                        liveActivityManager.startWorkout(activityProfile: profile)
-                        
-                        // Set last used date on profile and save to user defaults
-                        // Do this after starting workout as may change list binding!!
-                        profileManager.update(activityProfile: profile, onlyIfChanged: false)
-                        
-                        navigateToLiveView = true
-                    } label: {
-                        HStack{
-                            
-                            Text(profile.name)
-                                .foregroundStyle(.orange)
-                            
-                            Spacer()
-                            
-                            Image(systemName: HKWorkoutActivityType( rawValue: profile.workoutTypeId )!.iconImage)
-                                .foregroundColor(Color.orange)
-                            
-                        }
-                        
-                    }
-                    .tint(Color.green)
-                    .buttonStyle(BorderlessButtonStyle())
-                    .navigationDestination(isPresented: $navigateToLiveView) {
-                        LiveTabView(profileName: profile.name,
-                                    liveActivityManager: liveActivityManager,
-                                    dataCache: dataCache)
-                    }
-                }
+            VStack {
 
+                    HStack {
+                        Button {
+                            navigationCoordinator.selectedProfile = profile
+                            navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.ProfileDetailView)
+                        } label: {
+                            VStack{
+                                Image(systemName: "square.and.pencil")
+                                    .foregroundColor(Color.blue)
+                                    .background(Color.clear)
+                                    .clipShape(Circle())
+                                    .buttonStyle(PlainButtonStyle())
+                            }
+                            
+                        }
+                        .tint(Color.blue)
+                        .buttonStyle(BorderlessButtonStyle())
+
+                        Button {
+                            navigationCoordinator.selectedProfile = profile
+                            liveActivityManager.startWorkout(activityProfile: profile)
+                            
+                            // Set last used date on profile and save to user defaults
+                            // Do this after starting workout as may change list binding!!
+                            profileManager.update(activityProfile: profile, onlyIfChanged: false)
+                            
+                            navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.LiveTabView)
+                        } label: {
+                            HStack{
+                                
+                                Text(profile.name)
+                                    .foregroundStyle(.orange)
+                                
+                                Spacer()
+                                
+                                Image(systemName: HKWorkoutActivityType( rawValue: profile.workoutTypeId )!.iconImage)
+                                    .foregroundColor(Color.orange)
+                                
+                            }
+                            
+                        }
+                        .tint(Color.green)
+                        .buttonStyle(BorderlessButtonStyle())
+
+                    }
+                    
             }
                 
         }
-        .onAppear(perform: resetNavigationFlags)
+
     }
 
 }
@@ -94,6 +79,7 @@ struct ProfileListItemView: View {
     
      struct ProfileListItemView_Previews: PreviewProvider {
      
+         static var navigationCoordinator = NavigationCoordinator()
          static var settingsManager = SettingsManager()
          static var dataCache = DataCache(settingsManager: settingsManager)
          static var locationManager = LocationManager(settingsManager: settingsManager)
@@ -108,7 +94,8 @@ struct ProfileListItemView: View {
          
          static var previews: some View {
 
-            ProfileListItemView(profile: .constant(profileManager.profiles[0]),
+             ProfileListItemView(navigationCoordinator: navigationCoordinator,
+                                 profile: .constant(profileManager.profiles[0]),
                                 profileManager: profileManager,
                                 liveActivityManager: liveActivityManager,
                                 dataCache: dataCache)

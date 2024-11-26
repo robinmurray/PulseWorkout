@@ -16,6 +16,7 @@ struct Location: Identifiable {
 
 struct LocationView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var locationManager: LocationManager
     
 
@@ -31,6 +32,7 @@ struct LocationView: View {
             else {
                 VStack {
                     Form {
+
                         Section(header: Text("Current Location")) {
 
                             HStack {
@@ -199,9 +201,11 @@ struct LocationView: View {
 
 struct LocationView_Previews: PreviewProvider {
     
+    static var navigationCoordinator = NavigationCoordinator()
     static var settingsManager = SettingsManager()
     static var locationManager = LocationManager(settingsManager: settingsManager)
     static var previews: some View {
-        LocationView(locationManager: locationManager)
+        LocationView(navigationCoordinator: navigationCoordinator,
+                     locationManager: locationManager)
     }
 }

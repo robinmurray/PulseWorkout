@@ -29,7 +29,9 @@ struct ActivityListItemView: View {
             HStack {
 
                 Text(activityRecord.name)
-                    .foregroundStyle(.yellow).fontWeight(.bold)
+                    .foregroundStyle(.yellow)
+                    .fontWeight(.bold)
+                    .multilineTextAlignment(.leading)
                 Spacer()
                 VStack {
                     if activityRecord.toSavePublished {

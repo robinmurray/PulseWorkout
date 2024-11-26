@@ -16,6 +16,7 @@ struct PulseWorkout_Phone_App: App {
     @ObservedObject var settingsManager: SettingsManager
     @ObservedObject var dataCache: DataCache
     @ObservedObject var bluetoothManager: BTDevicesController
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     
     init() {
         let mySettingsManager = SettingsManager()
@@ -32,12 +33,13 @@ struct PulseWorkout_Phone_App: App {
         self.settingsManager = mySettingsManager
         self.dataCache = myDataCache
         self.bluetoothManager = myBluetoothManager
-        
+        self.navigationCoordinator = NavigationCoordinator()
     }
     
     var body: some Scene {
         WindowGroup {
-            ContentView(liveActivityManager: liveActivityManager,
+            ContentView(navigationCoordinator: navigationCoordinator,
+                        liveActivityManager: liveActivityManager,
                         profileManager: profileManager,
                         dataCache: dataCache,
                         settingsManager: settingsManager,

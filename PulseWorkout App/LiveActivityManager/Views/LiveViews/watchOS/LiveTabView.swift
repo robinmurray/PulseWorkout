@@ -16,6 +16,7 @@ enum LiveScreenTab {
 
 struct LiveTabView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     var profileName: String
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
@@ -24,11 +25,13 @@ struct LiveTabView: View {
 
             TabView(selection: $liveActivityManager.liveTabSelection) {
                 
-                StopView(liveActivityManager: liveActivityManager, dataCache: dataCache)
+                StopView(navigationCoordinator: navigationCoordinator,
+                         liveActivityManager: liveActivityManager, dataCache: dataCache)
                     .tag(LiveScreenTab.stop)
                     .navigationTitle("Stop")
                 
-                LiveMetricsView(liveActivityManager: liveActivityManager)
+                LiveMetricsView(navigationCoordinator: navigationCoordinator,
+                                liveActivityManager: liveActivityManager)
                     .tag(LiveScreenTab.liveMetrics)
                     .navigationTitle {
                         Label(profileName, 
@@ -37,7 +40,8 @@ struct LiveTabView: View {
                     }
 
 
-                LocationView(locationManager: liveActivityManager.locationManager)
+                LocationView(navigationCoordinator: navigationCoordinator,
+                             locationManager: liveActivityManager.locationManager)
                     .tag(LiveScreenTab.location)
                     .navigationTitle("Location")
 
@@ -64,6 +68,7 @@ struct LiveTabView: View {
 
 struct LiveTabView_Previews: PreviewProvider {
     
+    static var navigationCoordinator = NavigationCoordinator()
     static var settingsManager = SettingsManager()
     static var locationManager = LocationManager(settingsManager: settingsManager)
     static var dataCache = DataCache(settingsManager: settingsManager)
@@ -75,7 +80,8 @@ struct LiveTabView_Previews: PreviewProvider {
                                                          dataCache: dataCache)
 
     static var previews: some View {
-        LiveTabView(profileName: "Preview Profile",
+        LiveTabView(navigationCoordinator: navigationCoordinator,
+                    profileName: "Preview Profile",
                     liveActivityManager: liveActivityManager,
                     dataCache: dataCache)
     }

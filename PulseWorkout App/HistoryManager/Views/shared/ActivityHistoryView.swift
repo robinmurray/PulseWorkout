@@ -10,60 +10,94 @@ import SwiftUI
 
 struct ActivityHistoryView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var dataCache: DataCache
     
- 
+    enum NavigationTarget {
+        case ActivityDetailView
+        case MapRouteView
+    }
+    
+    
     var body: some View {
         
-        NavigationStack {
-            #if os(iOS)
-            ActivityHistoryHeaderView()
-            #endif
-            List {
-                ForEach(dataCache.UIRecordSet) {activityRecord in
-                    VStack {
-                        NavigationLink {
-                            ActivityDetailView(activityRecord: activityRecord,
-                                               dataCache: dataCache)
-                        } label : {
-                            ActivityListItemView(activityRecord: activityRecord,
-                                                 dataCache: dataCache)
+        #if os(iOS)
+        ActivityHistoryHeaderView()
+        #endif
+        
+        List {
+            ForEach(dataCache.UIRecordSet) {activityRecord in
+                VStack {
+                    Button(action: {
+                        navigationCoordinator.selectedActivityRecord = activityRecord
+                        navigationCoordinator.goToView(targetView: NavigationTarget.ActivityDetailView)
+                    })
+                    {
+                        ActivityListItemView(activityRecord: activityRecord,
+                                             dataCache: dataCache)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                    .swipeActions {
+                        Button(role:.destructive) {
+                            dataCache.delete(recordID:
+                                activityRecord.recordID)
+                        } label: {
+                            Label("Delete", systemImage: "xmark.bin")
                         }
-                        .swipeActions {
-                            Button(role:.destructive) {
-                                dataCache.delete(recordID:
-                                    activityRecord.recordID)
-                            } label: {
-                                Label("Delete", systemImage: "xmark.bin")
-                            }
-                                
-                        }
-
-                        #if os(iOS)
-                        ActivityListItemExtensionView(activityRecord: activityRecord, dataCache: dataCache)
-                        #endif
+                            
                     }
 
+                    #if os(iOS)
+                    Button(action: {
+                        navigationCoordinator.selectedActivityRecord = activityRecord
+                        navigationCoordinator.goToView(targetView: NavigationTarget.MapRouteView)
+                    })
+                    {
+                        ActivityListItemExtensionView(activityRecord: activityRecord, dataCache: dataCache)
+                    }
+                    .buttonStyle(BorderlessButtonStyle())
+                    
+                    #endif
                 }
-            }
-            #if os (iOS)
-            .listStyle(.grouped)
-            #endif
 
-        #if os(watchOS)
-            .navigationTitle {
-                HStack {
-                    Image(systemName: "book.circle")
-                        .foregroundColor(Color.black)
-                        .background(Color.yellow)
-                        .clipShape(Circle())
-                    Text("History")
-                        .foregroundColor(Color.yellow)
-                }
             }
-        #endif
         }
-        
+        #if os (iOS)
+        .listStyle(.grouped)
+        #endif
+        .navigationDestination(for: NavigationTarget.self) { pathValue in
+
+            if pathValue == .ActivityDetailView {
+
+                ActivityDetailView(navigationCoordinator: navigationCoordinator,
+                                   activityRecord: navigationCoordinator.selectedActivityRecord!,
+                                   dataCache: dataCache)
+            }
+            else if pathValue == .MapRouteView {
+                
+                MapRouteView(activityRecord: navigationCoordinator.selectedActivityRecord!,
+                             dataCache: dataCache)
+            }
+            else
+            {
+                Text("Unknown Target View")
+            }
+            
+        }
+    #if os(watchOS)
+        .navigationTitle {
+            HStack {
+                Image(systemName: "book.circle")
+                    .foregroundColor(Color.black)
+                    .background(Color.yellow)
+                    .clipShape(Circle())
+                Text("History")
+                    .foregroundColor(Color.yellow)
+            }
+        }
+    #endif
+
+    
 
 
     }
@@ -71,6 +105,7 @@ struct ActivityHistoryView: View {
 
 struct ActivityHistoryView_Previews: PreviewProvider {
     
+    static var navigationCoordinator = NavigationCoordinator()
     static var settingsManager = SettingsManager()
     static var dataCache = DataCache(settingsManager: settingsManager)
     static var activityRecord = ActivityRecord(settingsManager: settingsManager)
@@ -82,6 +117,7 @@ struct ActivityHistoryView_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        ActivityHistoryView(dataCache: dataCache)
+        ActivityHistoryView(navigationCoordinator: navigationCoordinator,
+                            dataCache: dataCache)
     }
 }

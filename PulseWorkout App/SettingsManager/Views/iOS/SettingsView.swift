@@ -9,12 +9,13 @@ import SwiftUI
 
 struct SettingsView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var settingsManager: SettingsManager
     
     var body: some View {
         
-        NavigationStack {
+ //       NavigationStack {
 
             Form {
 
@@ -87,17 +88,18 @@ struct SettingsView: View {
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
 
-        }
+ //       }
         
     }
 
 }
 
 #Preview {
-    
+    let navigationCoordinator = NavigationCoordinator()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     let settingsManager = SettingsManager()
     
-    SettingsView(bluetoothManager: bluetoothManager,
+    SettingsView(navigationCoordinator: navigationCoordinator,
+                 bluetoothManager: bluetoothManager,
                  settingsManager: settingsManager)
 }

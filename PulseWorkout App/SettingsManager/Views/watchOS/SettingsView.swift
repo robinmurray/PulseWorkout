@@ -13,7 +13,7 @@ struct SettingsView: View {
     @ObservedObject var settingsManager: SettingsManager
     
     var body: some View {
-        NavigationStack {
+//        NavigationStack {
             ScrollView {
 
             VStack {
@@ -64,7 +64,7 @@ struct SettingsView: View {
 
             }
             
-        }
+//        }
         
     }
 

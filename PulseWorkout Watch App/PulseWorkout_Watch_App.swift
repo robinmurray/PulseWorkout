@@ -19,7 +19,8 @@ struct PulseWorkout_Watch_App: App {
     @ObservedObject var settingsManager: SettingsManager
     @ObservedObject var dataCache: DataCache
     @ObservedObject var bluetoothManager: BTDevicesController
-
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
+    
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "PulseWorkout_Watch_App")
     
@@ -39,6 +40,7 @@ struct PulseWorkout_Watch_App: App {
         self.settingsManager = mySettingsManager
         self.dataCache = myDataCache
         self.bluetoothManager = myBluetoothManager
+        self.navigationCoordinator = NavigationCoordinator()
     }
 
     /// Manage change of Scene Phase
@@ -72,7 +74,8 @@ struct PulseWorkout_Watch_App: App {
     
     var body: some Scene {
         WindowGroup {
-            ContentView(liveActivityManager: liveActivityManager,
+            ContentView(navigationCoordinator: navigationCoordinator,
+                        liveActivityManager: liveActivityManager,
                         profileManager: profileManager,
                         dataCache: dataCache,
                         settingsManager: settingsManager,

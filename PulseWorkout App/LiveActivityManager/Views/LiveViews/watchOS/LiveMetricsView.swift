@@ -45,6 +45,7 @@ let HRDisplay: [HRState: HRStyling] =
 
 struct LiveMetricsView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var liveActivityManager: LiveActivityManager
     var activityData: ActivityRecord
 
@@ -59,7 +60,9 @@ struct LiveMetricsView: View {
      true: AlarmStyling(colour: Color.orange)]
 
     
-    init(liveActivityManager: LiveActivityManager) {
+    init(navigationCoordinator: NavigationCoordinator,
+         liveActivityManager: LiveActivityManager) {
+        self.navigationCoordinator = navigationCoordinator
         self.liveActivityManager = liveActivityManager
         self.activityData = liveActivityManager.liveActivityRecord ??
         ActivityRecord(settingsManager: liveActivityManager.settingsManager)
@@ -88,11 +91,10 @@ struct LiveMetricsView: View {
                 else {
                     VStack {
                         HStack {
-
-                                    ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: context.date),
-                                                    showSeconds: true,
-                                                    showSubseconds: context.cadence == .live)
-                                        .foregroundStyle(.yellow)
+                            ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: context.date),
+                                            showSeconds: true,
+                                            showSubseconds: context.cadence == .live)
+                                .foregroundStyle(.yellow)
 
                             Spacer()
                         }
@@ -140,6 +142,7 @@ struct LiveMetricsView: View {
 
 struct LiveMetricsView_Previews: PreviewProvider {
     
+    static var navigationCoordinator = NavigationCoordinator()
     static var activityProfile = ProfileManager()
     static var settingsManager = SettingsManager()
     static var locationManager = LocationManager(settingsManager: settingsManager)
@@ -153,7 +156,8 @@ struct LiveMetricsView_Previews: PreviewProvider {
 
     
     static var previews: some View {
-        LiveMetricsView(liveActivityManager: liveActivityManager)
+        LiveMetricsView(navigationCoordinator: navigationCoordinator,
+                        liveActivityManager: liveActivityManager)
     }
 }
 

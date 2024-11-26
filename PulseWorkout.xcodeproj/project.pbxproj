@@ -35,6 +35,7 @@
 		E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */; };
 		E421295C299D4D91001B8AA9 /* BTDeviceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */; };
 		E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295F29A21922001B8AA9 /* ActivityProfile.swift */; };
+		E423136F2CF628EE00E6F4FB /* ProfileListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E423136E2CF628EE00E6F4FB /* ProfileListItemView.swift */; };
 		E42AD0912AE82094008E7B05 /* NewProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */; };
 		E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */; };
 		E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */; };
@@ -42,16 +43,18 @@
 		E45E3F072CE8A461001D58B3 /* ActivityHistoryHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */; };
 		E45E3F082CEB944F001D58B3 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C92955F615006FA603 /* LiveActivityManager.swift */; };
 		E45E3F142CEB9BED001D58B3 /* LiveMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F122CEB9BED001D58B3 /* LiveMetricsView.swift */; };
-		E45E3F1E2CEBAB0C001D58B3 /* ProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F1C2CEBAB0C001D58B3 /* ProfileListView.swift */; };
 		E45E3F1F2CEBABBA001D58B3 /* NewProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */; };
 		E45E3F202CEBABD7001D58B3 /* ProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E468DC8229E9B5050002FEA9 /* ProfileDetailView.swift */; };
-		E45E3F222CEBAC8C001D58B3 /* ProfileListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F212CEBAC8C001D58B3 /* ProfileListItemView.swift */; };
 		E45E3F242CEC8D12001D58B3 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F232CEC8D12001D58B3 /* ProfileManager.swift */; };
 		E45E3F252CEC8D12001D58B3 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F232CEC8D12001D58B3 /* ProfileManager.swift */; };
 		E45E3F272CEC8D9D001D58B3 /* HKExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F262CEC8D9D001D58B3 /* HKExtensions.swift */; };
 		E45E3F282CEC8D9D001D58B3 /* HKExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F262CEC8D9D001D58B3 /* HKExtensions.swift */; };
 		E45E3F2B2CECD407001D58B3 /* BTDeviceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */; };
 		E45E3F2C2CECD8FC001D58B3 /* StartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0B929537E24006FA603 /* StartView.swift */; };
+		E45E3F2E2CECE6AA001D58B3 /* ElapsedTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */; };
+		E45E3F6A2CEDE2BA001D58B3 /* ActivitySaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F692CEDE2BA001D58B3 /* ActivitySaveView.swift */; };
+		E45E3F732CF0EF25001D58B3 /* ProfileListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F722CF0EF25001D58B3 /* ProfileListView.swift */; };
+		E45E3F7A2CF1F037001D58B3 /* NavigationCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F792CF1F037001D58B3 /* NavigationCoordinator.swift */; };
 		E46121EA2AAB5F9A00E07749 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121E92AAB5F9A00E07749 /* SettingsView.swift */; };
 		E46121EE2AACCF2300E07749 /* WatchAsDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */; };
 		E46121F02AADC86F00E07749 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121EF2AADC86F00E07749 /* SettingsManager.swift */; };
@@ -200,15 +203,17 @@
 		E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTStartDiscoverView.swift; sourceTree = "<group>"; };
 		E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceBarView.swift; sourceTree = "<group>"; };
 		E421295F29A21922001B8AA9 /* ActivityProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityProfile.swift; sourceTree = "<group>"; };
+		E423136E2CF628EE00E6F4FB /* ProfileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListItemView.swift; sourceTree = "<group>"; };
 		E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProfileDetailView.swift; sourceTree = "<group>"; };
 		E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsPausedView.swift; sourceTree = "<group>"; };
 		E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListItemExtensionView.swift; sourceTree = "<group>"; };
 		E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryHeaderView.swift; sourceTree = "<group>"; };
 		E45E3F122CEB9BED001D58B3 /* LiveMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsView.swift; sourceTree = "<group>"; };
-		E45E3F1C2CEBAB0C001D58B3 /* ProfileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListView.swift; sourceTree = "<group>"; };
-		E45E3F212CEBAC8C001D58B3 /* ProfileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListItemView.swift; sourceTree = "<group>"; };
 		E45E3F232CEC8D12001D58B3 /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 		E45E3F262CEC8D9D001D58B3 /* HKExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HKExtensions.swift; sourceTree = "<group>"; };
+		E45E3F692CEDE2BA001D58B3 /* ActivitySaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySaveView.swift; sourceTree = "<group>"; };
+		E45E3F722CF0EF25001D58B3 /* ProfileListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListView.swift; sourceTree = "<group>"; };
+		E45E3F792CF1F037001D58B3 /* NavigationCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationCoordinator.swift; sourceTree = "<group>"; };
 		E46121E92AAB5F9A00E07749 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAsDeviceView.swift; sourceTree = "<group>"; };
 		E46121EF2AADC86F00E07749 /* SettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
@@ -350,6 +355,7 @@
 		E45E3F102CEB9B63001D58B3 /* watchOS */ = {
 			isa = PBXGroup;
 			children = (
+				E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */,
 				E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */,
 				E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */,
 				E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */,
@@ -357,6 +363,7 @@
 				E46EF0B329537D63006FA603 /* LiveTabView.swift */,
 				E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */,
 				E46EF0BF29538811006FA603 /* LiveMetricsView.swift */,
+				E46EF0C129543FEA006FA603 /* StopView.swift */,
 			);
 			path = watchOS;
 			sourceTree = "<group>";
@@ -365,6 +372,7 @@
 			isa = PBXGroup;
 			children = (
 				E45E3F122CEB9BED001D58B3 /* LiveMetricsView.swift */,
+				E45E3F692CEDE2BA001D58B3 /* ActivitySaveView.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -412,8 +420,8 @@
 		E45E3F1B2CEBAAC8001D58B3 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				E45E3F1C2CEBAB0C001D58B3 /* ProfileListView.swift */,
-				E45E3F212CEBAC8C001D58B3 /* ProfileListItemView.swift */,
+				E45E3F722CF0EF25001D58B3 /* ProfileListView.swift */,
+				E423136E2CF628EE00E6F4FB /* ProfileListItemView.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -425,6 +433,7 @@
 				E4C11F5629CCC91F008DB769 /* BluetoothManager */,
 				E46121EB2AAB67C900E07749 /* SettingsManager */,
 				E4A333B22CC01DCC00995AC4 /* ActivityChartsManager */,
+				E4C11F5829CCCA5E008DB769 /* LiveActivityManager */,
 				E4941E792CD7F2360063421F /* HistoryManager */,
 				E45E3F172CEBA9CD001D58B3 /* ProfileManager */,
 			);
@@ -485,9 +494,9 @@
 				E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */,
 				E46EF0CB29560A1F006FA603 /* PulseWorkout Watch App.entitlements */,
 				E46EF08529537CA1006FA603 /* ContentView.swift */,
+				E45E3F792CF1F037001D58B3 /* NavigationCoordinator.swift */,
 				E40306822B22211000658A80 /* TopMenuView.swift */,
 				E46EF08329537CA1006FA603 /* PulseWorkout_Watch_App.swift */,
-				E4C11F5829CCCA5E008DB769 /* WorkoutManager */,
 				E46EF08729537CA3006FA603 /* Assets.xcassets */,
 				E46EF08929537CA3006FA603 /* Preview Content */,
 			);
@@ -683,26 +692,24 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
-		E4C11F5829CCCA5E008DB769 /* WorkoutManager */ = {
+		E4C11F5829CCCA5E008DB769 /* LiveActivityManager */ = {
 			isa = PBXGroup;
 			children = (
 				E46EF0C92955F615006FA603 /* LiveActivityManager.swift */,
 				E46121F72AB1A0AD00E07749 /* LocationManager.swift */,
 				E4C11F5929CCCA8E008DB769 /* Views */,
 			);
-			path = WorkoutManager;
+			path = LiveActivityManager;
 			sourceTree = "<group>";
 		};
 		E4C11F5929CCCA8E008DB769 /* Views */ = {
 			isa = PBXGroup;
 			children = (
 				E4D41B2D2C8A202C0014C1D9 /* LiveViews */,
-				E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */,
 				E46121F92AB315E600E07749 /* LocationView.swift */,
 				E46EE68C2B067A01008F54CD /* MapPinView.swift */,
 				E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */,
 				E46EF0C72955C8E9006FA603 /* PausedView.swift */,
-				E46EF0C129543FEA006FA603 /* StopView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1011,7 +1018,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E45E3F222CEBAC8C001D58B3 /* ProfileListItemView.swift in Sources */,
 				E4941E5F2CD4CAA90063421F /* AverageSettingsView.swift in Sources */,
 				E4941E4E2CD2A10B0063421F /* BTDiscoveredDeviceView.swift in Sources */,
 				E4941E452CD29FB30063421F /* BTContentView.swift in Sources */,
@@ -1034,17 +1040,19 @@
 				E4941E462CD29FBC0063421F /* BluetoothManager.swift in Sources */,
 				E4094BB92CD0C6D200915CCB /* LocationManager.swift in Sources */,
 				E4941E482CD29FCA0063421F /* DeviceList.swift in Sources */,
+				E423136F2CF628EE00E6F4FB /* ProfileListItemView.swift in Sources */,
 				E45E3F202CEBABD7001D58B3 /* ProfileDetailView.swift in Sources */,
 				E4941E4B2CD2A0F10063421F /* BTDeviceView.swift in Sources */,
+				E45E3F2E2CECE6AA001D58B3 /* ElapsedTimeView.swift in Sources */,
 				E4941E5D2CD4BC5B0063421F /* AutoPauseSettingsView.swift in Sources */,
 				E45E3F082CEB944F001D58B3 /* LiveActivityManager.swift in Sources */,
 				E45E3F2C2CECD8FC001D58B3 /* StartView.swift in Sources */,
-				E45E3F1E2CEBAB0C001D58B3 /* ProfileListView.swift in Sources */,
 				E45E3F2B2CECD407001D58B3 /* BTDeviceBarView.swift in Sources */,
 				E4941E4C2CD2A0FC0063421F /* BTDeviceDiscoverView.swift in Sources */,
 				E4094BCC2CD1515A00915CCB /* MapRouteView.swift in Sources */,
 				E4094BC22CD0CED600915CCB /* SettingsManager.swift in Sources */,
 				E4094BCB2CD1514F00915CCB /* FetchFailedView.swift in Sources */,
+				E45E3F732CF0EF25001D58B3 /* ProfileListView.swift in Sources */,
 				E4941E4F2CD2A1120063421F /* BTDeviceInfoView.swift in Sources */,
 				E4094BC82CD1512C00915CCB /* ActivityChartTraceBuilder.swift in Sources */,
 				E4CC66AD2CDA353300AA2F9E /* ChartView.swift in Sources */,
@@ -1058,6 +1066,7 @@
 				E4941E802CD7F3F60063421F /* SummaryMetricView.swift in Sources */,
 				E4941E832CD7F4830063421F /* ActivityDetailView.swift in Sources */,
 				E4941E492CD2A0CF0063421F /* BTStartDiscoverView.swift in Sources */,
+				E45E3F6A2CEDE2BA001D58B3 /* ActivitySaveView.swift in Sources */,
 				E4941E622CD4CD2E0063421F /* CyclingPowerSettingsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1125,6 +1134,7 @@
 				E46EF08429537CA1006FA603 /* PulseWorkout_Watch_App.swift in Sources */,
 				E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */,
 				E4C11F5B29CCCC43008DB769 /* DeviceList.swift in Sources */,
+				E45E3F7A2CF1F037001D58B3 /* NavigationCoordinator.swift in Sources */,
 				E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */,
 				E46121F22AAE178700E07749 /* BTPeripheralManager.swift in Sources */,
 				E46121F02AADC86F00E07749 /* SettingsManager.swift in Sources */,

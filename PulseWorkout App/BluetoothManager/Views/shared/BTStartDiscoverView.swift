@@ -17,7 +17,7 @@ struct BTStartDiscoverView: View {
 
 
     var body: some View {
-        NavigationStack {
+ //       NavigationStack {
             Group {
 
             VStack {
@@ -45,7 +45,7 @@ struct BTStartDiscoverView: View {
                 #endif
         }
 
-        }
+ //       }
         
     }
   

@@ -6,63 +6,100 @@
 //
 
 import SwiftUI
+import HealthKit
+
 
 struct ProfileListView: View {
-
+    
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
-    
-    @State private var navigateToNewView : Bool = false
-    @State private var navigateToTopMenuView : Bool = false
+
+    enum NavigationTarget {
+        case LiveMetricsView
+        case ProfileDetailView
+        case NewProfileDetailView
+    }
     
     
     var body: some View {
-        
+        VStack {
 
-        List {
-            ForEach(profileManager.profiles) { profile in
-                // Pass binding to item into DetailsView
-                ProfileListItemView(profile:  self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id })!],
-                                    profileManager: profileManager,
-                                    liveActivityManager: liveActivityManager,
-                                    dataCache: dataCache)
-            }
+            List {
+                ForEach(profileManager.profiles) { profile in
 
-        }
-        .listStyle(.grouped)
-        .toolbar {
-            ToolbarItemGroup(placement: .topBarLeading) {
-                HStack{
-                    
-                    NavigationStack {
-                        Button {
-                            navigateToNewView = true
-                        } label: {
-                            Label("Add", systemImage: "plus")
-                        }
-                    }
-                    .navigationDestination(isPresented: $navigateToNewView) {
-                        NewProfileDetailView(profileManager: profileManager)
-                    }
+                    ProfileListItemView(
+                        navigationCoordinator: navigationCoordinator,
+                        profile:  self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id })!],
+                        profileManager: profileManager,
+                        liveActivityManager: liveActivityManager,
+                        dataCache: dataCache)
 
                 }
+    
+            }
+            .navigationDestination(for: NavigationTarget.self) { pathValue in
 
+                if pathValue == .LiveMetricsView {
+
+
+                    LiveMetricsView(navigationCoordinator: navigationCoordinator,
+                                    profile: self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == (navigationCoordinator.selectedProfile?.id ?? UUID()) }) ?? 0] ,
+                                    liveActivityManager: liveActivityManager,
+                                    dataCache: dataCache)
+ 
+                }
+                else if pathValue == .ProfileDetailView {
+                    
+                    ProfileDetailView(profileManager: profileManager,
+                                      profile: self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == (navigationCoordinator.selectedProfile?.id ?? UUID()) }) ?? 0] )
+                    
+
+
+                }
+                else if pathValue == .NewProfileDetailView {
+                    NewProfileDetailView(profileManager: profileManager)
+                }
+                else {
+                    Text("Unknown Target View")
+                }
+                
             }
-            ToolbarItemGroup(placement: .topBarTrailing) {
-                HStack {
-                    Text("Activity Profiles")
-                    Spacer()
-                    Image(systemName: "figure.run")
-                }.foregroundColor(.orange)
+            .listStyle(.grouped)
+            .toolbar {
+                ToolbarItemGroup(placement: .topBarLeading) {
+                    HStack {
+                        Button {
+                            navigationCoordinator.goToView(targetView: NavigationTarget.NewProfileDetailView)
+
+                        } label: {
+                            Label("Add", systemImage: "plus")
+                            
+                        }
+                        .foregroundStyle(Color.blue)
+                        .buttonStyle(PlainButtonStyle())
+
+                    }
+                }
+                ToolbarItemGroup(placement: .topBarTrailing) {
+                    HStack {
+                        Text("Activity Profiles")
+                        Spacer()
+                        Image(systemName: "figure.run")
+                    }.foregroundColor(.orange)
+                }
             }
+
+            
+            Spacer()
         }
-        
     }
 }
 
 
 #Preview {
+    
     let profileManager = ProfileManager()
     let settingsManager = SettingsManager()
     let locationManager = LocationManager(settingsManager: settingsManager)
@@ -72,8 +109,10 @@ struct ProfileListView: View {
                                                          bluetoothManager: bluetoothManager,
                                                          settingsManager: settingsManager,
                                                          dataCache: dataCache)
+    let navigationCoordinator = NavigationCoordinator()
     
-    ProfileListView(profileManager: profileManager,
+    ProfileListView(navigationCoordinator: navigationCoordinator,
+                    profileManager: profileManager,
                     liveActivityManager: liveActivityManager,
                     dataCache: dataCache)
 }

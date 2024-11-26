@@ -6,26 +6,36 @@
 //
 
 import SwiftUI
+import HealthKit
 
 struct ProfileListView: View {
 
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
     
-    @State private var navigateToNewView : Bool = false
-    @State private var navigateToTopMenuView : Bool = false
-    
+    enum NavigationTarget {
+        case ProfileDetailView
+        case LiveTabView
+        case TopMenuView
+        case NewProfileDetailView
+        case ActivitySaveView
+    }
     
     var body: some View {
         
         List {
+        
             ForEach(profileManager.profiles) { profile in
-                // Pass binding to item into DetailsView
-                ProfileListItemView(profile:  self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id })!],
-                                    profileManager: profileManager,
-                                    liveActivityManager: liveActivityManager,
-                                    dataCache: dataCache)
+
+                ProfileListItemView(
+                    navigationCoordinator: navigationCoordinator,
+                    profile:  self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id })!],
+                    profileManager: profileManager,
+                    liveActivityManager: liveActivityManager,
+                    dataCache: dataCache)
+
             }
         }
         .navigationBarTitleDisplayMode(.large)
@@ -36,55 +46,80 @@ struct ProfileListView: View {
         .toolbar {
             ToolbarItemGroup(placement: .topBarLeading) {
                 HStack{
-                    
-                    NavigationStack {
-                        Button {
-                             navigateToTopMenuView = true
-                        } label: {
-                            Label("Add", systemImage: "list.triangle")
-                        }
+
+                    Button {
+                        navigationCoordinator.goToView(targetView: NavigationTarget.TopMenuView)
+                    } label: {
+                        Label("Menu", systemImage: "list.triangle")
                     }
-                    .navigationDestination(isPresented: $navigateToTopMenuView) {
-                        TopMenuView( profileManager: profileManager, liveActivityManager: liveActivityManager, dataCache: dataCache)
-                    }
-                    
-                    NavigationStack {
-                        Button {
-                            navigateToNewView = true
-                        } label: {
-                            Label("Add", systemImage: "plus")
-                        }
-                    }
-                    .navigationDestination(isPresented: $navigateToNewView) {
-                        NewProfileDetailView(profileManager: profileManager)
+
+                    Button {
+                        navigationCoordinator.goToView(targetView: NavigationTarget.NewProfileDetailView)
+                    } label: {
+                        Label("Add", systemImage: "plus")
                     }
 
                 }
 
             }
         }
+        .navigationDestination(for: NavigationTarget.self) { pathValue in
+
+            if pathValue == .ProfileDetailView {
+
+                ProfileDetailView(profileManager: profileManager,
+                                  profile: self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == navigationCoordinator.selectedProfile!.id }) ?? 0] )
+            }
+            else if pathValue == .LiveTabView {
+                
+                LiveTabView(navigationCoordinator: navigationCoordinator,
+                            profileName: navigationCoordinator.selectedProfile!.name,
+                            liveActivityManager: liveActivityManager,
+                            dataCache: dataCache)
+            }
+            else if pathValue == .TopMenuView {
+
+                TopMenuView( navigationCoordinator: navigationCoordinator,
+                             profileManager: profileManager,
+                             liveActivityManager: liveActivityManager,
+                             dataCache: dataCache)
+            }
+            else if pathValue == .NewProfileDetailView {
+                
+                NewProfileDetailView(profileManager: profileManager)
+            } else if pathValue == .ActivitySaveView {
+                
+                ActivitySaveView(navigationCoordinator: navigationCoordinator,
+                                 liveActivityManager: liveActivityManager,
+                                 dataCache: dataCache)
+            }
+            else
+            {
+                Text("Unknown Target View")
+            }
+            
+        }
     }
 }
 
 
-struct ProfileListView_Previews: PreviewProvider {
 
-    static var profileManager = ProfileManager()
-    static var settingsManager = SettingsManager()
-    static var locationManager = LocationManager(settingsManager: settingsManager)
-    static var dataCache = DataCache(settingsManager: settingsManager)
-    static var bluetoothManager = BTDevicesController(requestedServices: nil)
-    static var liveActivityManager = LiveActivityManager(locationManager: locationManager,
+#Preview {
+
+    let navigationCoordinator = NavigationCoordinator()
+    let profileManager = ProfileManager()
+    let settingsManager = SettingsManager()
+    let locationManager = LocationManager(settingsManager: settingsManager)
+    let dataCache = DataCache(settingsManager: settingsManager)
+    let bluetoothManager = BTDevicesController(requestedServices: nil)
+    let liveActivityManager = LiveActivityManager(locationManager: locationManager,
                                                          bluetoothManager: bluetoothManager,
                                                          settingsManager: settingsManager,
                                                          dataCache: dataCache)
 
     
-    static var previews: some View {
-        ProfileListView(profileManager: profileManager,
-                        liveActivityManager: liveActivityManager,
-                        dataCache: dataCache)
-    }
+    ProfileListView(navigationCoordinator: navigationCoordinator,
+                    profileManager: profileManager,
+                    liveActivityManager: liveActivityManager,
+                    dataCache: dataCache)
 }
-
-

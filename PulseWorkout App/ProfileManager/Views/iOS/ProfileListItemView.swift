@@ -2,45 +2,32 @@
 //  ProfileListItemView.swift
 //  PulseWorkout Phone App
 //
-//  Created by Robin Murray on 18/11/2024.
+//  Created by Robin Murray on 26/11/2024.
 //
 
 import SwiftUI
 import HealthKit
 
-struct AlarmStyling {
-    var alarmLevelText: String?
-    var colour: Color
-}
 
 struct ProfileListItemView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @Binding var profile: ActivityProfile
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
-
-    @State private var navigateToDetailView : Bool = false
-    @State private var navigateToLiveView : Bool = false
-    
-    // set navigation flags to false when view appears.
-    // this allows view to reappear and navigation to work successfully!
-    func resetNavigationFlags() {
-        navigateToDetailView = false
-        navigateToLiveView = false
-    }
     
     var body: some View {
-        NavigationStack {
+        VStack {
             HStack {
                 VStack {
                     HStack {
                         Image(systemName: HKWorkoutActivityType( rawValue: profile.workoutTypeId )!.iconImage)
-
+                        
                         Text(profile.name)
-
+                        
                         Spacer()
-
+                        
                     }
                     .foregroundStyle(.orange)
                     .font(.title3)
@@ -58,52 +45,38 @@ struct ProfileListItemView: View {
                         Spacer()
                     }
                     .foregroundStyle(.red)
-
+                    
                 }
                 
+                Spacer()
                 Button {
-                    
                     liveActivityManager.startWorkout(activityProfile: profile)
-                    
                     // Set last used date on profile and save to user defaults
                     // Do this after starting workout as may change list binding!!
                     profileManager.update(activityProfile: profile, onlyIfChanged: false)
                     
-                    navigateToLiveView = true
+                    navigationCoordinator.selectedProfile = profile
+                    navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.LiveMetricsView)
+
                 } label: {
                     HStack{
                         Text("Start").font(.title)
                         Image(systemName: "play.circle").font(.title)
-
+                        
                     }
                     
                 }
                 .tint(Color.green)
                 .buttonStyle(.bordered)
-//                 .buttonStyle(BorderlessButtonStyle())
-/* FIX                    .navigationDestination(isPresented: $navigateToLiveView) {
-                    LiveTabView(profileName: profile.name,
-                                liveActivityManager: liveActivityManager,
-                                dataCache: dataCache)
-                }
---FIX */
-                .navigationDestination(isPresented: $navigateToLiveView) {
-                    ActivityHistoryHeaderView()
-              }
+                
 
-                  
             }
-            .swipeActions {
-                Button(role:.destructive) {
-                    profileManager.remove(activityProfile: profile)
-                } label: {
-                    Label("Delete", systemImage: "xmark.bin")
-                }
-            }
-            
+
             HStack {
                 Button {
-                    navigateToDetailView = true
+                    navigationCoordinator.selectedProfile = profile
+                    navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.ProfileDetailView)
+
                 } label: {
                     HStack{
                         Image(systemName: "square.and.pencil")
@@ -117,21 +90,25 @@ struct ProfileListItemView: View {
                 }
                 .tint(Color.blue)
                 .buttonStyle(BorderlessButtonStyle())
-                .navigationDestination(isPresented: $navigateToDetailView) {
-                    ProfileDetailView(profileManager: profileManager,
-                                      profile: self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id }) ?? 0] )
-                }
+
                 Spacer()
             }
+
             
         }
-        .onAppear(perform: resetNavigationFlags)
-    }
+        .swipeActions {
+            Button(role:.destructive) {
+                profileManager.remove(activityProfile: profile)
+            } label: {
+                Label("Delete", systemImage: "xmark.bin")
+            }
+        }
 
+    }
 }
-    
 
 #Preview {
+    let navigationCoordinator = NavigationCoordinator()
     let settingsManager = SettingsManager()
     let dataCache = DataCache(settingsManager: settingsManager)
     let locationManager = LocationManager(settingsManager: settingsManager)
@@ -142,8 +119,11 @@ struct ProfileListItemView: View {
                                                          dataCache: dataCache)
     let profileManager = ProfileManager()
     
-    ProfileListItemView(profile: .constant(profileManager.profiles[0]),
-                        profileManager: profileManager,
-                        liveActivityManager: liveActivityManager,
-                        dataCache: dataCache)
+    
+    ProfileListItemView(navigationCoordinator: navigationCoordinator,
+                        profile: .constant(profileManager.profiles[0]),
+                       profileManager: profileManager,
+                       liveActivityManager: liveActivityManager,
+                       dataCache: dataCache)
+        
 }

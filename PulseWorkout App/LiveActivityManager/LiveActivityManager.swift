@@ -130,7 +130,8 @@ class LiveActivityManager : NSObject, ObservableObject {
         #if os(watchOS)
         return builder?.elapsedTime(at: at) ?? 0
         #else
-        return at.timeIntervalSince(liveActivityRecord!.startDateLocal)
+        let startDate = liveActivityRecord?.startDateLocal ?? Date()
+        return at.timeIntervalSince(startDate)
         #endif
     }
 

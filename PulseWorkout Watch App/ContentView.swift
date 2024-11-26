@@ -11,7 +11,7 @@ import SwiftUI
 
 struct ContentView: View {
 
-    
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var dataCache: DataCache
@@ -20,8 +20,9 @@ struct ContentView: View {
 
     
     var body: some View {
-        NavigationStack {
-            StartView(liveActivityManager: liveActivityManager,
+        NavigationStack(path: $navigationCoordinator.path) {
+            StartView(navigationCoordinator: navigationCoordinator,
+                      liveActivityManager: liveActivityManager,
                       profileManager: profileManager,
                       dataCache: dataCache)
 
@@ -34,6 +35,7 @@ struct ContentView: View {
 }
 
 struct ContentView_Previews: PreviewProvider {
+    static var navigationCoordinator = NavigationCoordinator()
     static var settingsManager = SettingsManager()
     static var locationManager = LocationManager(settingsManager: settingsManager)
     static var dataCache = DataCache(settingsManager: settingsManager)
@@ -46,7 +48,8 @@ struct ContentView_Previews: PreviewProvider {
 
     
     static var previews: some View {
-        ContentView(liveActivityManager: liveActivityManager,
+        ContentView(navigationCoordinator: navigationCoordinator,
+                    liveActivityManager: liveActivityManager,
                     profileManager: profileManager,
                     dataCache: dataCache,
                     settingsManager: settingsManager,

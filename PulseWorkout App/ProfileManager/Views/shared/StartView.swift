@@ -13,7 +13,7 @@ import SwiftUI
 
 
 struct StartView: View {
-
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var dataCache: DataCache
@@ -21,7 +21,8 @@ struct StartView: View {
     
     var body: some View {
         VStack {
-            ProfileListView(profileManager: profileManager,
+            ProfileListView(navigationCoordinator: navigationCoordinator,
+                            profileManager: profileManager,
                             liveActivityManager: liveActivityManager,
                             dataCache: dataCache)
 
@@ -43,9 +44,11 @@ struct StartView_Previews: PreviewProvider {
                                                          settingsManager: settingsManager,
                                                          dataCache: dataCache)
     static var profileManager = ProfileManager()
+    static var navigationCoordinator = NavigationCoordinator()
 
     static var previews: some View {
-        StartView(liveActivityManager: liveActivityManager,
+        StartView(navigationCoordinator: navigationCoordinator,
+                  liveActivityManager: liveActivityManager,
                   profileManager: profileManager,
                   dataCache: dataCache)
     }

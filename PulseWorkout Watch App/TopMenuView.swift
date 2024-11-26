@@ -11,45 +11,45 @@ import WatchKit
 
 struct TopMenuView: View {
 
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
 
+    enum NavigationTarget {
+        case ActivityHistoryView
+        case LocationView
+        case NowPlayingView
+        case SettingsView
+    }
            
-//    @State var navigateToNowPlayingView: Bool = false
-//    @State var navigateToLocationView: Bool = false
-//    @State var navigateToHistoryView: Bool = false
-//    @State var navigateToSettingsView: Bool = false
-
-//    @State var selectedOption: Int = 0
     
     var body: some View {
-
-        NavigationStack {
 
             ScrollView {
                 
                 VStack {
-                    
-                    NavigationLink(
-                        destination: ActivityHistoryView(dataCache: dataCache)) {
+                    Button {
+                        navigationCoordinator.goToView(targetView: NavigationTarget.ActivityHistoryView)
+                    } label: {
                         HStack {
-//                               Label("History", systemImage: "book.circle")
-//                                    .foregroundColor(Color.yellow)
+
                             Image(systemName: "book.circle")
                                 .foregroundColor(Color.black)
                                 .font(.title2)
                                 .background(Color.yellow)
                                 .clipShape(Circle())
+                            
                             Text("History")
                                 .foregroundColor(Color.yellow)
                             
                             Spacer()
                         }
                     }
-
-                    NavigationLink(
-                        destination: LocationView(locationManager: liveActivityManager.locationManager)) {
+                    
+                    Button {
+                        navigationCoordinator.goToView(targetView: NavigationTarget.LocationView)
+                    } label: {
                         HStack {
                             Image(systemName: "location.circle")
                                 .foregroundColor(Color.black)
@@ -65,8 +65,9 @@ struct TopMenuView: View {
                         }
                     }
 
-                    NavigationLink(
-                        destination: NowPlayingView()) {
+                    Button {
+                        navigationCoordinator.goToView(targetView: NavigationTarget.NowPlayingView)
+                    } label: {
                         HStack {
                             Image(systemName: "music.note.list")
                                 .foregroundColor(Color.black)
@@ -82,9 +83,9 @@ struct TopMenuView: View {
                         }
                     }
                     
-                    NavigationLink(
-                        destination: SettingsView(bluetoothManager: liveActivityManager.bluetoothManager,
-                                                  settingsManager: liveActivityManager.settingsManager)) {
+                    Button {
+                        navigationCoordinator.goToView(targetView: NavigationTarget.SettingsView)
+                    } label: {
                         HStack {
                             Image(systemName: "gear")
                                 .foregroundColor(Color.black)
@@ -96,18 +97,45 @@ struct TopMenuView: View {
                                 .foregroundColor(Color.gray)
                                 
                             Spacer()
-                                
                         }
                     }
                 }
             }
-        }
+            .navigationDestination(for: NavigationTarget.self) { pathValue in
+                
+                if pathValue == .ActivityHistoryView {
+
+                    ActivityHistoryView(navigationCoordinator: navigationCoordinator,
+                                        dataCache: dataCache)
+                }
+                else if pathValue == .LocationView {
+                    
+                    LocationView(navigationCoordinator: navigationCoordinator,
+                                 locationManager: liveActivityManager.locationManager)
+                }
+                else if pathValue == .NowPlayingView {
+                    
+                    NowPlayingView()
+                }
+                else if pathValue == .SettingsView {
+                    
+                    SettingsView(bluetoothManager: liveActivityManager.bluetoothManager,
+                                              settingsManager: liveActivityManager.settingsManager)
+                }
+                else
+                {
+                    Text("Unknown Target View")
+                }
+                
+            }
+
     }
 
 }
 
 struct TopMenuView_Previews: PreviewProvider {
     
+    static var navigationCoordinator = NavigationCoordinator()
     static var profileManager = ProfileManager()
     static var settingsManager = SettingsManager()
     static var locationManager = LocationManager(settingsManager: settingsManager)
@@ -119,8 +147,9 @@ struct TopMenuView_Previews: PreviewProvider {
                                                          dataCache: dataCache)
     
     static var previews: some View {
-        TopMenuView(profileManager: profileManager,
-                        liveActivityManager: liveActivityManager,
+        TopMenuView(navigationCoordinator: navigationCoordinator,
+                    profileManager: profileManager,
+                    liveActivityManager: liveActivityManager,
                     dataCache: dataCache)
     }
 
