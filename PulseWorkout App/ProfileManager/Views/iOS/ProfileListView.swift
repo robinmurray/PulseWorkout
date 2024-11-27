@@ -61,9 +61,6 @@ struct ProfileListView: View {
                 else if pathValue == .NewProfileDetailView {
                     NewProfileDetailView(profileManager: profileManager)
                 }
-                else {
-                    Text("Unknown Target View")
-                }
                 
             }
             .listStyle(.grouped)

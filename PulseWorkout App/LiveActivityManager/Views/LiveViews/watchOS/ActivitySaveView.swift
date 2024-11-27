@@ -55,13 +55,11 @@ struct ActivitySaveView: View {
                                                 ActivityRecord(settingsManager: liveActivityManager.settingsManager),
                     dataCache: dataCache)
             }
-            else
-            {
-                Text("Unknown Target View")
-            }
+
         }
  
     }
+    
 }
 
 struct ActivitySaveView_Previews: PreviewProvider {

@@ -78,10 +78,6 @@ struct ActivityHistoryView: View {
                 MapRouteView(activityRecord: navigationCoordinator.selectedActivityRecord!,
                              dataCache: dataCache)
             }
-            else
-            {
-                Text("Unknown Target View")
-            }
             
         }
     #if os(watchOS)

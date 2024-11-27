@@ -93,10 +93,6 @@ struct ProfileListView: View {
                                  liveActivityManager: liveActivityManager,
                                  dataCache: dataCache)
             }
-            else
-            {
-                Text("Unknown Target View")
-            }
             
         }
     }

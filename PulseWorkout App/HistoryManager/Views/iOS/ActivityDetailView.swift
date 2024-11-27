@@ -280,9 +280,6 @@ struct ActivityDetailView: View {
                           dataCache: dataCache,
                           chartId: "Cadence")
             }
-            else {
-                Text("Unknown Target View")
-            }
             
         }
 

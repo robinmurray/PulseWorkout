@@ -35,15 +35,13 @@ struct DestinationView: View {
 
                 DestinationView(navigationCoordinator: navigationCoordinator, type: "Hello World Again")
             }
-
-            else {
-                Text("Unknown Target View")
-            }
             
         }
 
     }
+    
 }
+
 enum DestinationViewNavOptions {
     case DestinationView
 }
@@ -77,12 +75,7 @@ struct StatisticsView: View {
             if pathValue == MyViews.DestinationView {
 
                 DestinationView(navigationCoordinator: navigationCoordinator, type: "Hello World")
-            }
-
-            else {
-                Text("Unknown Target View")
-            }
-            
+            }            
         }
     }
 }

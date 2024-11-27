@@ -109,7 +109,7 @@ struct LiveMetricsView: View {
                                 }
                         )
                     
-                    Image(systemName: "stop.circle")
+                    Image(systemName: "chevron.forward.circle")
                         .resizable()
                         .frame(width: 50, height: 50)
                         .offset(x: viewState.width)
@@ -151,9 +151,6 @@ struct LiveMetricsView: View {
                                  liveActivityManager: liveActivityManager,
                                  dataCache: dataCache)
                 
-            }
-            else {
-                Text("Unknown Target View")
             }
             
         }

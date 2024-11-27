@@ -270,9 +270,6 @@ struct ActivityDetailView: View {
                 ChartView(activityRecord: activityRecord,
                           dataCache: dataCache)
             }
-            else {
-                Text("Unknown Target View")
-            }
             
         }
         

@@ -122,13 +122,8 @@ struct TopMenuView: View {
                     SettingsView(bluetoothManager: liveActivityManager.bluetoothManager,
                                               settingsManager: liveActivityManager.settingsManager)
                 }
-                else
-                {
-                    Text("Unknown Target View")
-                }
                 
             }
-
     }
 
 }
