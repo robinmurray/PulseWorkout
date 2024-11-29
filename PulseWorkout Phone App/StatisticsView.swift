@@ -60,7 +60,11 @@ struct StatisticsView: View {
         VStack {
             ActivityHistoryHeaderView()
  
- 
+            Spacer()
+            SwipeButton(swipeText: "Swipe to go Home",
+                        perform : {navigationCoordinator.goToTab(tab: .home)},
+                        buttonColor: Color.yellow)
+
             Spacer()
             Text("Statistics!")
             Spacer()

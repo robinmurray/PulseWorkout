@@ -36,6 +36,7 @@
 		E421295C299D4D91001B8AA9 /* BTDeviceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */; };
 		E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295F29A21922001B8AA9 /* ActivityProfile.swift */; };
 		E423136F2CF628EE00E6F4FB /* ProfileListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E423136E2CF628EE00E6F4FB /* ProfileListItemView.swift */; };
+		E42313732CF752E100E6F4FB /* SwipeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42313722CF752E100E6F4FB /* SwipeButton.swift */; };
 		E42AD0912AE82094008E7B05 /* NewProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */; };
 		E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */; };
 		E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */; };
@@ -204,6 +205,7 @@
 		E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceBarView.swift; sourceTree = "<group>"; };
 		E421295F29A21922001B8AA9 /* ActivityProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityProfile.swift; sourceTree = "<group>"; };
 		E423136E2CF628EE00E6F4FB /* ProfileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListItemView.swift; sourceTree = "<group>"; };
+		E42313722CF752E100E6F4FB /* SwipeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeButton.swift; sourceTree = "<group>"; };
 		E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProfileDetailView.swift; sourceTree = "<group>"; };
 		E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsPausedView.swift; sourceTree = "<group>"; };
 		E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListItemExtensionView.swift; sourceTree = "<group>"; };
@@ -345,6 +347,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E423138B2CF9D1BA00E6F4FB /* Controls */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controls;
+			sourceTree = "<group>";
+		};
 		E45E3F0F2CEB9B54001D58B3 /* shared */ = {
 			isa = PBXGroup;
 			children = (
@@ -429,7 +438,9 @@
 		E45E3F2D2CECDD7B001D58B3 /* PulseWorkout App */ = {
 			isa = PBXGroup;
 			children = (
+				E423138B2CF9D1BA00E6F4FB /* Controls */,
 				E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */,
+				E42313722CF752E100E6F4FB /* SwipeButton.swift */,
 				E4C11F5629CCC91F008DB769 /* BluetoothManager */,
 				E46121EB2AAB67C900E07749 /* SettingsManager */,
 				E4A333B22CC01DCC00995AC4 /* ActivityChartsManager */,
@@ -1034,6 +1045,7 @@
 				E4094BB82CD0C6D200915CCB /* DataCache.swift in Sources */,
 				E45E3F072CE8A461001D58B3 /* ActivityHistoryHeaderView.swift in Sources */,
 				E4094BC92CD1513400915CCB /* ActivityChartsController.swift in Sources */,
+				E42313732CF752E100E6F4FB /* SwipeButton.swift in Sources */,
 				E4941E432CD29F920063421F /* CloudConnectionsView.swift in Sources */,
 				E4094BC52CD1503600915CCB /* ActivityHistoryView.swift in Sources */,
 				E4CC66A82CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */,

@@ -34,6 +34,14 @@ struct LiveMetricsView: View {
         
     }
     
+    func stopAndSave() {
+        liveActivityManager.endWorkout()
+        liveActivityManager.saveLiveActivityRecord()
+        navigationCoordinator.selectedActivityRecord = liveActivityManager.liveActivityRecord ??
+            ActivityRecord(settingsManager: liveActivityManager.settingsManager)
+        
+        navigationCoordinator.goToView(targetView: NavigationTarget.ActivitySaveView)
+    }
 
     var body: some View {
         VStack {
@@ -62,7 +70,7 @@ struct LiveMetricsView: View {
                     
                 }
             }
-            
+/*
             Button {
                 liveActivityManager.endWorkout()
                 liveActivityManager.saveLiveActivityRecord()
@@ -88,56 +96,11 @@ struct LiveMetricsView: View {
             }
             .tint(Color.red)
             .buttonStyle(BorderlessButtonStyle())
+ */
             Spacer()
-            
-            HStack{
-                
-                ZStack {
-                    
-                    RoundedRectangle(cornerRadius: 30)
-                        .fill(Color.red)
-                        .frame(width: 100, height: 100)
-                        .offset(x: viewState.width)
-                        .gesture(
-                            DragGesture().onChanged { value in
-                                viewState = value.translation
-                            }
-                                .onEnded { value in
-                                    withAnimation(.spring()) {
-                                        viewState = .zero
-                                    }
-                                }
-                        )
-                    
-                    Image(systemName: "chevron.forward.circle")
-                        .resizable()
-                        .frame(width: 50, height: 50)
-                        .offset(x: viewState.width)
-                        .foregroundColor(Color.white)
-                        .gesture(
-                            DragGesture()
-                                .onChanged { value in
-                                    viewState = value.translation
-                                    print("viewState : \(viewState)")
-                                
-                                }
-                                .onEnded { value in
-                                    withAnimation(.spring()) {
-                                        viewState = .zero
+            SwipeButton(swipeText: "Swipe to end",
+                        perform: stopAndSave )
 
-                                        if value.translation.width > 100 {
-                                            liveActivityManager.endWorkout()
-                                            liveActivityManager.saveLiveActivityRecord()
-                                            
-                                            navigationCoordinator.goToView(targetView: NavigationTarget.ActivitySaveView)
-                                        }
-                                    }
-                                }
-                                
-                        )
-                    
-                }
-            }
             
             Spacer()
        
