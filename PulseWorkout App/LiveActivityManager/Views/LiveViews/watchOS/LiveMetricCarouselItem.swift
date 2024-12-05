@@ -44,8 +44,8 @@ struct LiveMetricCarouselItem: View {
 struct LiveMetricCarouselItem_Previews: PreviewProvider {
     
     static var previews: some View {
-        LiveMetricCarouselItem(metric1: (image: "arrowshape.forward", text: "metric1 value"),
-                               metric2: (image: "arrow.up.right.circle", text: "metric2 value")
+        LiveMetricCarouselItem(metric1: (image: distanceIcon, text: "metric1 value"),
+                               metric2: (image: ascentIcon, text: "metric2 value")
         )
     }
 }

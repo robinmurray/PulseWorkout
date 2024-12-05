@@ -74,6 +74,10 @@ class LiveActivityManager : NSObject, ObservableObject {
     var session: HKWorkoutSession?
     var builder: HKLiveWorkoutBuilder?
     #endif
+    
+    #if os (iOS)
+    var builder: HKWorkoutBuilder?
+    #endif
 
     var liveActivityRecord: ActivityRecord?
     
@@ -152,6 +156,10 @@ class LiveActivityManager : NSObject, ObservableObject {
                 - currentPauseDurationAt(at: at), 0)
     }
     
+    func pausedTime(at: Date) -> TimeInterval {
+        return (liveActivityRecord?.pausedTime ?? 0) + currentPauseDurationAt(at: at)
+    }
+    
     func PauseHRMonitor() {
         self.liveActivityState = .paused
     }
@@ -173,13 +181,15 @@ class LiveActivityManager : NSObject, ObservableObject {
         liveActivityRecord = ActivityRecord(settingsManager: settingsManager)
         liveActivityRecord?.start(activityProfile: activityProfile, startDate: startDate)
 
-        #if os(watchOS)
-        startHRMonitor()
+
+        startRecording()
+
 
         let configuration = HKWorkoutConfiguration()
         configuration.activityType = workoutType
         configuration.locationType = workoutLocation
-        
+
+#if os(watchOS)
         do {
             session = try HKWorkoutSession( healthStore: healthStore, configuration: configuration)
             builder = session?.associatedWorkoutBuilder()
@@ -195,7 +205,12 @@ class LiveActivityManager : NSObject, ObservableObject {
         // Set the workout builder's data source.
         builder?.dataSource = HKLiveWorkoutDataSource(healthStore: healthStore,
                                                      workoutConfiguration: configuration)
+        
+        #elseif os(iOS)
+        builder = HKWorkoutBuilder(healthStore: healthStore, configuration: configuration, device: .local())
         #endif
+        
+        
         // Start the workout session and begin data collection.
         
         // If an outdoor activity then start location services
@@ -204,6 +219,9 @@ class LiveActivityManager : NSObject, ObservableObject {
         }
         #if os(watchOS)
         session?.startActivity(with: startDate)
+        #endif
+        
+        
         builder?.beginCollection(withStart: startDate) { (success, error) in
             // The workout has started.
             if !success {
@@ -214,6 +232,9 @@ class LiveActivityManager : NSObject, ObservableObject {
             }
         }
 
+        
+
+        #if os(watchOS)
         if self.liveActivityProfile!.lockScreen && !WKInterfaceDevice.current().isWaterLockEnabled {
             Timer.scheduledTimer(timeInterval: 5.0, target: self, selector: #selector(delayedEnableWaterLock), userInfo: nil, repeats: false)
         }
@@ -232,9 +253,29 @@ class LiveActivityManager : NSObject, ObservableObject {
 
         #if os(watchOS)
         session?.end()
+        
+        #elseif os(iOS)
+        builder?.endCollection(withEnd: Date())  { (success, error) in
+            // The workout has started.
+            if !success {
+                self.logger.error("Workout completion Failed with error: \(String(describing: error))")
+                
+            } else {
+                self.logger.log("Workout Completed")
+                if self.settingsManager.saveAppleHealth {
+                    self.builder?.finishWorkout { (workout, error) in
+                        DispatchQueue.main.async {
+                            self.workout = workout
+                        }
+                    }
+                } else {
+                    self.builder?.discardWorkout()
+                }
+            }
+        }
         #endif
         
-        stopHRMonitor()
+        stopRecording()
 
     }
     
@@ -349,7 +390,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         BTcyclePowerBatteryLevel = batteryLevel
     }
     
-    func startHRMonitor() {
+    func startRecording() {
         logger.debug("Initialising timer")
         self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         self.timer!.tolerance = 0.2
@@ -359,7 +400,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         self.liveActivityState = .live
     }
     
-    func stopHRMonitor() {
+    func stopRecording() {
         logger.debug("stopping timer")
         self.timer?.invalidate()
         self.hrState = HRState.inactive
@@ -378,6 +419,8 @@ class LiveActivityManager : NSObject, ObservableObject {
         
         if self.hrState != HRState.inactive {
             // add a track point for tcx file creation every time timer fires...
+
+            set(elapsedTime: elapsedTime(at: Date()))
             self.addTrackPoint()
             
             let maxAlarmRepeat = (liveActivityProfile!.constantRepeat ? settingsManager.maxAlarmRepeatCount : 1)

@@ -73,7 +73,7 @@ struct BTDeviceBarView: View {
                 .foregroundColor(BTconnectedColour[liveActivityManager.BTcyclePowerConnected])
             Image(systemName:getBatteryImage(batteryLevel: liveActivityManager.BTcyclePowerBatteryLevel))
                 .foregroundColor(getBatteryColor(batteryLevel: liveActivityManager.BTcyclePowerBatteryLevel))
-            Image(systemName:"arrow.clockwise.circle")
+            Image(systemName:cadenceIcon)
                 .foregroundColor(Color.gray)
             Image(systemName:"battery.100.bolt")
                 .foregroundColor(Color.gray)

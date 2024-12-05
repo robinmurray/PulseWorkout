@@ -113,7 +113,7 @@ struct SwipeButton: View {
                                     viewState = .zero
                                 }
                                 if value.translation.width >= maxDrag {
-                                    print("Triggered")
+
                                     if !triggered {
                                         triggered = true
                                         perform()
@@ -134,9 +134,11 @@ struct SwipeButton: View {
                                     viewState = value.translation
                                 }
                                 
+                                /*
                                 if (value.translation.width <= maxDrag) {
                                     print("viewState : \(viewState)")
                                 }
+                                */
                                 
                                 if (viewState.width > maxDrag * 0.95) &&
                                     !triggered {
@@ -150,7 +152,7 @@ struct SwipeButton: View {
                                     viewState = .zero
                                     }
                                 if value.translation.width >= maxDrag {
-                                    print("Triggered")
+
                                     if !triggered {
                                         triggered = true
                                         perform()

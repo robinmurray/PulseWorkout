@@ -325,7 +325,9 @@ class DataCache: NSObject, Codable, ObservableObject {
 
         operation.desiredKeys = ["name", "type", "sportType", "startDateLocal", "elapsedTime", "pausedTime", "movingTime",
                                  "activityDescription", "distance", "totalAscent", "totalDescent",
-                                 "averageHeartRate", "averageCadence", "averagePower", "averageSpeed", "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit", "mapSnapshot" ]
+                                 "averageHeartRate", "averageCadence", "averagePower", "averageSpeed",
+                                 "maxHeartRate", "maxCadence", "maxPower", "maxSpeed",
+                                 "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit", "mapSnapshot" ]
         operation.resultsLimit = cacheSize
 // FIX?        operation.configuration.timeoutIntervalForRequest = 30
 
@@ -354,11 +356,11 @@ class DataCache: NSObject, Codable, ObservableObject {
 
             switch result {
             case .success:
-
+/*
                 for record in self.refreshList {
-//                    self.logger.debug( "\(record.description())" )
+                    self.logger.debug( "\(record.description())" )
                 }
-                
+*/
                 // copy temporary array to main array and write to local cache
                 // only if no unsaved / undeleted items in local cache otherwise cloud view is out of date!
                 DispatchQueue.main.async {

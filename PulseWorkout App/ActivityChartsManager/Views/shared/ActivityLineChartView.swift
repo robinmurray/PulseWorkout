@@ -16,17 +16,21 @@ struct ActivityLineChartView: View {
     @State var lastAveVal: Int = 0
     
     func getXAxis( item: ActivityChartTracePoint ) -> Int {
+        
         return useDistanceXAxis ? Int(item.distanceMeters) : item.elapsedSeconds
+        
     }
 
     func segmentAverage( item: ActivityChartTracePoint ) -> Double {
-        print("primaryValueDistanceSegmentAverage \(item.primaryValueDistanceSegmentAverage)")
-        print("primaryValueTimeSegmentAverage \(item.primaryValueTimeSegmentAverage)")
+
         return useDistanceXAxis ? Double(item.primaryValueDistanceSegmentAverage) : item.primaryValueTimeSegmentAverage
+        
     }
 
     func isSegmentMidpoint( item: ActivityChartTracePoint ) -> Bool {
+        
         return useDistanceXAxis ? item.distanceSegmentMidpoint : item.timeSegmentMidpoint
+        
     }
 
     
@@ -126,7 +130,7 @@ struct ActivityLineChartView: View {
                         Button {
                             useDistanceXAxis = !useDistanceXAxis
                         } label: {
-                            Image(systemName: useDistanceXAxis ? "ruler" : "clock.arrow.circlepath")
+                            Image(systemName: useDistanceXAxis ? measureIcon : "clock.arrow.circlepath")
                                 }.labelStyle(.iconOnly)
                             .buttonStyle(BorderlessButtonStyle())
 

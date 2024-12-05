@@ -31,7 +31,7 @@ struct SettingsView: View {
                 NavigationLink(
                     destination: AverageSettingsView(settingsManager: settingsManager)) {
                         HStack {
-                            Label("Average Calculations", systemImage: "arrow.up.and.line.horizontal.and.arrow.down")
+                            Label("Average Calculations", systemImage: meanIcon)
                                 .foregroundColor(.green)
                             Spacer()
                         }

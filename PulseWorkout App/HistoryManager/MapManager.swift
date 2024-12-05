@@ -38,8 +38,13 @@ extension ActivityRecord {
             let activityCKRecord = CKRecord(recordType: recordType, recordID: recordID)
             activityCKRecord["mapSnapshot"] = asset
 
-            dc.CKForceUpdate(activityCKRecord: activityCKRecord,
-                             completionFunction: saveSnapshotCompletion)
+            // Only update if already saved! - should get picked up by record save
+            // if not then will update saved record on next display...
+            if !toSave {
+                dc.CKForceUpdate(activityCKRecord: activityCKRecord,
+                                 completionFunction: saveSnapshotCompletion)
+            }
+            
             
         } catch let error {
             logger.error("Error creating snapshot asset \(error)")

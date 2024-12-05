@@ -91,10 +91,10 @@ struct ActivityDetailView: View {
                     
                     HStack {
                         Image(systemName: distanceIcon)
-                            .foregroundColor(Color.blue)
+                            .foregroundColor(distanceColor)
                         Spacer()
                         Text(distanceFormatter(distance: activityRecord.distanceMeters))
-                            .foregroundStyle(.blue)
+                            .foregroundStyle(distanceColor)
                             .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
                     }
                     Divider()
@@ -111,11 +111,11 @@ struct ActivityDetailView: View {
 
                     HStack {
                         Image(systemName: heartRateIcon)
-                            .foregroundColor(Color.red)
+                            .foregroundColor(heartRateColor)
                         Spacer()
                         Text(activityRecord.averageHeartRate
                             .formatted(.number.precision(.fractionLength(0))) + " bpm")
-                        .foregroundStyle(.red)
+                        .foregroundStyle(heartRateColor)
                         .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
                     }
                     Divider()
@@ -123,7 +123,7 @@ struct ActivityDetailView: View {
                 }
             
                 GraphButtonView(navigationCoordinator: navigationCoordinator,
-                                buttonColor: .blue,
+                                buttonColor: distanceColor,
                                 activityRecord: activityRecord,
                                 dataCache: dataCache)
 
@@ -203,13 +203,13 @@ struct ActivityDetailView: View {
                 }
                 
                 GraphButtonView(navigationCoordinator: navigationCoordinator,
-                                buttonColor: .red,
+                                buttonColor: heartRateColor,
                                 activityRecord: activityRecord,
                                 dataCache: dataCache)
                 
             }
             .navigationTitle("Heart Rate")
-            .containerBackground(.red.gradient, for: .tabView)
+            .containerBackground(heartRateColor.gradient, for: .tabView)
             
             HStack {
                 VStack {
@@ -237,13 +237,13 @@ struct ActivityDetailView: View {
                 }
                 
                 GraphButtonView(navigationCoordinator: navigationCoordinator,
-                                buttonColor: .orange,
+                                buttonColor: powerColor,
                                 activityRecord: activityRecord,
                                 dataCache: dataCache)
                 
             }
             .navigationTitle("Power")
-            .containerBackground(.orange.gradient, for: .tabView)
+            .containerBackground(powerColor.gradient, for: .tabView)
             
         }
         .tabViewStyle(.verticalPage)

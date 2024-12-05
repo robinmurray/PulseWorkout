@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+struct HRStyling  {
+    var HRText: String?
+    var colour: Color
+}
+
+let HRDisplay: [HRState: HRStyling] =
+[HRState.inactive: HRStyling(HRText: "___", colour: Color.gray),
+ HRState.normal: HRStyling(colour: Color.green),
+ HRState.hiAlarm: HRStyling(colour: Color.red),
+ HRState.loAlarm: HRStyling(colour: Color.orange)]
+
 struct LiveMetricsView: View {
 
     @ObservedObject var navigationCoordinator: NavigationCoordinator
@@ -51,60 +62,253 @@ struct LiveMetricsView: View {
                 lowFrequencyTimeInterval: 10.0,
                 highFrequencyTimeInterval: 1.0 / 20.0)
             ) { context in
-                
-                VStack {
+
+                HStack {
                     
-                    Text(profile.name)
-                    
-                    HStack {
-                        
+                    HStack{
+                        Image(systemName: movingTimeIcon)
                         ElapsedTimeView(elapsedTime: liveActivityManager.movingTime(at: Date()),
                                         showSeconds: true,
-                                        showSubseconds: true)
-                        .foregroundStyle(.yellow)
-                        
-                        Spacer()
+                                        showSubseconds: context.cadence == .live)
                     }
+                    .foregroundStyle(.green)
+                    .font(.title)
+                    
                     Spacer()
                     
-                    
-                }
-            }
-/*
-            Button {
-                liveActivityManager.endWorkout()
-                liveActivityManager.saveLiveActivityRecord()
-                navigationCoordinator.selectedActivityRecord = liveActivityManager.liveActivityRecord ??
-                    ActivityRecord(settingsManager: liveActivityManager.settingsManager)
-                
-                navigationCoordinator.goToView(targetView: NavigationTarget.ActivitySaveView)
+                    HStack {
+                        Image(systemName: "pause.fill")
+                        ElapsedTimeView(elapsedTime: liveActivityManager.pausedTime(at: Date()),
+                                        showSeconds: true,
+                                        showSubseconds: context.cadence == .live)
 
-            } label: {
-                VStack{
-                    Image(systemName: "stop.circle")
-                        .foregroundColor(Color.red)
-                        .font(.title2)
-                        .frame(width: 80, height: 80)
-                        .background(Color.clear)
-                        .clipShape(Circle())
-                        .buttonStyle(PlainButtonStyle())
-                    
-                    Text("Stop")
-                        .foregroundColor(Color.red)
+                    }
+                    .foregroundStyle(.orange)
+
+
                 }
                 
+
+                HStack {
+
+                    
+                    Spacer()
+
+                    HStack {
+                        Image(systemName: "timer")
+                        ElapsedTimeView(elapsedTime: liveActivityManager.elapsedTime(at: Date()),
+                                        showSeconds: true,
+                                        showSubseconds: context.cadence == .live)
+
+                    }
+                    .foregroundStyle(.yellow)
+                }
+
+                
+                List {
+                    
+                    Section(header: HStack {
+                        Image(systemName: heartRateIcon)
+                            .font(.title2)
+                            .frame(width: 40, height: 40)
+                        Text("Heart Rate")
+                        Spacer()
+                        }
+                        .font(.title2)
+                        .foregroundStyle(heartRateColor)
+                    )
+                    {
+                        HStack {
+                            Text((liveActivityManager.heartRate ?? 0)
+                                .formatted(.number.precision(.fractionLength(0))))
+                                .fontWeight(.bold)
+                                .foregroundColor(HRDisplay[liveActivityManager.hrState]?.colour)
+                                .frame(width: 140.0, height: 60.0)
+                                .font(.system(size: 60))
+
+                            Spacer()
+                            VStack {
+
+                                HStack {
+                                    Image(systemName: maxIcon)
+                                    Text(String(activityData.averageHeartRate))
+                                }
+ 
+                                HStack {
+                                    Image(systemName: meanIcon)
+                                    Text((activityData.maxHeartRate)
+                                      .formatted(.number.precision(.fractionLength(0))))
+                                }
+
+                            }
+                        }
+                        .foregroundStyle(heartRateColor)
+                        .font(.title3)
+                    }
+ 
+                    
+                    
+                    Section(header: HStack {
+                        Image(systemName: measureIcon)
+                            .font(.title2)
+                            .frame(width: 40, height: 40)
+                        Text("Distance")
+                        Spacer()
+                        }
+                        .font(.title2)
+                        .foregroundStyle(distanceColor)
+                    )
+                    {
+                        HStack {
+                            Text(distanceFormatter(distance: activityData.distanceMeters))
+                                .font(.title)
+
+                            Spacer()
+                            VStack {
+                                HStack {
+                                    Image(systemName: ascentIcon)
+                                    Text(distanceFormatter(distance: activityData.totalAscent ?? 0,
+                                                           forceMeters: true))
+                                }
+                                HStack {
+                                    Image(systemName: descentIcon)
+                                    Text(distanceFormatter(distance: activityData.totalDescent ?? 0,
+                                                           forceMeters: true))
+                                }
+
+                            }
+                        }
+                        .foregroundStyle(distanceColor)
+                        .font(.title3)
+                    }
+
+                    
+                    Section(header: HStack {
+                        Image(systemName: speedIcon)
+                            .font(.title2)
+                            .frame(width: 40, height: 40)
+                        Text("Speed")
+                        Spacer()
+                        }
+                        .font(.title2)
+                        .foregroundStyle(speedColor)
+                    )
+                    {
+                        HStack {
+                            Text(speedFormatter(speed: activityData.speed ?? 0))
+                                .font(.title)
+
+                            Spacer()
+                            VStack {
+                                HStack {
+                                    Image(systemName: maxIcon)
+                                    Text(speedFormatter(speed: activityData.maxSpeed))
+                                }
+                                HStack {
+                                    Image(systemName: meanIcon)
+                                    Text(speedFormatter(speed: activityData.averageSpeed))
+                                }
+
+                            }
+                        }
+                        .foregroundStyle(speedColor)
+                        .font(.title3)
+                    }
+                    
+
+                    Section(header: HStack {
+                        Image(systemName: powerIcon)
+                            .font(.title2)
+                            .frame(width: 40, height: 40)
+                        Text("Power")
+                        Spacer()
+                        }
+                        .font(.title2)
+                        .foregroundStyle(powerColor)
+                    )
+                    {
+                        HStack {
+                            Text(Measurement(value: Double(activityData.watts ?? 0),
+                                             unit: UnitPower.watts)
+                            .formatted(.measurement(width: .abbreviated,
+                                                    usage: .asProvided)))
+                            .font(.title)
+                            
+                            Spacer()
+                            VStack {
+                                HStack {
+                                    Image(systemName: maxIcon)
+                                    Text(Measurement(value: Double(activityData.maxPower),
+                                                     unit: UnitPower.watts)
+                                    .formatted(.measurement(width: .abbreviated,
+                                                            usage: .asProvided)))
+                                }
+                                HStack {
+                                    Image(systemName: meanIcon)
+                                    Text(Measurement(value: Double(activityData.averagePower),
+                                                     unit: UnitPower.watts)
+                                    .formatted(.measurement(width: .abbreviated,
+                                                            usage: .asProvided)))
+                                }
+
+                            }
+
+                        }
+                        .foregroundStyle(powerColor)
+                        .font(.title3)
+                    }
+
+                    Section(header: HStack {
+                        Image(systemName: cadenceIcon)
+                            .font(.title2)
+                            .frame(width: 40, height: 40)
+                        Text("Cadence")
+                        Spacer()
+                        }
+                        .font(.title2)
+                        .foregroundStyle(cadenceColor)
+                    )
+                    {
+                        HStack {
+
+                            Text(String(activityData.cadence ?? 0))
+                                .font(.title)
+
+                            Spacer()
+
+                            VStack {
+                                HStack {
+                                    Image(systemName: maxIcon)
+                                    Text(String(activityData.maxCadence))
+                                }
+                                HStack {
+                                    Image(systemName: meanIcon)
+                                    Text(String(activityData.averageCadence))
+                                }
+
+                            }
+
+                        }
+                        .foregroundStyle(cadenceColor)
+                        .font(.title3)
+                    }
+
+                }
+                     
             }
-            .tint(Color.red)
-            .buttonStyle(BorderlessButtonStyle())
- */
+//            .listStyle(.grouped)
+//            .listStyle(.plain)
+
             Spacer()
             SwipeButton(swipeText: "Swipe to end",
                         perform: stopAndSave )
+                .padding()
 
-            
-            Spacer()
+
        
             BTDeviceBarView(liveActivityManager: liveActivityManager)
+            
+
         }
         .navigationDestination(for: NavigationTarget.self) { pathValue in
 
@@ -119,6 +323,7 @@ struct LiveMetricsView: View {
         }
         .toolbar(.hidden, for: .tabBar)
         .navigationTitle(profile.name)
+        .navigationBarBackButtonHidden()
 
     }
 

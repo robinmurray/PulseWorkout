@@ -55,7 +55,7 @@ class ActivityChartsController: NSObject, ObservableObject {
                                                      averagesIncludeZeros: false)
         let trace = traceBuilder.build(
             id: "Heart Rate",
-            colorScheme: .red,
+            colorScheme: heartRateColor,
             displayPrimaryAverage: true,
             timeDistanceSeries: activityRecord.trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0) } ),
             primaryDataSeries: activityRecord.trackPoints.map( {$0.heartRate } ),
@@ -75,7 +75,7 @@ class ActivityChartsController: NSObject, ObservableObject {
         traceBuilder.rollingAverageCount = max(Int(dataCache.settingsManager!.cyclePowerGraphSeconds / 2), 1)
         let trace = traceBuilder.build(
             id: "Power",
-            colorScheme: .yellow,
+            colorScheme: powerColor,
             displayPrimaryAverage: true,
             timeDistanceSeries: activityRecord.trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0 ) } ),
             primaryDataSeries: activityRecord.trackPoints.map( { Double($0.watts ?? 0) } ),
@@ -93,7 +93,7 @@ class ActivityChartsController: NSObject, ObservableObject {
         traceBuilder.rollingAverageCount = max(Int(dataCache.settingsManager!.cyclePowerGraphSeconds / 2), 1)
         let trace = traceBuilder.build(
             id: "Cadence",
-            colorScheme: .orange,
+            colorScheme: cadenceColor,
             displayPrimaryAverage: true,
             timeDistanceSeries: activityRecord.trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0 ) } ),
             primaryDataSeries: activityRecord.trackPoints.map( { Double($0.cadence ?? 0) } ),
@@ -110,7 +110,7 @@ class ActivityChartsController: NSObject, ObservableObject {
                                                      averagesIncludeZeros: true)
         let trace = traceBuilder.build(
             id: "Ascent",
-            colorScheme: .blue,
+            colorScheme: distanceColor,
             displayPrimaryAverage: false,
             timeDistanceSeries: activityRecord.trackPoints.map( { TimeDistance( time: $0.time, distanceMeters: $0.distanceMeters ?? 0 ) } ),
             primaryDataSeries: getAscentFromAltitude(altitudeArray: activityRecord.trackPoints.map( { $0.altitudeMeters } )),

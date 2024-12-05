@@ -323,7 +323,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var averageCadence: Int = 0
     var averagePower: Int = 0
     var averageSpeed: Double = 0
-    
+    var maxHeartRate: Double = 0
+    var maxCadence: Int = 0
+    var maxPower: Int = 0
+    var maxSpeed: Double = 0
     
     // fields used for storing to Cloudkit only
     let recordType = "activity"
@@ -504,7 +507,8 @@ extension ActivityRecord {
     private enum CodingKeys: String, CodingKey {
         case recordName, name, workoutTypeId, workoutLocationId, type, sportType, startDateLocal,
              elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
-             averageHeartRate, averageCadence, averagePower, averageSpeed, activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
+             averageHeartRate, averageCadence, averagePower, averageSpeed, maxHeartRate, maxCadence, maxPower, maxSpeed,
+             activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
              stravaSaveStatus, totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL
     }
     
@@ -526,7 +530,7 @@ extension ActivityRecord {
             logger.error("Settings manager not set")
             return
         }
-        
+               
         trackPoints.append(TrackPoint(time: trackPointTime,
                                       heartRate: heartRate,
                                       latitude: latitude,
@@ -662,6 +666,11 @@ extension ActivityRecord {
         activityRecord["averageCadence"] = averageCadence as CKRecordValue
         activityRecord["averagePower"] = averagePower as CKRecordValue
         activityRecord["averageSpeed"] = averageSpeed as CKRecordValue
+        activityRecord["maxHeartRate"] = maxHeartRate as CKRecordValue
+        activityRecord["maxCadence"] = maxCadence as CKRecordValue
+        activityRecord["maxPower"] = maxPower as CKRecordValue
+        activityRecord["maxSpeed"] = maxSpeed as CKRecordValue
+
         activityRecord["activeEnergy"] = activeEnergy as CKRecordValue
 
         activityRecord["totalAscent"] = (totalAscent ?? 0) as CKRecordValue
@@ -710,6 +719,10 @@ extension ActivityRecord {
         averageCadence = activityRecord["averageCadence"] ?? 0 as Int
         averagePower = activityRecord["averagePower"] ?? 0 as Int
         averageSpeed = activityRecord["averageSpeed"] ?? 0 as Double
+        maxHeartRate = activityRecord["maxHeartRate"] ?? 0 as Double
+        maxCadence = activityRecord["maxCadence"] ?? 0 as Int
+        maxPower = activityRecord["maxPower"] ?? 0 as Int
+        maxSpeed = activityRecord["maxSpeed"] ?? 0 as Double
         activeEnergy = activityRecord["activeEnergy"] ?? 0 as Double
         timeOverHiAlarm = activityRecord["timeOverHiAlarm"] ?? 0 as Double
         timeUnderLoAlarm = activityRecord["timeUnderLoAlarm"] ?? 0 as Double
@@ -771,7 +784,9 @@ extension ActivityRecord {
     func set(heartRate: Double?) {
 
         self.heartRate = heartRate
-    
+        if (heartRate ?? 0) > maxHeartRate {
+            self.maxHeartRate = heartRate ?? 0
+        }
     }
     
     func set(elapsedTime: Double) {
@@ -800,12 +815,18 @@ extension ActivityRecord {
     func set(watts: Int?) {
 
         self.watts = watts
+        if (watts ?? 0) > maxPower {
+            self.maxPower = watts ?? 0
+        }
 
     }
     
     func set(cadence:Int?) {
         
         self.cadence = cadence
+        if (cadence ?? 0) > maxCadence {
+            self.maxCadence = cadence ?? 0
+        }
 
     }
     
@@ -831,6 +852,9 @@ extension ActivityRecord {
     func set(speed: Double?) {
         
         self.speed = speed
+        if (speed ?? 0) > maxSpeed {
+            self.maxSpeed = speed ?? 0
+        }
 
     }
     

@@ -97,7 +97,7 @@ struct ActivityDetailView: View {
                 Divider()
                     
                 }
-                .foregroundColor(.blue)
+                .foregroundColor(distanceColor)
             )
             {
                 VStack {
@@ -123,7 +123,7 @@ struct ActivityDetailView: View {
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
                                 .frame(width: 40, height: 40)
-                                .foregroundStyle(.blue)
+                                .foregroundStyle(distanceColor)
                         }
                     
                     }
@@ -148,7 +148,7 @@ struct ActivityDetailView: View {
                 Divider()
                     
                 }
-                .foregroundColor(.red)
+                .foregroundColor(heartRateColor)
             )
             {
                 VStack {
@@ -165,7 +165,7 @@ struct ActivityDetailView: View {
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
                                 .frame(width: 40, height: 40)
-                                .foregroundStyle(.red)
+                                .foregroundStyle(heartRateColor)
                         }
                     }
                     .buttonStyle(BorderlessButtonStyle())
@@ -193,7 +193,7 @@ struct ActivityDetailView: View {
                 Divider()
                     
                 }
-                .foregroundColor(.orange)
+                .foregroundColor(powerColor)
             )
             {
                 VStack {
@@ -213,7 +213,7 @@ struct ActivityDetailView: View {
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
                                 .frame(width: 40, height: 40)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(powerColor)
                         }
                     }
                     .buttonStyle(BorderlessButtonStyle())
@@ -231,7 +231,7 @@ struct ActivityDetailView: View {
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
                                 .frame(width: 40, height: 40)
-                                .foregroundStyle(.orange)
+                                .foregroundStyle(cadenceColor)
                         }
                     }
                     .buttonStyle(BorderlessButtonStyle())
@@ -265,7 +265,7 @@ struct ActivityDetailView: View {
                           dataCache: dataCache,
                           chartId: "Ascent")
             }
-            else if pathValue == .ChartViewAscent {
+            else if pathValue == .ChartViewHR {
                 ChartView(activityRecord: activityRecord,
                           dataCache: dataCache,
                           chartId: "Heart Rate")

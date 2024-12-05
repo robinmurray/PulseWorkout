@@ -44,7 +44,7 @@ struct ProfileListItemView: View {
                         
                         Spacer()
                     }
-                    .foregroundStyle(.red)
+                    .foregroundStyle(heartRateColor)
                     
                 }
                 

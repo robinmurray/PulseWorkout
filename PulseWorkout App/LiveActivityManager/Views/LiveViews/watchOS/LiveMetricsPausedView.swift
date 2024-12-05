@@ -71,7 +71,7 @@ struct LiveMetricsPausedView: View {
                             HStack {
                                 Spacer().frame(maxWidth: .infinity)
                                 
-                                Image(systemName: "heart.fill").foregroundColor(Color.red)
+                                Image(systemName: heartRateIcon).foregroundColor(heartRateColor)
                                 
 
                                 

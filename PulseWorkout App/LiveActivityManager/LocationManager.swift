@@ -23,6 +23,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var verticalAccuracy: Double?
     var totalAscent: Double?
     var totalDescent: Double?
+    var distanceMeters: Double      // Total Distance travelled
     var speed: Double?
     var direction: Double?
     var placeName: String?
@@ -32,6 +33,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var isPaused: Bool = false
     
     var lastAltitude: Double?
+    var lastLocation: CLLocation?
     
     var locManager: CLLocationManager
     var backgroundActive: Bool = false
@@ -61,6 +63,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         self.settingsManager = settingsManager
         locManager = CLLocationManager()
         headingsOk = CLLocationManager.headingAvailable()
+        self.distanceMeters = 0
 
         super.init()
         
@@ -162,6 +165,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         locManager.allowsBackgroundLocationUpdates = true
 
         if authStatusOk {
+            distanceMeters = 0
+            lastLocation = nil
             locManager.startUpdatingLocation()
             backgroundActive = true
         }
@@ -175,8 +180,10 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         longitude = nil
         altitude = nil
         lastAltitude = nil
+        lastLocation = nil
         totalAscent = nil
         totalDescent = nil
+        distanceMeters = 0
         speed = nil
         horizontalAccuracy = nil
         direction = nil
@@ -296,6 +303,17 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             // backgroundActive => workout is active
             if backgroundActive {
                 
+                if !isPaused {
+                    if lastLocation == nil {
+                        lastLocation = location
+                    }
+                    else if horizontalAccuracy != nil && horizontalAccuracy != -1 {
+                        if (location?.distance(from: lastLocation!) ?? 0) > horizontalAccuracy! {
+                            distanceMeters += (location?.distance(from: lastLocation!) ?? 0)
+                            lastLocation = location
+                        }
+                    }
+                }
                 // Calculate ascent and descent taking to account vertical accuracy
                 if altitude != nil && lastAltitude != nil && verticalAccuracy != nil  && verticalAccuracy != -1 {
                     // Only update altitude if change is greater than current accuracy
@@ -351,6 +369,9 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     liveActivityRecord!.set(totalAscent: totalAscent)
                     liveActivityRecord!.set(totalDescent: totalDescent)
                     liveActivityRecord!.set(altitudeMeters: altitude)
+                    #if os(iOS)
+                    liveActivityRecord!.set(distanceMeters: distanceMeters)
+                    #endif
                 }
                 
             }
