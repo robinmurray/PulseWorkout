@@ -630,7 +630,7 @@ extension LiveActivityManager {
     
     func set(averageHeartRate: Double) {
         if liveActivityRecord != nil {
-            liveActivityRecord!.averageHeartRate = Int(averageHeartRate)
+            liveActivityRecord!.averageHeartRate = averageHeartRate
         }
     }
     

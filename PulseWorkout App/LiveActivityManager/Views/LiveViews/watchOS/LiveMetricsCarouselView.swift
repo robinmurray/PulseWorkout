@@ -55,15 +55,10 @@ struct LiveMetricsCarouselView: View {
                 // Power and Average Power
                 LiveMetricCarouselItem(
                     metric1: (image: powerIcon,
-                              text: Measurement(value: Double(activityData.watts ?? 0),
-                                                unit: UnitPower.watts)
-                               .formatted(.measurement(width: .abbreviated,
-                                                       usage: .asProvided))),
+                              text: powerFormatter(watts: Double(activityData.watts ?? 0))),
+
                     metric2: (image: meanIcon,
-                              text: Measurement(value: Double(activityData.averagePower),
-                                                unit: UnitPower.watts)
-                               .formatted(.measurement(width: .abbreviated,
-                                                       usage: .asProvided)))
+                              text: powerFormatter(watts: Double(activityData.averagePower)))
                 )
                 .modifier(GetHeightModifier(height: $scrollStackheight))
                 
@@ -71,9 +66,9 @@ struct LiveMetricsCarouselView: View {
                 // Cadence and Average Cadence
                 LiveMetricCarouselItem(
                     metric1: (image: cadenceIcon,
-                              text: String(activityData.cadence ?? 0)),
+                              text: cadenceFormatter(cadence: Double(activityData.cadence ?? 0))),
                     metric2: (image: meanIcon,
-                              text: String(activityData.averageCadence))
+                              text: cadenceFormatter(cadence: Double(activityData.averageCadence)))
                 )
                 .modifier(GetHeightModifier(height: $scrollStackheight))
                    

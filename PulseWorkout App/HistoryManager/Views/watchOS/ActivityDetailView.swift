@@ -113,8 +113,8 @@ struct ActivityDetailView: View {
                         Image(systemName: heartRateIcon)
                             .foregroundColor(heartRateColor)
                         Spacer()
-                        Text(activityRecord.averageHeartRate
-                            .formatted(.number.precision(.fractionLength(0))) + " bpm")
+                        Text(heartRateFormatter(heartRate: Double(activityRecord.averageHeartRate))
+                             + " bpm")
                         .foregroundStyle(heartRateColor)
                         .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
                     }
@@ -188,8 +188,8 @@ struct ActivityDetailView: View {
             HStack {
                 VStack {
                     SummaryMetricView(title: "Average",
-                                      value: activityRecord.averageHeartRate
-                        .formatted(.number.precision(.fractionLength(0))) + " bpm")
+                                      value: heartRateFormatter(heartRate: Double(activityRecord.averageHeartRate))
+                                         + " bpm")
                     .foregroundStyle(.yellow)
                     
                     SummaryMetricView(title: activityRecord.hiHRLimit == nil ? "Time Over High Limit" : "Time Over High Limit (\(activityRecord.hiHRLimit!))",
@@ -215,23 +215,16 @@ struct ActivityDetailView: View {
                 VStack {
                     
                     SummaryMetricView(title: "Average Power",
-                                      value: Measurement(value: Double(activityRecord.averagePower),
-                                                         unit: UnitPower.watts)
-                                        .formatted(.measurement(width: .abbreviated,
-                                                                usage: .asProvided)
-                                        ))
+                                      value: powerFormatter(watts: Double(activityRecord.averagePower)))
                     .foregroundStyle(.yellow)
                     
                     SummaryMetricView(title: "Average Cadence",
-                                      value: activityRecord.averageCadence
-                        .formatted(.number.precision(.fractionLength(0))))
+                                      value: cadenceFormatter(cadence: Double(activityRecord.averageCadence))
+                                        )
                     .foregroundStyle(.yellow)
                     
                     SummaryMetricView(title: "Energy",
-                                      value: Measurement(value: activityRecord.activeEnergy,
-                                                         unit: UnitEnergy.kilocalories).formatted(.measurement(
-                                                            width: .abbreviated,
-                                                            usage: .workout)))
+                                      value: energyFormatter(energy: activityRecord.activeEnergy))
                     .foregroundStyle(.yellow)
                     
                 }

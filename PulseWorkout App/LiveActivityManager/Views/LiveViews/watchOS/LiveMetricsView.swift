@@ -111,8 +111,7 @@ struct LiveMetricsView: View {
                             
                             Spacer().frame(maxWidth: .infinity)
                             
-                            Text((liveActivityManager.heartRate ?? 0)
-                                .formatted(.number.precision(.fractionLength(0))))
+                            Text(heartRateFormatter(heartRate: (liveActivityManager.heartRate ?? 0)))
                                 .fontWeight(.bold)
                                 .foregroundColor(HRDisplay[liveActivityManager.hrState]?.colour)
                                 .frame(width: 140.0, height: 60.0)

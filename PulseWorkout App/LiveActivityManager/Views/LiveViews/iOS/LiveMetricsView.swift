@@ -119,8 +119,7 @@ struct LiveMetricsView: View {
                     )
                     {
                         HStack {
-                            Text((liveActivityManager.heartRate ?? 0)
-                                .formatted(.number.precision(.fractionLength(0))))
+                            Text(heartRateFormatter(heartRate: Double(liveActivityManager.heartRate ?? 0)))
                                 .fontWeight(.bold)
                                 .foregroundColor(HRDisplay[liveActivityManager.hrState]?.colour)
                                 .frame(width: 140.0, height: 60.0)
@@ -131,13 +130,12 @@ struct LiveMetricsView: View {
 
                                 HStack {
                                     Image(systemName: maxIcon)
-                                    Text(String(activityData.averageHeartRate))
+                                    Text(heartRateFormatter(heartRate: Double(activityData.averageHeartRate)))
                                 }
  
                                 HStack {
                                     Image(systemName: meanIcon)
-                                    Text((activityData.maxHeartRate)
-                                      .formatted(.number.precision(.fractionLength(0))))
+                                    Text(heartRateFormatter(heartRate: activityData.maxHeartRate))
                                 }
 
                             }
@@ -228,27 +226,20 @@ struct LiveMetricsView: View {
                     )
                     {
                         HStack {
-                            Text(Measurement(value: Double(activityData.watts ?? 0),
-                                             unit: UnitPower.watts)
-                            .formatted(.measurement(width: .abbreviated,
-                                                    usage: .asProvided)))
+                            Text(powerFormatter(watts: Double(activityData.watts ?? 0)))
                             .font(.title)
                             
                             Spacer()
                             VStack {
                                 HStack {
                                     Image(systemName: maxIcon)
-                                    Text(Measurement(value: Double(activityData.maxPower),
-                                                     unit: UnitPower.watts)
-                                    .formatted(.measurement(width: .abbreviated,
-                                                            usage: .asProvided)))
+                                    Text(powerFormatter(watts: Double(activityData.maxPower)))
+
                                 }
                                 HStack {
                                     Image(systemName: meanIcon)
-                                    Text(Measurement(value: Double(activityData.averagePower),
-                                                     unit: UnitPower.watts)
-                                    .formatted(.measurement(width: .abbreviated,
-                                                            usage: .asProvided)))
+                                    Text(powerFormatter(watts: Double(activityData.averagePower)))
+
                                 }
 
                             }

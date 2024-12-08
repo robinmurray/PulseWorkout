@@ -159,8 +159,7 @@ struct ActivityDetailView: View {
                     {
                         HStack{
                             SummaryMetricView(title: "Average",
-                                              value: activityRecord.averageHeartRate
-                                .formatted(.number.precision(.fractionLength(0))) + " bpm")
+                                              value: heartRateFormatter(heartRate: Double(activityRecord.averageHeartRate)) + " bpm")
                             Spacer()
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
@@ -204,11 +203,8 @@ struct ActivityDetailView: View {
                     {
                         HStack{
                             SummaryMetricView(title: "Average Power",
-                                              value: Measurement(value: Double(activityRecord.averagePower),
-                                                                 unit: UnitPower.watts)
-                                                .formatted(.measurement(width: .abbreviated,
-                                                                        usage: .asProvided)
-                                                ))
+                                              value: powerFormatter(watts: Double(activityRecord.averagePower))
+                                                )
                             Spacer()
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
@@ -225,8 +221,8 @@ struct ActivityDetailView: View {
                     {
                         HStack{
                             SummaryMetricView(title: "Average Cadence",
-                                              value: activityRecord.averageCadence
-                                .formatted(.number.precision(.fractionLength(0))))
+                                              value: cadenceFormatter(cadence: Double(activityRecord.averageCadence))
+                                                )
                             Spacer()
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
@@ -238,10 +234,7 @@ struct ActivityDetailView: View {
                     
                     
                     SummaryMetricView(title: "Energy",
-                                      value: Measurement(value: activityRecord.activeEnergy,
-                                                         unit: UnitEnergy.kilocalories).formatted(.measurement(
-                                                            width: .abbreviated,
-                                                            usage: .workout)))
+                                      value: energyFormatter(energy: activityRecord.activeEnergy))
                 }
                 .foregroundStyle(.foreground)
 

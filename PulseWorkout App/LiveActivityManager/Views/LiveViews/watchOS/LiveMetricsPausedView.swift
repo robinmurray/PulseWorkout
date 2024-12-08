@@ -75,8 +75,7 @@ struct LiveMetricsPausedView: View {
                                 
 
                                 
-                                Text((liveActivityManager.heartRate ?? 0)
-                                    .formatted(.number.precision(.fractionLength(0))))
+                                Text(heartRateFormatter(heartRate: (liveActivityManager.heartRate ?? 0)))
                                     .fontWeight(.bold)
                                     .foregroundColor(HRDisplay[liveActivityManager.hrState]?.colour)
                                     .frame(width: 40.0, height: 30.0)

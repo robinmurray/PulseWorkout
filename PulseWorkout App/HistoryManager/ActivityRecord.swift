@@ -319,7 +319,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var cadenceAnalysis: analysedVariable = analysedVariable()
     var powerAnalysis: analysedVariable = analysedVariable()
 
-    var averageHeartRate: Int = 0
+    var averageHeartRate: Double = 0
     var averageCadence: Int = 0
     var averagePower: Int = 0
     var averageSpeed: Double = 0
@@ -549,7 +549,7 @@ extension ActivityRecord {
         cadenceAnalysis.add(cadence == nil ? nil : Double(cadence!), includeZeros: SM.aveCadenceZeros)
         powerAnalysis.add(cadence == nil ? nil : Double(watts!), includeZeros: SM.avePowerZeros)
         
-        averageHeartRate = Int(heartRateAnalysis.average)
+        averageHeartRate = heartRateAnalysis.average
         averageCadence = Int(cadenceAnalysis.average)
         averagePower = Int(powerAnalysis.average)
 
@@ -715,7 +715,7 @@ extension ActivityRecord {
         totalAscent = activityRecord["totalAscent"] ?? 0 as Double
         totalDescent = activityRecord["totalDescent"] ?? 0 as Double
 
-        averageHeartRate = activityRecord["averageHeartRate"] ?? 0 as Int
+        averageHeartRate = activityRecord["averageHeartRate"] ?? 0 as Double
         averageCadence = activityRecord["averageCadence"] ?? 0 as Int
         averagePower = activityRecord["averagePower"] ?? 0 as Int
         averageSpeed = activityRecord["averageSpeed"] ?? 0 as Double
@@ -832,7 +832,7 @@ extension ActivityRecord {
     
     func set(averageHeartRate: Double) {
 
-        self.averageHeartRate = Int(averageHeartRate)
+        self.averageHeartRate = averageHeartRate
 
     }
     

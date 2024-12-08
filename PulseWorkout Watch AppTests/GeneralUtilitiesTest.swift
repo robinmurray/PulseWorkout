@@ -205,34 +205,7 @@ final class GeneralUtilitiesTest: XCTestCase {
 
     }
     
-    func testDurationFormatter() throws {
 
-        XCTAssert(durationFormatter(seconds: 10) == "0:10")
-        XCTAssert(durationFormatter(seconds: 100) == "1:40")
-
-        XCTAssert(durationFormatter(seconds: 3610) == "1:00:10")
-
-        XCTAssert(durationFormatter(seconds: 60) == "0:01")
-        XCTAssert(durationFormatter(seconds: 600) == "0:10")
-
-        XCTAssert(durationFormatter(seconds: 3600) == "1:00")
-        XCTAssert(durationFormatter(seconds: 3660) == "1:01")
-
-        print(durationFormatter(elapsedSeconds: 10, minimizeLength: true))
-        XCTAssert(durationFormatter(elapsedSeconds: 10, minimizeLength: true) == "00:10")
-        XCTAssert(durationFormatter(elapsedSeconds: 100, minimizeLength: true) == "01:40")
-
-        XCTAssert(durationFormatter(elapsedSeconds: 3610, minimizeLength: true) == "01:00:10")
-
-        XCTAssert(durationFormatter(elapsedSeconds: 60, minimizeLength: true) == "00:01")
-        XCTAssert(durationFormatter(elapsedSeconds: 600, minimizeLength: true) == "00:10")
-
-        XCTAssert(durationFormatter(elapsedSeconds: 3600, minimizeLength: true) == "01:00")
-        XCTAssert(durationFormatter(elapsedSeconds: 3660, minimizeLength: true) == "01:01")
-
-        
-        
-    }
 
     func testSegAveSeries() throws {
 
