@@ -13,6 +13,7 @@
 	<key>com.apple.developer.icloud-container-identifiers</key>
 	<array>
 		<string>iCloud.CloudKitLesson</string>
+		<string>iCloud.MurrayNet.Aleph</string>
 	</array>
 	<key>com.apple.developer.icloud-services</key>
 	<array>

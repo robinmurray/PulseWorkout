@@ -30,8 +30,10 @@ struct ActivityListItemView: View {
 
                 Text(activityRecord.name)
                     .foregroundStyle(.yellow)
-                    .fontWeight(.bold)
                     .multilineTextAlignment(.leading)
+                #if os(iOS)
+                    .fontWeight(.bold)
+                #endif
                 Spacer()
                 VStack {
                     if activityRecord.toSavePublished {

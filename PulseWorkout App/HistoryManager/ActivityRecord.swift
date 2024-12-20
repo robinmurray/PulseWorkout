@@ -224,9 +224,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         
         self.tcxFileName = baseFileName + ".gz"
         self.JSONFileName = baseFileName + ".json"
-        self.recordID = CKRecord.ID()
-        self.recordName = recordID.recordName
-
+        self.recordID = DataCache.getCKRecordID()
+        self.recordName = self.recordID.recordName
     }
     
     // Initialise record from CloudKt record - will have recordID set
@@ -286,8 +285,11 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     }
     
     func setToSave( _ newStatus: Bool ) {
-        toSave = newStatus
-        toSavePublished = newStatus
+
+        self.toSave = newStatus
+        DispatchQueue.main.async{
+            self.toSavePublished = newStatus
+        }
     }
 
     // Calculated averages
@@ -739,9 +741,9 @@ extension ActivityRecord {
 
         setToSave(false)
         toDelete = false
-        tcxFileName = ""
-        JSONFileName = ""
-
+        tcxFileName = baseFileName + ".gz"
+        JSONFileName = baseFileName + ".json"
+        
         if activityRecord["tcx"] != nil {
             self.logger.info("Parsing track data")
             let asset = activityRecord["tcx"]! as CKAsset

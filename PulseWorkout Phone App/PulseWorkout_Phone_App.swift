@@ -18,6 +18,9 @@ struct PulseWorkout_Phone_App: App {
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
+    
     init() {
         let mySettingsManager = SettingsManager()
         let myLocationManager = LocationManager(settingsManager: mySettingsManager)
@@ -34,6 +37,9 @@ struct PulseWorkout_Phone_App: App {
         self.dataCache = myDataCache
         self.bluetoothManager = myBluetoothManager
         self.navigationCoordinator = NavigationCoordinator()
+        
+        // register datacache in app delegate so can perform cache updates
+        appDelegate.dataCache = self.dataCache
     }
     
     var body: some Scene {

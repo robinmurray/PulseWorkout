@@ -84,14 +84,18 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     var settingsManager: SettingsManager!
     
+    let containerName: String = "iCloud.MurrayNet.Aleph"
+    static var zoneName: String = "Aleph_Zone"
+    
     var container: CKContainer!
     var database: CKDatabase!
-//    var zoneID: CKRecordZone.ID!
+    var zoneID: CKRecordZone.ID!
     
     @Published var UIRecordSet: [ActivityRecord] = []
+    @Published var fetching: Bool = false
+    @Published var fetchComplete: Bool = false
 
     /// Activity record fetched and used in detail display
-//    var displayActivityRecord: ActivityRecord?
     var fullActivityRecordCache: FullActivityRecordCache = FullActivityRecordCache()
 
        
@@ -113,10 +117,10 @@ class DataCache: NSObject, Codable, ObservableObject {
         super.init()
         self.settingsManager = settingsManager
         
-        container = CKContainer(identifier: "iCloud.CloudKitLesson")
+        container = CKContainer(identifier: containerName)
         database = container.privateCloudDatabase
-//        zoneID = CKRecordZone.ID(zoneName: "CKL_Zone")
-        
+        zoneID = CKRecordZone.ID(zoneName: DataCache.zoneName)
+                
 /*
         Task {
             do {
@@ -128,19 +132,64 @@ class DataCache: NSObject, Codable, ObservableObject {
         }
   */
 
+        // Create subscription for record change notifications
+        createQuerySubscription()
+        
         if readCache {
             _ = read()
-            
-            
+                        
             if !dirty() {
-                refresh()
+                refreshCache()
             }
             else {
-                startSynchTimer()
+                flushCache()
             }
         }
 
     }
+    
+    /// Class function to create a new recordID in correct zone, given a record name
+    class func getCKRecordID(recordName: String) -> CKRecord.ID {
+        return CKRecord.ID(recordName: recordName, zoneID: CKRecordZone.ID(zoneName: zoneName))
+    }
+
+    /// Class function to create a new recordID in correct zone from scratch
+    class func getCKRecordID() -> CKRecord.ID {
+        let recordName = CKRecord.ID().recordName
+        return CKRecord.ID(recordName: recordName, zoneID: CKRecordZone.ID(zoneName: zoneName))
+    }
+    
+    
+    func refreshUI() {
+        
+        if !dirty() {
+            refreshCache()
+        }
+        else {
+            flushCache()
+
+            updateUI()
+        }
+        
+    }
+    
+    
+    /// push changes in cache to cloudkit
+    private func flushCache() {
+        saveAndDeleteRecord(recordsToSave: toBeSavedCKRecords(),
+                            recordIDsToDelete: toBeDeletedIDs())
+    }
+    
+    
+    /// Copy cache contents to User Interface list - trigger view update
+    private func updateUI() {
+        
+        DispatchQueue.main.async { [self] in
+            self.UIRecordSet = self.cache()
+        }
+        
+    }
+    
     
     private func createCKZoneIfNeeded(zoneID: CKRecordZone.ID) async throws {
 
@@ -155,14 +204,6 @@ class DataCache: NSObject, Codable, ObservableObject {
         UserDefaults.standard.set(true, forKey: "zoneCreated")
     }
  
-
-    func updateUI() {
-        
-        DispatchQueue.main.async {
-            self.UIRecordSet = self.cache()
-        }
-        
-    }
     
     func add(activityRecord: ActivityRecord) {
         
@@ -173,35 +214,56 @@ class DataCache: NSObject, Codable, ObservableObject {
             activities.removeLast()
         }
         
+        UIRecordSet.insert(activityRecord, at: 0)
+
         _ = write()
         
-        updateUI()
-        
-        startSynchTimer()
+        flushCache()
 
     }
+
+    
+    /// Test if this recordId is in the cache
+    /// If not in cache then returns nil. If in cache returns index
+    private func cachedIndex(recordID: CKRecord.ID) -> Int? {
+        
+        return activities.firstIndex(where: { $0.recordName == recordID.recordName })
+        
+    }
+    
+    /// Remove record from UI
+    func removeFromUI(recordID: CKRecord.ID) {
+        
+        guard let index = UIRecordSet.firstIndex(where: { $0.recordName == recordID.recordName }) else {return}
+        
+        UIRecordSet.remove(at: index)
+    }
+    
     
     func delete(recordID: CKRecord.ID) {
-               
-        guard let index = activities.firstIndex(where: { $0.recordName == recordID.recordName }) else {
-            logger.log("DELETION not Found!! ")
+        
+        removeFromUI(recordID: recordID)
+        
+        guard let index = cachedIndex(recordID: recordID) else {
+            // Record is not in cache, just attempt deletion
+            saveAndDeleteRecord(recordsToSave: [], recordIDsToDelete: [recordID])
             return
         }
-
+               
+        // Record is in cache, mark to delete in cahce and then flush cache
         activities[index].toDelete = true
         activities[index].deleteTrackRecord()
         
         logger.debug("DELETED OK :\(index) \(recordID.recordName)")
         _ = write()
         
-        updateUI()
-        
-        startSynchTimer()
+        flushCache()
         
     }
     
+    
     /// Remove item from cache - call once deleted from cloudkit
-    func remove(recordID: CKRecord.ID) {
+    func removeFromCache(recordID: CKRecord.ID) {
         
         guard let index = activities.firstIndex(where: { $0.recordName == recordID.recordName }) else {
             return
@@ -212,36 +274,53 @@ class DataCache: NSObject, Codable, ObservableObject {
         _ = write()
         
     }
+    
 
     /// Returns list of to-be-saved activity records
-    func toBeSaved() -> [ActivityRecord] {
+    private func toBeSaved() -> [ActivityRecord] {
         
         return activities.filter{ ($0.toSave == true) && ($0.toDelete == false) }
 
     }
 
+    
     /// Returns list of to-be-deleted activity records
-    func toBeDeleted() -> [ActivityRecord] {
+    private func toBeDeleted() -> [ActivityRecord] {
         
         return activities.filter{ $0.toDelete == true }
 
     }
+
+    private func toBeSavedCKRecords() -> [CKRecord] {
+        
+        return activities.filter{ ($0.toSave == true) && ($0.toDelete == false) }.map( { $0.asCKRecord() })
+
+    }
     
-    func cache() -> [ActivityRecord] {
+    /// Returns list of to-be-deleted activity records
+    private func toBeDeletedIDs() -> [CKRecord.ID] {
+        
+        return activities.filter{ $0.toDelete == true }.map( {$0.recordID} )
+
+    }
+
+    
+    private func cache() -> [ActivityRecord] {
         
         return activities.filter{ $0.toDelete == false }
         
     }
     
+    
     /// Does the cache have outstanding additions or deletions to be written to CloudKit?
-    func dirty() -> Bool {
+    private func dirty() -> Bool {
         
         return (toBeSaved().count > 0) || (toBeDeleted().count > 0)
         
     }
     
     /// Get URL for JSON file
-    func CacheURL(fileName: String) -> URL? {
+    private func CacheURL(fileName: String) -> URL? {
 
         guard let cachePath = getCacheDirectory() else { return nil }
 
@@ -250,7 +329,7 @@ class DataCache: NSObject, Codable, ObservableObject {
 
 
     /// Read cache from JSON file in cache folder
-    func read() -> Bool {
+    private func read() -> Bool {
 
         guard let cacheURL = CacheURL(fileName: cacheFile) else { return false }
 
@@ -263,9 +342,11 @@ class DataCache: NSObject, Codable, ObservableObject {
             for activity in JSONData.activities {
 //                logger.log("activity \(activity.recordName ?? "xxx")  toBeSaved status \(activity.toSave) -- toDelete status \(activity.toDelete)")
                 // create recordID from recordName as recordID not serialised to JSON
-//                activity.recordID = CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
-                activity.recordID = CKRecord.ID(recordName: activity.recordName)
-
+                activity.recordID = DataCache.getCKRecordID(recordName: activity.recordName)
+//                CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
+//                activity.recordID = CKRecord.ID(recordName: activity.recordName)
+//                let str = activity.mapSnapshotURL?.absoluteString as! String
+//                logger.log("map snapshot : \(str)")
                 // set toSavePublished equal to toSave
                 activity.setToSave(activity.toSave)
                 activities.append(activity)
@@ -283,7 +364,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     
     /// Write entire cache to JSON file in cache folder
-    func write() -> Bool {
+    private func write() -> Bool {
         
         guard let cacheURL = CacheURL(fileName: cacheFile) else { return false }
         
@@ -295,8 +376,6 @@ class DataCache: NSObject, Codable, ObservableObject {
 //            logger.log("JSON : \(String(describing: jsonString))")
             do {
                 try data.write(to: cacheURL)
-                
-                updateUI()
 
                 return true
             }
@@ -313,11 +392,74 @@ class DataCache: NSObject, Codable, ObservableObject {
     }
 
     
-    @objc func refresh() {
+    private func refreshCache() {
         
+        fetchRecordBlock(startDate: nil,
+                         qualityOfService: .userInitiated,
+                         blockCompletionFunction: refreshCacheCompletion)
+        
+    }
+  
+    
+    private func refreshCacheCompletion(records : [ActivityRecord] ) -> Void {
+        
+        // copy temporary array to main array and write to local cache
+        // only if no unsaved / undeleted items in local cache otherwise cloud view is out of date!
+        
+//        logger.log("refesh cache completion")
+//        logger.log("Top record = \(records[0].name)")
+//        DispatchQueue.main.async {
+            if !self.dirty() {
+                self.activities = records
+                _ = self.write()
+//            }
+//            self.UIRecordSet = records
+            self.updateUI()
+        }
+
+        
+    }
+    
+    
+    func fetchNextBlock() {
+        
+        if fetching {
+            return
+        }
+        if fetchComplete {
+            return
+        }
+        
+        let latestUIDate = UIRecordSet.last?.startDateLocal ?? nil
+        logger.log("Fetch next block with start date \(String(describing: latestUIDate?.formatted()))")
+        fetchRecordBlock(startDate: latestUIDate,
+                         qualityOfService: .userInitiated,
+                         blockCompletionFunction: nextBlockCompletion)
+        
+    }
+    
+    
+    private func nextBlockCompletion(records : [ActivityRecord] ) -> Void {
+        
+        logger.log("next block fetch completion")
+        DispatchQueue.main.async {
+            self.UIRecordSet += records
+        }
+    }
+    
+    
+    private func fetchRecordBlock(startDate: Date?, qualityOfService: QualityOfService, blockCompletionFunction: @escaping ([ActivityRecord]) -> ()) {
+        
+
         refreshList = []
-        let pred = NSPredicate(value: true)
-        let sort = NSSortDescriptor(key: "creationDate", ascending: false)
+        fetching = true
+        fetchComplete = false
+        
+        var pred = NSPredicate(value: true)
+        if startDate != nil {
+            pred = NSPredicate(format: "startDateLocal < %@", startDate! as CVarArg)
+        }
+        let sort = NSSortDescriptor(key: "startDateLocal", ascending: false)
         let query = CKQuery(recordType: "activity", predicate: pred)
         query.sortDescriptors = [sort]
 
@@ -329,23 +471,20 @@ class DataCache: NSObject, Codable, ObservableObject {
                                  "maxHeartRate", "maxCadence", "maxPower", "maxSpeed",
                                  "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit", "mapSnapshot" ]
         operation.resultsLimit = cacheSize
-// FIX?        operation.configuration.timeoutIntervalForRequest = 30
+        operation.qualityOfService = qualityOfService
 
 
         operation.recordMatchedBlock = { recordID, result in
             switch result {
             case .success(let record):
-                // TODO: Do something with the record that was received.
-                let myRecord = ActivityRecord(fromCKRecord: record, settingsManager: self.settingsManager)
+                let newActivityRecord = ActivityRecord(fromCKRecord: record, settingsManager: self.settingsManager)
 
                 DispatchQueue.main.async {
-//                    self.logger.debug("Adding to cache : \(myRecord)")
-                    self.refreshList.append(myRecord)
+                    self.refreshList.append(newActivityRecord)
                 }
                 break
                 
             case .failure(let error):
-                // TODO: Handle per-record failure, perhaps retry fetching it manually in case an asset failed to download or something like that.
                 self.logger.error( "Fetch failed \(String(describing: error))")
                 
                 break
@@ -354,23 +493,20 @@ class DataCache: NSObject, Codable, ObservableObject {
             
         operation.queryResultBlock = { result in
 
+            DispatchQueue.main.async {
+                self.fetching = false
+            }
+
             switch result {
             case .success:
-/*
-                for record in self.refreshList {
-                    self.logger.debug( "\(record.description())" )
-                }
-*/
-                // copy temporary array to main array and write to local cache
-                // only if no unsaved / undeleted items in local cache otherwise cloud view is out of date!
-                DispatchQueue.main.async {
-                    if !self.dirty() {
-                        self.activities = self.refreshList
-                        _ = self.write()
+
+                if self.refreshList.count < self.cacheSize {
+                    DispatchQueue.main.async {
+                        self.fetchComplete = true
                     }
                 }
-
-
+                blockCompletionFunction(self.refreshList)
+                
                 break
                     
             case .failure(let error):
@@ -383,8 +519,8 @@ class DataCache: NSObject, Codable, ObservableObject {
                     CKError.zoneBusy:
 //                    CKError.notAuthenticated: //REMOVE!!
                     
-                    self.logger.log("temporary refresh error - set up retry")
-                        self.startDeferredRefresh()
+                    self.logger.log("temporary refresh error")
+
                     
                 default:
                     self.logger.error("permanent refresh error - not retrying")
@@ -399,88 +535,7 @@ class DataCache: NSObject, Codable, ObservableObject {
 
     }
 
-    func startDeferredRefresh() {
-        let deferredTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(refresh), userInfo: nil, repeats: false)
-        deferredTimer.tolerance = 5
-    }
-
     
-    
-    func CKDelete(recordID: CKRecord.ID) {
-        
-        self.logger.log("deleting \(recordID)")
-        
-        database.delete(withRecordID: recordID) { (ckRecordID, error) in
-            
-            if let error = error {
-                self.logger.error("\(error.localizedDescription)")
-                
-                switch error {
-                case CKError.unknownItem:
-                    self.logger.debug("item being deleted had not been saved")
-                    self.remove(recordID: recordID)
-                    return
-                default:
-                    return
-                }
-                
-            }
-            
-            guard let id = ckRecordID else {
-                return
-            }
-            
-            self.logger.log("deleted and removed \(id)")
-            self.remove(recordID: recordID)
-            
-        }
-    }
-
-    func CKSave(activityRecord: ActivityRecord) {
-
-        let CKRecord = activityRecord.asCKRecord()
-        logger.log("saving \(activityRecord.recordID!)")
-
-        database.save(CKRecord) { record, error in
-            DispatchQueue.main.async {
-                if let error = error {
-                    switch error {
-                    case CKError.accountTemporarilyUnavailable,
-                        CKError.networkFailure,
-                        CKError.networkUnavailable,
-                        CKError.serviceUnavailable,
-                        CKError.zoneBusy:
-                        
-                        self.logger.log("temporary error")
-                    
-                    case CKError.serverRecordChanged:
-                        // Record already exists- shouldn't happen, but!
-                        self.logger.error("record already exists!")
-                        activityRecord.deleteTrackRecord()
-                        activityRecord.setToSave(false)
-
-                        _ = self.write()
-                        
-                    default:
-                        self.logger.error("permanent error")
-
-                    }
-                    
-                    self.logger.error("\(error.localizedDescription)")
-
-                } else {
-                    self.logger.log("Saved")
-
-                    activityRecord.deleteTrackRecord()
-                    activityRecord.setToSave(false)
-                    
-                    _ = self.write()
-                }
-            }
-        }
-        
-    }
-
     func CKForceUpdate(activityCKRecord: CKRecord, completionFunction: @escaping (CKRecord?) -> Void) {
         logger.log("updating \(activityCKRecord.recordID)")
         
@@ -514,47 +569,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             }
         }
     }
-
-    
-    func startSynchTimer() {
-        if self.synchTimer == nil {
-            self.synchTimer = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(synch), userInfo: nil, repeats: true)
-            self.synchTimer!.tolerance = 5
-            logger.log("Starting synch timer")
-        }
-    }
-    
-    func stopSynchTimer() {
-        
-        DispatchQueue.main.async {
-            if self.synchTimer != nil {
-                self.synchTimer!.invalidate()
-                self.synchTimer = nil
-                self.logger.log("Stopping synch timer")
-            }
-        }
-    }
-    
-    @objc func synch() {
-        
-        if !dirty() {
-            stopSynchTimer()
-            return
-        }
-        
-        if toBeDeleted().count > 0 {
-            CKDelete(recordID: toBeDeleted()[0].recordID)
-            return
-        }
-        
-        if toBeSaved().count > 0 {
-            CKSave(activityRecord: toBeSaved()[0])
-        }
-        
-        
-        
-    }
-
+   
     
     func fetchRecord(recordID: CKRecord.ID,
                      completionFunction: @escaping (ActivityRecord) -> (),
@@ -631,5 +646,178 @@ class DataCache: NSObject, Codable, ObservableObject {
     
 
     
+    func saveAndDeleteRecord(recordsToSave: [CKRecord],
+                             recordIDsToDelete: [CKRecord.ID]) {
 
+        self.logger.log("Saving records: \(recordsToSave.map( {$0.recordID} ))")
+        self.logger.log("Deleting records: \(recordIDsToDelete)")
+
+
+        let modifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: recordsToSave, recordIDsToDelete: recordIDsToDelete)
+        modifyRecordsOperation.qualityOfService = .utility
+        modifyRecordsOperation.isAtomic = false
+        
+        // recordFetched is a function that gets called for each record retrieved
+        modifyRecordsOperation.perRecordSaveBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
+            switch result {
+            case .success(let record):
+                // populate displayActivityRecord - NOTE tcx asset was fetched, so will parse entire track record
+                
+                guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
+                self.logger.log("Saved")
+                
+                savedActivityRecord.deleteTrackRecord()
+                savedActivityRecord.setToSave(false)
+                
+                _ = self.write()
+                
+                break
+                
+            case .failure(let error):
+
+                switch error {
+                case CKError.accountTemporarilyUnavailable,
+                    CKError.networkFailure,
+                    CKError.networkUnavailable,
+                    CKError.serviceUnavailable,
+                    CKError.zoneBusy:
+                    
+                    self.logger.log("temporary error")
+                    
+                case CKError.serverRecordChanged:
+                    // Record already exists- shouldn't happen, but!
+                    self.logger.error("record already exists!")
+                    guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
+                    savedActivityRecord.deleteTrackRecord()
+                    savedActivityRecord.setToSave(false)
+                    
+                    _ = self.write()
+                    
+                default:
+                    self.logger.error("permanent error")
+                    
+                }
+                
+                self.logger.error("Save failed with error : \(error.localizedDescription)")
+                
+                break
+            }
+
+        }
+        
+        modifyRecordsOperation.perRecordDeleteBlock = { (recordID: CKRecord.ID, result: Result<Void, any Error>) in
+            switch result {
+            case .success:
+                self.logger.log("deleted and removed \(recordID)")
+                self.removeFromCache(recordID: recordID)
+                
+                break
+                
+            case .failure(let error):
+                switch error {
+                case CKError.unknownItem:
+                    self.logger.debug("item being deleted had not been saved")
+                    self.removeFromCache(recordID: recordID)
+                    return
+                default:
+                    self.logger.error("Deletion failed with error : \(error.localizedDescription)")
+                    return
+                }
+            }
+        }
+            
+        modifyRecordsOperation.modifyRecordsResultBlock = { (operationResult : Result<Void, any Error>) in
+        
+            switch operationResult {
+            case .success:
+                self.logger.info("Record modify completed")
+
+                break
+                
+            case .failure(let error):
+                self.logger.error( "modify failed \(String(describing: error))")
+
+                break
+            }
+
+        }
+        
+        self.database.add(modifyRecordsOperation)
+
+    }
+    
+    
+    func fetchAllRecordIDs(recordCompletionFunction: @escaping (CKRecord.ID) -> ()) {
+               
+        var pred = NSPredicate(value: true)
+        var minStartDate: Date? = nil
+        var recordCount: Int = 0
+        let sort = NSSortDescriptor(key: "startDateLocal", ascending: false)
+        let query = CKQuery(recordType: "activity", predicate: pred)
+        query.sortDescriptors = [sort]
+
+        let operation = CKQueryOperation(query: query)
+
+        operation.desiredKeys = ["name", "startDateLocal"]
+        operation.qualityOfService = .userInitiated
+        operation.resultsLimit = 200
+
+
+        operation.recordMatchedBlock = { recordID, result in
+            switch result {
+            case .success(let record):
+                recordCompletionFunction(recordID)
+                recordCount += 1
+                let startDate: Date = record["startDateLocal"]  ?? Date() as Date
+                if minStartDate == nil {
+                    minStartDate = startDate
+                } else {
+                    minStartDate = min(startDate, minStartDate!)
+                }
+                
+                break
+                
+            case .failure(let error):
+                self.logger.error( "Fetch failed for recordID \(recordID) : \(String(describing: error))")
+                
+                break
+            }
+        }
+            
+        operation.queryResultBlock = { result in
+
+            switch result {
+            case .success:
+
+                self.logger.info("Record fetch successfully complete : record count \(recordCount) : min date \(minStartDate!.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))")
+                
+                break
+                    
+            case .failure(let error):
+
+                switch error {
+                case CKError.accountTemporarilyUnavailable,
+                    CKError.networkFailure,
+                    CKError.networkUnavailable,
+                    CKError.serviceUnavailable,
+                    CKError.zoneBusy:
+                    
+                    self.logger.log("temporary refresh error")
+
+                    
+                default:
+                    self.logger.error("permanent refresh error - not retrying")
+                }
+                self.logger.error( "Fetch failed \(String(describing: error))")
+                break
+            }
+
+        }
+        
+        database.add(operation)
+
+    }
+
+    
+ 
 }

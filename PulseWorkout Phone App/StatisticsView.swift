@@ -59,6 +59,12 @@ struct StatisticsView: View {
     var body: some View {
         VStack {
             ActivityHistoryHeaderView()
+            Spacer()
+            Button("Migrate...") {
+                print("Perform migration")
+                let migrationManager = MigrationManager(dataCache: dataCache)
+                migrationManager.createRecordZone()
+            }
  
             Spacer()
             SwipeButton(swipeText: "Swipe to go Home",

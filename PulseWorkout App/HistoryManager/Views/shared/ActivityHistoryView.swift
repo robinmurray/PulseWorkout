@@ -12,6 +12,7 @@ struct ActivityHistoryView: View {
     
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var dataCache: DataCache
+
     
     enum NavigationTarget {
         case ActivityDetailView
@@ -61,6 +62,15 @@ struct ActivityHistoryView: View {
                 }
 
             }
+            if !dataCache.fetching && !dataCache.fetchComplete {
+              ProgressView()
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .foregroundColor(.black)
+                .foregroundColor(.red)
+                .onAppear {
+                    dataCache.fetchNextBlock()
+                }
+            }
         }
         #if os (iOS)
         .listStyle(.grouped)
@@ -92,9 +102,9 @@ struct ActivityHistoryView: View {
             }
         }
     #endif
-
-    
-
+        .refreshable {
+            dataCache.refreshUI()
+        }
 
     }
 }

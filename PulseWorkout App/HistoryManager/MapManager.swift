@@ -62,8 +62,8 @@ extension ActivityRecord {
         
         guard let snapshotAsset = ar["mapSnapshot"] as CKAsset? else { return }
 
-        mapSnapshotURL = snapshotAsset.fileURL
-        logger.log("Snaphot URL set")
+//        mapSnapshotURL = snapshotAsset.fileURL
+        logger.log("Snapshot URL set")
         deleteSnapshotFile()
     }
     
@@ -90,24 +90,28 @@ extension ActivityRecord {
 
         // check if snapshot already exists
         if mapSnapshotImage != nil {
+            logger.info("Snapshot already exists \(self.name) : \(self.startDateLocal)")
             return
         }
         
         if mapSnapshotURL != nil {
-            logger.info("Getting image from cached URL")
+            logger.info("Getting image from cached URL for \(self.name) : \(self.startDateLocal)")
             if let data = try? Data(contentsOf: mapSnapshotURL! ),
                let image = UIImage(data: data) {
                 mapSnapshotImage = image
-                logger.info("got image from cached URL")
+                logger.info("got image from cached URL for \(self.name) : \(self.startDateLocal) with URL \(self.mapSnapshotURL!.absoluteString)")
                 return
             }
+            logger.info("Failed to get image from cached URL for \(self.name) : \(self.startDateLocal) with URL \(self.mapSnapshotURL!.absoluteString)")
             
         }
         // check if map snapshot already created and available as URL from cloudkit
         if mapSnapshotAsset != nil {
+            logger.info("Trying to get image from existing mapSnapshotAsset for \(self.name) : \(self.startDateLocal)")
             if let mapSnapshotURL = mapSnapshotAsset?.fileURL,
                let data = try? Data(contentsOf: mapSnapshotURL ),
                let image = UIImage(data: data) {
+                logger.info("Got image from existing mapSnapshotAsset for \(self.name) : \(self.startDateLocal)")
                 mapSnapshotImage = image
                 return
             }
@@ -115,6 +119,7 @@ extension ActivityRecord {
         
         // if trackpoints already exist then create snapshot, else fetch trackpoints and then create snapshot
         if trackPoints.count > 0 {
+            logger.info("Building image from existing trackpoints for \(self.name) : \(self.startDateLocal)")
             setMapSnapshot(fromActivityRecord: self)
         }
         else {

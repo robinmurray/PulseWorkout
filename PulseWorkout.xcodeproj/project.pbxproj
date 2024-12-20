@@ -31,6 +31,8 @@
 		E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41281682BBD4CCF00996E1C /* MapRouteView.swift */; };
 		E41501172D06196500C09200 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E41501182D06196500C09200 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
+		E415011A2D07763C00C09200 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41501192D07763C00C09200 /* AppDelegate.swift */; };
+		E415011C2D07763C00C09200 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41501192D07763C00C09200 /* AppDelegate.swift */; };
 		E41CFBA72AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */; };
 		E420D7862B03D55300C0D7B2 /* LocationNotAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */; };
 		E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */; };
@@ -86,6 +88,8 @@
 		E46EF0CA2955F615006FA603 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C92955F615006FA603 /* LiveActivityManager.swift */; };
 		E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
 		E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */; };
+		E492BFE52D15B7610050B6E8 /* DCNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492BFE42D15B7600050B6E8 /* DCNotificationManager.swift */; };
+		E492BFE62D15B7610050B6E8 /* DCNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492BFE42D15B7600050B6E8 /* DCNotificationManager.swift */; };
 		E4941E422CD29F8A0063421F /* WatchAsDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */; };
 		E4941E432CD29F920063421F /* CloudConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F32AAF6D1600E07749 /* CloudConnectionsView.swift */; };
 		E4941E452CD29FB30063421F /* BTContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5029C49744008DB769 /* BTContentView.swift */; };
@@ -115,6 +119,10 @@
 		E4A0839729AA18E7007B50D3 /* BTDiscoveredDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */; };
 		E4A333B62CC01EE900995AC4 /* ActivityChartsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A333B52CC01EE900995AC4 /* ActivityChartsController.swift */; };
 		E4A333B82CC15DA500995AC4 /* FetchFailedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A333B72CC15DA500995AC4 /* FetchFailedView.swift */; };
+		E4A372FB2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
+		E4A372FC2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
+		E4A372FD2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
+		E4A372FE2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
 		E4B5CEA82D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEA92D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */; };
@@ -203,6 +211,7 @@
 		E40F886A2AA5D31400E00F25 /* SimpleXML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleXML.swift; sourceTree = "<group>"; };
 		E41281662BB33A5300996E1C /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		E41281682BBD4CCF00996E1C /* MapRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRouteView.swift; sourceTree = "<group>"; };
+		E41501192D07763C00C09200 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricCarouselItem.swift; sourceTree = "<group>"; };
 		E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationNotAuthView.swift; sourceTree = "<group>"; };
 		E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceDiscoverView.swift; sourceTree = "<group>"; };
@@ -253,6 +262,7 @@
 		E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "PulseWorkout-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElapsedTimeView.swift; sourceTree = "<group>"; };
+		E492BFE42D15B7600050B6E8 /* DCNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCNotificationManager.swift; sourceTree = "<group>"; };
 		E4941E512CD3EAB80063421F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E4941E5C2CD4BC5B0063421F /* AutoPauseSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoPauseSettingsView.swift; sourceTree = "<group>"; };
 		E4941E5E2CD4CAA90063421F /* AverageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AverageSettingsView.swift; sourceTree = "<group>"; };
@@ -267,6 +277,7 @@
 		E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDiscoveredDeviceView.swift; sourceTree = "<group>"; };
 		E4A333B52CC01EE900995AC4 /* ActivityChartsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityChartsController.swift; sourceTree = "<group>"; };
 		E4A333B72CC15DA500995AC4 /* FetchFailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchFailedView.swift; sourceTree = "<group>"; };
+		E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationManager.swift; sourceTree = "<group>"; };
 		E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattersTest.swift; sourceTree = "<group>"; };
 		E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCache.swift; sourceTree = "<group>"; };
@@ -447,6 +458,8 @@
 			children = (
 				E423138B2CF9D1BA00E6F4FB /* Controls */,
 				E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */,
+				E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */,
+				E41501192D07763C00C09200 /* AppDelegate.swift */,
 				E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */,
 				E42313722CF752E100E6F4FB /* SwipeButton.swift */,
 				E4C11F5629CCC91F008DB769 /* BluetoothManager */,
@@ -617,6 +630,7 @@
 				E4BAA2402B1C7D560053C065 /* ActivityRecord.swift */,
 				E40F886A2AA5D31400E00F25 /* SimpleXML.swift */,
 				E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */,
+				E492BFE42D15B7600050B6E8 /* DCNotificationManager.swift */,
 				E4CC66AE2CDBE1A600AA2F9E /* MapManager.swift */,
 				E4941E7A2CD7F2710063421F /* Views */,
 			);
@@ -1042,8 +1056,10 @@
 				E4941E4E2CD2A10B0063421F /* BTDiscoveredDeviceView.swift in Sources */,
 				E4941E452CD29FB30063421F /* BTContentView.swift in Sources */,
 				E45E3F142CEB9BED001D58B3 /* LiveMetricsView.swift in Sources */,
+				E415011C2D07763C00C09200 /* AppDelegate.swift in Sources */,
 				E45E3F052CE7B91E001D58B3 /* ActivityListItemExtensionView.swift in Sources */,
 				E4941E422CD29F8A0063421F /* WatchAsDeviceView.swift in Sources */,
+				E492BFE52D15B7610050B6E8 /* DCNotificationManager.swift in Sources */,
 				E4094BB52CD0C6D200915CCB /* ActivityRecord.swift in Sources */,
 				E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */,
 				E4941E532CD3EAB80063421F /* SettingsView.swift in Sources */,
@@ -1088,6 +1104,7 @@
 				E4941E832CD7F4830063421F /* ActivityDetailView.swift in Sources */,
 				E4941E492CD2A0CF0063421F /* BTStartDiscoverView.swift in Sources */,
 				E45E3F6A2CEDE2BA001D58B3 /* ActivitySaveView.swift in Sources */,
+				E4A372FC2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
 				E4B5CEA92D02E0AC0094CA4F /* Formatters.swift in Sources */,
 				E4941E622CD4CD2E0063421F /* CyclingPowerSettingsView.swift in Sources */,
 			);
@@ -1097,6 +1114,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E415011A2D07763C00C09200 /* AppDelegate.swift in Sources */,
+				E4A372FB2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
 				E41501182D06196500C09200 /* Formatters.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1142,6 +1161,7 @@
 				E4C25BAE2A4F55FB002F315D /* ActivityListItemView.swift in Sources */,
 				E406C7C32C667EDA0015C4F3 /* GeneralUtilities.swift in Sources */,
 				E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */,
+				E492BFE62D15B7610050B6E8 /* DCNotificationManager.swift in Sources */,
 				E4D41B312C8A230F0014C1D9 /* LiveMetricsCarouselView.swift in Sources */,
 				E46EF0B429537D63006FA603 /* LiveTabView.swift in Sources */,
 				E4BAA2412B1C7D560053C065 /* ActivityRecord.swift in Sources */,
@@ -1172,6 +1192,7 @@
 				E4C25BB02A4F562B002F315D /* ActivityDetailView.swift in Sources */,
 				E4CC66A72CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */,
 				E46121F82AB1A0AD00E07749 /* LocationManager.swift in Sources */,
+				E4A372FD2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
 				E4E4DFEE29E88A6200979AA2 /* ProfileListItemView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1185,6 +1206,7 @@
 				E406C7C52C667F6F0015C4F3 /* GeneralUtilitiesTest.swift in Sources */,
 				E46EF09529537CA3006FA603 /* PulseWorkout_Watch_AppTests.swift in Sources */,
 				E40306812B1F1D7900658A80 /* ActivityRecordTest.swift in Sources */,
+				E4A372FE2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
 				E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
