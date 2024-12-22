@@ -7,15 +7,17 @@
 
 import Foundation
 import CloudKit
+import UIKit
+
 
 /// Extension of datacache to manage subscriptions and notifications
 extension DataCache {
     
-    
+    /// Function to create a query subscription - NOT CURRENTLY USED!!
     func createQuerySubscription() {
         // Only proceed if you need to create the subscription.
- //       guard !UserDefaults.standard.bool(forKey: "didCreateActivitySubscription")
- //           else { return }
+        guard !UserDefaults.standard.bool(forKey: "didCreateActivityQuerySubscription")
+            else { return }
                         
         // Define a predicate that matches records with a tags field
         // that contains the word 'Swift'.
@@ -52,12 +54,12 @@ extension DataCache {
             case .success:
                 // Record that the system successfully creates the subscription
                 // to prevent unnecessary trips to the server in later launches.
-                UserDefaults.standard.setValue(true, forKey: "didCreateActivitySubscription")
-                self.logger.info("Subscription created!")
+                UserDefaults.standard.setValue(true, forKey: "didCreateActivityQuerySubscription")
+                self.logger.info("Query subscription created!")
                 break
                 
             case .failure(let error):
-                self.logger.error( "Subscription creation failed with error: \(String(describing: error))")
+                self.logger.error( "Query subscription creation failed with error: \(String(describing: error))")
                 break
             }
         }
@@ -68,6 +70,7 @@ extension DataCache {
     }
     
     
+    /// Set up database change subscription for acivity records
     func createSubscription() {
         
         // Only proceed if the subscription doesn't already exist.
@@ -115,8 +118,37 @@ extension DataCache {
     }
 
 
+    private func writeServerChangeToken(token: CKServerChangeToken) {
+
+        do {
+            let changeTokenData = try NSKeyedArchiver.archivedData(withRootObject: token as Any, requiringSecureCoding: true)
+            UserDefaults.standard.set(changeTokenData, forKey: serverChangeTokenKey)
+        } catch {
+            logger.error("Failed to archive change token \(error.localizedDescription)")
+        }
+        
+    }
     
-    public func handleNotification() {
+    private func readServerChangeToken() -> CKServerChangeToken? {
+        
+        let changeTokenData = UserDefaults.standard.data(forKey: serverChangeTokenKey)
+        
+        if changeTokenData != nil {
+            do {
+                let changeToken = try NSKeyedUnarchiver.unarchivedObject(ofClass: CKServerChangeToken.self, from: changeTokenData!)
+                logger.info("last change token retrieved")
+                return changeToken
+            } catch {
+                logger.error("Error unarchiving change token \(error.localizedDescription)")
+                return nil
+            }
+            
+        }
+        return nil
+    }
+    
+    
+    public func handleNotification(completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         // Create a dictionary that maps a record zone ID to its
         // corresponding zone configuration. The configuration
         // contains the server change token from the most recent
@@ -125,17 +157,24 @@ extension DataCache {
         
         // Use the ChangeToken to fetch only whatever changes have occurred since the last
         // time we asked, since intermediate push notifications might have been dropped.
-        let serverChangeTokenKey = "ckServerChangeToken"
-        var changeToken: CKServerChangeToken? = nil
+        
+        let changeToken: CKServerChangeToken? = readServerChangeToken()
+        /*
         let changeTokenData = UserDefaults.standard.data(forKey: serverChangeTokenKey)
         
         if changeTokenData != nil {
-            changeToken = NSKeyedUnarchiver.unarchiveObject(with: changeTokenData!) as! CKServerChangeToken?
+            do {
+                try changeToken = NSKeyedUnarchiver.unarchivedObject(ofClass: CKServerChangeToken.self, from: changeTokenData!)
+                logger.info("last change token retrieved")
+            } catch {
+                logger.error("Error unarchiving change token \(error.localizedDescription)")
+            }
+            
         }
-        
+        */
         let config = CKFetchRecordZoneChangesOperation.ZoneConfiguration()
         config.previousServerChangeToken = changeToken
-        var configurations: [CKRecordZone.ID: CKFetchRecordZoneChangesOperation.ZoneConfiguration] = [zoneID: config]
+        let configurations: [CKRecordZone.ID: CKFetchRecordZoneChangesOperation.ZoneConfiguration] = [zoneID: config]
         
         logger.log("Handle Notification changeToken \(changeToken)")
         // Create a fetch operation with an array of record zone IDs
@@ -173,30 +212,56 @@ extension DataCache {
         
         // Cache the change tokens that CloudKit provides as
         // the operation runs.
-        operation.recordZoneChangeTokensUpdatedBlock = { recordZoneID, token, _ in
+        operation.recordZoneChangeTokensUpdatedBlock = { recordZoneID, serverChangeToken, _ in
             
             self.logger.log("zone changed ID = \(recordZoneID)")
             if recordZoneID == self.zoneID {
-                let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: token)
-                UserDefaults.standard.set(changeTokenData, forKey: serverChangeTokenKey)
+                self.writeServerChangeToken(token: serverChangeToken!)
             }
             
         }
         
+        operation.recordZoneFetchResultBlock = {(recordZoneID: CKRecordZone.ID,
+                                                 fetchChangesResult: Result<(serverChangeToken: CKServerChangeToken,
+                                                                               clientChangeTokenData: Data?,
+                                                                               moreComing: Bool), any Error>) in
+            switch fetchChangesResult {
+                
+            case .failure(let error):
+                self.logger.error("Error in recordZoneFetchResultBlock \(error.localizedDescription)")
+                completionHandler(UIBackgroundFetchResult.noData)
+                
+            case .success(let (serverChangeToken, _, _) ):
+                
+                if recordZoneID == self.zoneID {
+                    self.logger.info("Record Zone Change Completed for zone \(recordZoneID)")
+
+                    self.writeServerChangeToken(token: serverChangeToken)
+                }
+                completionHandler(UIBackgroundFetchResult.newData)
+                
+            }
+            
+        }
         
+
+/*
         // If the fetch for the current record zone completes
         // successfully, cache the final change token.
         operation.recordZoneFetchCompletionBlock = { recordZoneID, token, _, _, error in
             if let error = error {
                 self.logger.error("Error in recordZoneFetchCompletionBlock \(error.localizedDescription)")
+                completionHandler(UIBackgroundFetchResult.noData)
             } else {
                 if recordZoneID == self.zoneID {
-                    let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: token)
+                    self.logger.info("Record Zone Change Completed for zone \(recordZoneID)")
+                    let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: token as Any)
                     UserDefaults.standard.set(changeTokenData, forKey: serverChangeTokenKey)
                 }
+                completionHandler(UIBackgroundFetchResult.newData)
             }
         }
-        
+*/
         
         // Set an appropriate QoS and add the operation to the shared
         // database's operation queue to execute it.
@@ -215,7 +280,14 @@ extension DataCache {
 
     
     private func processRecordChangeNofification(record: CKRecord) {
-        logger.log("Processing record change: \(record)")
+        let recordDesc: String = record["name"] ?? "" + " : " + (record["startDateLocal"] as! Date).formatted(Date.ISO8601FormatStyle())
+        logger.log("Processing record change: \(recordDesc)")
+        
+        let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: settingsManager)
+        
+        changeCache(changedActivityRecord: activityRecord)
+        changeUI(changedActivityRecord: activityRecord)
+        
     }
     
 

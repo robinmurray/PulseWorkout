@@ -84,6 +84,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     var settingsManager: SettingsManager!
     
+    let serverChangeTokenKey = "ckServerChangeToken"
     let containerName: String = "iCloud.MurrayNet.Aleph"
     static var zoneName: String = "Aleph_Zone"
     
@@ -133,7 +134,7 @@ class DataCache: NSObject, Codable, ObservableObject {
   */
 
         // Create subscription for record change notifications
-        createQuerySubscription()
+        createSubscription()
         
         if readCache {
             _ = read()
@@ -231,12 +232,20 @@ class DataCache: NSObject, Codable, ObservableObject {
         
     }
     
+    private func UIIndex(recordID: CKRecord.ID) -> Int? {
+        
+        return UIRecordSet.firstIndex(where: { $0.recordName == recordID.recordName })
+        
+    }
+    
     /// Remove record from UI
     func removeFromUI(recordID: CKRecord.ID) {
         
-        guard let index = UIRecordSet.firstIndex(where: { $0.recordName == recordID.recordName }) else {return}
+        guard let index = UIIndex(recordID: recordID) else {return}
         
-        UIRecordSet.remove(at: index)
+        DispatchQueue.main.async {
+            self.UIRecordSet.remove(at: index)
+        }
     }
     
     
@@ -276,6 +285,85 @@ class DataCache: NSObject, Codable, ObservableObject {
     }
     
 
+    /// Change cache with changedActivityRecord.
+    /// If changedActivityRecord in cache, the replace with the new record.
+    /// If changedActivityRecord not in cache, then add to cache if it is the date range.
+    func changeCache(changedActivityRecord: ActivityRecord) {
+        
+        if let index = cachedIndex(recordID: changedActivityRecord.recordID) {
+            // changedActivityRecord exists in cache
+            
+            // Remove activityRecord from cache
+            activities.remove(at: index)
+            
+            // Replace with changedActivityRecord
+            activities.insert(changedActivityRecord, at: index)
+            
+            logger.info("Updated cache record at index \(index)")
+            
+            _ = write()
+            
+        } else {
+            // changedActivityRecord does not exist in cache
+            // add to cache if startDateLocal in appropriate range
+            if let index = activities.firstIndex(where: {$0.startDateLocal < changedActivityRecord.startDateLocal}) {
+                activities.insert(changedActivityRecord, at: index)
+                
+                if activities.count > cacheSize {
+                    activities.removeLast()
+                }
+                
+                logger.info("Inserted new cache record at index \(index)")
+                
+                _ = write()
+            }
+        }
+    }
+    
+    
+    /// Change UIRecordSet with changedActivityRecord.
+    /// If changedActivityRecord in UIRecordSet, the replace with the new record.
+    /// If changedActivityRecord not in UIRecordSet, then add to UIRecordSet if it is the date range.
+    func changeUI(changedActivityRecord: ActivityRecord) {
+        
+        // UIRecordSet is published variable, so has to be changed in main async thread
+        DispatchQueue.main.async {
+            if let index = self.UIIndex(recordID: changedActivityRecord.recordID) {
+                // changedActivityRecord exists in UIRecordSet
+                
+                // Remove activityRecord from UIRecordSet
+                self.UIRecordSet.remove(at: index)
+                
+                // Replace with changedActivityRecord
+                self.UIRecordSet.insert(changedActivityRecord, at: index)
+                
+                self.logger.info("Updated UI record at index \(index)")
+
+                
+            } else {
+                // changedActivityRecord does not exist in UIRecordSet
+                // add to UIRecordSet if startDateLocal in appropriate range
+                if let index = self.UIRecordSet.firstIndex(where: {$0.startDateLocal < changedActivityRecord.startDateLocal}) {
+                    
+                    let recordDesc: String = self.UIRecordSet[index].name  + " : " + changedActivityRecord.startDateLocal.formatted(Date.ISO8601FormatStyle())
+                    
+                    let newRecordDesc: String = changedActivityRecord.name + " : " + changedActivityRecord.startDateLocal.formatted(Date.ISO8601FormatStyle())
+                    
+                    self.logger.info("found startDateLocal = \(recordDesc)")
+                    self.logger.info("Inserting before with : \(newRecordDesc)")
+                     
+                    self.UIRecordSet.insert(changedActivityRecord, at: index)
+                    
+                    
+                    self.logger.info("Inserted new UIRecordSet record at index \(index)")
+
+                }
+            }
+        }
+
+    }
+    
+    
     /// Returns list of to-be-saved activity records
     private func toBeSaved() -> [ActivityRecord] {
         
@@ -660,7 +748,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         // recordFetched is a function that gets called for each record retrieved
         modifyRecordsOperation.perRecordSaveBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
             switch result {
-            case .success(let record):
+            case .success:
                 // populate displayActivityRecord - NOTE tcx asset was fetched, so will parse entire track record
                 
                 guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
@@ -749,7 +837,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     func fetchAllRecordIDs(recordCompletionFunction: @escaping (CKRecord.ID) -> ()) {
                
-        var pred = NSPredicate(value: true)
+        let pred = NSPredicate(value: true)
         var minStartDate: Date? = nil
         var recordCount: Int = 0
         let sort = NSSortDescriptor(key: "startDateLocal", ascending: false)

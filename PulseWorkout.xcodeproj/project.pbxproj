@@ -31,8 +31,6 @@
 		E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41281682BBD4CCF00996E1C /* MapRouteView.swift */; };
 		E41501172D06196500C09200 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E41501182D06196500C09200 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
-		E415011A2D07763C00C09200 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41501192D07763C00C09200 /* AppDelegate.swift */; };
-		E415011C2D07763C00C09200 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41501192D07763C00C09200 /* AppDelegate.swift */; };
 		E41CFBA72AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */; };
 		E420D7862B03D55300C0D7B2 /* LocationNotAuthView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */; };
 		E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */; };
@@ -211,7 +209,6 @@
 		E40F886A2AA5D31400E00F25 /* SimpleXML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleXML.swift; sourceTree = "<group>"; };
 		E41281662BB33A5300996E1C /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		E41281682BBD4CCF00996E1C /* MapRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRouteView.swift; sourceTree = "<group>"; };
-		E41501192D07763C00C09200 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricCarouselItem.swift; sourceTree = "<group>"; };
 		E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationNotAuthView.swift; sourceTree = "<group>"; };
 		E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceDiscoverView.swift; sourceTree = "<group>"; };
@@ -307,10 +304,17 @@
 			);
 			target = E46EF07D29537CA1006FA603 /* PulseWorkout Watch App */;
 		};
+		E492BFE72D1809660050B6E8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				AppDelegate.swift,
+			);
+			target = E4094B992CD0C22A00915CCB /* PulseWorkout Phone AppTests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		E4094B8C2CD0C22800915CCB /* PulseWorkout Phone App */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (E45E3F0B2CEB99AF001D58B3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "PulseWorkout Phone App"; sourceTree = "<group>"; };
+		E4094B8C2CD0C22800915CCB /* PulseWorkout Phone App */ = {isa = PBXFileSystemSynchronizedRootGroup; exceptions = (E45E3F0B2CEB99AF001D58B3 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, E492BFE72D1809660050B6E8 /* PBXFileSystemSynchronizedBuildFileExceptionSet */, ); explicitFileTypes = {}; explicitFolders = (); path = "PulseWorkout Phone App"; sourceTree = "<group>"; };
 		E4094B9D2CD0C22A00915CCB /* PulseWorkout Phone AppTests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "PulseWorkout Phone AppTests"; sourceTree = "<group>"; };
 		E4094BA72CD0C22B00915CCB /* PulseWorkout Phone AppUITests */ = {isa = PBXFileSystemSynchronizedRootGroup; explicitFileTypes = {}; explicitFolders = (); path = "PulseWorkout Phone AppUITests"; sourceTree = "<group>"; };
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -459,7 +463,6 @@
 				E423138B2CF9D1BA00E6F4FB /* Controls */,
 				E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */,
 				E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */,
-				E41501192D07763C00C09200 /* AppDelegate.swift */,
 				E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */,
 				E42313722CF752E100E6F4FB /* SwipeButton.swift */,
 				E4C11F5629CCC91F008DB769 /* BluetoothManager */,
@@ -1056,7 +1059,6 @@
 				E4941E4E2CD2A10B0063421F /* BTDiscoveredDeviceView.swift in Sources */,
 				E4941E452CD29FB30063421F /* BTContentView.swift in Sources */,
 				E45E3F142CEB9BED001D58B3 /* LiveMetricsView.swift in Sources */,
-				E415011C2D07763C00C09200 /* AppDelegate.swift in Sources */,
 				E45E3F052CE7B91E001D58B3 /* ActivityListItemExtensionView.swift in Sources */,
 				E4941E422CD29F8A0063421F /* WatchAsDeviceView.swift in Sources */,
 				E492BFE52D15B7610050B6E8 /* DCNotificationManager.swift in Sources */,
@@ -1114,7 +1116,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E415011A2D07763C00C09200 /* AppDelegate.swift in Sources */,
 				E4A372FB2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
 				E41501182D06196500C09200 /* Formatters.swift in Sources */,
 			);
