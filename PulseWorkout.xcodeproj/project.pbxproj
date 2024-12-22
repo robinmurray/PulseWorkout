@@ -88,6 +88,7 @@
 		E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */; };
 		E492BFE52D15B7610050B6E8 /* DCNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492BFE42D15B7600050B6E8 /* DCNotificationManager.swift */; };
 		E492BFE62D15B7610050B6E8 /* DCNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492BFE42D15B7600050B6E8 /* DCNotificationManager.swift */; };
+		E492BFE92D1835530050B6E8 /* WatchAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */; };
 		E4941E422CD29F8A0063421F /* WatchAsDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */; };
 		E4941E432CD29F920063421F /* CloudConnectionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F32AAF6D1600E07749 /* CloudConnectionsView.swift */; };
 		E4941E452CD29FB30063421F /* BTContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5029C49744008DB769 /* BTContentView.swift */; };
@@ -260,6 +261,7 @@
 		E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElapsedTimeView.swift; sourceTree = "<group>"; };
 		E492BFE42D15B7600050B6E8 /* DCNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCNotificationManager.swift; sourceTree = "<group>"; };
+		E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppDelegate.swift; sourceTree = "<group>"; };
 		E4941E512CD3EAB80063421F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		E4941E5C2CD4BC5B0063421F /* AutoPauseSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoPauseSettingsView.swift; sourceTree = "<group>"; };
 		E4941E5E2CD4CAA90063421F /* AverageSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AverageSettingsView.swift; sourceTree = "<group>"; };
@@ -532,6 +534,7 @@
 				E45E3F792CF1F037001D58B3 /* NavigationCoordinator.swift */,
 				E40306822B22211000658A80 /* TopMenuView.swift */,
 				E46EF08329537CA1006FA603 /* PulseWorkout_Watch_App.swift */,
+				E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */,
 				E46EF08729537CA3006FA603 /* Assets.xcassets */,
 				E46EF08929537CA3006FA603 /* Preview Content */,
 			);
@@ -1147,6 +1150,7 @@
 				E46121F62AAF6FCB00E07749 /* GeneralSettingsView.swift in Sources */,
 				E4BAA23F2B1C7D0E0053C065 /* DataCache.swift in Sources */,
 				E46EF0CA2955F615006FA603 /* LiveActivityManager.swift in Sources */,
+				E492BFE92D1835530050B6E8 /* WatchAppDelegate.swift in Sources */,
 				E46121EE2AACCF2300E07749 /* WatchAsDeviceView.swift in Sources */,
 				E40F88302A97AAF500E00F25 /* ActivitySaveView.swift in Sources */,
 				E4C11F5329C632DB008DB769 /* BTDetailDeviceView.swift in Sources */,

@@ -8,10 +8,20 @@
 import Foundation
 import CloudKit
 import UIKit
+#if os(watchOS)
+import WatchKit
+#endif
 
 
 /// Extension of datacache to manage subscriptions and notifications
 extension DataCache {
+    
+    #if os(iOS)
+    typealias BackgroundFetchResult = UIBackgroundFetchResult
+    #endif
+    #if os(watchOS)
+    typealias BackgroundFetchResult = WKBackgroundFetchResult
+    #endif
     
     /// Function to create a query subscription - NOT CURRENTLY USED!!
     func createQuerySubscription() {
@@ -101,6 +111,8 @@ extension DataCache {
             case .success:
                 // Record that the system successfully creates the subscription
                 // to prevent unnecessary trips to the server in later launches.
+                self.logger.info( "Subscription created!")
+
                 UserDefaults.standard.setValue(true, forKey: "didCreateActivitySubscription")
                 break
                 
@@ -147,8 +159,11 @@ extension DataCache {
         return nil
     }
     
-    
-    public func handleNotification(completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+
+
+    public func handleNotification(completionHandler: @escaping (BackgroundFetchResult) -> Void) {
+
+        
         // Create a dictionary that maps a record zone ID to its
         // corresponding zone configuration. The configuration
         // contains the server change token from the most recent
@@ -159,19 +174,7 @@ extension DataCache {
         // time we asked, since intermediate push notifications might have been dropped.
         
         let changeToken: CKServerChangeToken? = readServerChangeToken()
-        /*
-        let changeTokenData = UserDefaults.standard.data(forKey: serverChangeTokenKey)
-        
-        if changeTokenData != nil {
-            do {
-                try changeToken = NSKeyedUnarchiver.unarchivedObject(ofClass: CKServerChangeToken.self, from: changeTokenData!)
-                logger.info("last change token retrieved")
-            } catch {
-                logger.error("Error unarchiving change token \(error.localizedDescription)")
-            }
-            
-        }
-        */
+
         let config = CKFetchRecordZoneChangesOperation.ZoneConfiguration()
         config.previousServerChangeToken = changeToken
         let configurations: [CKRecordZone.ID: CKFetchRecordZoneChangesOperation.ZoneConfiguration] = [zoneID: config]
@@ -229,7 +232,9 @@ extension DataCache {
                 
             case .failure(let error):
                 self.logger.error("Error in recordZoneFetchResultBlock \(error.localizedDescription)")
-                completionHandler(UIBackgroundFetchResult.noData)
+
+                completionHandler(BackgroundFetchResult.failed)
+
                 
             case .success(let (serverChangeToken, _, _) ):
                 
@@ -238,30 +243,14 @@ extension DataCache {
 
                     self.writeServerChangeToken(token: serverChangeToken)
                 }
-                completionHandler(UIBackgroundFetchResult.newData)
+
+                completionHandler(BackgroundFetchResult.newData)
+
                 
             }
             
         }
         
-
-/*
-        // If the fetch for the current record zone completes
-        // successfully, cache the final change token.
-        operation.recordZoneFetchCompletionBlock = { recordZoneID, token, _, _, error in
-            if let error = error {
-                self.logger.error("Error in recordZoneFetchCompletionBlock \(error.localizedDescription)")
-                completionHandler(UIBackgroundFetchResult.noData)
-            } else {
-                if recordZoneID == self.zoneID {
-                    self.logger.info("Record Zone Change Completed for zone \(recordZoneID)")
-                    let changeTokenData = NSKeyedArchiver.archivedData(withRootObject: token as Any)
-                    UserDefaults.standard.set(changeTokenData, forKey: serverChangeTokenKey)
-                }
-                completionHandler(UIBackgroundFetchResult.newData)
-            }
-        }
-*/
         
         // Set an appropriate QoS and add the operation to the shared
         // database's operation queue to execute it.

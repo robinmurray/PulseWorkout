@@ -10,6 +10,7 @@ import os
 
 @main
 struct PulseWorkout_Watch_App: App {
+    @WKApplicationDelegateAdaptor var appDelegate: WatchAppDelegate
     @Environment(\.scenePhase) private var scenePhase
 
     
@@ -41,6 +42,9 @@ struct PulseWorkout_Watch_App: App {
         self.dataCache = myDataCache
         self.bluetoothManager = myBluetoothManager
         self.navigationCoordinator = NavigationCoordinator()
+        
+        // register datacache in app delegate so can perform cache updates
+        appDelegate.dataCache = self.dataCache
     }
 
     /// Manage change of Scene Phase
