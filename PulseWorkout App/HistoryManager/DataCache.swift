@@ -11,9 +11,12 @@ import os
 
 
 
-func getCacheDirectory() -> URL? {
+func getCacheDirectory(testMode: Bool = false) -> URL? {
 
-    let cachePath = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first!.appendingPathComponent("pulseWorkout")
+    let cachePath = FileManager.default.urls(for: .cachesDirectory,
+                                             in: .userDomainMask).first!
+        .appendingPathComponent(testMode ? "pulseWorkoutTEST" : "pulseWorkout")
+    
     do {
         try FileManager.default.createDirectory(at: cachePath, withIntermediateDirectories: true)
     } catch {
@@ -25,21 +28,21 @@ func getCacheDirectory() -> URL? {
 }
 
 /// Get URL for  file in cache directory
-func CacheURL(fileName: String) -> URL? {
+func CacheURL(fileName: String, testMode: Bool = false) -> URL? {
 
-    guard let cachePath = getCacheDirectory() else { return nil }
+    guard let cachePath = getCacheDirectory(testMode: testMode) else { return nil }
 
     return cachePath.appendingPathComponent(fileName)
 }
 
-func clearCache() {
+func clearCache(testMode: Bool = false) {
     let fm = FileManager.default
 
     do {
-        let files = try fm.contentsOfDirectory(atPath: getCacheDirectory()!.path)
+        let files = try fm.contentsOfDirectory(atPath: getCacheDirectory(testMode: testMode)!.path)
 //            let jsonFiles = files.filter{ $0.pathExtension == "json" }
         for file in files {
-            let path = getCacheDirectory()!.appendingPathComponent(file)
+            let path = getCacheDirectory(testMode: testMode)!.appendingPathComponent(file)
             do {
                 try FileManager.default.removeItem(at: path)
 
@@ -84,6 +87,7 @@ class FullActivityRecordCache: NSObject {
 class DataCache: NSObject, Codable, ObservableObject {
     
     var settingsManager: SettingsManager!
+    var testMode: Bool = false
     
     let serverChangeTokenKey = "ckServerChangeToken"
     let containerName: String = "iCloud.MurrayNet.Aleph"
@@ -97,8 +101,11 @@ class DataCache: NSObject, Codable, ObservableObject {
     @Published var fetching: Bool = false
     @Published var fetchComplete: Bool = false
 
-    /// Activity record fetched and used in detail display
-    var fullActivityRecordCache: FullActivityRecordCache = FullActivityRecordCache()
+    // Activity record fetched and used in detail display
+    let fullActivityRecordCache: FullActivityRecordCache = FullActivityRecordCache()
+    
+    // Cache for map snapshot images
+    var imageCache: ImageCache!
 
        
     let cacheSize = 50
@@ -114,10 +121,12 @@ class DataCache: NSObject, Codable, ObservableObject {
         case activities
     }
 
-    init(settingsManager: SettingsManager, readCache: Bool = true) {
+    init(settingsManager: SettingsManager, readCache: Bool = true, testMode: Bool = false) {
 
         super.init()
         self.settingsManager = settingsManager
+        self.testMode = testMode
+        imageCache = ImageCache(dataCache: self)
         
         container = CKContainer(identifier: containerName)
         database = container.privateCloudDatabase
@@ -224,6 +233,13 @@ class DataCache: NSObject, Codable, ObservableObject {
 
     }
 
+    /// Test if record is cached
+    func isCached(recordName: String) -> Bool {
+        
+        guard let _ = activities.firstIndex(where: { $0.recordName == recordName }) else {return false}
+        
+        return true
+    }
     
     /// Test if this recordId is in the cache
     /// If not in cache then returns nil. If in cache returns index
@@ -366,7 +382,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     
     /// Returns list of to-be-saved activity records
-    private func toBeSaved() -> [ActivityRecord] {
+    func toBeSaved() -> [ActivityRecord] {
         
         return activities.filter{ ($0.toSave == true) && ($0.toDelete == false) }
 
@@ -408,19 +424,11 @@ class DataCache: NSObject, Codable, ObservableObject {
         
     }
     
-    /// Get URL for JSON file
-    private func CacheURL(fileName: String) -> URL? {
-
-        guard let cachePath = getCacheDirectory() else { return nil }
-
-        return cachePath.appendingPathComponent(fileName)
-    }
-
 
     /// Read cache from JSON file in cache folder
     private func read() -> Bool {
 
-        guard let cacheURL = CacheURL(fileName: cacheFile) else { return false }
+        guard let cacheURL = CacheURL(fileName: cacheFile, testMode: testMode) else { return false }
 
         do {
             let data = try Data(contentsOf: cacheURL)
@@ -455,7 +463,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     /// Write entire cache to JSON file in cache folder
     private func write() -> Bool {
         
-        guard let cacheURL = CacheURL(fileName: cacheFile) else { return false }
+        guard let cacheURL = CacheURL(fileName: cacheFile, testMode: testMode) else { return false }
         
         logger.log("Writing cache to JSON file")
 //        logger.debug("Activities \(self.activities)")

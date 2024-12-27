@@ -18,7 +18,7 @@ extension ActivityRecord {
         // NOTE - if record not yet saved then shouldn't do update!
         
         guard let dc = self.dataCache else {
-            logger.error("datacache not set")
+            logger.error("dataCache not set")
             return
         }
         
@@ -29,10 +29,14 @@ extension ActivityRecord {
             let data = image.jpegData(compressionQuality: 0.5)
         else { return }
         
+        // Add image to image cache if record is in cache
+        dc.imageCache.add(record: self, image: data)
+        
         mapSnapshotFileURL = getCacheDirectory()?.appendingPathComponent(baseFileName + ".jpg")
 
         do {
             try data.write(to: mapSnapshotFileURL!)
+                        
             let asset = CKAsset(fileURL: mapSnapshotFileURL!)
             // FIX!!! - should be able to align with other CKRecord stuff!!!
             let activityCKRecord = CKRecord(recordType: recordType, recordID: recordID)
@@ -80,17 +84,23 @@ extension ActivityRecord {
         }
     }
     
-    func getMapSnapshot(datacache: DataCache) {
+    func getMapSnapshot(dataCache: DataCache) {
         
         if workoutLocationId == HKWorkoutSessionLocationType.indoor.rawValue {
             return
         }
         
-        self.dataCache = datacache
+        self.dataCache = dataCache
 
         // check if snapshot already exists
         if mapSnapshotImage != nil {
             logger.info("Snapshot already exists \(self.name) : \(self.startDateLocal)")
+            return
+        }
+        
+        if let image = dataCache.imageCache.getImage(record: self) {
+            logger.info("Retrieved image from image cache")
+            mapSnapshotImage = image
             return
         }
         
@@ -100,6 +110,7 @@ extension ActivityRecord {
                let image = UIImage(data: data) {
                 mapSnapshotImage = image
                 logger.info("got image from cached URL for \(self.name) : \(self.startDateLocal) with URL \(self.mapSnapshotURL!.absoluteString)")
+                dataCache.imageCache.add(record: self, image: data)
                 return
             }
             logger.info("Failed to get image from cached URL for \(self.name) : \(self.startDateLocal) with URL \(self.mapSnapshotURL!.absoluteString)")
@@ -113,6 +124,7 @@ extension ActivityRecord {
                let image = UIImage(data: data) {
                 logger.info("Got image from existing mapSnapshotAsset for \(self.name) : \(self.startDateLocal)")
                 mapSnapshotImage = image
+                dataCache.imageCache.add(record: self, image: data)
                 return
             }
         }
@@ -124,7 +136,7 @@ extension ActivityRecord {
         }
         else {
             logger.info("fetching track record for snapshot for record \(self.name) : \(self.startDateLocal)")
-            datacache.fetchRecord(recordID: recordID,
+            dataCache.fetchRecord(recordID: recordID,
                                   completionFunction: self.setMapSnapshot,
                                   completionFailureFunction: self.buildSnapshotFailure)
         }

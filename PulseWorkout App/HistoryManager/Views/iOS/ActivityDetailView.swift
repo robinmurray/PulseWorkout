@@ -243,7 +243,7 @@ struct ActivityDetailView: View {
 
 
         }
-        .onAppear( perform: { activityRecord.getMapSnapshot(datacache: dataCache) })
+        .onAppear( perform: { activityRecord.getMapSnapshot(dataCache: dataCache) })
 
         .navigationDestination(for: NavigationTarget.self) { pathValue in
 
