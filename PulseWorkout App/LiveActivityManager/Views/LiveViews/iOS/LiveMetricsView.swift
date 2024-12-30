@@ -107,189 +107,211 @@ struct LiveMetricsView: View {
                 
                 List {
                     
-                    Section(header: HStack {
-                        Image(systemName: heartRateIcon)
-                            .font(.title2)
-                            .frame(width: 40, height: 40)
-                        Text("Heart Rate")
-                        Spacer()
-                        }
-                        .font(.title2)
-                        .foregroundStyle(heartRateColor)
-                    )
-                    {
-                        HStack {
-                            Text(heartRateFormatter(heartRate: Double(liveActivityManager.heartRate ?? 0)))
-                                .fontWeight(.bold)
-                                .foregroundColor(HRDisplay[liveActivityManager.hrState]?.colour)
-                                .frame(width: 140.0, height: 60.0)
-                                .font(.system(size: 60))
-
-                            Spacer()
-                            VStack {
-
-                                HStack {
+                    Group {
+                        VStack {
+                            HStack {
+                                Image(systemName: heartRateIcon)
+                                    .font(.title)
+                                Text("Heart Rate")
+                                Spacer()
+                            }
+                            .foregroundStyle(heartRateColor)
+                            
+                            HStack {
+                                Text(heartRateFormatter(heartRate: Double(liveActivityManager.heartRate ?? 100)))
+                                    .fontWeight(.bold)
+                                    .foregroundColor(HRDisplay[liveActivityManager.hrState]?.colour)
+                                //.frame(width: 160.0, height: 60.0)
+                                    .frame(width: 240, alignment: .trailing)
+                                    .font(.system(size: 60))
+                                
+                                Spacer()
+                                
+                                VStack {
                                     Image(systemName: maxIcon)
-                                    Text(heartRateFormatter(heartRate: Double(activityData.averageHeartRate)))
-                                }
- 
-                                HStack {
                                     Image(systemName: meanIcon)
-                                    Text(heartRateFormatter(heartRate: activityData.maxHeartRate))
                                 }
-
+                                
+                                VStack {
+                                    
+                                    Text(heartRateFormatter(heartRate: Double(activityData.averageHeartRate)))
+                                        .frame(width: 80, alignment: .trailing)
+                                    Text(heartRateFormatter(heartRate: activityData.maxHeartRate))
+                                        .frame(width: 80, alignment: .trailing)
+                                    
+                                }
                             }
                         }
                         .foregroundStyle(heartRateColor)
                         .font(.title3)
                     }
- 
                     
                     
-                    Section(header: HStack {
-                        Image(systemName: measureIcon)
-                            .font(.title2)
-                            .frame(width: 40, height: 40)
-                        Text("Distance")
-                        Spacer()
-                        }
-                        .font(.title2)
-                        .foregroundStyle(distanceColor)
-                    )
-                    {
-                        HStack {
-                            Text(distanceFormatter(distance: activityData.distanceMeters))
-                                .font(.title)
-
-                            Spacer()
-                            VStack {
-                                HStack {
+                    Group {
+                        VStack {
+                            HStack {
+                                Image(systemName: measureIcon)
+                                    .font(.title)
+                                Text("Distance")
+                                Spacer()
+                            }
+                            
+                            HStack {
+                                Text(distanceFormatter(distance: activityData.distanceMeters))
+                                    .fontWeight(.bold)
+                                    .frame(width: 240, alignment: .trailing)
+                                    .font(.system(size: 60))
+                                
+                                Spacer()
+                                
+                                VStack {
                                     Image(systemName: ascentIcon)
+                                    Image(systemName: descentIcon)
+                                }
+                                
+                                VStack {
+                                    
                                     Text(distanceFormatter(distance: activityData.totalAscent ?? 0,
                                                            forceMeters: true))
-                                }
-                                HStack {
-                                    Image(systemName: descentIcon)
-                                    Text(distanceFormatter(distance: activityData.totalDescent ?? 0,
+                                    .frame(width: 80, alignment: .trailing)
+                                    Text(distanceFormatter(distance: activityData.totalDescent ?? 5000,
                                                            forceMeters: true))
+                                    .frame(width: 80, alignment: .trailing)
+                                    
                                 }
-
                             }
                         }
                         .foregroundStyle(distanceColor)
                         .font(.title3)
+                        
                     }
-
                     
-                    Section(header: HStack {
-                        Image(systemName: speedIcon)
-                            .font(.title2)
-                            .frame(width: 40, height: 40)
-                        Text("Speed")
-                        Spacer()
-                        }
-                        .font(.title2)
-                        .foregroundStyle(speedColor)
-                    )
-                    {
-                        HStack {
-                            Text(speedFormatter(speed: activityData.speed ?? 0))
-                                .font(.title)
-
-                            Spacer()
-                            VStack {
-                                HStack {
-                                    Image(systemName: maxIcon)
-                                    Text(speedFormatter(speed: activityData.maxSpeed))
-                                }
-                                HStack {
-                                    Image(systemName: meanIcon)
-                                    Text(speedFormatter(speed: activityData.averageSpeed))
-                                }
-
+                    
+                    
+                    Group {
+                        VStack {
+                            HStack {
+                                Image(systemName: speedIcon)
+                                    .font(.title)
+                                Text("Speed")
+                                Spacer()
                             }
-                        }
-                        .foregroundStyle(speedColor)
-                        .font(.title3)
-                    }
-                    
-
-                    Section(header: HStack {
-                        Image(systemName: powerIcon)
-                            .font(.title2)
-                            .frame(width: 40, height: 40)
-                        Text("Power")
-                        Spacer()
-                        }
-                        .font(.title2)
-                        .foregroundStyle(powerColor)
-                    )
-                    {
-                        HStack {
-                            Text(powerFormatter(watts: Double(activityData.watts ?? 0)))
-                            .font(.title)
                             
-                            Spacer()
-                            VStack {
-                                HStack {
+                            HStack {
+                                
+                                Text(speedFormatter(speed: activityData.speed ?? 0))
+                                    .fontWeight(.bold)
+                                    .frame(width: 240, alignment: .trailing)
+                                    .font(.system(size: 60))
+                                
+                                
+                                Spacer()
+                                
+                                VStack {
                                     Image(systemName: maxIcon)
-                                    Text(powerFormatter(watts: Double(activityData.maxPower)))
-
-                                }
-                                HStack {
                                     Image(systemName: meanIcon)
-                                    Text(powerFormatter(watts: Double(activityData.averagePower)))
-
                                 }
-
+                                
+                                VStack {
+                                    
+                                    Text(speedFormatter(speed: activityData.maxSpeed))
+                                        .frame(width: 80, alignment: .trailing)
+                                    Text(speedFormatter(speed: activityData.averageSpeed))
+                                        .frame(width: 80, alignment: .trailing)
+                                    
+                                }
                             }
-
+                        }
+                        .foregroundStyle(speedColor)
+                        .font(.title3)
+                    }
+                    
+                    
+                    Group {
+                        VStack {
+                            HStack {
+                                Image(systemName: powerIcon)
+                                    .font(.title)
+                                Text("Power")
+                                Spacer()
+                            }
+                            
+                            HStack {
+                                
+                                Text(powerFormatter(watts: Double(activityData.watts ?? 0)))
+                                    .fontWeight(.bold)
+                                    .frame(width: 240, alignment: .trailing)
+                                    .font(.system(size: 60))
+                                
+                                
+                                Spacer()
+                                
+                                VStack {
+                                    Image(systemName: maxIcon)
+                                    Image(systemName: meanIcon)
+                                }
+                                
+                                VStack {
+                                    
+                                    Text(powerFormatter(watts: Double(activityData.maxPower)))
+                                        .frame(width: 80, alignment: .trailing)
+                                    Text(powerFormatter(watts: Double(activityData.averagePower)))
+                                        .frame(width: 80, alignment: .trailing)
+                                    
+                                }
+                            }
+                            
                         }
                         .foregroundStyle(powerColor)
                         .font(.title3)
                     }
-
-                    Section(header: HStack {
-                        Image(systemName: cadenceIcon)
-                            .font(.title2)
-                            .frame(width: 40, height: 40)
-                        Text("Cadence")
-                        Spacer()
-                        }
-                        .font(.title2)
-                        .foregroundStyle(cadenceColor)
-                    )
-                    {
-                        HStack {
-
-                            Text(String(activityData.cadence ?? 0))
-                                .font(.title)
-
-                            Spacer()
-
-                            VStack {
-                                HStack {
-                                    Image(systemName: maxIcon)
-                                    Text(String(activityData.maxCadence))
-                                }
-                                HStack {
-                                    Image(systemName: meanIcon)
-                                    Text(String(activityData.averageCadence))
-                                }
-
+                    
+                    
+                    Group {
+                        VStack {
+                            HStack {
+                                Image(systemName: cadenceIcon)
+                                    .font(.title)
+                                Text("Cadence")
+                                Spacer()
                             }
-
+                            
+                            HStack {
+                                
+                                Text(String(activityData.cadence ?? 0))
+                                    .fontWeight(.bold)
+                                    .frame(width: 240, alignment: .trailing)
+                                    .font(.system(size: 60))
+                                
+                                
+                                Spacer()
+                                
+                                VStack {
+                                    Image(systemName: maxIcon)
+                                    Image(systemName: meanIcon)
+                                }
+                                
+                                VStack {
+                                    
+                                    Text(String(activityData.maxCadence))
+                                        .frame(width: 80, alignment: .trailing)
+                                    Text(String(activityData.averageCadence))
+                                        .frame(width: 80, alignment: .trailing)
+                                    
+                                }
+                            }
+                            
                         }
                         .foregroundStyle(cadenceColor)
                         .font(.title3)
                     }
-
                 }
-                     
             }
-//            .listStyle(.grouped)
-//            .listStyle(.plain)
+            .listStyle(.grouped)
 
+            
+
+            
             Spacer()
             SwipeButton(swipeText: "Swipe to end",
                         perform: stopAndSave )
@@ -315,6 +337,7 @@ struct LiveMetricsView: View {
         .toolbar(.hidden, for: .tabBar)
         .navigationTitle(profile.name)
         .navigationBarBackButtonHidden()
+        .navigationBarTitleDisplayMode(.inline)
 
     }
 
