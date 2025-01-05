@@ -50,9 +50,9 @@ let BTServices: [String: String] =
 
 class BTDevicesController: NSObject, ObservableObject {
 
-    @Published var knownDevices: DeviceList = DeviceList(devices: [])
-    @Published var discoveredDevices: DeviceList = DeviceList(devices: [])
-    @Published var connectableDevices: DeviceList = DeviceList(devices: [])
+    @Published var knownDevices: DeviceList = DeviceList(devices: [], persistent: true, userDefaultsKey: knownDeviceKey)
+    @Published var discoveredDevices: DeviceList = DeviceList(devices: [], persistent: false)
+    @Published var connectableDevices: DeviceList = DeviceList(devices: [], persistent: false)
     
     var activePeripherals: [CBPeripheral] = []
     
@@ -80,11 +80,10 @@ class BTDevicesController: NSObject, ObservableObject {
         super.init()
         
         // Read list of known devices
-        knownDevices.read(key: knownDeviceKey)
+        knownDevices.read()
 
         if knownDevices.empty() {
             knownDevices.setDefault()
-            knownDevices.write(key: knownDeviceKey)
         }
         
         // connectableDevices is list of devices to connect to if seen
@@ -136,7 +135,6 @@ class BTDevicesController: NSObject, ObservableObject {
         connectableDevices.remove(device: device)
         discoveredDevices.add(device: device)
         knownDevices.remove(device: device)
-        knownDevices.write(key: knownDeviceKey)
     }
     
     func addActivePeripheral(peripheral: CBPeripheral) -> Int {
@@ -293,7 +291,6 @@ extension BTDevicesController: CBCentralManagerDelegate {
 
         logger.log("Connected!")
         knownDevices.add(peripheral: peripheral)
-        knownDevices.write(key: knownDeviceKey)
 
         // Remove from Connectable Device list
         connectableDevices.remove(peripheral: peripheral)
@@ -352,9 +349,7 @@ extension BTDevicesController: CBPeripheralDelegate {
             logger.debug("Service for peripheral \(peripheral) : \(service)")
             logger.debug("UUID : \(service.uuid.uuidString)  description: \(service.uuid.description)")
             knownDevices.addService(peripheral: peripheral, service: service.uuid.uuidString)
-            peripheral.discoverCharacteristics(nil, for: service)
         }
-        knownDevices.write(key: knownDeviceKey)
 
         for service in services {
             peripheral.discoverCharacteristics(nil, for: service)
@@ -414,22 +409,18 @@ extension BTDevicesController: CBPeripheralDelegate {
         case firmwareRevisionStringCharacteristicCBUUID:
             logger.debug("firmware revision characteristic \(characteristic) for peripheral \(peripheral)")
             knownDevices.setDeviceInfo(peripheral: peripheral, key: "Firmware Revision", value: stringCharacteristic(from: characteristic))
-            knownDevices.write(key: knownDeviceKey)
             
         case hardwareRevisionStringCharacteristicCBUUID:
             logger.debug("hardware revision characteristic \(characteristic) for peripheral \(peripheral)")
             knownDevices.setDeviceInfo(peripheral: peripheral, key: "Hardware Revision", value: stringCharacteristic(from: characteristic))
-            knownDevices.write(key: knownDeviceKey)
             
         case softwareRevisionStringCharacteristicCBUUID:
             logger.debug("software revision characteristic \(characteristic) for peripheral \(peripheral)")
             knownDevices.setDeviceInfo(peripheral: peripheral, key: "Software Revision", value: stringCharacteristic(from: characteristic))
-            knownDevices.write(key: knownDeviceKey)
             
         case manufacturerNameStringCharacteristicCBUUID:
             logger.debug("manufacturer name characteristic \(characteristic) for peripheral \(peripheral)")
             knownDevices.setDeviceInfo(peripheral: peripheral, key: "Manufacturer", value: stringCharacteristic(from: characteristic))
-            knownDevices.write(key: knownDeviceKey)
 
         case cyclingPowerFeatureCBUUID:
             logger.debug("cyclingPowerFeatureCBUUID characteristic \(characteristic) for peripheral \(peripheral)")

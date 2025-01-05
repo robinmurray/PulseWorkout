@@ -192,6 +192,9 @@ extension DataCache {
             switch result {
             case .success(let record):
 
+                if record.recordType == "activity" {
+                    self.processRecordChangeNofification(record: record)
+                }
                 self.processRecordChangeNofification(record: record)
                 
                 break
