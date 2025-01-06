@@ -50,9 +50,9 @@ let BTServices: [String: String] =
 
 class BTDevicesController: NSObject, ObservableObject {
 
-    @Published var knownDevices: DeviceList = DeviceList(devices: [], persistent: true, userDefaultsKey: knownDeviceKey)
-    @Published var discoveredDevices: DeviceList = DeviceList(devices: [], persistent: false)
-    @Published var connectableDevices: DeviceList = DeviceList(devices: [], persistent: false)
+    @Published var knownDevices: BTDeviceList = BTDeviceList(persistent: true, userDefaultsKey: knownDeviceKey)
+    @Published var discoveredDevices: BTDeviceList = BTDeviceList()
+    @Published var connectableDevices: BTDeviceList = BTDeviceList()
     
     var activePeripherals: [CBPeripheral] = []
     

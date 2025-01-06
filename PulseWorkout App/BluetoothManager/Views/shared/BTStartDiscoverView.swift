@@ -10,9 +10,11 @@ import SwiftUI
 struct BTStartDiscoverView: View {
     
     @ObservedObject var bluetoothManager: BTDevicesController
+    @ObservedObject var knownDevices: BTDeviceList
     
     init(bluetoothManager: BTDevicesController) {
         self.bluetoothManager = bluetoothManager
+        self.knownDevices = bluetoothManager.knownDevices
     }
 
 
@@ -21,7 +23,7 @@ struct BTStartDiscoverView: View {
             Group {
 
             VStack {
-                List(bluetoothManager.knownDevices.devices) { device in
+                List(knownDevices.devices) { device in
                     BTKnownDeviceView(btDevice: device, btManager: bluetoothManager)
                 }
                 #if os(watchOS)

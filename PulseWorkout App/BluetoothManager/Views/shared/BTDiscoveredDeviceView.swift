@@ -96,10 +96,14 @@ struct ConnectingView: View {
 struct BTDiscoveredDeviceView: View {
     var btDevice: BTDevice
     @ObservedObject var btManager: BTDevicesController
+    @ObservedObject var knownDevices: BTDeviceList
+    @ObservedObject var connectableDevices: BTDeviceList
 
     init(btDevice: BTDevice, btManager: BTDevicesController) {
         self.btDevice = btDevice
         self.btManager = btManager
+        self.knownDevices = btManager.knownDevices
+        self.connectableDevices = btManager.connectableDevices
     }
     
 
@@ -107,11 +111,11 @@ struct BTDiscoveredDeviceView: View {
     
     func statusView() -> AnyView {
 
-        if btManager.knownDevices.contains(device: btDevice) {
+        if knownDevices.contains(device: btDevice) {
             return AnyView(ConnectedView())
 
         }
-        if !btManager.connectableDevices.contains(device: btDevice) {
+        if !connectableDevices.contains(device: btDevice) {
             return AnyView(ConnectView(btDevice: btDevice, btManager: btManager))
 
         }

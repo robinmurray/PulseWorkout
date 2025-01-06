@@ -113,8 +113,8 @@
 		E492C01C2D1DCA580050B6E8 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
 		E492C01D2D1DCA600050B6E8 /* BTPeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F12AAE178600E07749 /* BTPeripheralManager.swift */; };
 		E492C01E2D1DCA600050B6E8 /* BTPeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F12AAE178600E07749 /* BTPeripheralManager.swift */; };
-		E492C01F2D1DCA680050B6E8 /* DeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5A29CCCC43008DB769 /* DeviceList.swift */; };
-		E492C0202D1DCA680050B6E8 /* DeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5A29CCCC43008DB769 /* DeviceList.swift */; };
+		E492C01F2D1DCA680050B6E8 /* BTDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5A29CCCC43008DB769 /* BTDevice.swift */; };
+		E492C0202D1DCA680050B6E8 /* BTDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5A29CCCC43008DB769 /* BTDevice.swift */; };
 		E492C0212D1DCA710050B6E8 /* GeneralUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */; };
 		E492C0222D1DCA710050B6E8 /* GeneralUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */; };
 		E492C0232D1DCA820050B6E8 /* SwipeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42313722CF752E100E6F4FB /* SwipeButton.swift */; };
@@ -123,7 +123,7 @@
 		E4941E452CD29FB30063421F /* BTContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5029C49744008DB769 /* BTContentView.swift */; };
 		E4941E462CD29FBC0063421F /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
 		E4941E472CD29FC30063421F /* BTPeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F12AAE178600E07749 /* BTPeripheralManager.swift */; };
-		E4941E482CD29FCA0063421F /* DeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5A29CCCC43008DB769 /* DeviceList.swift */; };
+		E4941E482CD29FCA0063421F /* BTDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5A29CCCC43008DB769 /* BTDevice.swift */; };
 		E4941E492CD2A0CF0063421F /* BTStartDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */; };
 		E4941E4A2CD2A0E40063421F /* BTKnownDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */; };
 		E4941E4B2CD2A0F10063421F /* BTDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */; };
@@ -151,6 +151,10 @@
 		E4A372FC2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
 		E4A372FD2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
 		E4A372FE2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
+		E4AEC09F2D2C3B7000DC0082 /* BTDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */; };
+		E4AEC0A02D2C3B7000DC0082 /* BTDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */; };
+		E4AEC0A12D2C3B7000DC0082 /* BTDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */; };
+		E4AEC0A22D2C3B7000DC0082 /* BTDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */; };
 		E4B5CEA82D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEA92D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */; };
@@ -159,7 +163,7 @@
 		E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5029C49744008DB769 /* BTContentView.swift */; };
 		E4C11F5329C632DB008DB769 /* BTDetailDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */; };
 		E4C11F5529C7588E008DB769 /* BTDeviceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */; };
-		E4C11F5B29CCCC43008DB769 /* DeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5A29CCCC43008DB769 /* DeviceList.swift */; };
+		E4C11F5B29CCCC43008DB769 /* BTDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5A29CCCC43008DB769 /* BTDevice.swift */; };
 		E4C25BAC2A4F5554002F315D /* ActivityHistoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */; };
 		E4C25BAE2A4F55FB002F315D /* ActivityListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */; };
 		E4C25BB02A4F562B002F315D /* ActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */; };
@@ -307,6 +311,7 @@
 		E4A333B52CC01EE900995AC4 /* ActivityChartsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityChartsController.swift; sourceTree = "<group>"; };
 		E4A333B72CC15DA500995AC4 /* FetchFailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchFailedView.swift; sourceTree = "<group>"; };
 		E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationManager.swift; sourceTree = "<group>"; };
+		E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceList.swift; sourceTree = "<group>"; };
 		E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattersTest.swift; sourceTree = "<group>"; };
 		E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCache.swift; sourceTree = "<group>"; };
@@ -314,7 +319,7 @@
 		E4C11F5029C49744008DB769 /* BTContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTContentView.swift; sourceTree = "<group>"; };
 		E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDetailDeviceView.swift; sourceTree = "<group>"; };
 		E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceInfoView.swift; sourceTree = "<group>"; };
-		E4C11F5A29CCCC43008DB769 /* DeviceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceList.swift; sourceTree = "<group>"; };
+		E4C11F5A29CCCC43008DB769 /* BTDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDevice.swift; sourceTree = "<group>"; };
 		E4C25BAB2A4F5554002F315D /* ActivityHistoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryView.swift; sourceTree = "<group>"; };
 		E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListItemView.swift; sourceTree = "<group>"; };
 		E4C25BAF2A4F562B002F315D /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
@@ -747,7 +752,8 @@
 			children = (
 				E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */,
 				E46121F12AAE178600E07749 /* BTPeripheralManager.swift */,
-				E4C11F5A29CCCC43008DB769 /* DeviceList.swift */,
+				E4C11F5A29CCCC43008DB769 /* BTDevice.swift */,
+				E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */,
 				E4C11F5729CCC9FD008DB769 /* Views */,
 			);
 			path = BluetoothManager;
@@ -1096,6 +1102,7 @@
 				E45E3F052CE7B91E001D58B3 /* ActivityListItemExtensionView.swift in Sources */,
 				E4941E422CD29F8A0063421F /* WatchAsDeviceView.swift in Sources */,
 				E492BFE52D15B7610050B6E8 /* DCNotificationManager.swift in Sources */,
+				E4AEC0A12D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E4094BB52CD0C6D200915CCB /* ActivityRecord.swift in Sources */,
 				E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */,
 				E4941E532CD3EAB80063421F /* SettingsView.swift in Sources */,
@@ -1112,7 +1119,7 @@
 				E4CC66A82CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */,
 				E4941E462CD29FBC0063421F /* BluetoothManager.swift in Sources */,
 				E4094BB92CD0C6D200915CCB /* LocationManager.swift in Sources */,
-				E4941E482CD29FCA0063421F /* DeviceList.swift in Sources */,
+				E4941E482CD29FCA0063421F /* BTDevice.swift in Sources */,
 				E492C0062D19568A0050B6E8 /* ImageCache.swift in Sources */,
 				E423136F2CF628EE00E6F4FB /* ProfileListItemView.swift in Sources */,
 				E45E3F202CEBABD7001D58B3 /* ProfileDetailView.swift in Sources */,
@@ -1151,11 +1158,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E492C0202D1DCA680050B6E8 /* DeviceList.swift in Sources */,
+				E492C0202D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E492C0132D1DC7D90050B6E8 /* ImageCache.swift in Sources */,
 				E492C01E2D1DCA600050B6E8 /* BTPeripheralManager.swift in Sources */,
 				E492C0102D19BDDE0050B6E8 /* SimpleXML.swift in Sources */,
 				E492C0082D19BBF90050B6E8 /* DataCache.swift in Sources */,
+				E4AEC0A22D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E492C01C2D1DCA580050B6E8 /* BluetoothManager.swift in Sources */,
 				E492C00C2D19BC260050B6E8 /* SettingsManager.swift in Sources */,
 				E4A372FB2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
@@ -1221,6 +1229,7 @@
 				E46EE68D2B067A01008F54CD /* MapPinView.swift in Sources */,
 				E4A0839729AA18E7007B50D3 /* BTDiscoveredDeviceView.swift in Sources */,
 				E468DC8329E9B5050002FEA9 /* ProfileDetailView.swift in Sources */,
+				E4AEC09F2D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E4C428332CB0431B0069F61D /* ActivityChartTraceBuilder.swift in Sources */,
 				E4B5CEA82D02E0AC0094CA4F /* Formatters.swift in Sources */,
 				E4941E862CD7FBC50063421F /* ActivityHeaderView.swift in Sources */,
@@ -1229,7 +1238,7 @@
 				E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */,
 				E46EF08429537CA1006FA603 /* PulseWorkout_Watch_App.swift in Sources */,
 				E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */,
-				E4C11F5B29CCCC43008DB769 /* DeviceList.swift in Sources */,
+				E4C11F5B29CCCC43008DB769 /* BTDevice.swift in Sources */,
 				E45E3F7A2CF1F037001D58B3 /* NavigationCoordinator.swift in Sources */,
 				E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */,
 				E46121F22AAE178700E07749 /* BTPeripheralManager.swift in Sources */,
@@ -1254,6 +1263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E492C0072D19BBF90050B6E8 /* DataCache.swift in Sources */,
+				E4AEC0A02D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E492C0152D1DC9800050B6E8 /* ProfileManager.swift in Sources */,
 				E492C00F2D19BDDE0050B6E8 /* SimpleXML.swift in Sources */,
 				E41501172D06196500C09200 /* Formatters.swift in Sources */,
@@ -1267,7 +1277,7 @@
 				E492C00D2D19BDD00050B6E8 /* ActivityProfile.swift in Sources */,
 				E4A372FE2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
 				E492C0172D1DC9B20050B6E8 /* HapticsSettingsView.swift in Sources */,
-				E492C01F2D1DCA680050B6E8 /* DeviceList.swift in Sources */,
+				E492C01F2D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */,
 				E492C0212D1DCA710050B6E8 /* GeneralUtilities.swift in Sources */,
 				E492C0142D1DC8E20050B6E8 /* ImageCache.swift in Sources */,

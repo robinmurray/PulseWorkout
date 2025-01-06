@@ -1,8 +1,8 @@
 //
-//  DeviceList.swift
-//  PulseWorkout Watch App
+//  BTDeviceList.swift
+//  PulseWorkout
 //
-//  Created by Robin Murray on 23/03/2023.
+//  Created by Robin Murray on 06/01/2025.
 //
 
 import Foundation
@@ -10,109 +10,21 @@ import CoreBluetooth
 import CloudKit
 import os
 
-let defaultBTDevices: [BTDevice] = [BTDevice(id: UUID(uuidString: "B1D7C9D0-12AC-FABC-FC29-B00EDE23F68E")!, name: "TICKR C703", services: [], deviceInfo: [:])]
-
-
-enum DeviceConnectionState {
-    case disconnected, connecting, connected
-}
-
-
-struct BTDevice: Identifiable, Codable {
-    var id: UUID
-    var name: String
-    var services: [String]
-    var connectionState: DeviceConnectionState?
-    var deviceInfo: [String:String]
-    
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "BTDevice")
-    
-    // set CodingKeys to exclude connectionState from coding/decoding
-    private enum CodingKeys: String, CodingKey {
-        case id, name, services, deviceInfo
-    }
-
-    func serviceDescriptions() -> [String] {
-        
-        var returnVal: [String] = []
-        for service in services {
-            returnVal.append(BTServices[service, default: service])
-        }
-        return returnVal
-    }
-
-
-    /// Set device info the device
-    /// Return true / false whether the deviceInfo has changed
-    mutating func setDeviceInfo(key: String, value: String) -> Bool {
-        if let currentInfo = deviceInfo[key] {
-            if currentInfo == value {
-                return false
-            }
-        }
-        deviceInfo[key] = value
-        return true
-    }
-    
-    func connected(bluetoothManager: BTDevicesController) -> Bool {
-        
-        for peripheral in bluetoothManager.activePeripherals {
-            
-            if peripheral.identifier == id {
-                
-                return peripheral.state == CBPeripheralState.connected
-
-            }
-        }
-        return false
-    }
-    
-    
-    /// Create CKRecord.ID for this device
-    func CKRecordID() -> CKRecord.ID {
-        let zoneName = DataCache.zoneName
-        return CKRecord.ID(recordName: id.uuidString, zoneID: CKRecordZone.ID(zoneName: zoneName))
-    }
-    
-    
-    /// Convert device data to CKRecord
-    func asCKRecord() -> CKRecord {
-        let recordType = "BTDevices"
-        let recordID: CKRecord.ID = CKRecordID()
-        let record = CKRecord(recordType: recordType, recordID: recordID)
-        record["name"] = name as CKRecordValue
-        record["services"] = services as CKRecordValue
-        
-        do {
-            let data = try JSONEncoder().encode(deviceInfo)
-            let jsonString = String(data: data, encoding: .utf8) ?? ""
-            record["deviceInfo"] = jsonString as CKRecordValue
-        } catch {
-            logger.error("Error enconding deviceInfo")
-        }
-
-        return record
-    }
-
-
-}
-
-struct DeviceList: CustomStringConvertible {
+class BTDeviceList: NSObject, ObservableObject {
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "BTDeviceList")
     let cloudKitManager = CloudKitManager()
         
-    var description: String {
+    override var description: String {
         return "Device List description <HERE>"
     }
     
-    var devices: [BTDevice]
+    @Published var devices: [BTDevice]
     
     /// Whether the list is persistent and stored to Cloudkit & UserDefaults
     /// Set to true for knownDevices
-    var persistent: Bool = false
+    var persistent: Bool
     
     /// Key for storing persistent list in user defaults
     var userDefaultsKey: String?
@@ -120,6 +32,20 @@ struct DeviceList: CustomStringConvertible {
     var serviceConnectCallback: [CBUUID: (Bool) -> Void] = [:]
 
     
+    /// Initialise a non-persistent list
+    override init() {
+        devices = []
+        persistent = false
+    }
+    
+    /// Initialise a persistent list - stored to cloudkit and userDefaults
+    init(persistent: Bool, userDefaultsKey: String?) {
+        self.devices = []
+        self.persistent = persistent
+        self.userDefaultsKey = userDefaultsKey
+    }
+
+
     func deviceFromPeripheral(peripheral: CBPeripheral) -> BTDevice {
         
         return BTDevice(id: peripheral.identifier, name: peripheral.name ?? "Unknown", services: [], deviceInfo: [:])
@@ -167,7 +93,7 @@ struct DeviceList: CustomStringConvertible {
     }
     
     
-    mutating func setDefault() {
+    func setDefault() {
         devices = defaultBTDevices
         if persistent {
             saveAndDeleteRecord(recordsToSave: devices.map( {$0.asCKRecord()} ),
@@ -179,7 +105,7 @@ struct DeviceList: CustomStringConvertible {
     
     /// Add device to this device list
     /// If device list is persistent, write to cloudkit and UserDefaults
-    mutating func add(device: BTDevice) {
+    func add(device: BTDevice) {
         
         if let _ = devices.firstIndex(where: { $0.id == device.id }) {
             return
@@ -196,7 +122,7 @@ struct DeviceList: CustomStringConvertible {
     
     /// Add device represented by the BT peripheral to this device list
     /// If device list is persistent, write to cloudkit and UserDefaults
-    mutating func add(peripheral: CBPeripheral) {
+    func add(peripheral: CBPeripheral) {
         
         if let _ = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
             return
@@ -208,7 +134,7 @@ struct DeviceList: CustomStringConvertible {
     
     /// Remove device from this device list
     /// If device list is persistent, write to cloudkit and UserDefaults
-    mutating func remove(device: BTDevice) {
+    func remove(device: BTDevice) {
         
         if let index = devices.firstIndex(where: { $0.id == device.id }) {
 
@@ -225,7 +151,7 @@ struct DeviceList: CustomStringConvertible {
     
     /// Remove device represented by this BT Peripheral from this device list
     /// If device list is persistent, write to cloudkit and UserDefaults
-    mutating func remove(peripheral: CBPeripheral) {
+    func remove(peripheral: CBPeripheral) {
         
         if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
             let IDToRemove = devices[index].CKRecordID()
@@ -260,7 +186,7 @@ struct DeviceList: CustomStringConvertible {
     }
 
     
-    mutating func setServiceConnectCallback(serviceCBUUID: CBUUID, callback: @escaping (Bool) -> Void) {
+    func setServiceConnectCallback(serviceCBUUID: CBUUID, callback: @escaping (Bool) -> Void) {
         
         // Set the callback function for when services connect / disconnect.
         
@@ -278,7 +204,7 @@ struct DeviceList: CustomStringConvertible {
     }
     
     
-    mutating func setConnectionState(device: BTDevice, connectionState: DeviceConnectionState) {
+    func setConnectionState(device: BTDevice, connectionState: DeviceConnectionState) {
         
         let initialConnectedServices: Set<String> = connectedServices()
         
@@ -309,7 +235,7 @@ struct DeviceList: CustomStringConvertible {
     }
     
     
-    mutating func setConnectionState(peripheral: CBPeripheral, connectionState: DeviceConnectionState) {
+    func setConnectionState(peripheral: CBPeripheral, connectionState: DeviceConnectionState) {
 
         let initialConnectedServices: Set<String> = connectedServices()
         
@@ -351,7 +277,7 @@ struct DeviceList: CustomStringConvertible {
     }
     
     
-    mutating func setDeviceInfo(device: BTDevice, key: String, value: String) {
+    func setDeviceInfo(device: BTDevice, key: String, value: String) {
         
         if let index = devices.firstIndex(where: { $0.id == device.id }) {
             if devices[index].setDeviceInfo(key: key, value: value) {
@@ -366,7 +292,7 @@ struct DeviceList: CustomStringConvertible {
     }
     
     
-    mutating func setDeviceInfo(peripheral: CBPeripheral, key: String, value: String) {
+    func setDeviceInfo(peripheral: CBPeripheral, key: String, value: String) {
         
         if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
             if devices[index].setDeviceInfo(key: key, value: value) {
@@ -381,14 +307,14 @@ struct DeviceList: CustomStringConvertible {
     }
 
     
-    mutating func reset() {
+    func reset() {
         devices = []
     }
     
     
     /// Add service to the device represented by the peripheral
     /// Write if persistent list
-    mutating func addService(peripheral: CBPeripheral, service: String) {
+    func addService(peripheral: CBPeripheral, service: String) {
     
         if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
             if !devices[index].services.contains(service) {
@@ -432,7 +358,7 @@ struct DeviceList: CustomStringConvertible {
     }
     
 
-    mutating func read() {
+    func read() {
         
         if !persistent {
             logger.error("Trying to read non-persistent device list!")
@@ -453,7 +379,6 @@ struct DeviceList: CustomStringConvertible {
         }
         
         fetchRecordBlock()
-        
         
     }
 
@@ -502,7 +427,7 @@ struct DeviceList: CustomStringConvertible {
         modifyRecordsOperation.perRecordSaveBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
             switch result {
             case .success:
-                logger.info("Saved \(recordID)")
+                self.logger.info("Saved \(recordID)")
                                 
                 break
                 
@@ -515,18 +440,18 @@ struct DeviceList: CustomStringConvertible {
                     CKError.serviceUnavailable,
                     CKError.zoneBusy:
                     
-                    logger.error("temporary error")
+                    self.logger.error("temporary error")
                     
                 case CKError.serverRecordChanged:
                     // Record already exists- shouldn't happen, but!
-                    logger.error("record already exists!")
+                    self.logger.error("record already exists!")
                     
                 default:
-                    logger.error("permanent error")
+                    self.logger.error("permanent error")
                     
                 }
                 
-                logger.error("Save failed with error : \(error.localizedDescription)")
+                self.logger.error("Save failed with error : \(error.localizedDescription)")
                 
                 break
             }
@@ -537,33 +462,34 @@ struct DeviceList: CustomStringConvertible {
         modifyRecordsOperation.perRecordDeleteBlock = { (recordID: CKRecord.ID, result: Result<Void, any Error>) in
             switch result {
             case .success:
-                logger.info("deleted and removed \(recordID)")
+                self.logger.info("deleted and removed \(recordID)")
                 
                 break
                 
             case .failure(let error):
                 switch error {
                 case CKError.unknownItem:
-                    logger.error("item being deleted had not been saved")
+                    self.logger.error("item being deleted had not been saved")
 
                     return
                 default:
-                    logger.error("Deletion failed with error : \(error.localizedDescription)")
+                    self.logger.error("Deletion failed with error : \(error.localizedDescription)")
                     return
                 }
             }
         }
-            
+           
+        
         modifyRecordsOperation.modifyRecordsResultBlock = { (operationResult : Result<Void, any Error>) in
         
             switch operationResult {
             case .success:
-                logger.info("Record modify completed")
+                self.logger.info("Record modify completed")
 
                 break
                 
             case .failure(let error):
-                logger.error( "modify failed \(String(describing: error))")
+                self.logger.error( "modify failed \(String(describing: error))")
 
                 break
             }
@@ -574,7 +500,8 @@ struct DeviceList: CustomStringConvertible {
 
     }
     
-    mutating func setDevices(deviceList: [BTDevice]) {
+    
+    func setDevices(deviceList: [BTDevice]) {
         devices = deviceList
     }
     
@@ -618,8 +545,7 @@ struct DeviceList: CustomStringConvertible {
             case .success:
 
                 self.logger.info("Device fetch complete")
-//                devices = fetchedDevices
-//                self.setDevices(deviceList: fetchedDevices)
+                self.devices = fetchedDevices
                 
                 break
                     
@@ -649,74 +575,4 @@ struct DeviceList: CustomStringConvertible {
 
     }
 
-  
-
-    
-    
-}
-
-
-class CloudKitManager: NSObject {
-
-    var containerName: String
-    var container: CKContainer
-    var database: CKDatabase
-    
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "CloudKitManager")
-    
-    override init() {
-        containerName = "iCloud.MurrayNet.Aleph"
-        container = CKContainer(identifier: containerName)
-        database = container.privateCloudDatabase
-        
-    }
-
-    
-  
-   
-    func CKForceUpdate(deviceRecord: CKRecord, completionFunction: @escaping (CKRecord?) -> Void) {
-        
-        let containerName: String = "iCloud.MurrayNet.Aleph"
-        let container = CKContainer(identifier: containerName)
-        let database = container.privateCloudDatabase
-        
-        logger.log("updating \(deviceRecord.recordID)")
-        
-        database.modifyRecords(saving: [deviceRecord], deleting: [], savePolicy: .changedKeys) { result in
-            DispatchQueue.main.async {
-                switch result {
-                case .success(let records):
-                    print("Success Records : \(records)")
- 
-                    for recordResult in records.saveResults {
-    
-                        switch recordResult.value {
-                        case .success(let record):
-                            self.logger.log("Record updated \(record)")
-                            completionFunction(record)
-//                            _ = self.write()
-                        case .failure(let error):
-                            self.logger.error("Single Record update failed with error \(error.localizedDescription)")
-                            completionFunction(nil)
-                        }
-
-                    }
-
-                case .failure(let error):
-                    self.logger.error("Batch Record update failed with error \(error.localizedDescription)")
-                    // Delete temporary image file
-                    completionFunction(nil)
-                }
-                
-
-            }
-        }
-    }
-    
-    func nilUpdateCompletion(_: CKRecord?) -> Void {
-        return
-    }
-    
-    
 }
