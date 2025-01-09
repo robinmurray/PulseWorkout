@@ -69,6 +69,11 @@ extension ActivityRecord {
 //        mapSnapshotURL = snapshotAsset.fileURL
         logger.log("Snapshot URL set")
         deleteSnapshotFile()
+        
+        if let dc = dataCache {
+            _ = dc.write()
+        }
+
     }
     
     /// Remove temporary .jpg file

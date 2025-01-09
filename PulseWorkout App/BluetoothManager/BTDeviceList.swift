@@ -14,6 +14,8 @@ class BTDeviceList: NSObject, ObservableObject {
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "BTDeviceList")
+    
+    // Initialise interface to cloudkit for this Object
     let cloudKitManager = CloudKitManager()
         
     override var description: String {
@@ -21,6 +23,9 @@ class BTDeviceList: NSObject, ObservableObject {
     }
     
     @Published var devices: [BTDevice]
+    
+    /// Temporary device list for fetching from CloudKit
+    var fetchedDevices: [BTDevice] = []
     
     /// Whether the list is persistent and stored to Cloudkit & UserDefaults
     /// Set to true for knownDevices
@@ -98,7 +103,6 @@ class BTDeviceList: NSObject, ObservableObject {
         if persistent {
             saveAndDeleteRecord(recordsToSave: devices.map( {$0.asCKRecord()} ),
                                 recordIDsToDelete: [])
-            write()
         }
     }
     
@@ -115,7 +119,6 @@ class BTDeviceList: NSObject, ObservableObject {
         if persistent {
             saveAndDeleteRecord(recordsToSave: [device.asCKRecord()],
                                 recordIDsToDelete: [])
-            write()
         }
     }
     
@@ -143,7 +146,6 @@ class BTDeviceList: NSObject, ObservableObject {
             if persistent {
                 saveAndDeleteRecord(recordsToSave: [],
                                     recordIDsToDelete: [device.CKRecordID()])
-                write()
             }
         }
     }
@@ -160,7 +162,6 @@ class BTDeviceList: NSObject, ObservableObject {
             if persistent {
                 saveAndDeleteRecord(recordsToSave: [],
                                     recordIDsToDelete: [IDToRemove])
-                write()
             }
         }
     }
@@ -283,7 +284,7 @@ class BTDeviceList: NSObject, ObservableObject {
             if devices[index].setDeviceInfo(key: key, value: value) {
                 // if device info has changed and list is persistent then update...
                 if persistent {
-                    cloudKitManager.CKForceUpdate(deviceRecord: devices[index].asCKRecord(), completionFunction: cloudKitManager.nilUpdateCompletion)
+                    cloudKitManager.CKForceUpdate(ckRecord: devices[index].asCKRecord(), completionFunction: cloudKitManager.nilUpdateCompletion)
                     write()
                 }
             }
@@ -298,7 +299,7 @@ class BTDeviceList: NSObject, ObservableObject {
             if devices[index].setDeviceInfo(key: key, value: value) {
                 // if device info has changed and list is persistent then update...
                 if persistent {
-                    cloudKitManager.CKForceUpdate(deviceRecord: devices[index].asCKRecord(), completionFunction: cloudKitManager.nilUpdateCompletion)
+                    cloudKitManager.CKForceUpdate(ckRecord: devices[index].asCKRecord(), completionFunction: cloudKitManager.nilUpdateCompletion)
                     write()
                 }
             }
@@ -320,7 +321,7 @@ class BTDeviceList: NSObject, ObservableObject {
             if !devices[index].services.contains(service) {
                 devices[index].services.append(service)
                 if persistent {
-                    cloudKitManager.CKForceUpdate(deviceRecord: devices[index].asCKRecord(), completionFunction: cloudKitManager.nilUpdateCompletion)
+                    cloudKitManager.CKForceUpdate(ckRecord: devices[index].asCKRecord(), completionFunction: cloudKitManager.nilUpdateCompletion)
                     write()
                 }
             }
@@ -404,174 +405,47 @@ class BTDeviceList: NSObject, ObservableObject {
             logger.error("Error enconding Devices")
         }
         
-//        saveAndDeleteRecord(recordsToSave: devices.map({$0.asCKRecord()}), recordIDsToDelete: [])
-
     }
 
+    func recordSaveCompletion(recordID: CKRecord.ID) -> Void {
+
+        // Write to JSON cache
+        write()
+        
+    }
     
-    func saveAndDeleteRecord(recordsToSave: [CKRecord],
-                             recordIDsToDelete: [CKRecord.ID]) {
-
-        logger.info("Saving records: \(recordsToSave.map( {$0.recordID} ))")
-        logger.info("Deleting records: \(recordIDsToDelete)")
-
-        let containerName: String = "iCloud.MurrayNet.Aleph"
-        let container = CKContainer(identifier: containerName)
-        let database = container.privateCloudDatabase
-
-        let modifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: recordsToSave, recordIDsToDelete: recordIDsToDelete)
-        modifyRecordsOperation.qualityOfService = .utility
-        modifyRecordsOperation.isAtomic = false
+    func recordDeletionCompletion(recordID: CKRecord.ID) -> Void {
         
-        // recordFetched is a function that gets called for each record retrieved
-        modifyRecordsOperation.perRecordSaveBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
-            switch result {
-            case .success:
-                self.logger.info("Saved \(recordID)")
-                                
-                break
-                
-            case .failure(let error):
-
-                switch error {
-                case CKError.accountTemporarilyUnavailable,
-                    CKError.networkFailure,
-                    CKError.networkUnavailable,
-                    CKError.serviceUnavailable,
-                    CKError.zoneBusy:
-                    
-                    self.logger.error("temporary error")
-                    
-                case CKError.serverRecordChanged:
-                    // Record already exists- shouldn't happen, but!
-                    self.logger.error("record already exists!")
-                    
-                default:
-                    self.logger.error("permanent error")
-                    
-                }
-                
-                self.logger.error("Save failed with error : \(error.localizedDescription)")
-                
-                break
-            }
-
-        }
+        // Write to JSON cache
+        write()
         
-        
-        modifyRecordsOperation.perRecordDeleteBlock = { (recordID: CKRecord.ID, result: Result<Void, any Error>) in
-            switch result {
-            case .success:
-                self.logger.info("deleted and removed \(recordID)")
-                
-                break
-                
-            case .failure(let error):
-                switch error {
-                case CKError.unknownItem:
-                    self.logger.error("item being deleted had not been saved")
-
-                    return
-                default:
-                    self.logger.error("Deletion failed with error : \(error.localizedDescription)")
-                    return
-                }
-            }
-        }
-           
-        
-        modifyRecordsOperation.modifyRecordsResultBlock = { (operationResult : Result<Void, any Error>) in
-        
-            switch operationResult {
-            case .success:
-                self.logger.info("Record modify completed")
-
-                break
-                
-            case .failure(let error):
-                self.logger.error( "modify failed \(String(describing: error))")
-
-                break
-            }
-
-        }
-        
-        database.add(modifyRecordsOperation)
-
     }
     
     
-    func setDevices(deviceList: [BTDevice]) {
-        devices = deviceList
+    private func saveAndDeleteRecord(recordsToSave: [CKRecord],
+                                     recordIDsToDelete: [CKRecord.ID]) {
+        
+        cloudKitManager.saveAndDeleteRecord(recordsToSave: recordsToSave,
+                                            recordIDsToDelete: recordIDsToDelete,
+                                            recordSaveSuccessCompletionFunction: recordSaveCompletion,
+                                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion)
+
+ 
     }
     
 
+    
+    /// Callback functions for CloudKit record fetch
+    /// On block completion copy temporary list to the main device list
+    private func blockFetchCompletion(ckRecordList: [CKRecord]) -> Void {
+        devices = ckRecordList.map( {self.deviceFromCKRecord(record: $0) ?? defaultBTDevices[0]})
+    }
+    
+    
     private func fetchRecordBlock() {
         
-        let pred = NSPredicate(value: true)
-        let containerName: String = "iCloud.MurrayNet.Aleph"
-        let container = CKContainer(identifier: containerName)
-        let database = container.privateCloudDatabase
-        var fetchedDevices: [BTDevice] = []
-
-        let query = CKQuery(recordType: "BTDevices", predicate: pred)
-        query.sortDescriptors = []
-
-        let operation = CKQueryOperation(query: query)
-
-        operation.desiredKeys = ["name", "services", "deviceInfo"]
-        operation.resultsLimit = 200
-        operation.qualityOfService = .utility
-
-        operation.recordMatchedBlock = { recordID, result in
-            switch result {
-            case .success(let record):
-                if let fetchedDevice = self.deviceFromCKRecord(record: record) {
-                    fetchedDevices.append(fetchedDevice)
-                }
-                break
-                
-            case .failure(let error):
-                self.logger.error( "Fetch failed \(String(describing: error))")
-                
-                break
-            }
-        }
-            
-        operation.queryResultBlock = { result in
-
-
-            switch result {
-            case .success:
-
-                self.logger.info("Device fetch complete")
-                self.devices = fetchedDevices
-                
-                break
-                    
-            case .failure(let error):
-
-                switch error {
-                case CKError.accountTemporarilyUnavailable,
-                    CKError.networkFailure,
-                    CKError.networkUnavailable,
-                    CKError.serviceUnavailable,
-                    CKError.zoneBusy:
-//                    CKError.notAuthenticated: //REMOVE!!
-                    
-                    self.logger.log("Temporary device fetch error")
-
-                    
-                default:
-                    self.logger.error("permanent device fetch error")
-                }
-                self.logger.error( "Fetch failed \(String(describing: error))")
-                break
-            }
-
-        }
-        
-        database.add(operation)
+        cloudKitManager.fetchRecordBlock(query: cloudKitManager.BTDeviceQueryOperation(),
+                                         blockCompletionFunction: blockFetchCompletion)
 
     }
 
