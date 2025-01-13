@@ -8,6 +8,7 @@
 import Foundation
 import os
 import HealthKit
+import CloudKit
 
 class ProfileManager: NSObject, ObservableObject {
 
@@ -16,6 +17,10 @@ class ProfileManager: NSObject, ObservableObject {
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "activityProfiles")
+    
+    // Initialise interface to CloudKit
+    let cloudKitManager = CloudKitManager()
+    
     override init() {
 
         super.init()
@@ -26,7 +31,6 @@ class ProfileManager: NSObject, ObservableObject {
         // if no profiles set up then create defaults to get started!
         if profiles.count == 0 {
             self.addDefaults()
-            self.write()
         }
 
     }
@@ -110,8 +114,9 @@ class ProfileManager: NSObject, ObservableObject {
         
         profiles.insert(newActivityProfile, at: 0)
 
-        self.write(sortBeforeWrite: false)
-        
+        // Save to cloudkit - gets saved to local JSON file on completion
+        saveAndDeleteRecord(recordsToSave: [newActivityProfile.asCKRecord()], recordIDsToDelete: [])
+
         // return index of new entry
         return (0)
     }
@@ -124,12 +129,14 @@ class ProfileManager: NSObject, ObservableObject {
             return
         }
         
-        for (index, profile) in profiles.enumerated() {
-            if profile.id == activityProfile.id {
-                profiles.remove(at: index)
-                self.write()
-                return
-            }
+        if let index = profiles.firstIndex(where: { $0.id == activityProfile.id  }) {
+
+            let IDToRemove = profiles[index].CKRecordID()
+            profiles.remove(at: index)
+
+            saveAndDeleteRecord(recordsToSave: [],
+                                recordIDsToDelete: [IDToRemove])
+
         }
     }
 
@@ -146,6 +153,9 @@ class ProfileManager: NSObject, ObservableObject {
                     updatedActivityProfile.lastUsed = Date()
                     profiles[index] = updatedActivityProfile
                     
+                    cloudKitManager.CKForceUpdate(ckRecord: profiles[index].asCKRecord(),
+                                                  completionFunction: cloudKitManager.nilUpdateCompletion)
+
                     self.write(sortBeforeWrite: false)
                 }
 
@@ -166,7 +176,8 @@ class ProfileManager: NSObject, ObservableObject {
         return nil
     }
     
-    func read() {
+    
+    private func read() {
         logger.debug("Trying decode profiles")
         
         // Initialise empty dictionary
@@ -181,11 +192,13 @@ class ProfileManager: NSObject, ObservableObject {
                 
             }
         }
+        
+        fetchRecordBlock()
     }
 
     
     
-    func write(sortBeforeWrite: Bool = true) {
+    private func write(sortBeforeWrite: Bool = true) {
         
         logger.debug("Writing profile!")
         if sortBeforeWrite {
@@ -202,6 +215,48 @@ class ProfileManager: NSObject, ObservableObject {
         } catch {
             logger.error("Error enconding")
         }
+
+    }
+    
+    private func recordSaveCompletion(recordID: CKRecord.ID) -> Void {
+
+        // Write to JSON cache
+        write(sortBeforeWrite: false)
+        
+    }
+    
+    private func recordDeletionCompletion(recordID: CKRecord.ID) -> Void {
+        
+        // Write to JSON cache
+        write(sortBeforeWrite: false)
+        
+    }
+    
+    
+    private func saveAndDeleteRecord(recordsToSave: [CKRecord],
+                                     recordIDsToDelete: [CKRecord.ID]) {
+        
+        cloudKitManager.saveAndDeleteRecord(recordsToSave: recordsToSave,
+                                            recordIDsToDelete: recordIDsToDelete,
+                                            recordSaveSuccessCompletionFunction: recordSaveCompletion,
+                                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion)
+
+ 
+    }
+   
+    /// Callback functions for CloudKit record fetch
+    /// On block completion copy temporary list to the main device list
+    private func blockFetchCompletion(ckRecordList: [CKRecord]) -> Void {
+        DispatchQueue.main.async{
+            self.profiles = ckRecordList.map( {ActivityProfile(record: $0)})
+        }
+    }
+    
+    
+    private func fetchRecordBlock() {
+        
+        cloudKitManager.fetchRecordBlock(query: cloudKitManager.profileQueryOperation(),
+                                         blockCompletionFunction: blockFetchCompletion)
 
     }
     

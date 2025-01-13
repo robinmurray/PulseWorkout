@@ -376,6 +376,7 @@ class BTDeviceList: NSObject, ObservableObject {
             if let loadedBTDevices = try? decoder.decode(type(of: devices), from: savedDevices) {
                 logger.info("\(loadedBTDevices)")
                 devices = loadedBTDevices
+
             }
         }
         

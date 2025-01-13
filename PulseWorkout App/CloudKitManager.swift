@@ -31,6 +31,26 @@ class CloudKitManager: NSObject, ObservableObject {
         
     }
 
+    /// Query definition for fetching Activity Profilesfrom CloudKit
+    func profileQueryOperation() -> CKQueryOperation {
+        let pred = NSPredicate(value: true)
+        let sort = NSSortDescriptor(key: "lastUsed", ascending: false)
+        
+        let query = CKQuery(recordType: "Profile", predicate: pred)
+        query.sortDescriptors = [sort]
+
+        let operation = CKQueryOperation(query: query)
+
+        operation.desiredKeys = ["name", "workoutTypeId", "workoutLocationId",
+                                 "hiLimitAlarmActive", "hiLimitAlarm", "loLimitAlarmActive",
+                                 "loLimitAlarm", "playSound", "playHaptic",
+                                 "constantRepeat", "lockScreen", "lastUsed",
+                                 "autoPause"]
+        
+        return operation
+
+    }
+    
     /// Query definition for fetching Bluetooth devices from CloudKit
     func BTDeviceQueryOperation() -> CKQueryOperation {
         let pred = NSPredicate(value: true)
