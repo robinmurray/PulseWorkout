@@ -84,14 +84,14 @@ class FullActivityRecordCache: NSObject {
     }
 }
 
-class DataCache: NSObject, Codable, ObservableObject {
+class DataCache: CloudKitManager, Codable {
     
     var settingsManager: SettingsManager!
     var testMode: Bool = false
     
-    let cloudKitManager: CloudKitManager = CloudKitManager()
+//    let cloudKitManager: CloudKitManager = CloudKitManager()
     
-    
+/*
     /// FIX! - ALL TO BE REMOVED!
     let containerName: String = "iCloud.MurrayNet.Aleph"
     static var zoneName: String = "Aleph_Zone"
@@ -99,7 +99,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     var container: CKContainer!
     var database: CKDatabase!
     var zoneID: CKRecordZone.ID!
-    
+*/
     @Published var UIRecordSet: [ActivityRecord] = []
 
 
@@ -112,8 +112,8 @@ class DataCache: NSObject, Codable, ObservableObject {
        
     let cacheSize = 50
     let cacheFile = "activityCache.act"
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "dataCache")
+    let localLogger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                             category: "dataCache")
     private var activities: [ActivityRecord] = []
     private var refreshList: [ActivityRecord] = []
    
@@ -129,9 +129,9 @@ class DataCache: NSObject, Codable, ObservableObject {
         self.testMode = testMode
         imageCache = ImageCache(dataCache: self)
         
-        container = CKContainer(identifier: containerName)
-        database = container.privateCloudDatabase
-        zoneID = CKRecordZone.ID(zoneName: DataCache.zoneName)
+//        container = CKContainer(identifier: containerName)
+//        database = container.privateCloudDatabase
+//        zoneID = CKRecordZone.ID(zoneName: DataCache.zoneName)
                 
 /*
         Task {
@@ -177,8 +177,8 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     /// push changes in cache to cloudkit
     private func flushCache() {
-        saveAndDeleteRecord(recordsToSave: toBeSavedCKRecords(),
-                            recordIDsToDelete: toBeDeletedIDs())
+        CKsaveAndDeleteRecord(recordsToSave: toBeSavedCKRecords(),
+                              recordIDsToDelete: toBeDeletedIDs())
     }
     
     
@@ -198,7 +198,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             return
         }
 
-        logger.log("creating zone")
+        localLogger.log("creating zone")
         let newZone = CKRecordZone(zoneID: zoneID)
         _ = try await database.modifyRecordZones(saving: [newZone], deleting: [])
 
@@ -262,7 +262,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         guard let index = cachedIndex(recordID: recordID) else {
             // Record is not in cache, just attempt deletion
-            saveAndDeleteRecord(recordsToSave: [], recordIDsToDelete: [recordID])
+            CKsaveAndDeleteRecord(recordsToSave: [], recordIDsToDelete: [recordID])
             return
         }
                
@@ -270,7 +270,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         activities[index].toDelete = true
         activities[index].deleteTrackRecord()
         
-        logger.debug("DELETED OK :\(index) \(recordID.recordName)")
+        localLogger.debug("DELETED OK :\(index) \(recordID.recordName)")
         _ = write()
         
         flushCache()
@@ -306,7 +306,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             // Replace with changedActivityRecord
             activities.insert(changedActivityRecord, at: index)
             
-            logger.info("Updated cache record at index \(index)")
+            localLogger.info("Updated cache record at index \(index)")
             
             _ = write()
             
@@ -320,7 +320,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                     activities.removeLast()
                 }
                 
-                logger.info("Inserted new cache record at index \(index)")
+                localLogger.info("Inserted new cache record at index \(index)")
                 
                 _ = write()
             }
@@ -344,7 +344,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                 // Replace with changedActivityRecord
                 self.UIRecordSet.insert(changedActivityRecord, at: index)
                 
-                self.logger.info("Updated UI record at index \(index)")
+                self.localLogger.info("Updated UI record at index \(index)")
 
                 
             } else {
@@ -356,13 +356,13 @@ class DataCache: NSObject, Codable, ObservableObject {
                     
                     let newRecordDesc: String = changedActivityRecord.name + " : " + changedActivityRecord.startDateLocal.formatted(Date.ISO8601FormatStyle())
                     
-                    self.logger.info("found startDateLocal = \(recordDesc)")
-                    self.logger.info("Inserting before with : \(newRecordDesc)")
+                    self.localLogger.info("found startDateLocal = \(recordDesc)")
+                    self.localLogger.info("Inserting before with : \(newRecordDesc)")
                      
                     self.UIRecordSet.insert(changedActivityRecord, at: index)
                     
                     
-                    self.logger.info("Inserted new UIRecordSet record at index \(index)")
+                    self.localLogger.info("Inserted new UIRecordSet record at index \(index)")
 
                 }
             }
@@ -428,7 +428,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             
             for activity in JSONData.activities {
 
-                activity.recordID = cloudKitManager.getCKRecordID(recordID: UUID(uuidString: activity.recordName))
+                activity.recordID = getCKRecordID(recordID: UUID(uuidString: activity.recordName))
 
                 // set toSavePublished equal to toSave
                 activity.setToSave(activity.toSave)
@@ -440,7 +440,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             return true
         }
         catch {
-            logger.error("error:\(error.localizedDescription)")
+            localLogger.error("error:\(error.localizedDescription)")
             return false
         }
     }
@@ -451,7 +451,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         guard let cacheURL = CacheURL(fileName: cacheFile, testMode: testMode) else { return false }
         
-        logger.log("Writing cache to JSON file")
+        localLogger.log("Writing cache to JSON file")
 
         do {
             let data = try JSONEncoder().encode(self)
@@ -462,12 +462,12 @@ class DataCache: NSObject, Codable, ObservableObject {
                 return true
             }
             catch {
-                logger.error("error \(error.localizedDescription)")
+                localLogger.error("error \(error.localizedDescription)")
                 return false
             }
 
         } catch {
-            logger.error("Error enconding cache")
+            localLogger.error("Error enconding cache")
             return false
         }
 
@@ -488,29 +488,29 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     private func refreshCache() {
         
-        cloudKitManager.fetchRecordBlock(query: cloudKitManager.activityQuery(startDate: nil),
-                                         blockCompletionFunction: blockFetchCompletion,
-                                         resultsLimit: cacheSize,
-                                         qualityOfService: .userInitiated)
+        fetchRecordBlock(query: activityQuery(startDate: nil),
+                         blockCompletionFunction: blockFetchCompletion,
+                         resultsLimit: cacheSize,
+                         qualityOfService: .userInitiated)
     }
   
     
     func fetchNextBlock() {
                 
         let latestUIDate = UIRecordSet.last?.startDateLocal ?? nil
-        logger.log("Fetch next block with start date \(String(describing: latestUIDate?.formatted()))")
+        localLogger.log("Fetch next block with start date \(String(describing: latestUIDate?.formatted()))")
 
-        cloudKitManager.fetchRecordBlock(query: cloudKitManager.activityQuery(startDate: latestUIDate),
-                                         blockCompletionFunction: nextBlockCompletion,
-                                         resultsLimit: cacheSize,
-                                         qualityOfService: .userInitiated)
+        fetchRecordBlock(query: activityQuery(startDate: latestUIDate),
+                         blockCompletionFunction: nextBlockCompletion,
+                         resultsLimit: cacheSize,
+                         qualityOfService: .userInitiated)
         
     }
     
     
     private func nextBlockCompletion(records : [CKRecord] ) -> Void {
         
-        logger.log("Next block fetch completion")
+        localLogger.log("Next block fetch completion")
         DispatchQueue.main.async {
             self.UIRecordSet += records.map( {ActivityRecord(fromCKRecord: $0, settingsManager: self.settingsManager)})
         }
@@ -519,7 +519,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     func CKForceUpdate(activityCKRecord: CKRecord, completionFunction: @escaping (CKRecord?) -> Void) {
         
-        cloudKitManager.CKForceUpdate(ckRecord: activityCKRecord, completionFunction: completionFunction)
+        forceUpdate(ckRecord: activityCKRecord, completionFunction: completionFunction)
 
     }
    
@@ -528,11 +528,11 @@ class DataCache: NSObject, Codable, ObservableObject {
                      completionFunction: @escaping (ActivityRecord) -> (),
                      completionFailureFunction: @escaping () -> ()) {
 
-        self.logger.log("Fetching track file for record: \(recordID)")
+        self.localLogger.log("Fetching track file for record: \(recordID)")
         
         // check if this record already cached
         if let cachedRecord = fullActivityRecordCache.get(recordID: recordID) {
-            self.logger.log("Required record already cached")
+            self.localLogger.log("Required record already cached")
             completionFunction(cachedRecord)
 
             return
@@ -540,7 +540,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         // TODO - check if record not saved yet!!!
         if let unsavedActivity = activities.filter({$0.recordID == recordID && $0.toSave}).first {
-            self.logger.log("Required record not yet saved, so copying existing object")
+            self.localLogger.log("Required record not yet saved, so copying existing object")
             let unsavedRecord = ActivityRecord(fromActivityRecord: unsavedActivity,
                                                settingsManager: settingsManager)
             fullActivityRecordCache.add(activityRecord: unsavedRecord)
@@ -549,12 +549,12 @@ class DataCache: NSObject, Codable, ObservableObject {
             return
         }
 
-        cloudKitManager.fetchRecord(recordID: recordID,
-                                    completionFunction: { ckRecord in
+        fetchRecord(recordID: recordID,
+                    completionFunction: { ckRecord in
             let record = ActivityRecord(fromCKRecord: ckRecord, settingsManager: self.settingsManager)
             self.fullActivityRecordCache.add(activityRecord: record)
             completionFunction(record) },
-                                    completionFailureFunction: completionFailureFunction)
+                    completionFailureFunction: completionFailureFunction)
         
     }
     
@@ -571,13 +571,13 @@ class DataCache: NSObject, Codable, ObservableObject {
         removeFromCache(recordID: recordID)
     }
     
-    func saveAndDeleteRecord(recordsToSave: [CKRecord],
-                             recordIDsToDelete: [CKRecord.ID]) {
+    func CKsaveAndDeleteRecord(recordsToSave: [CKRecord],
+                               recordIDsToDelete: [CKRecord.ID]) {
 
-        cloudKitManager.saveAndDeleteRecord(recordsToSave: recordsToSave,
-                                            recordIDsToDelete: recordIDsToDelete,
-                                            recordSaveSuccessCompletionFunction: recordSaveCompletion,
-                                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion)
+        saveAndDeleteRecord(recordsToSave: recordsToSave,
+                            recordIDsToDelete: recordIDsToDelete,
+                            recordSaveSuccessCompletionFunction: recordSaveCompletion,
+                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion)
 
     }
     
@@ -591,7 +591,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     private func processRecordDeletedNotification(recordID: CKRecord.ID) {
 
-        logger.log("Processing record deletion: \(recordID)")
+        localLogger.log("Processing record deletion: \(recordID)")
         removeFromCache(recordID: recordID)
         removeFromUI(recordID: recordID)
         
@@ -601,7 +601,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     private func processRecordChangeNofification(record: CKRecord) {
 
         let recordDesc: String = record["name"] ?? "" + " : " + (record["startDateLocal"] as! Date).formatted(Date.ISO8601FormatStyle())
-        logger.log("Processing record change: \(recordDesc)")
+        localLogger.log("Processing record change: \(recordDesc)")
         
         let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: settingsManager)
         
@@ -641,7 +641,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                 break
                 
             case .failure(let error):
-                self.logger.error( "Fetch failed for recordID \(recordID) : \(String(describing: error))")
+                self.localLogger.error( "Fetch failed for recordID \(recordID) : \(String(describing: error))")
                 
                 break
             }
@@ -652,7 +652,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             switch result {
             case .success:
 
-                self.logger.info("Record fetch successfully complete : record count \(recordCount) : min date \(minStartDate!.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))")
+                self.localLogger.info("Record fetch successfully complete : record count \(recordCount) : min date \(minStartDate!.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))")
                 
                 break
                     
@@ -665,13 +665,13 @@ class DataCache: NSObject, Codable, ObservableObject {
                     CKError.serviceUnavailable,
                     CKError.zoneBusy:
                     
-                    self.logger.log("temporary refresh error")
+                    self.localLogger.log("temporary refresh error")
 
                     
                 default:
-                    self.logger.error("permanent refresh error - not retrying")
+                    self.localLogger.error("permanent refresh error - not retrying")
                 }
-                self.logger.error( "Fetch failed \(String(describing: error))")
+                self.localLogger.error( "Fetch failed \(String(describing: error))")
                 break
             }
 

@@ -67,33 +67,6 @@ struct BTDevice: Identifiable, Codable {
         }
         return false
     }
-    
-    
-    /// Create CKRecord.ID for this device
-    func CKRecordID() -> CKRecord.ID {
-        let zoneName = DataCache.zoneName
-        return CKRecord.ID(recordName: id.uuidString, zoneID: CKRecordZone.ID(zoneName: zoneName))
-    }
-    
-    
-    /// Convert device data to CKRecord
-    func asCKRecord() -> CKRecord {
-        let recordType = "BTDevices"
-        let recordID: CKRecord.ID = CKRecordID()
-        let record = CKRecord(recordType: recordType, recordID: recordID)
-        record["name"] = name as CKRecordValue
-        record["services"] = services as CKRecordValue
-        
-        do {
-            let data = try JSONEncoder().encode(deviceInfo)
-            let jsonString = String(data: data, encoding: .utf8) ?? ""
-            record["deviceInfo"] = jsonString as CKRecordValue
-        } catch {
-            logger.error("Error enconding deviceInfo")
-        }
-
-        return record
-    }
 
 }
 

@@ -44,7 +44,6 @@ struct PulseWorkout_Phone_App: App {
         
         
         // Register notifications
-        myBluetoothManager.knownDevices.registerNotifications(notificationManager: myCloudKitNotificationManager)
         myDataCache.registerNotifications(notificationManager: myCloudKitNotificationManager)
         self.profileManager.registerNotifications(notificationManager: myCloudKitNotificationManager)
         

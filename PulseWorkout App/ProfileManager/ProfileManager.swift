@@ -10,16 +10,14 @@ import os
 import HealthKit
 import CloudKit
 
-class ProfileManager: NSObject, ObservableObject {
+class ProfileManager: CloudKitManager {
 
     @Published var profiles: [ActivityProfile] = []
     private var lastSavedProfiles: [ActivityProfile] = []
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "activityProfiles")
-    
-    // Initialise interface to CloudKit
-    let cloudKitManager = CloudKitManager()
+    let localLogger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                             category: "activityProfiles")
+
     
     override init() {
 
@@ -115,8 +113,8 @@ class ProfileManager: NSObject, ObservableObject {
         profiles.insert(newActivityProfile, at: 0)
 
         // Save to cloudkit - gets saved to local JSON file on completion
-        let IDToAdd = cloudKitManager.getCKRecordID(recordID: newActivityProfile.id)
-        saveAndDeleteRecord(recordsToSave: [newActivityProfile.asCKRecord(recordID: IDToAdd)], recordIDsToDelete: [])
+        let IDToAdd = getCKRecordID(recordID: newActivityProfile.id)
+        CKsaveAndDeleteRecord(recordsToSave: [newActivityProfile.asCKRecord(recordID: IDToAdd)], recordIDsToDelete: [])
 
         // return index of new entry
         return (0)
@@ -132,11 +130,11 @@ class ProfileManager: NSObject, ObservableObject {
         
         if let index = profiles.firstIndex(where: { $0.id == activityProfile.id  }) {
 
-            let IDToRemove = cloudKitManager.getCKRecordID(recordID: profiles[index].id)
+            let IDToRemove = getCKRecordID(recordID: profiles[index].id)
             profiles.remove(at: index)
 
-            saveAndDeleteRecord(recordsToSave: [],
-                                recordIDsToDelete: [IDToRemove])
+            CKsaveAndDeleteRecord(recordsToSave: [],
+                                  recordIDsToDelete: [IDToRemove])
 
         }
     }
@@ -154,9 +152,9 @@ class ProfileManager: NSObject, ObservableObject {
                     updatedActivityProfile.lastUsed = Date()
                     profiles[index] = updatedActivityProfile
                     
-                    let CKRecordID = cloudKitManager.getCKRecordID(recordID: profile.id)
-                    cloudKitManager.CKForceUpdate(ckRecord: profiles[index].asCKRecord(recordID: CKRecordID),
-                                                  completionFunction: cloudKitManager.nilUpdateCompletion)
+                    let CKRecordID = getCKRecordID(recordID: profile.id)
+                    forceUpdate(ckRecord: profiles[index].asCKRecord(recordID: CKRecordID),
+                                completionFunction: nilUpdateCompletion)
 
                     self.write(sortBeforeWrite: false)
                 }
@@ -180,7 +178,7 @@ class ProfileManager: NSObject, ObservableObject {
     
     
     private func read() {
-        logger.debug("Trying decode profiles")
+        localLogger.debug("Trying decode profiles")
         
         // Initialise empty dictionary
         // try to read from userDefaults in to this - if fails then use defaults
@@ -188,21 +186,22 @@ class ProfileManager: NSObject, ObservableObject {
         if let savedProfiles = UserDefaults.standard.object(forKey: "ActivityProfiles") as? Data {
             let decoder = JSONDecoder()
             if let loadedProfiles = try? decoder.decode(type(of: profiles), from: savedProfiles) {
-                logger.debug("\(loadedProfiles)")
+                localLogger.debug("\(loadedProfiles)")
                 profiles = loadedProfiles
                 lastSavedProfiles = loadedProfiles
                 
             }
         }
         
-        fetchRecordBlock()
+        fetchRecordBlock(query: profileQueryOperation(),
+                         blockCompletionFunction: blockFetchCompletion)
     }
 
     
     
     private func write(sortBeforeWrite: Bool = true) {
         
-        logger.debug("Writing profile!")
+        localLogger.debug("Writing profile!")
         if sortBeforeWrite {
             let epochDate = NSDate(timeIntervalSince1970: 0) as Date
             profiles = profiles.sorted(by: { $0.lastUsed ?? epochDate > $1.lastUsed ?? epochDate })
@@ -212,10 +211,10 @@ class ProfileManager: NSObject, ObservableObject {
         do {
             let data = try JSONEncoder().encode(profiles)
             let jsonString = String(data: data, encoding: .utf8)
-            logger.debug("JSON : \(String(describing: jsonString))")
+            localLogger.debug("JSON : \(String(describing: jsonString))")
             UserDefaults.standard.set(data, forKey: "ActivityProfiles")
         } catch {
-            logger.error("Error enconding")
+            localLogger.error("Error enconding")
         }
 
     }
@@ -235,13 +234,13 @@ class ProfileManager: NSObject, ObservableObject {
     }
     
     
-    private func saveAndDeleteRecord(recordsToSave: [CKRecord],
+    private func CKsaveAndDeleteRecord(recordsToSave: [CKRecord],
                                      recordIDsToDelete: [CKRecord.ID]) {
         
-        cloudKitManager.saveAndDeleteRecord(recordsToSave: recordsToSave,
-                                            recordIDsToDelete: recordIDsToDelete,
-                                            recordSaveSuccessCompletionFunction: recordSaveCompletion,
-                                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion)
+        saveAndDeleteRecord(recordsToSave: recordsToSave,
+                            recordIDsToDelete: recordIDsToDelete,
+                            recordSaveSuccessCompletionFunction: recordSaveCompletion,
+                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion)
 
  
     }
@@ -255,13 +254,6 @@ class ProfileManager: NSObject, ObservableObject {
     }
     
     
-    private func fetchRecordBlock() {
-        
-        cloudKitManager.fetchRecordBlock(query: cloudKitManager.profileQueryOperation(),
-                                         blockCompletionFunction: blockFetchCompletion)
-
-    }
-    
     
     func registerNotifications(notificationManager: CloudKitNotificationManager) {
         notificationManager.registerNotificationFunctions(recordType: "Profile",
@@ -272,7 +264,7 @@ class ProfileManager: NSObject, ObservableObject {
     
     private func processRecordDeletedNotification(recordID: CKRecord.ID) {
 
-        logger.log("Processing record deletion: \(recordID)")
+        localLogger.log("Processing record deletion: \(recordID)")
 
         if let index = profiles.firstIndex(where: { $0.id!.uuidString == recordID.recordName }) {
             
@@ -291,7 +283,7 @@ class ProfileManager: NSObject, ObservableObject {
     private func processRecordChangeNofification(record: CKRecord) {
 
         let recordDesc: String = record["name"] ?? ""
-        logger.log("Processing record change: \(recordDesc)")
+        localLogger.log("Processing record change: \(recordDesc)")
         
         let profile = ActivityProfile(record: record)
         

@@ -12,7 +12,6 @@ struct ActivityHistoryView: View {
     
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var dataCache: DataCache
-    @ObservedObject var cloudKitManager: CloudKitManager
 
     
     enum NavigationTarget {
@@ -23,7 +22,6 @@ struct ActivityHistoryView: View {
     init(navigationCoordinator: NavigationCoordinator, dataCache: DataCache) {
         self.navigationCoordinator = navigationCoordinator
         self.dataCache = dataCache
-        self.cloudKitManager = dataCache.cloudKitManager
     }
     
     var body: some View {
@@ -68,7 +66,7 @@ struct ActivityHistoryView: View {
                 }
 
             }
-            if !cloudKitManager.fetching && !cloudKitManager.fetchComplete {
+            if !dataCache.fetching && !dataCache.fetchComplete {
               ProgressView()
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .foregroundColor(.black)

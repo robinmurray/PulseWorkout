@@ -14,10 +14,7 @@ class BTDeviceList: NSObject, ObservableObject {
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "BTDeviceList")
-    
-    // Initialise interface to cloudkit for this Object
-    let cloudKitManager = CloudKitManager()
-        
+
     override var description: String {
         return "Device List description <HERE>"
     }
@@ -57,41 +54,6 @@ class BTDeviceList: NSObject, ObservableObject {
     }
     
     
-    func deviceFromCKRecord(record: CKRecord) -> BTDevice? {
-        
-        var deviceInfo: [String:String] = [:]
-        var name: String = ""
-        var services: [String] = []
-        
-        if record.recordType != "BTDevices" {
-            logger.error("Incorrect record type for BT Device")
-            return nil
-        }
-
-        guard let id = UUID(uuidString: record.recordID.recordName) else {
-            logger.error("Failed to decode id for record \(record)")
-            return nil
-        }
-        
-        name = record["name"] ?? "" as String
-        services = record["services"] ?? [] as [String]
-        
-        let jsonDeviceInfo = record["deviceInfo"] ?? "" as String
-        let jsonData = (jsonDeviceInfo as! String).data(using: .utf8) ?? Data()
-
-        let decoder = JSONDecoder()
-        if let tempDeviceInfo = try? decoder.decode(type(of: deviceInfo), from: jsonData) {
-            deviceInfo = tempDeviceInfo
-        }
-        
-        logger.info("read device \(id)  :  \(name)  :  \(services)  :  \(deviceInfo)")
-        return BTDevice(id: id,
-                        name: name,
-                        services: services,
-                        deviceInfo: deviceInfo)
-        
-    }
-    
     
     func empty() -> Bool {
         return devices.count == 0
@@ -100,10 +62,8 @@ class BTDeviceList: NSObject, ObservableObject {
     
     func setDefault() {
         devices = defaultBTDevices
-        if persistent {
-            saveAndDeleteRecord(recordsToSave: devices.map( {$0.asCKRecord()} ),
-                                recordIDsToDelete: [])
-        }
+        if persistent { write() }
+
     }
     
     
@@ -116,10 +76,8 @@ class BTDeviceList: NSObject, ObservableObject {
         }
         devices.append(device)
         
-        if persistent {
-            saveAndDeleteRecord(recordsToSave: [device.asCKRecord()],
-                                recordIDsToDelete: [])
-        }
+        if persistent { write() }
+        
     }
     
     
@@ -143,10 +101,7 @@ class BTDeviceList: NSObject, ObservableObject {
 
             devices.remove(at: index)
             
-            if persistent {
-                saveAndDeleteRecord(recordsToSave: [],
-                                    recordIDsToDelete: [device.CKRecordID()])
-            }
+            if persistent { write() }
         }
     }
     
@@ -156,13 +111,10 @@ class BTDeviceList: NSObject, ObservableObject {
     func remove(peripheral: CBPeripheral) {
         
         if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
-            let IDToRemove = devices[index].CKRecordID()
+
             devices.remove(at: index)
             
-            if persistent {
-                saveAndDeleteRecord(recordsToSave: [],
-                                    recordIDsToDelete: [IDToRemove])
-            }
+            if persistent { write() }
         }
     }
     
@@ -283,10 +235,7 @@ class BTDeviceList: NSObject, ObservableObject {
         if let index = devices.firstIndex(where: { $0.id == device.id }) {
             if devices[index].setDeviceInfo(key: key, value: value) {
                 // if device info has changed and list is persistent then update...
-                if persistent {
-                    cloudKitManager.CKForceUpdate(ckRecord: devices[index].asCKRecord(), completionFunction: cloudKitManager.nilUpdateCompletion)
-                    write()
-                }
+                if persistent { write() }
             }
             
         }
@@ -298,12 +247,8 @@ class BTDeviceList: NSObject, ObservableObject {
         if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
             if devices[index].setDeviceInfo(key: key, value: value) {
                 // if device info has changed and list is persistent then update...
-                if persistent {
-                    cloudKitManager.CKForceUpdate(ckRecord: devices[index].asCKRecord(), completionFunction: cloudKitManager.nilUpdateCompletion)
-                    write()
-                }
+                if persistent { write() }
             }
-            
         }
     }
 
@@ -320,10 +265,7 @@ class BTDeviceList: NSObject, ObservableObject {
         if let index = devices.firstIndex(where: { $0.id == peripheral.identifier }) {
             if !devices[index].services.contains(service) {
                 devices[index].services.append(service)
-                if persistent {
-                    cloudKitManager.CKForceUpdate(ckRecord: devices[index].asCKRecord(), completionFunction: cloudKitManager.nilUpdateCompletion)
-                    write()
-                }
+                if persistent { write() }
             }
         }
 
@@ -380,8 +322,6 @@ class BTDeviceList: NSObject, ObservableObject {
             }
         }
         
-        fetchRecordBlock()
-        
     }
 
     
@@ -407,98 +347,5 @@ class BTDeviceList: NSObject, ObservableObject {
         }
         
     }
-
-    func recordSaveCompletion(recordID: CKRecord.ID) -> Void {
-
-        // Write to JSON cache
-        write()
-        
-    }
-    
-    func recordDeletionCompletion(recordID: CKRecord.ID) -> Void {
-        
-        // Write to JSON cache
-        write()
-        
-    }
-    
-    
-    private func saveAndDeleteRecord(recordsToSave: [CKRecord],
-                                     recordIDsToDelete: [CKRecord.ID]) {
-        
-        cloudKitManager.saveAndDeleteRecord(recordsToSave: recordsToSave,
-                                            recordIDsToDelete: recordIDsToDelete,
-                                            recordSaveSuccessCompletionFunction: recordSaveCompletion,
-                                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion)
-
- 
-    }
-    
-
-    
-    /// Callback functions for CloudKit record fetch
-    /// On block completion copy temporary list to the main device list
-    private func blockFetchCompletion(ckRecordList: [CKRecord]) -> Void {
-        devices = ckRecordList.map( {self.deviceFromCKRecord(record: $0) ?? defaultBTDevices[0]})
-    }
-    
-    
-    private func fetchRecordBlock() {
-        
-        cloudKitManager.fetchRecordBlock(query: cloudKitManager.BTDeviceQueryOperation(),
-                                         blockCompletionFunction: blockFetchCompletion)
-
-    }
-
-    
-    func registerNotifications(notificationManager: CloudKitNotificationManager) {
-        notificationManager.registerNotificationFunctions(recordType: "BTDevices",
-                                                          recordDeletionFunction: processRecordDeletedNotification,
-                                                          recordChangeFunction: processRecordChangeNofification)
-    }
-    
-    
-    private func processRecordDeletedNotification(recordID: CKRecord.ID) {
-
-        logger.log("Processing record deletion: \(recordID)")
-
-        if let index = devices.firstIndex(where: { $0.id.uuidString == recordID.recordName }) {
-            
-            DispatchQueue.main.async {
-
-                self.devices.remove(at: index)
-                
-                self.write()
-            }
-
-        }
-        
-    }
-
-
-    private func processRecordChangeNofification(record: CKRecord) {
-
-        let recordDesc: String = record["name"] ?? ""
-        logger.log("Processing record change: \(recordDesc)")
-        
-        if let device = deviceFromCKRecord(record: record) {
-            
-            DispatchQueue.main.async {
-                if let index = self.devices.firstIndex(where: { $0.id.uuidString == record.recordID.recordName }) {
-
-                    self.devices.remove(at: index)
-                    self.devices.insert(device, at: index)
-                    
-                } else {
-                    self.devices.append(device)
-                }
-                
-                self.write()
-            }
-
-            
-        }
-    }
-    
     
 }

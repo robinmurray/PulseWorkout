@@ -33,6 +33,7 @@ class CloudKitManager: NSObject, ObservableObject {
         zoneName = "Aleph_Zone"
         zoneID = CKRecordZone.ID(zoneName: zoneName)
         
+        super.init()
     }
 
     
@@ -303,7 +304,7 @@ class CloudKitManager: NSObject, ObservableObject {
  
   
    
-    func CKForceUpdate(ckRecord: CKRecord, completionFunction: @escaping (CKRecord?) -> Void) {
+    func forceUpdate(ckRecord: CKRecord, completionFunction: @escaping (CKRecord?) -> Void) {
         
         logger.log("updating \(ckRecord.recordID)")
         

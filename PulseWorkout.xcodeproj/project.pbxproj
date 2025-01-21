@@ -299,7 +299,6 @@
 		E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "PulseWorkout-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElapsedTimeView.swift; sourceTree = "<group>"; };
-		E492BFE42D15B7600050B6E8 /* DCNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCNotificationManager.swift; sourceTree = "<group>"; };
 		E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppDelegate.swift; sourceTree = "<group>"; };
 		E492C0042D19568A0050B6E8 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		E4941E512CD3EAB80063421F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -677,7 +676,6 @@
 				E40F886A2AA5D31400E00F25 /* SimpleXML.swift */,
 				E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */,
 				E492C0042D19568A0050B6E8 /* ImageCache.swift */,
-				E492BFE42D15B7600050B6E8 /* DCNotificationManager.swift */,
 				E4CC66AE2CDBE1A600AA2F9E /* MapManager.swift */,
 				E4941E7A2CD7F2710063421F /* Views */,
 			);
