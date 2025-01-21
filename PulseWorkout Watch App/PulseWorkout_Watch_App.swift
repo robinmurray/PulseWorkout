@@ -21,21 +21,24 @@ struct PulseWorkout_Watch_App: App {
     @ObservedObject var dataCache: DataCache
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var navigationCoordinator: NavigationCoordinator
+    var cloudKitNotificationManager: CloudKitNotificationManager
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "PulseWorkout_Watch_App")
     
     init() {
+        let myCloudKitNotificationManager = CloudKitNotificationManager()
         let mySettingsManager = SettingsManager()
         let myLocationManager = LocationManager(settingsManager: mySettingsManager)
         let myDataCache = DataCache(settingsManager: mySettingsManager)
         let myBluetoothManager = BTDevicesController(requestedServices: nil)
+        
+        self.cloudKitNotificationManager = myCloudKitNotificationManager
 
         self.liveActivityManager = LiveActivityManager(locationManager: myLocationManager,
                                                        bluetoothManager: myBluetoothManager,
                                                        settingsManager: mySettingsManager,
                                                        dataCache: myDataCache)
-        
         self.locationManager = myLocationManager
         self.profileManager = ProfileManager()
         self.settingsManager = mySettingsManager
@@ -43,8 +46,14 @@ struct PulseWorkout_Watch_App: App {
         self.bluetoothManager = myBluetoothManager
         self.navigationCoordinator = NavigationCoordinator()
         
+        
+        // Register notifications
+        myBluetoothManager.knownDevices.registerNotifications(notificationManager: myCloudKitNotificationManager)
+        myDataCache.registerNotifications(notificationManager: myCloudKitNotificationManager)
+        self.profileManager.registerNotifications(notificationManager: myCloudKitNotificationManager)
+        
         // register datacache in app delegate so can perform cache updates
-        appDelegate.dataCache = self.dataCache
+        appDelegate.notificationManager = myCloudKitNotificationManager
     }
 
     /// Manage change of Scene Phase

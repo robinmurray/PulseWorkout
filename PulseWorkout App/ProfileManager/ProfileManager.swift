@@ -115,7 +115,8 @@ class ProfileManager: NSObject, ObservableObject {
         profiles.insert(newActivityProfile, at: 0)
 
         // Save to cloudkit - gets saved to local JSON file on completion
-        saveAndDeleteRecord(recordsToSave: [newActivityProfile.asCKRecord()], recordIDsToDelete: [])
+        let IDToAdd = cloudKitManager.getCKRecordID(recordID: newActivityProfile.id)
+        saveAndDeleteRecord(recordsToSave: [newActivityProfile.asCKRecord(recordID: IDToAdd)], recordIDsToDelete: [])
 
         // return index of new entry
         return (0)
@@ -131,7 +132,7 @@ class ProfileManager: NSObject, ObservableObject {
         
         if let index = profiles.firstIndex(where: { $0.id == activityProfile.id  }) {
 
-            let IDToRemove = profiles[index].CKRecordID()
+            let IDToRemove = cloudKitManager.getCKRecordID(recordID: profiles[index].id)
             profiles.remove(at: index)
 
             saveAndDeleteRecord(recordsToSave: [],
@@ -153,7 +154,8 @@ class ProfileManager: NSObject, ObservableObject {
                     updatedActivityProfile.lastUsed = Date()
                     profiles[index] = updatedActivityProfile
                     
-                    cloudKitManager.CKForceUpdate(ckRecord: profiles[index].asCKRecord(),
+                    let CKRecordID = cloudKitManager.getCKRecordID(recordID: profile.id)
+                    cloudKitManager.CKForceUpdate(ckRecord: profiles[index].asCKRecord(recordID: CKRecordID),
                                                   completionFunction: cloudKitManager.nilUpdateCompletion)
 
                     self.write(sortBeforeWrite: false)
@@ -260,5 +262,54 @@ class ProfileManager: NSObject, ObservableObject {
 
     }
     
+    
+    func registerNotifications(notificationManager: CloudKitNotificationManager) {
+        notificationManager.registerNotificationFunctions(recordType: "Profile",
+                                                          recordDeletionFunction: processRecordDeletedNotification,
+                                                          recordChangeFunction: processRecordChangeNofification)
+    }
+    
+    
+    private func processRecordDeletedNotification(recordID: CKRecord.ID) {
+
+        logger.log("Processing record deletion: \(recordID)")
+
+        if let index = profiles.firstIndex(where: { $0.id!.uuidString == recordID.recordName }) {
+            
+            DispatchQueue.main.async {
+
+                self.profiles.remove(at: index)
+                
+                self.write()
+            }
+
+        }
+        
+    }
+
+
+    private func processRecordChangeNofification(record: CKRecord) {
+
+        let recordDesc: String = record["name"] ?? ""
+        logger.log("Processing record change: \(recordDesc)")
+        
+        let profile = ActivityProfile(record: record)
+        
+
+        DispatchQueue.main.async {
+            if let index = self.profiles.firstIndex(where: { $0.id!.uuidString == record.recordID.recordName }) {
+
+                self.profiles.remove(at: index)
+                self.profiles.insert(profile, at: index)
+                
+            } else {
+                self.profiles.append(profile)
+            }
+            
+            self.write()
+        }
+
+    }
+  
 }
 

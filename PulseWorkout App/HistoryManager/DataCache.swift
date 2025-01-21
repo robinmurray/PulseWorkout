@@ -93,7 +93,6 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     
     /// FIX! - ALL TO BE REMOVED!
-    let serverChangeTokenKey = "ckServerChangeToken"
     let containerName: String = "iCloud.MurrayNet.Aleph"
     static var zoneName: String = "Aleph_Zone"
     
@@ -102,8 +101,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     var zoneID: CKRecordZone.ID!
     
     @Published var UIRecordSet: [ActivityRecord] = []
-    @Published var fetching: Bool = false
-    @Published var fetchComplete: Bool = false
+
 
     // Activity record fetched and used in detail display
     let fullActivityRecordCache: FullActivityRecordCache = FullActivityRecordCache()
@@ -118,7 +116,6 @@ class DataCache: NSObject, Codable, ObservableObject {
                         category: "dataCache")
     private var activities: [ActivityRecord] = []
     private var refreshList: [ActivityRecord] = []
-    private var synchTimer: Timer?
    
     // set CodingKeys to define which variables are stored to JSON file
     private enum CodingKeys: String, CodingKey {
@@ -148,7 +145,7 @@ class DataCache: NSObject, Codable, ObservableObject {
   */
 
         // Create subscription for record change notifications
-        createSubscription()
+//        createSubscription()
         
         if readCache {
             _ = read()
@@ -162,18 +159,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         }
 
     }
-    
-    /// Class function to create a new recordID in correct zone, given a record name
-    class func getCKRecordID(recordName: String) -> CKRecord.ID {
-        return CKRecord.ID(recordName: recordName, zoneID: CKRecordZone.ID(zoneName: zoneName))
-    }
 
-    /// Class function to create a new recordID in correct zone from scratch
-    class func getCKRecordID() -> CKRecord.ID {
-        let recordName = CKRecord.ID().recordName
-        return CKRecord.ID(recordName: recordName, zoneID: CKRecordZone.ID(zoneName: zoneName))
-    }
-    
     
     func refreshUI() {
         
@@ -441,13 +427,9 @@ class DataCache: NSObject, Codable, ObservableObject {
             activities = []
             
             for activity in JSONData.activities {
-//                logger.log("activity \(activity.recordName ?? "xxx")  toBeSaved status \(activity.toSave) -- toDelete status \(activity.toDelete)")
-                // create recordID from recordName as recordID not serialised to JSON
-                activity.recordID = DataCache.getCKRecordID(recordName: activity.recordName)
-//                CKRecord.ID(recordName: activity.recordName, zoneID: zoneID)
-//                activity.recordID = CKRecord.ID(recordName: activity.recordName)
-//                let str = activity.mapSnapshotURL?.absoluteString as! String
-//                logger.log("map snapshot : \(str)")
+
+                activity.recordID = cloudKitManager.getCKRecordID(recordID: UUID(uuidString: activity.recordName))
+
                 // set toSavePublished equal to toSave
                 activity.setToSave(activity.toSave)
                 activities.append(activity)
@@ -470,11 +452,10 @@ class DataCache: NSObject, Codable, ObservableObject {
         guard let cacheURL = CacheURL(fileName: cacheFile, testMode: testMode) else { return false }
         
         logger.log("Writing cache to JSON file")
-//        logger.debug("Activities \(self.activities)")
+
         do {
             let data = try JSONEncoder().encode(self)
-//            let jsonString = String(data: data, encoding: .utf8)
-//            logger.log("JSON : \(String(describing: jsonString))")
+
             do {
                 try data.write(to: cacheURL)
 
@@ -550,19 +531,17 @@ class DataCache: NSObject, Codable, ObservableObject {
         self.logger.log("Fetching track file for record: \(recordID)")
         
         // check if this record already cached
-        let cachedRecord = fullActivityRecordCache.get(recordID: recordID)
-        if cachedRecord != nil {
+        if let cachedRecord = fullActivityRecordCache.get(recordID: recordID) {
             self.logger.log("Required record already cached")
-            completionFunction(cachedRecord!)
+            completionFunction(cachedRecord)
 
             return
         }
         
         // TODO - check if record not saved yet!!!
-        let unsavedActivity = activities.filter({$0.recordID == recordID && $0.toSave})
-        if unsavedActivity.count != 0 {
+        if let unsavedActivity = activities.filter({$0.recordID == recordID && $0.toSave}).first {
             self.logger.log("Required record not yet saved, so copying existing object")
-            let unsavedRecord = ActivityRecord(fromActivityRecord: unsavedActivity[0],
+            let unsavedRecord = ActivityRecord(fromActivityRecord: unsavedActivity,
                                                settingsManager: settingsManager)
             fullActivityRecordCache.add(activityRecord: unsavedRecord)
             completionFunction(unsavedRecord)
@@ -570,50 +549,13 @@ class DataCache: NSObject, Codable, ObservableObject {
             return
         }
 
-        self.logger.log("fetching required record from cloudkit")
-        // CKRecordID contains the zone from which the records should be retrieved
-        let fetchRecordsOperation = CKFetchRecordsOperation(recordIDs: [recordID])
-        fetchRecordsOperation.qualityOfService = .userInitiated
+        cloudKitManager.fetchRecord(recordID: recordID,
+                                    completionFunction: { ckRecord in
+            let record = ActivityRecord(fromCKRecord: ckRecord, settingsManager: self.settingsManager)
+            self.fullActivityRecordCache.add(activityRecord: record)
+            completionFunction(record) },
+                                    completionFailureFunction: completionFailureFunction)
         
-        // recordFetched is a function that gets called for each record retrieved
-        fetchRecordsOperation.perRecordResultBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
-            switch result {
-            case .success(let record):
-                // populate displayActivityRecord - NOTE tcx asset was fetched, so will parse entire track record
-                let record = ActivityRecord(fromCKRecord: record, settingsManager: self.settingsManager)
-                self.fullActivityRecordCache.add(activityRecord: record)
-
-                completionFunction(record)
-
-                break
-                
-            case .failure(let error):
-                self.logger.error( "Fetch failed \(String(describing: error))")
-                completionFailureFunction()
-                
-                break
-            }
-            
-
-        }
-        
-        fetchRecordsOperation.fetchRecordsResultBlock = { (operationResult : Result<Void, any Error>) in
-        
-            switch operationResult {
-            case .success:
-                self.logger.info("Record fetch completed")
-                break
-                
-            case .failure(let error):
-                self.logger.error( "Fetch failed \(String(describing: error))")
-                completionFailureFunction()
-                break
-            }
-
-        }
-        
-        self.database.add(fetchRecordsOperation)
-
     }
     
 
@@ -639,6 +581,34 @@ class DataCache: NSObject, Codable, ObservableObject {
 
     }
     
+    
+    func registerNotifications(notificationManager: CloudKitNotificationManager) {
+        notificationManager.registerNotificationFunctions(recordType: "activity",
+                                                          recordDeletionFunction: processRecordDeletedNotification,
+                                                          recordChangeFunction: processRecordChangeNofification)
+    }
+    
+    
+    private func processRecordDeletedNotification(recordID: CKRecord.ID) {
+
+        logger.log("Processing record deletion: \(recordID)")
+        removeFromCache(recordID: recordID)
+        removeFromUI(recordID: recordID)
+        
+    }
+
+
+    private func processRecordChangeNofification(record: CKRecord) {
+
+        let recordDesc: String = record["name"] ?? "" + " : " + (record["startDateLocal"] as! Date).formatted(Date.ISO8601FormatStyle())
+        logger.log("Processing record change: \(recordDesc)")
+        
+        let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: settingsManager)
+        
+        changeCache(changedActivityRecord: activityRecord)
+        changeUI(changedActivityRecord: activityRecord)
+        
+    }
     
     func fetchAllRecordIDs(recordCompletionFunction: @escaping (CKRecord.ID) -> ()) {
                

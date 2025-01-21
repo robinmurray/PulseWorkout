@@ -17,15 +17,19 @@ struct PulseWorkout_Phone_App: App {
     @ObservedObject var dataCache: DataCache
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var navigationCoordinator: NavigationCoordinator
+    var cloudKitNotificationManager: CloudKitNotificationManager
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     
     
     init() {
+        let myCloudKitNotificationManager = CloudKitNotificationManager()
         let mySettingsManager = SettingsManager()
         let myLocationManager = LocationManager(settingsManager: mySettingsManager)
         let myDataCache = DataCache(settingsManager: mySettingsManager)
         let myBluetoothManager = BTDevicesController(requestedServices: nil)
+        
+        self.cloudKitNotificationManager = myCloudKitNotificationManager
 
         self.liveActivityManager = LiveActivityManager(locationManager: myLocationManager,
                                                        bluetoothManager: myBluetoothManager,
@@ -38,8 +42,14 @@ struct PulseWorkout_Phone_App: App {
         self.bluetoothManager = myBluetoothManager
         self.navigationCoordinator = NavigationCoordinator()
         
+        
+        // Register notifications
+        myBluetoothManager.knownDevices.registerNotifications(notificationManager: myCloudKitNotificationManager)
+        myDataCache.registerNotifications(notificationManager: myCloudKitNotificationManager)
+        self.profileManager.registerNotifications(notificationManager: myCloudKitNotificationManager)
+        
         // register datacache in app delegate so can perform cache updates
-        appDelegate.dataCache = self.dataCache
+        appDelegate.notificationManager = myCloudKitNotificationManager
     }
     
     var body: some Scene {

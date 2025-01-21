@@ -114,16 +114,11 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
         
     }
     
-    /// Create CKRecord.ID for this device
-    func CKRecordID() -> CKRecord.ID {
-        let zoneName = DataCache.zoneName
-        return CKRecord.ID(recordName: (id ?? UUID()).uuidString, zoneID: CKRecordZone.ID(zoneName: zoneName))
-    }
     
     /// Convert device data to CKRecord
-    func asCKRecord() -> CKRecord {
+    func asCKRecord(recordID: CKRecord.ID) -> CKRecord {
         let recordType = "Profile"
-        let recordID: CKRecord.ID = CKRecordID()
+//        let recordID: CKRecord.ID = CKRecordID()
         let record = CKRecord(recordType: recordType, recordID: recordID)
         record["name"] = name as CKRecordValue
         record["workoutTypeId"] = workoutTypeId as CKRecordValue

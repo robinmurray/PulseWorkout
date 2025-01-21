@@ -1,9 +1,10 @@
 //
-//  DCNotificationManager.swift
-//  PulseWorkout Watch App
+//  CloudKitNotificationManager.swift
+//  PulseWorkout
 //
-//  Created by Robin Murray on 20/12/2024.
+//  Created by Robin Murray on 14/01/2025.
 //
+
 
 import Foundation
 import CloudKit
@@ -11,17 +12,34 @@ import UIKit
 #if os(watchOS)
 import WatchKit
 #endif
+import os
 
+class CloudKitNotificationManager: CloudKitManager {
+ 
+#if os(iOS)
+typealias BackgroundFetchResult = UIBackgroundFetchResult
+#endif
+#if os(watchOS)
+typealias BackgroundFetchResult = WKBackgroundFetchResult
+#endif
 
-/// Extension of datacache to manage subscriptions and notifications
-extension DataCache {
+    let serverChangeTokenKey = "ckServerChangeToken"
     
-    #if os(iOS)
-    typealias BackgroundFetchResult = UIBackgroundFetchResult
-    #endif
-    #if os(watchOS)
-    typealias BackgroundFetchResult = WKBackgroundFetchResult
-    #endif
+    struct NotificationFunctions {
+        var recordDeletion: (CKRecord.ID) -> Void
+        var recordChange: (CKRecord) -> Void
+    }
+    
+    /// Dictionary of record types which can be notified, with registered notification functions
+    private var recordTypeNotification: [String: NotificationFunctions] = [:]
+    
+    
+    override init() {
+        super.init()
+        
+        createSubscription()
+    }
+    
     
     /// Function to create a query subscription - NOT CURRENTLY USED!!
     func createQuerySubscription() {
@@ -78,22 +96,22 @@ extension DataCache {
         operation.qualityOfService = .utility
         database.add(operation)
     }
-    
-    
+
+
     /// Set up database change subscription for acivity records
     func createSubscription() {
         
         // Only proceed if the subscription doesn't already exist.
-        guard !UserDefaults.standard.bool(forKey: "didCreateActivitySubscription")
+        guard !UserDefaults.standard.bool(forKey: "didCreateZoneSubscription")
             else { return }
                 
         // Create a subscription with an ID that's unique within the scope of
         // the user's private database.
-        let subscription = CKDatabaseSubscription(subscriptionID: "activity-changes")
+        let subscription = CKDatabaseSubscription(subscriptionID: "zone-changes")
 
 
         // Scope the subscription to just the 'activity' record type.
-        subscription.recordType = "activity"
+//        subscription.recordType = "activity"
 
                 
         // Configure the notification so that the system delivers it silently
@@ -113,7 +131,7 @@ extension DataCache {
                 // to prevent unnecessary trips to the server in later launches.
                 self.logger.info( "Subscription created!")
 
-                UserDefaults.standard.setValue(true, forKey: "didCreateActivitySubscription")
+                UserDefaults.standard.setValue(true, forKey: "didCreateZoneSubscription")
                 break
                 
             case .failure(let error):
@@ -140,7 +158,7 @@ extension DataCache {
         }
         
     }
-    
+
     private func readServerChangeToken() -> CKServerChangeToken? {
         
         let changeTokenData = UserDefaults.standard.data(forKey: serverChangeTokenKey)
@@ -158,7 +176,7 @@ extension DataCache {
         }
         return nil
     }
-    
+
 
 
     public func handleNotification(completionHandler: @escaping (BackgroundFetchResult) -> Void) {
@@ -192,8 +210,8 @@ extension DataCache {
             switch result {
             case .success(let record):
 
-                if record.recordType == "activity" {
-//                    self.processRecordChangeNofification(record: record)
+                if let notificationFunction = self.recordTypeNotification[record.recordType] {
+                    notificationFunction.recordChange(record)
                 }
                 
                 break
@@ -209,8 +227,8 @@ extension DataCache {
         
         operation.recordWithIDWasDeletedBlock = { recordID, recordType in
             
-            if recordType == "activity" {
-//                self.processRecordDeletedNotification(recordID: recordID)
+            if let notificationFunction = self.recordTypeNotification[recordType] {
+                notificationFunction.recordDeletion(recordID)
             }
             
         }
@@ -259,29 +277,15 @@ extension DataCache {
         operation.qualityOfService = .utility
         database.add(operation)
     }
-    
-   /*
-    private func processRecordDeletedNotification(recordID: CKRecord.ID) {
-        
-        logger.log("Processing record deletion: \(recordID)")
-        removeFromCache(recordID: recordID)
-        removeFromUI(recordID: recordID)
-        
-    }
 
-    
-    private func processRecordChangeNofification(record: CKRecord) {
-        let recordDesc: String = record["name"] ?? "" + " : " + (record["startDateLocal"] as! Date).formatted(Date.ISO8601FormatStyle())
-        logger.log("Processing record change: \(recordDesc)")
-        
-        let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: settingsManager)
-        
-        changeCache(changedActivityRecord: activityRecord)
-        changeUI(changedActivityRecord: activityRecord)
-        
-    }
-    */
 
+    func registerNotificationFunctions( recordType: String, recordDeletionFunction: @escaping (CKRecord.ID) -> Void, recordChangeFunction: @escaping (CKRecord) -> Void) {
+        
+        recordTypeNotification[recordType] = NotificationFunctions(recordDeletion: recordDeletionFunction,
+                                                                   recordChange: recordChangeFunction)
+
+    }
     
     
+
 }

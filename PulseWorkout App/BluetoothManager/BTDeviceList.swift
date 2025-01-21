@@ -450,4 +450,55 @@ class BTDeviceList: NSObject, ObservableObject {
 
     }
 
+    
+    func registerNotifications(notificationManager: CloudKitNotificationManager) {
+        notificationManager.registerNotificationFunctions(recordType: "BTDevices",
+                                                          recordDeletionFunction: processRecordDeletedNotification,
+                                                          recordChangeFunction: processRecordChangeNofification)
+    }
+    
+    
+    private func processRecordDeletedNotification(recordID: CKRecord.ID) {
+
+        logger.log("Processing record deletion: \(recordID)")
+
+        if let index = devices.firstIndex(where: { $0.id.uuidString == recordID.recordName }) {
+            
+            DispatchQueue.main.async {
+
+                self.devices.remove(at: index)
+                
+                self.write()
+            }
+
+        }
+        
+    }
+
+
+    private func processRecordChangeNofification(record: CKRecord) {
+
+        let recordDesc: String = record["name"] ?? ""
+        logger.log("Processing record change: \(recordDesc)")
+        
+        if let device = deviceFromCKRecord(record: record) {
+            
+            DispatchQueue.main.async {
+                if let index = self.devices.firstIndex(where: { $0.id.uuidString == record.recordID.recordName }) {
+
+                    self.devices.remove(at: index)
+                    self.devices.insert(device, at: index)
+                    
+                } else {
+                    self.devices.append(device)
+                }
+                
+                self.write()
+            }
+
+            
+        }
+    }
+    
+    
 }

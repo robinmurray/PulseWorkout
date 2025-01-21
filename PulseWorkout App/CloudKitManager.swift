@@ -16,6 +16,8 @@ class CloudKitManager: NSObject, ObservableObject {
     var containerName: String
     var container: CKContainer
     var database: CKDatabase
+    var zoneName: String
+    var zoneID: CKRecordZone.ID
     
     // NOTE: These are global to all fetches
     @Published var fetching: Bool = false
@@ -28,9 +30,41 @@ class CloudKitManager: NSObject, ObservableObject {
         containerName = "iCloud.MurrayNet.Aleph"
         container = CKContainer(identifier: containerName)
         database = container.privateCloudDatabase
+        zoneName = "Aleph_Zone"
+        zoneID = CKRecordZone.ID(zoneName: zoneName)
         
     }
 
+    
+    private func createCKZoneIfNeeded(zoneID: CKRecordZone.ID) async throws {
+
+        guard !UserDefaults.standard.bool(forKey: "zoneCreated") else {
+            return
+        }
+
+        logger.log("creating zone")
+        let newZone = CKRecordZone(zoneID: zoneID)
+        _ = try await database.modifyRecordZones(saving: [newZone], deleting: [])
+
+        UserDefaults.standard.set(true, forKey: "zoneCreated")
+    }
+ 
+    
+    /// Function to create a new recordID in correct zone, given a record name
+    func getCKRecordID(recordID: UUID?) -> CKRecord.ID {
+        
+        let recordName: String = recordID?.uuidString ?? CKRecord.ID().recordName
+        
+        return CKRecord.ID(recordName: recordName, zoneID: zoneID)
+    }
+
+    /// Function to create a new recordID in correct zone from scratch
+    func getCKRecordID() -> CKRecord.ID {
+        let recordName = CKRecord.ID().recordName
+        return CKRecord.ID(recordName: recordName, zoneID: zoneID)
+    }
+    
+    
     /// Query definition for fetching Activity Profilesfrom CloudKit
     func profileQueryOperation() -> CKQueryOperation {
         let pred = NSPredicate(value: true)
@@ -309,5 +343,54 @@ class CloudKitManager: NSObject, ObservableObject {
     }
     
     
+    
+    func fetchRecord(recordID: CKRecord.ID,
+                     completionFunction: @escaping (CKRecord) -> (),
+                     completionFailureFunction: @escaping () -> ()) {
+
+        self.logger.log("Fetching record: \(recordID) from Cloudkit")
+        
+        // CKRecordID contains the zone from which the records should be retrieved
+        let fetchRecordsOperation = CKFetchRecordsOperation(recordIDs: [recordID])
+        fetchRecordsOperation.qualityOfService = .userInitiated
+        
+        // recordFetched is a function that gets called for each record retrieved
+        fetchRecordsOperation.perRecordResultBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
+            switch result {
+            case .success(let record):
+                self.logger.info( "Fetch succeeded : \(recordID)")
+                completionFunction(record)
+
+                break
+                
+            case .failure(let error):
+                self.logger.error( "Fetch failed \(String(describing: error))")
+                completionFailureFunction()
+                
+                break
+            }
+            
+
+        }
+        
+        fetchRecordsOperation.fetchRecordsResultBlock = { (operationResult : Result<Void, any Error>) in
+        
+            switch operationResult {
+            case .success:
+                self.logger.info("Record fetch completed")
+                break
+                
+            case .failure(let error):
+                self.logger.error( "Fetch failed \(String(describing: error))")
+                completionFailureFunction()
+                break
+            }
+
+        }
+        
+        self.database.add(fetchRecordsOperation)
+
+    }
+ 
 }
 

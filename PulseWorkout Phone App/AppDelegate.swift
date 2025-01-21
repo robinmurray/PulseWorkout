@@ -12,7 +12,7 @@ import os
 
 class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
-    var dataCache: DataCache?
+    var notificationManager: CloudKitNotificationManager?
   
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "appDelegate")
@@ -53,9 +53,9 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         logger.info("notification Type : \(String(describing: notificationType))")
         
         // notification type should be query type
-        if (notification?.subscriptionID == "activity-changes") {
+        if (notification?.subscriptionID == "zone-changes") {
 
-            dataCache!.handleNotification(completionHandler: completionHandler)
+            notificationManager!.handleNotification(completionHandler: completionHandler)
 
         }
         
