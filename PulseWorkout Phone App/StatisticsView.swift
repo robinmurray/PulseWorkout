@@ -62,8 +62,8 @@ struct StatisticsView: View {
             Spacer()
             Button("Migrate...") {
                 print("Perform migration")
-                let migrationManager = MigrationManager(dataCache: dataCache)
-                migrationManager.createRecordZone()
+                let migrationManager = MigrationManager()
+                migrationManager.fetchAllRecordsToMove()
             }
  
             Spacer()

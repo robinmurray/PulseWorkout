@@ -71,7 +71,7 @@ class CloudKitManager: NSObject, ObservableObject {
         let pred = NSPredicate(value: true)
         let sort = NSSortDescriptor(key: "lastUsed", ascending: false)
         
-        let query = CKQuery(recordType: "Profile", predicate: pred)
+        let query = CKQuery(recordType: "ActivityProfile", predicate: pred)
         query.sortDescriptors = [sort]
 
         let operation = CKQueryOperation(query: query)
@@ -110,7 +110,7 @@ class CloudKitManager: NSObject, ObservableObject {
             pred = NSPredicate(format: "startDateLocal < %@", startDate! as CVarArg)
         }
         let sort = NSSortDescriptor(key: "startDateLocal", ascending: false)
-        let query = CKQuery(recordType: "activity", predicate: pred)
+        let query = CKQuery(recordType: "Activity", predicate: pred)
         query.sortDescriptors = [sort]
 
         let operation = CKQueryOperation(query: query)

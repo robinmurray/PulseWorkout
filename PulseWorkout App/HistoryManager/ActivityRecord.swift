@@ -331,7 +331,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var maxSpeed: Double = 0
     
     // fields used for storing to Cloudkit only
-    let recordType = "activity"
+    let recordType = "Activity"
     var recordID: CKRecord.ID!
     var recordName: String!
     var tcxAsset: CKAsset?

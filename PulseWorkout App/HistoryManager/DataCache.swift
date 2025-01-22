@@ -583,7 +583,7 @@ class DataCache: CloudKitManager, Codable {
     
     
     func registerNotifications(notificationManager: CloudKitNotificationManager) {
-        notificationManager.registerNotificationFunctions(recordType: "activity",
+        notificationManager.registerNotificationFunctions(recordType: "Activity",
                                                           recordDeletionFunction: processRecordDeletedNotification,
                                                           recordChangeFunction: processRecordChangeNofification)
     }
@@ -616,7 +616,7 @@ class DataCache: CloudKitManager, Codable {
         var minStartDate: Date? = nil
         var recordCount: Int = 0
         let sort = NSSortDescriptor(key: "startDateLocal", ascending: false)
-        let query = CKQuery(recordType: "activity", predicate: pred)
+        let query = CKQuery(recordType: "Activity", predicate: pred)
         query.sortDescriptors = [sort]
 
         let operation = CKQueryOperation(query: query)

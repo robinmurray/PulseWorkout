@@ -9,28 +9,15 @@ import Foundation
 import CloudKit
 import os
 
-class MigrationManager: NSObject {
+class MigrationManager: CloudKitManager {
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
+    let localLogger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "migrationManager")
-    let containerName: String = "iCloud.MurrayNet.Aleph"
-    var container: CKContainer!
-    var database: CKDatabase!
-    var zoneID: CKRecordZone.ID!
-    let zoneName: String = "Aleph_Zone"
-    var tempFileList: [CKRecord.ID : String] = [:]
-    
-    var dataCache: DataCache
-    
-    init(dataCache: DataCache) {
 
-        self.dataCache = dataCache
-        container = CKContainer(identifier: containerName)
-//        container = CKContainer(identifier: "iCloud.CloudKitLesson")
-        database = container.privateCloudDatabase
-        zoneID = CKRecordZone.ID(zoneName: zoneName)
-        
-    }
+    var tempFileList: [CKRecord.ID : String] = [:]
+
+    
+
     
     func createRecordZone() {
 
@@ -44,69 +31,60 @@ class MigrationManager: NSObject {
             
             switch operationResult {
             case .success:
-                self.logger.info("Record zone created success")
+                self.localLogger.info("Record zone created success")
                 self.fetchAllRecordsToMove()
 
                 break
                 
             case .failure(let error):
-                self.logger.error( "Record zone creation error : \(String(describing: error))")
+                self.localLogger.error( "Record zone creation error : \(String(describing: error))")
 
                 break
             }
 
         }
  
-        /*
-        let newZone = CKRecordZone(zoneID: zoneID)
-        Task {
-            do {
-                print("new Zone : \(newZone)")
-                _ = try await database.modifyRecordZones(saving: [newZone], deleting: [])
-            } catch {
-                print("Error creating zone")
-            }
-        }
-*/
+
         
                 database.add(zoneCreationOperation)
     }
     
     func fetchAllRecordsToMove() {
         
-        dataCache.fetchAllRecordIDs(recordCompletionFunction: fetchRecordToMove)
+        fetchAllRecordIDs(recordCompletionFunction: fetchRecordToMove)
         
-//        fetchRecordToMove(recordID: dataCache.UIRecordSet[0].recordID)
     }
     
     func fetchRecordToMove(recordID: CKRecord.ID) {
         
-        dataCache.fetchRecord(recordID: recordID,
-                              completionFunction: moveRecord, completionFailureFunction: failedFetch)
+        fetchRecord(recordID: recordID,
+                    completionFunction: moveRecord,
+                    completionFailureFunction: failedFetch)
     }
     
-    func moveRecord(record: ActivityRecord) -> Void {
-        logger.info("Fetched record : \(record.name)  ID : \(record.recordID)")
+    func moveRecord(CKrecord: CKRecord) -> Void {
+        let record = ActivityRecord(fromCKRecord: CKrecord, settingsManager: SettingsManager())
+        localLogger.info("Fetched record : \(record.name)  ID : \(record.recordID)")
         record.recordID = CKRecord.ID(recordName: record.recordName, zoneID: zoneID)
         let ckRecord = record.asCKRecord()
         if record.saveTrackRecord() {
             tempFileList[record.recordID] = record.tcxFileName!
             saveAndDeleteRecord(recordsToSave: [ckRecord], recordIDsToDelete: [])
         } else {
-            logger.error("Failed to save track record")
+            localLogger.error("Failed to save track record")
         }
         
     }
     
     func failedFetch() -> Void {
-        logger.info("Fetch Failed")
+        localLogger.info("Fetch Failed")
     }
     
     func saveAndDeleteRecord(recordsToSave: [CKRecord],
                              recordIDsToDelete: [CKRecord.ID]) {
 
-        self.logger.log("Saving records: \(recordsToSave.map( {$0.recordID} ))")
-        self.logger.log("Deleting records: \(recordIDsToDelete)")
+        self.localLogger.log("Saving records: \(recordsToSave.map( {$0.recordID} ))")
+        self.localLogger.log("Deleting records: \(recordIDsToDelete)")
 
 
         let modifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: recordsToSave, recordIDsToDelete: recordIDsToDelete)
@@ -120,7 +98,7 @@ class MigrationManager: NSObject {
                 // populate displayActivityRecord - NOTE tcx asset was fetched, so will parse entire track record
                 
 //                guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
-                self.logger.log("Saved \(record)")
+                self.localLogger.log("Saved \(record)")
                 
 //                savedActivityRecord.deleteTrackRecord()
                 break
@@ -134,11 +112,11 @@ class MigrationManager: NSObject {
                     CKError.serviceUnavailable,
                     CKError.zoneBusy:
                     
-                    self.logger.log("temporary error")
+                    self.localLogger.log("temporary error")
                     
                 case CKError.serverRecordChanged:
                     // Record already exists- shouldn't happen, but!
-                    self.logger.error("record already exists!")
+                    self.localLogger.error("record already exists!")
 //                    guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
 //                    savedActivityRecord.deleteTrackRecord()
 //                    savedActivityRecord.setToSave(false)
@@ -146,11 +124,11 @@ class MigrationManager: NSObject {
 //                    _ = self.write()
                     
                 default:
-                    self.logger.error("permanent error")
+                    self.localLogger.error("permanent error")
                     
                 }
                 
-                self.logger.error("Save failed with error : \(error.localizedDescription)")
+                self.localLogger.error("Save failed with error : \(error.localizedDescription)")
                 
                 break
             }
@@ -161,7 +139,7 @@ class MigrationManager: NSObject {
         modifyRecordsOperation.perRecordDeleteBlock = { (recordID: CKRecord.ID, result: Result<Void, any Error>) in
             switch result {
             case .success:
-                self.logger.log("deleted and removed \(recordID)")
+                self.localLogger.log("deleted and removed \(recordID)")
  //               self.removeFromCache(recordID: recordID)
                 
                 break
@@ -169,11 +147,11 @@ class MigrationManager: NSObject {
             case .failure(let error):
                 switch error {
                 case CKError.unknownItem:
-                    self.logger.debug("item being deleted had not been saved")
+                    self.localLogger.debug("item being deleted had not been saved")
 //                    self.removeFromCache(recordID: recordID)
                     return
                 default:
-                    self.logger.error("Deletion failed with error : \(error.localizedDescription)")
+                    self.localLogger.error("Deletion failed with error : \(error.localizedDescription)")
                     return
                 }
             }
@@ -183,12 +161,12 @@ class MigrationManager: NSObject {
         
             switch operationResult {
             case .success:
-                self.logger.info("Record modify completed")
+                self.localLogger.info("Record modify completed")
 
                 break
                 
             case .failure(let error):
-                self.logger.error( "modify failed \(String(describing: error))")
+                self.localLogger.error( "modify failed \(String(describing: error))")
 
                 break
             }
@@ -207,12 +185,83 @@ class MigrationManager: NSObject {
         if tURL != nil {
             do {
                 try FileManager.default.removeItem(at: tURL!)
-                    logger.debug("file has been deleted \(fileName)")
+                localLogger.debug("file has been deleted \(fileName)")
             } catch {
-                logger.error("error \(error)")
+                localLogger.error("error \(error)")
             }
         }
     }
-    
+  
+    func fetchAllRecordIDs(recordCompletionFunction: @escaping (CKRecord.ID) -> ()) {
+               
+        let pred = NSPredicate(value: true)
+        var minStartDate: Date? = nil
+        var recordCount: Int = 0
+        let sort = NSSortDescriptor(key: "startDateLocal", ascending: false)
+        let query = CKQuery(recordType: "Activity", predicate: pred)
+        query.sortDescriptors = [sort]
+
+        let operation = CKQueryOperation(query: query)
+
+        operation.desiredKeys = ["name", "startDateLocal"]
+        operation.qualityOfService = .userInitiated
+        operation.resultsLimit = 200
+
+
+        operation.recordMatchedBlock = { recordID, result in
+            switch result {
+            case .success(let record):
+                recordCompletionFunction(recordID)
+                recordCount += 1
+                let startDate: Date = record["startDateLocal"]  ?? Date() as Date
+                if minStartDate == nil {
+                    minStartDate = startDate
+                } else {
+                    minStartDate = min(startDate, minStartDate!)
+                }
+                
+                break
+                
+            case .failure(let error):
+                self.localLogger.error( "Fetch failed for recordID \(recordID) : \(String(describing: error))")
+                
+                break
+            }
+        }
+            
+        operation.queryResultBlock = { result in
+
+            switch result {
+            case .success:
+
+                self.localLogger.info("Record fetch successfully complete : record count \(recordCount) : min date \(minStartDate!.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))")
+                
+                break
+                    
+            case .failure(let error):
+
+                switch error {
+                case CKError.accountTemporarilyUnavailable,
+                    CKError.networkFailure,
+                    CKError.networkUnavailable,
+                    CKError.serviceUnavailable,
+                    CKError.zoneBusy:
+                    
+                    self.localLogger.log("temporary refresh error")
+
+                    
+                default:
+                    self.localLogger.error("permanent refresh error - not retrying")
+                }
+                self.localLogger.error( "Fetch failed \(String(describing: error))")
+                break
+            }
+
+        }
+        
+        database.add(operation)
+
+    }
+
 
 }

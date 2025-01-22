@@ -55,7 +55,7 @@ typealias BackgroundFetchResult = WKBackgroundFetchResult
         // Create a subscription and scope it to the 'activity' record type.
         // Provide a unique identifier for the subscription and declare the
         // circumstances for invoking it.
-        let subscription = CKQuerySubscription(recordType: "activity",
+        let subscription = CKQuerySubscription(recordType: "Activity",
                                                predicate: predicate,
                                                subscriptionID: "activity-changes",
                                                options: [.firesOnRecordCreation,
@@ -111,7 +111,7 @@ typealias BackgroundFetchResult = WKBackgroundFetchResult
 
 
         // Scope the subscription to just the 'activity' record type.
-//        subscription.recordType = "activity"
+//        subscription.recordType = "Activity"
 
                 
         // Configure the notification so that the system delivers it silently

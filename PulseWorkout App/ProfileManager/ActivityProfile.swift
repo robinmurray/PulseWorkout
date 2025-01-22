@@ -92,7 +92,7 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
         let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                             category: "ActivityProfile")
 
-        if record.recordType != "Profile" {
+        if record.recordType != "ActivityProfile" {
             logger.error("Incorrect record type for Activity Profile")
 
         }
@@ -117,7 +117,7 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
     
     /// Convert device data to CKRecord
     func asCKRecord(recordID: CKRecord.ID) -> CKRecord {
-        let recordType = "Profile"
+        let recordType = "ActivityProfile"
 //        let recordID: CKRecord.ID = CKRecordID()
         let record = CKRecord(recordType: recordType, recordID: recordID)
         record["name"] = name as CKRecordValue

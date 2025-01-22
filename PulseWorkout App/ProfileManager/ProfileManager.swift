@@ -256,7 +256,7 @@ class ProfileManager: CloudKitManager {
     
     
     func registerNotifications(notificationManager: CloudKitNotificationManager) {
-        notificationManager.registerNotificationFunctions(recordType: "Profile",
+        notificationManager.registerNotificationFunctions(recordType: "ActivityProfile",
                                                           recordDeletionFunction: processRecordDeletedNotification,
                                                           recordChangeFunction: processRecordChangeNofification)
     }
