@@ -215,6 +215,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var TSSEstimatebyHRZone: [Double] = []
     var movingTimebyHRZone: [Double] = []
     
+    var hasLocationData: Bool = false
+    var hasHRData: Bool = false
+    var hasPowerData: Bool = false
+    
     var autoPause: Bool = true
     var isPaused: Bool = false
     
@@ -310,6 +314,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         TSSEstimatebyHRZone = fromActivityRecord.TSSEstimatebyHRZone
         movingTimebyHRZone = fromActivityRecord.movingTimebyHRZone
         
+        hasLocationData = fromActivityRecord.hasLocationData
+        hasHRData = fromActivityRecord.hasHRData
+        hasPowerData = fromActivityRecord.hasPowerData
         
         
         setToSave(fromActivityRecord.toSave)
@@ -557,11 +564,9 @@ extension ActivityRecord {
              activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
              stravaSaveStatus, stravaId, trackPointGap, TSS, FTP, powerZoneLimits, TSSbyPowerZone, movingTimebyPowerZone,
              thesholdHR, estimatedTSSbyHR, HRZoneLimits, TSSEstimatebyHRZone, movingTimebyHRZone,
-             totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL
+             totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL,
+             hasLocationData, hasHRData, hasPowerData
     }
-    
-    
-    
     
 }
 
@@ -750,6 +755,9 @@ extension ActivityRecord {
         activityRecord["TSSEstimatebyHRZone"] = TSSEstimatebyHRZone
         activityRecord["movingTimebyHRZone"] = movingTimebyHRZone
         
+        activityRecord["hasLocationData"] = hasLocationData
+        activityRecord["hasHRData"] = hasHRData
+        activityRecord["hasPowerData"] = hasPowerData
         
         if saveTrackRecord() {
             logger.debug("creating asset!")
@@ -810,6 +818,10 @@ extension ActivityRecord {
         HRZoneLimits = (activityRecord["HRZoneLimits"] ?? []) as [Int]
         TSSEstimatebyHRZone = (activityRecord["TSSEstimatebyHRZone"] ?? []) as [Double]
         movingTimebyHRZone = (activityRecord["movingTimebyHRZone"] ?? []) as [Double]
+        
+        hasLocationData = (activityRecord["hasLocationData"] ?? true) as Bool
+        hasHRData = (activityRecord["hasHRData"] ?? true) as Bool
+        hasPowerData = (activityRecord["hasPowerData"] ?? true) as Bool
         
         
         mapSnapshotAsset = activityRecord["mapSnapshot"] as CKAsset?
@@ -1105,10 +1117,12 @@ extension ActivityRecord {
             case "latlng":
                 latitudeSeries = stream.data!.map({ ($0 as? [Double?] ?? [nil, nil])[0] })
                 longitudeSeries = stream.data!.map({ ($0 as? [Double?] ?? [nil, nil])[1] })
+                hasLocationData = true
                 break
 
             case "heartrate":
                 heartRateSeries = stream.data!.map({ $0 as? Double? ?? nil })
+                hasHRData = true
                 break
                 
             case "altitude":
@@ -1121,6 +1135,7 @@ extension ActivityRecord {
                 
             case "watts":
                 wattsSeries = stream.data!.map({ $0 as? Int? ?? nil })
+                hasPowerData = true
                 break
                 
             case "velocity_smooth":
@@ -1299,6 +1314,7 @@ extension ActivityRecord {
     func set(heartRate: Double?) {
 
         self.heartRate = heartRate
+        self.hasHRData = true
         if (heartRate ?? 0) > maxHeartRate {
             self.maxHeartRate = heartRate ?? 0
         }
@@ -1330,6 +1346,7 @@ extension ActivityRecord {
     func set(watts: Int?) {
 
         self.watts = watts
+        self.hasPowerData = true
         if (watts ?? 0) > maxPower {
             self.maxPower = watts ?? 0
         }
@@ -1376,12 +1393,14 @@ extension ActivityRecord {
     func set(latitude: Double?) {
         
         self.latitude = latitude
+        self.hasLocationData = true
 
     }
     
     func set(longitude: Double?) {
         
         self.longitude = longitude
+        self.hasLocationData = true
 
     }
 

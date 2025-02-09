@@ -91,12 +91,9 @@ extension ActivityRecord {
     
     func getMapSnapshot(dataCache: DataCache) {
         
-        /// FIX - if !hasLocationData...
-        /*
-        if workoutLocationId == HKWorkoutSessionLocationType.indoor.rawValue {
+        if !(hasLocationData) {
             return
         }
-        */
         
         self.dataCache = dataCache
 

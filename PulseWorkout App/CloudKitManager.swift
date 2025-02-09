@@ -122,7 +122,8 @@ class CloudKitManager: NSObject, ObservableObject {
                                  "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit",
                                  "mapSnapshot", "stravaId", "stravaSaveStatus", "trackPointGap",
                                  "TSS", "FTP", "powerZoneLimits", "TSSbyPowerZone", "movingTimebyPowerZone",
-                                 "thesholdHR", "estimatedTSSbyHR", "HRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone"]
+                                 "thesholdHR", "estimatedTSSbyHR", "HRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone",
+                                 "hasLocationData", "hasHRData", "hasPowerData"]
         
         return operation
         
