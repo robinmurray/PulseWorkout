@@ -1,6 +1,15 @@
 {
-  "originHash" : "83ffce27527b281518faad7eba754e9f0ce57b67740a62356e3d9b6ced46e1b2",
+  "originHash" : "c540ef450a27608a43a68da09b4525ad2340953cfef2bf6c2493423642350eff",
   "pins" : [
+    {
+      "identity" : "alamofire",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/Alamofire/Alamofire.git",
+      "state" : {
+        "revision" : "747c8db8d57b68d5e35275f10c92d55f982adbd4",
+        "version" : "4.9.1"
+      }
+    },
     {
       "identity" : "gzipswift",
       "kind" : "remoteSourceControl",
@@ -8,6 +17,15 @@
       "state" : {
         "revision" : "731037f6cc2be2ec01562f6597c1d0aa3fe6fd05",
         "version" : "6.0.1"
+      }
+    },
+    {
+      "identity" : "swiftyjson",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/SwiftyJSON/SwiftyJSON.git",
+      "state" : {
+        "revision" : "af76cf3ef710b6ca5f8c05f3a31307d44a3c5828",
+        "version" : "5.0.2"
       }
     }
   ],

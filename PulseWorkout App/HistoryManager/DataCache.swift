@@ -91,15 +91,7 @@ class DataCache: CloudKitManager, Codable {
     
 //    let cloudKitManager: CloudKitManager = CloudKitManager()
     
-/*
-    /// FIX! - ALL TO BE REMOVED!
-    let containerName: String = "iCloud.MurrayNet.Aleph"
-    static var zoneName: String = "Aleph_Zone"
-    
-    var container: CKContainer!
-    var database: CKDatabase!
-    var zoneID: CKRecordZone.ID!
-*/
+
     @Published var UIRecordSet: [ActivityRecord] = []
 
 
@@ -600,7 +592,7 @@ class DataCache: CloudKitManager, Codable {
 
     private func processRecordChangeNofification(record: CKRecord) {
 
-        let recordDesc: String = record["name"] ?? "" + " : " + (record["startDateLocal"] as! Date).formatted(Date.ISO8601FormatStyle())
+        let recordDesc: String = record["name"] ?? "" + " : " + (record["startDateLocal"] as? Date ?? Date(timeIntervalSince1970: 0)).formatted(Date.ISO8601FormatStyle())
         localLogger.log("Processing record change: \(recordDesc)")
         
         let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: settingsManager)

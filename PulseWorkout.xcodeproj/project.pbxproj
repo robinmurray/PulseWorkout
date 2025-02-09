@@ -86,6 +86,7 @@
 		E46EF0CA2955F615006FA603 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C92955F615006FA603 /* LiveActivityManager.swift */; };
 		E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
 		E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */; };
+		E48F92CC2D4B8B8D00278003 /* StravaSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E48F92CB2D4B8B8D00278003 /* StravaSwift */; };
 		E492BFE92D1835530050B6E8 /* WatchAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */; };
 		E492C0052D19568A0050B6E8 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492C0042D19568A0050B6E8 /* ImageCache.swift */; };
 		E492C0062D19568A0050B6E8 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492C0042D19568A0050B6E8 /* ImageCache.swift */; };
@@ -364,6 +365,7 @@
 			files = (
 				E4094BBE2CD0CB7500915CCB /* Gzip in Frameworks */,
 				E4094BC02CD0CB9700915CCB /* HealthKit.framework in Frameworks */,
+				E48F92CC2D4B8B8D00278003 /* StravaSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -851,6 +853,7 @@
 			name = "PulseWorkout Phone App";
 			packageProductDependencies = (
 				E4094BBD2CD0CB7500915CCB /* Gzip */,
+				E48F92CB2D4B8B8D00278003 /* StravaSwift */,
 			);
 			productName = "PulseWorkout Phone App";
 			productReference = E4094B8B2CD0C22800915CCB /* PulseWorkout Phone App.app */;
@@ -1023,6 +1026,7 @@
 			mainGroup = E46EF07129537CA0006FA603;
 			packageReferences = (
 				E46121FF2ACB1CA500E07749 /* XCRemoteSwiftPackageReference "GzipSwift" */,
+				E48F92CA2D4B8B8D00278003 /* XCLocalSwiftPackageReference "../StravaSwift-Local" */,
 			);
 			productRefGroup = E46EF07929537CA1006FA603 /* Products */;
 			projectDirPath = "";
@@ -1917,6 +1921,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		E48F92CA2D4B8B8D00278003 /* XCLocalSwiftPackageReference "../StravaSwift-Local" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = "../StravaSwift-Local";
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		E46121FF2ACB1CA500E07749 /* XCRemoteSwiftPackageReference "GzipSwift" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -1938,6 +1949,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = E46121FF2ACB1CA500E07749 /* XCRemoteSwiftPackageReference "GzipSwift" */;
 			productName = Gzip;
+		};
+		E48F92CB2D4B8B8D00278003 /* StravaSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = StravaSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -48,6 +48,9 @@ class SettingsManager: NSObject, ObservableObject  {
     /// The number of seconds to average power over on the cycle power graph
     @Published var cyclePowerGraphSeconds: Int
     
+    /// Whether to fetch data from Strava
+    @Published var fetchFromStrava: Bool = true
+    
     override init() {
         
         transmitHR = UserDefaults.standard.bool(forKey: "transmitHR")

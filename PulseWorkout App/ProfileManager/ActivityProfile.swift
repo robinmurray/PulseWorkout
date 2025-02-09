@@ -8,7 +8,7 @@
 import Foundation
 import CloudKit
 import os
-
+import HealthKit
 
 /** The main data structure for maintaining workout / profile infromation */
 struct ActivityProfile: Codable, Identifiable, Equatable {
@@ -23,6 +23,9 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
     
     /// Apple HK workout type.
     var workoutTypeId: UInt
+    
+    /// Strava activity type
+    var stravaType: String
     
     /// Apple HK workout location.
     var workoutLocationId: Int
@@ -74,6 +77,7 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
         self.name = name
         self.workoutTypeId = workoutTypeId
         self.workoutLocationId = workoutLocationId
+        self.stravaType = HKWorkoutActivityType(rawValue: self.workoutTypeId)?.defaultStravaType ?? "Ride"
         self.hiLimitAlarmActive = hiLimitAlarmActive
         self.hiLimitAlarm = hiLimitAlarm
         self.loLimitAlarmActive = loLimitAlarmActive
@@ -112,6 +116,8 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
         lastUsed = record["lastUsed"] as Date?
         autoPause = record["autoPause"] ?? true as Bool
         
+        // FIX!
+        stravaType = HKWorkoutActivityType(rawValue: self.workoutTypeId)?.defaultStravaType ?? "Ride"
     }
     
     

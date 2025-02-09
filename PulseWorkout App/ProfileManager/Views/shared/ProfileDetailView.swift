@@ -13,7 +13,7 @@ struct ProfileDetailForm: View {
   
     @Binding var profile: ActivityProfile
    
-    var workoutTypes: [HKWorkoutActivityType] = [.crossTraining, .cycling, .mixedCardio, .paddleSports, .rowing, .running, .walking]
+    var workoutTypes: [HKWorkoutActivityType] = [.crossTraining, .cycling, .flexibility, .functionalStrengthTraining, .mixedCardio, .paddleSports, .rowing, .running, .walking]
     var workoutLocations: [HKWorkoutSessionLocationType] = [.indoor, .outdoor]
 
     

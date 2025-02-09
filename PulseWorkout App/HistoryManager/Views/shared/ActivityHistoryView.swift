@@ -13,6 +13,7 @@ struct ActivityHistoryView: View {
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var dataCache: DataCache
 
+    @State var stravaFetchInProgress: Bool = false
     
     enum NavigationTarget {
         case ActivityDetailView
@@ -107,7 +108,28 @@ struct ActivityHistoryView: View {
         }
     #endif
         .refreshable {
+
+#if os(watchOS)
+            print("REFRESHING!!!")
             dataCache.refreshUI()
+#endif
+#if os(iOS)
+            if dataCache.settingsManager.fetchFromStrava {
+                if !stravaFetchInProgress {
+                    stravaFetchInProgress = true
+                    StravaFetchLatestActivities(dataCache: dataCache,
+                                                completionHandler: { stravaFetchInProgress = false
+                                                                     dataCache.refreshUI() },
+                                                failureCompletionHandler: { stravaFetchInProgress = false
+                                                                            dataCache.refreshUI()}).execute()
+                }
+            }
+            else {
+                dataCache.refreshUI()
+            }
+
+            
+#endif
         }
 
     }

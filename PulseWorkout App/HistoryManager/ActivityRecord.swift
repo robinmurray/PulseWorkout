@@ -10,6 +10,10 @@ import Gzip
 import CloudKit
 import os
 import SwiftUI
+import HealthKit
+#if os(iOS)
+import StravaSwift
+#endif
 
 enum StravaSaveStatus: Int {
     case dontSave = 0
@@ -161,8 +165,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var workoutLocationId: Int = 1
     
     var name: String = "Morning Ride"
-    var type: String = "Ride"
-    var sportType = "Ride"
+    var stravaType: String = "Ride"
+//    var sportType = "Ride"
     let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
     
     var startDateLocal: Date = Date()
@@ -176,6 +180,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var hiHRLimit: Int?
     var loHRLimit: Int?
     var stravaSaveStatus: Int = StravaSaveStatus.dontSave.rawValue
+    var stravaId: Int?          // id of this record in Strava
     var tcxFileName: String?    // Temporary cache file for tcx file
     var JSONFileName: String?   // Temporary cache file for JSON serialisation of activity record
     
@@ -195,6 +200,20 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var altitudeMeters: Double?
     var distanceMeters: Double = 0
     
+    // Time between logging data readings
+    var trackPointGap: Int = ACTIVITY_RECORDING_INTERVAL
+    
+    var TSS: Double?
+    var FTP: Int?
+    var powerZoneLimits: [Int] = []
+    var TSSbyPowerZone: [Double] = []
+    var movingTimebyPowerZone: [Double] = []
+    
+    var thesholdHR: Int?
+    var estimatedTSSbyHR: Double?
+    var HRZoneLimits: [Int] = []
+    var TSSEstimatebyHRZone: [Double] = []
+    var movingTimebyHRZone: [Double] = []
     
     var autoPause: Bool = true
     var isPaused: Bool = false
@@ -234,7 +253,15 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         self.settingsManager = settingsManager
         self.fromCKRecord(activityRecord: fromCKRecord)
     }
-  
+    
+    #if os(iOS)
+    init(fromStravaActivity: StravaActivity, settingsManager: SettingsManager) {
+        super.init()
+        self.settingsManager = settingsManager
+        self.fromStravaActivity(fromStravaActivity)
+    }
+    #endif
+    
     // Initialise from another Acivity Record and take a deep copy -- NOTE will have same recordID!
     init(fromActivityRecord: ActivityRecord, settingsManager: SettingsManager) {
         super.init()
@@ -243,10 +270,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         recordID = fromActivityRecord.recordID
         recordName = fromActivityRecord.recordName
         name = fromActivityRecord.name
-        type = fromActivityRecord.type
+        stravaType = fromActivityRecord.stravaType
         workoutTypeId = fromActivityRecord.workoutTypeId
         workoutLocationId = fromActivityRecord.workoutLocationId
-        sportType = fromActivityRecord.sportType
+//        sportType = fromActivityRecord.sportType
         startDateLocal = fromActivityRecord.startDateLocal
         elapsedTime = fromActivityRecord.elapsedTime
         pausedTime = fromActivityRecord.pausedTime
@@ -268,6 +295,22 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         totalAscent = fromActivityRecord.totalAscent
         totalDescent = fromActivityRecord.totalDescent
         stravaSaveStatus = fromActivityRecord.stravaSaveStatus
+        stravaId = fromActivityRecord.stravaId
+        trackPointGap = fromActivityRecord.trackPointGap
+        
+        TSS = fromActivityRecord.TSS
+        FTP = fromActivityRecord.FTP
+        powerZoneLimits = fromActivityRecord.powerZoneLimits
+        TSSbyPowerZone = fromActivityRecord.TSSbyPowerZone
+        movingTimebyPowerZone = fromActivityRecord.movingTimebyPowerZone
+        
+        thesholdHR = fromActivityRecord.thesholdHR
+        estimatedTSSbyHR = fromActivityRecord.estimatedTSSbyHR
+        HRZoneLimits = fromActivityRecord.HRZoneLimits
+        TSSEstimatebyHRZone = fromActivityRecord.TSSEstimatebyHRZone
+        movingTimebyHRZone = fromActivityRecord.movingTimebyHRZone
+        
+        
         
         setToSave(fromActivityRecord.toSave)
 
@@ -431,12 +474,13 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
     func start(activityProfile: ActivityProfile, startDate: Date) {
     
-        type = "Ride"
-        sportType = "Ride"
+//        type = "Ride"
+//        sportType = "Ride"
         startDateLocal = startDate
         hiHRLimit = activityProfile.hiLimitAlarmActive ? activityProfile.hiLimitAlarm : nil
         loHRLimit = activityProfile.loLimitAlarmActive ? activityProfile.loLimitAlarm : nil
         workoutTypeId = activityProfile.workoutTypeId
+        stravaType = activityProfile.stravaType
         workoutLocationId = activityProfile.workoutLocationId
         autoPause = activityProfile.autoPause
         
@@ -507,12 +551,16 @@ extension ActivityRecord {
 
     // set CodingKeys to define which variables are stored to JSON file
     private enum CodingKeys: String, CodingKey {
-        case recordName, name, workoutTypeId, workoutLocationId, type, sportType, startDateLocal,
+        case recordName, name, workoutTypeId, workoutLocationId, stravaType, startDateLocal,
              elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
              averageHeartRate, averageCadence, averagePower, averageSpeed, maxHeartRate, maxCadence, maxPower, maxSpeed,
              activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
-             stravaSaveStatus, totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL
+             stravaSaveStatus, stravaId, trackPointGap, TSS, FTP, powerZoneLimits, TSSbyPowerZone, movingTimebyPowerZone,
+             thesholdHR, estimatedTSSbyHR, HRZoneLimits, TSSEstimatebyHRZone, movingTimebyHRZone,
+             totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL
     }
+    
+    
     
     
 }
@@ -652,11 +700,11 @@ extension ActivityRecord {
 // !!        recordID = CKRecord.ID()
         let activityRecord = CKRecord(recordType: recordType, recordID: recordID)
         activityRecord["name"] = name as CKRecordValue
-        activityRecord["type"] = type as CKRecordValue
+        activityRecord["stravaType"] = stravaType as CKRecordValue
         activityRecord["workoutTypeId"] = workoutTypeId as CKRecordValue
         activityRecord["workoutLocationId"] = workoutLocationId as CKRecordValue
 
-        activityRecord["sportType"] = sportType as CKRecordValue
+//        activityRecord["sportType"] = sportType as CKRecordValue
         activityRecord["startDateLocal"] = startDateLocal as CKRecordValue
         activityRecord["elapsedTime"] = elapsedTime as CKRecordValue
         activityRecord["pausedTime"] = pausedTime as CKRecordValue
@@ -687,7 +735,21 @@ extension ActivityRecord {
             activityRecord["loHRLimit"] = loHRLimit! as CKRecordValue
         }
         activityRecord["stravaSaveStatus"] = stravaSaveStatus as CKRecordValue
+        activityRecord["stravaId"] = stravaId as CKRecordValue?
+        activityRecord["trackPointGap"] = trackPointGap as CKRecordValue
 
+        activityRecord["TSS"] = TSS as CKRecordValue?
+        activityRecord["FTP"] = FTP as CKRecordValue?
+        activityRecord["powerZoneLimits"] = powerZoneLimits as CKRecordValue
+        activityRecord["TSSbyPowerZone"] = TSSbyPowerZone as CKRecordValue
+        activityRecord["movingTimebyPowerZone"] = movingTimebyPowerZone as CKRecordValue
+        
+        activityRecord["thesholdHR"] = thesholdHR
+        activityRecord["estimatedTSSbyHR"] = estimatedTSSbyHR
+        activityRecord["HRZoneLimits"] = HRZoneLimits
+        activityRecord["TSSEstimatebyHRZone"] = TSSEstimatebyHRZone
+        activityRecord["movingTimebyHRZone"] = movingTimebyHRZone
+        
         
         if saveTrackRecord() {
             logger.debug("creating asset!")
@@ -701,13 +763,14 @@ extension ActivityRecord {
     }
     
     func fromCKRecord(activityRecord: CKRecord) {
+        
         recordID = activityRecord.recordID
         recordName = recordID.recordName
         name = activityRecord["name"] ?? "" as String
-        type = activityRecord["type"] ?? "" as String
+        stravaType = activityRecord["stravaType"] ?? "Ride" as String
         workoutTypeId = activityRecord["workoutTypeId"] ?? 1 as UInt
         workoutLocationId = activityRecord["workoutLocationId"] ?? 1 as Int
-        sportType = activityRecord["sportType"] ?? "" as String
+//        sportType = activityRecord["sportType"] ?? "" as String
         startDateLocal = activityRecord["startDateLocal"] ?? Date() as Date
         elapsedTime = activityRecord["elapsedTime"] ?? 0 as Double
         pausedTime = activityRecord["pausedTime"] ?? 0 as Double
@@ -733,6 +796,21 @@ extension ActivityRecord {
         totalAscent = activityRecord["totalAscent"] as Double?
         totalDescent = activityRecord["totalDescent"] as Double?
         stravaSaveStatus = (activityRecord["stravaSaveStatus"] ?? StravaSaveStatus.dontSave.rawValue) as Int
+        stravaId = activityRecord["stravaId"] as Int?
+        trackPointGap = activityRecord["trackPointGap"] ?? ACTIVITY_RECORDING_INTERVAL as Int
+        
+        TSS = activityRecord["TSS"] as Double?
+        FTP = activityRecord["FTP"] as Int?
+        powerZoneLimits = (activityRecord["powerZoneLimits"] ?? []) as [Int]
+        TSSbyPowerZone = (activityRecord["TSSbyPowerZone"] ?? []) as [Double]
+        movingTimebyPowerZone = (activityRecord["movingTimebyPowerZone"] ?? []) as [Double]
+        
+        thesholdHR = activityRecord["thesholdHR"] as Int?
+        estimatedTSSbyHR = activityRecord["estimatedTSSbyHR"] as Double?
+        HRZoneLimits = (activityRecord["HRZoneLimits"] ?? []) as [Int]
+        TSSEstimatebyHRZone = (activityRecord["TSSEstimatebyHRZone"] ?? []) as [Double]
+        movingTimebyHRZone = (activityRecord["movingTimebyHRZone"] ?? []) as [Double]
+        
         
         mapSnapshotAsset = activityRecord["mapSnapshot"] as CKAsset?
         if mapSnapshotAsset != nil {
@@ -776,13 +854,448 @@ extension ActivityRecord {
     
 }
 
+// MARK: - Strava Link
+
+extension ActivityRecord {
+ 
+    #if os(iOS)
+    func fromStravaActivity(_ stravaActivity: StravaActivity) {
+
+        /*
+
+         "distance" : 24931.4,
+         "moving_time" : 4500,
+         "elapsed_time" : 4500,
+         "total_elevation_gain" : 0,
+         "type" : "Ride",
+         "sport_type" : "MountainBikeRide",
+         "workout_type" : null,
+         "id" : 154504250376823,
+         "external_id" : "garmin_push_12345678987654321",
+         "upload_id" : 987654321234567891234,
+         "start_date" : "2018-05-02T12:15:09Z",
+         "start_date_local" : "2018-05-02T05:15:09Z",
+         "timezone" : "(GMT-08:00) America/Los_Angeles",
+         "utc_offset" : -25200,
+         "start_latlng" : null,
+         "end_latlng" : null,
+         "location_city" : null,
+         "location_state" : null,
+         "location_country" : "United States",
+         "achievement_count" : 0,
+         "kudos_count" : 3,
+         "comment_count" : 1,
+         "athlete_count" : 1,
+         "photo_count" : 0,
+         "map" : {
+           "id" : "a12345678987654321",
+           "summary_polyline" : null,
+           "resource_state" : 2
+         },
+         "trainer" : true,
+         "commute" : false,
+         "manual" : false,
+         "private" : false,
+         "flagged" : false,
+         "gear_id" : "b12345678987654321",
+         "from_accepted_tag" : false,
+         "average_speed" : 5.54,
+         "max_speed" : 11,
+         "average_cadence" : 67.1,
+         "average_watts" : 175.3,
+         "weighted_average_watts" : 210,
+         "kilojoules" : 788.7,
+         "device_watts" : true,
+         "has_heartrate" : true,
+         "average_heartrate" : 140.3,
+         "max_heartrate" : 178,
+         "max_watts" : 406,
+         "pr_count" : 0,
+         "total_photo_count" : 1,
+         "has_kudoed" : false,
+         "suffer_score" : 82
+         
+         
+         public let id: Int?  // * Need to store StravaId - DONE - note nil/0
+         public let resourceState: ResourceState?
+         public let externalId: String?
+         public let uploadId: Int?
+         
+         public let highElevation : Double?  // * ADD
+         public let lowElevation : Double?  // * ADD
+
+         public let startDate: Date?
+
+         public let map: Map?
+         public let trainer: Bool?
+
+         public let workoutType: WorkoutType?
+
+
+         public let deviceWatts : Bool?
+         public let hasHeartRate : Bool?
+
+         */
+
+        self.recordID = CloudKitManager().getCKRecordID()  // *
+        self.recordName = self.recordID.recordName      // *
+        
+        stravaId = stravaActivity.id
+        name = stravaActivity.name ?? ""
+        stravaType = stravaActivity.type?.rawValue ?? "Ride"
+        workoutTypeId = getHKWorkoutActivityType(stravaType).rawValue
+        workoutLocationId = getHKWorkoutSessionLocationType(stravaType).rawValue
+
+//        sportType = "Ride" // *
+        /* Possible Strava Values
+        "AlpineSki", "BackcountrySki", "Badminton", "Canoeing", "Crossfit", "EBikeRide", "Elliptical", "EMountainBikeRide", "Golf", "GravelRide", "Handcycle", "HighIntensityIntervalTraining", "Hike", "IceSkate", "InlineSkate", "Kayaking", "Kitesurf", "MountainBikeRide", "NordicSki", "Pickleball", "Pilates", "Racquetball", "Ride", "RockClimbing", "RollerSki", "Rowing", "Run", "Sail", "Skateboard", "Snowboard", "Snowshoe", "Soccer", "Squash", "StairStepper", "StandUpPaddling", "Surfing", "Swim", "TableTennis", "Tennis", "TrailRun", "Velomobile", "VirtualRide", "VirtualRow", "VirtualRun", "Walk", "WeightTraining", "Wheelchair", "Windsurf", "Workout", "Yoga"
+         
+         Foot Sports
+
+         Run
+         Trail Run
+         Walk
+         Hike
+         Virtual Run
+         
+         Cycle Sports
+
+         Ride
+         Mountain Bike Ride
+         Gravel Ride
+         E-Bike Ride
+         E-Mountain Bike Ride
+         Velomobile
+         Virtual Ride
+         
+         
+         Water Sports
+
+         Canoe
+         Kayak
+         Kitesurf
+         Rowing
+         Stand Up Paddling
+         Surf
+         Swim
+         Windsurf
+         
+         
+         Winter Sports
+
+         Ice Skate
+         Alpine Ski
+         Backcountry Ski
+         Nordic Ski
+         Snowboard
+         Snowshoe
+         
+         
+         Other Sports:
+
+         Handcycle
+         Inline Skate
+         Rock Climb
+         Roller Ski
+         Golf
+         Skateboard
+         Football (Soccer)
+         Wheelchair
+         Badminton
+         Tennis
+         Pickleball
+         Crossfit
+         Elliptical
+         Stair Stepper
+         Weight Training
+         Yoga
+         Workout
+         HIIT
+         Pilates
+         Table Tennis
+         Squash
+         Racquetball
+         */
+        
+        startDateLocal = stravaActivity.startDateLocal ?? Date()
+        elapsedTime = stravaActivity.elapsedTime ?? 0
+        pausedTime = (stravaActivity.elapsedTime ?? 0) - (stravaActivity.movingTime ?? 0)
+        movingTime = stravaActivity.movingTime ?? 0
+        activityDescription = stravaActivity.activityDescription ?? ""
+        distanceMeters = stravaActivity.distance ?? 0
+        totalAscent = stravaActivity.totalElevationGain
+        totalDescent = 0        // *
+
+        averageHeartRate = stravaActivity.averageHeartRate ?? 0
+        averageCadence = Int(stravaActivity.averageCadence ?? 0)
+        averagePower = Int(stravaActivity.averagePower ?? 0)
+        averageSpeed = stravaActivity.averageSpeed ?? 0
+        maxPower = Int(stravaActivity.maxPower ?? 0)
+        maxSpeed = stravaActivity.maxSpeed ?? 0
+        maxHeartRate = stravaActivity.maxHeartRate ?? 0
+        
+        activeEnergy = stravaActivity.kiloJoules ?? 0 // * UNITS!
+        timeOverHiAlarm = 0
+        timeUnderLoAlarm = 0
+        hiHRLimit = nil
+        loHRLimit = nil
+        stravaSaveStatus = StravaSaveStatus.saved.rawValue
+        stravaType = stravaActivity.sportType ?? "Ride"
+        
+        setToSave(false)
+
+        toDelete = false
+        
+        tcxFileName = baseFileName + ".gz"
+        JSONFileName = baseFileName + ".json"
+        autoPause = true // *
+        
+        mapSnapshotURL = nil // *
+        mapSnapshotImage = nil // *
+        mapSnapshotAsset = nil // *
+        
+        trackPoints = [] // *
+    }
+    
+    
+    /// Add trackpoints to activity record derived from strava streams
+    func addStreams(_ streams: [StravaSwift.Stream]) {
+        var desiredStreamLength: Int?
+        var timeStreamPresent = false
+        var timeSeries: [Date] = []
+        var heartRateSeries: [Double?] = []
+        var distanceMetersSeries: [Double?] = []
+        var altitudeMetersSeries: [Double?] = []
+        var cadenceSeries: [Int?] = []
+        var wattsSeries: [Int?] = []
+        var speedSeries: [Double?] = []
+        var latitudeSeries: [Double?] = []
+        var longitudeSeries: [Double?] = []
+        
+        for stream in streams {
+            
+            logger.info("Adding stream: \(stream.type?.rawValue ?? "nil")")
+            if let streamLength = desiredStreamLength {
+                if stream.data?.count != streamLength {
+                    logger.error("Streams of different length!")
+                    return
+                }
+            }
+            else {
+                desiredStreamLength = stream.data?.count
+            }
+            
+            
+            switch stream.type?.rawValue ?? "unknown" {
+            case "time":
+                timeStreamPresent = true
+                let timeStream = stream.data!.map({ $0 as? Double ?? 0 })
+                timeSeries = timeStream.map({ startDateLocal.addingTimeInterval( $0 ) })
+                let timeGaps = zip(timeStream, timeStream.dropFirst()).map({ $1 - $0 })
+                logger.info("Time gaps - minimum : \(timeGaps.min() ?? 0) :: maximum \(timeGaps.max() ?? 0)")
+                
+                // Set trackpoint gap to time difference between items in series (ignoring pauses!)
+                trackPointGap = Int(timeGaps.min() ?? 1)
+                break
+                
+            case "distance":
+                distanceMetersSeries = stream.data!.map({ $0 as? Double? ?? nil })
+                break
+                
+            case "latlng":
+                latitudeSeries = stream.data!.map({ ($0 as? [Double?] ?? [nil, nil])[0] })
+                longitudeSeries = stream.data!.map({ ($0 as? [Double?] ?? [nil, nil])[1] })
+                break
+
+            case "heartrate":
+                heartRateSeries = stream.data!.map({ $0 as? Double? ?? nil })
+                break
+                
+            case "altitude":
+                altitudeMetersSeries = stream.data!.map({ $0 as? Double? ?? nil })
+                break
+                
+            case "cadence":
+                cadenceSeries = stream.data!.map({ $0 as? Int? ?? nil })
+                break
+                
+            case "watts":
+                wattsSeries = stream.data!.map({ $0 as? Int? ?? nil })
+                break
+                
+            case "velocity_smooth":
+                speedSeries = stream.data!.map({ $0 as? Double? ?? nil })
+                break
+                
+            default:
+                logger.info("Unknown stream type \(stream.seriesType ?? "nil")")
+            }
+        }
+
+        
+        
+        if !timeStreamPresent {
+            logger.error("No time stream!")
+            return
+        }
+        
+        for (index, timepoint) in timeSeries.enumerated() {
+
+            trackPoints.append(TrackPoint(time: timepoint,
+                                          heartRate: heartRateSeries.count == desiredStreamLength ? heartRateSeries[index] : nil,
+                                          latitude: latitudeSeries.count == desiredStreamLength ? latitudeSeries[index] : nil,
+                                          longitude: longitudeSeries.count == desiredStreamLength ? longitudeSeries[index] : nil,
+                                          altitudeMeters: altitudeMetersSeries.count == desiredStreamLength ? altitudeMetersSeries[index] : nil,
+                                          distanceMeters: distanceMetersSeries.count == desiredStreamLength ? distanceMetersSeries[index] : nil,
+                                          cadence: cadenceSeries.count == desiredStreamLength ? cadenceSeries[index] : nil,
+                                          speed: speedSeries.count == desiredStreamLength ? speedSeries[index] : nil,
+                                          watts: wattsSeries.count == desiredStreamLength ? wattsSeries[index] : nil
+                                         )
+                                )
+        }
+        addActivityAnalysis()
+        
+    }
+    #endif
+    
+    
+    func addActivityAnalysis() {
+        FTP = 275
+        thesholdHR = 154
+        
+        
+        let powerZoneRatios = [0, 0.55, 0.75, 0.9, 1.05, 1.2]
+        if let currentFTP = FTP {
+            powerZoneLimits = powerZoneRatios.map({ Int(round($0 * Double(currentFTP))) })
+        }
+        
+        let HRZoneRatios = [0, 0.68, 0.83, 0.94, 1.05]
+        if let currentThesholdHR = thesholdHR {
+            HRZoneLimits = HRZoneRatios.map({ Int(round($0 * Double(currentThesholdHR))) })
+        }
+
+        TSS = getTotalTSS()
+        TSSEstimatebyHRZone = getTSSEstimatebyHRZone()
+        estimatedTSSbyHR = TSSEstimatebyHRZone.reduce(0, +)
+        TSSbyPowerZone = getTSSbyPowerZone()
+        movingTimebyPowerZone = getmovingTimebyPowerZone()
+    }
+    
+    
+    /// Return incremental TSS score for a wattage - taking into account FTP and trackPointGap
+    func incrementalTSS(watts: Int?, ftp: Int, seconds: Int) -> Double {
+        
+        return (100 * pow(((Double(watts ?? 0)) / Double(ftp)), 2) * (Double(seconds) / (60 * 60) ))
+        
+    }
+    
+    
+    /// Return total TSS for the entire activity
+    func getTotalTSS() -> Double? {
+        
+        guard let currentFTP = FTP else {return nil}
+        
+        let TSSSeries = trackPoints.map({ incrementalTSS(watts: $0.watts, ftp: currentFTP, seconds: trackPointGap) })
+
+        let thisTSS = TSSSeries.reduce(0, +)
+
+        let roundedTSS = round(thisTSS * 10) / 10
+        
+        return roundedTSS
+        
+    }
+    
+    
+    func getTSSEstimatebyHRZone() -> [Double] {
+       
+        var calcTSSbyHRZone: [Double] = []
+        var TSSSeries: [Double]
+        
+        guard let currentThesholdHR = thesholdHR,
+              let currentFTP = FTP else {return []}
+        
+        for (index, lowerLimit) in HRZoneLimits.enumerated() {
+            let power = powerZoneLimits[index+1]
+            if index > HRZoneLimits.count - 2 {
+                
+                let x = trackPoints.filter({($0.heartRate ?? 0) >= Double(lowerLimit)})
+                TSSSeries =
+                x.map({ _ in incrementalTSS(watts: power, ftp: currentFTP, seconds: trackPointGap) })
+                
+            } else {
+                TSSSeries = trackPoints.filter({(($0.heartRate ?? 0) >= Double(lowerLimit)) && (($0.heartRate ?? 0) < Double(HRZoneLimits[index+1]))})
+                    .map({ _ in incrementalTSS(watts: power, ftp: currentFTP, seconds: trackPointGap) })
+            }
+        
+            let thisTSS = TSSSeries.reduce(0, +)
+            let roundedTSS = round(thisTSS * 10) / 10
+            calcTSSbyHRZone.append(roundedTSS)
+        }
+        
+        return calcTSSbyHRZone
+        
+    }
+    
+    
+    func getTSSbyPowerZone() -> [Double] {
+    
+        guard let currentFTP = FTP else {return []}
+        
+        var calcTSSbyPowerZone: [Double] = []
+        var TSSSeries: [Double]
+        
+        for (index, lowerLimit) in powerZoneLimits.enumerated() {
+            
+            if index > powerZoneLimits.count - 2 {
+                TSSSeries = trackPoints.filter({($0.watts ?? 0) >= lowerLimit})
+                    .map({ incrementalTSS(watts: $0.watts, ftp: currentFTP, seconds: trackPointGap) })
+                
+            } else {
+                TSSSeries = trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < powerZoneLimits[index+1])})
+                    .map({ incrementalTSS(watts: $0.watts, ftp: currentFTP, seconds: trackPointGap) })
+            }
+            let thisTSS = TSSSeries.reduce(0, +)
+            let roundedTSS = round(thisTSS * 10) / 10
+            calcTSSbyPowerZone.append(roundedTSS)
+        }
+        
+        return calcTSSbyPowerZone
+    }
+    
+    
+    func getmovingTimebyPowerZone() -> [Double] {
+    
+        guard let currentFTP = FTP else {return []}
+        
+        var calcMovingTimebyPowerZone: [Double] = []
+        var movingTime: Double
+        
+        for (index, lowerLimit) in powerZoneLimits.enumerated() {
+            
+            if index > powerZoneLimits.count - 2 {
+                movingTime = Double(trackPoints.filter({($0.watts ?? 0) >= lowerLimit}).count * trackPointGap)
+                
+            } else {
+                movingTime = Double(trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < powerZoneLimits[index+1])}).count * trackPointGap)
+
+            }
+
+            calcMovingTimebyPowerZone.append(movingTime)
+        }
+        
+        return calcMovingTimebyPowerZone
+    }
+
+}
+
+
+
 // MARK: - Set Values
 
 
 extension ActivityRecord {
     
 
-    
     func set(heartRate: Double?) {
 
         self.heartRate = heartRate

@@ -54,7 +54,6 @@ struct StatisticsView: View {
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var dataCache: DataCache
-
     
     var body: some View {
         VStack {
@@ -63,9 +62,53 @@ struct StatisticsView: View {
             Button("Migrate...") {
                 print("Perform migration")
                 let migrationManager = MigrationManager()
-                migrationManager.fetchAllRecordsToMove()
+                //! migrationManager.fetchAllRecordsToMove()
             }
- 
+
+            Spacer()
+
+            Button("Test Strava Fetch...") {
+                print("Fetch from Strava")
+//                let stravaManager = StravaManager()
+//                stravaManager.fetchActivities(perPage: 5,
+//                                              completionHandler: stravaManager.dummyFetchCompletion)
+
+                StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion).execute()
+            }
+            Button("Fetch - force reauth...") {
+
+                StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion,
+                                      forceReauth: true).execute()
+            }
+            Button("Fetch - force refresh...") {
+
+                StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion,
+                                      forceRefresh: true).execute()
+            }
+            Button("Test Strava Fetch and save first...") {
+                print("Fetch from Strava and save")
+                
+                StravaFetchLatestActivities(after: Date.now.addingTimeInterval(-86400 * 5),
+                                            dataCache: dataCache,
+                                            completionHandler: { }).execute()
+                /*
+                StravaFetchActivities(completionHandler: {fetchedActivities in
+                    
+                    for (index, activity) in fetchedActivities.enumerated() {
+                        if index < 1 {
+                            StravaFetchFullActivity(stravaActivityId: activity.id!,
+                                                    completionHandler: {activityRecord in
+                                
+                                activityRecord.save(dataCache: self.dataCache)
+                            }
+                            ).execute()
+                        }
+                    }
+                }
+                ).execute()
+                */
+            }
+            
             Spacer()
             SwipeButton(swipeText: "Swipe to go Home",
                         perform : {navigationCoordinator.goToTab(tab: .home)},

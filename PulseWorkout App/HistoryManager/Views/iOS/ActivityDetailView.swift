@@ -7,6 +7,7 @@
 
 import SwiftUI
 import HealthKit
+import Charts
 
 
 struct ActivityDetailView: View {
@@ -14,6 +15,12 @@ struct ActivityDetailView: View {
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var activityRecord: ActivityRecord
     @ObservedObject var dataCache: DataCache
+    
+    struct TrainingLoadByRange : Identifiable {
+        let id = UUID()
+        let range: String
+        let value: Double
+    }
     
     enum NavigationTarget {
         case MapRouteView
@@ -31,6 +38,56 @@ struct ActivityDetailView: View {
         return formatter
     }()
     
+    func hasTrainingLoad(_ activityRecord: ActivityRecord) -> Bool {
+        
+        if (((activityRecord.TSS ?? 0) > 0) &&
+            (activityRecord.TSSbyPowerZone.count == 6)) ||
+            (((activityRecord.estimatedTSSbyHR ?? 0) > 0) &&
+             (activityRecord.TSSEstimatebyHRZone.count == 5)) {
+            
+            return true
+        }
+        
+        return false
+    }
+    
+    func trainingLoadEstimated(_ activityRecord: ActivityRecord) -> Bool {
+        
+        if ((activityRecord.TSS ?? 0) > 0) {
+            return false
+        }
+        return true
+    }
+    
+    func trainingLoadByRange(_ activityRecord: ActivityRecord) -> [TrainingLoadByRange] {
+        
+        if trainingLoadEstimated(activityRecord) {
+            return [TrainingLoadByRange(range: "Low Aerobic",
+                                        value: activityRecord.TSSEstimatebyHRZone[0] + activityRecord.TSSEstimatebyHRZone[1]),
+                    TrainingLoadByRange(range: "High Aerobic",
+                                        value: activityRecord.TSSEstimatebyHRZone[2] + activityRecord.TSSEstimatebyHRZone[3]),
+                    TrainingLoadByRange(range: "Anaerobic",
+                                        value: activityRecord.TSSEstimatebyHRZone[4])]
+        }
+        else {
+            return [TrainingLoadByRange(range: "Low Aerobic",
+                                        value: activityRecord.TSSbyPowerZone[0] + activityRecord.TSSbyPowerZone[1]),
+                    TrainingLoadByRange(range: "High Aerobic",
+                                        value: activityRecord.TSSbyPowerZone[2] + activityRecord.TSSbyPowerZone[3]),
+                    TrainingLoadByRange(range: "Anaerobic",
+                                        value: activityRecord.TSSbyPowerZone[4] + activityRecord.TSSbyPowerZone[5])]
+        }
+    }
+    
+    func totalTrainingLoad(_ activityRecord: ActivityRecord) -> Double {
+        
+        if trainingLoadEstimated(activityRecord) {
+            return activityRecord.estimatedTSSbyHR ?? 0
+        }
+        else {
+            return activityRecord.TSS ?? 0
+        }
+    }
     
     var body: some View {
 
@@ -52,6 +109,75 @@ struct ActivityDetailView: View {
 
             }
 
+            if hasTrainingLoad(activityRecord) {
+                
+                GroupBox(label:
+                            VStack {
+                    HStack {
+                        Image(systemName: "figure.strengthtraining.traditional.circle")
+                            .font(.title2)
+                            .frame(width: 40, height: 40)
+                        Text("Training Load")
+                        Spacer()
+
+                    }
+                    .foregroundColor(.purple)
+                    
+                    Divider()
+                }
+                )
+                {
+                    VStack
+                    {
+                        if trainingLoadEstimated(activityRecord) {
+                            Text("Estimated from Heart Rate").bold()
+                        }
+                        
+                        let trainingLoads = trainingLoadByRange(activityRecord)
+                     
+                        ZStack {
+
+                            // The donut chart
+                            Chart(trainingLoads) { trainingLoad in
+                                SectorMark(
+                                    angle: .value(
+                                        Text(verbatim: trainingLoad.range),
+                                        trainingLoad.value
+                                    ),
+                                    innerRadius: .ratio(0.618),
+                                    angularInset: 8
+                                )
+                                .foregroundStyle(
+                                    by: .value(
+                                        "Name",
+                                        trainingLoad.range
+                                    )
+                                )
+                                .cornerRadius(6)
+                                .annotation(position: .overlay) {
+                                    if trainingLoad.value > 0 {
+                                        Text(String(format: "%.1f", trainingLoad.value)).bold()
+                                    }
+                                    
+                                }
+                            }
+                            .frame(width: 300, height: 300)
+                            
+                            // The text in the centre
+                            VStack(alignment:.center) {
+                                Text("Total Load").bold()
+                                Text(String(format: "%.1f", totalTrainingLoad(activityRecord))).bold()
+                            }
+                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                            
+                                
+                        }
+
+                    }
+                }
+            }
+
+            
             GroupBox(label:
                         VStack {
                 HStack {

@@ -392,7 +392,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     
     func startRecording() {
         logger.debug("Initialising timer")
-        self.timer = Timer.scheduledTimer(timeInterval: 2.0, target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
+        self.timer = Timer.scheduledTimer(timeInterval: Double(ACTIVITY_RECORDING_INTERVAL), target: self, selector: #selector(fireTimer), userInfo: nil, repeats: true)
         self.timer!.tolerance = 0.2
         logger.debug("Timer initialised")
         self.hrState = HRState.normal

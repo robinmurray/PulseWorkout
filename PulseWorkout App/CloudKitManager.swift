@@ -115,12 +115,14 @@ class CloudKitManager: NSObject, ObservableObject {
 
         let operation = CKQueryOperation(query: query)
 
-        operation.desiredKeys = ["name", "type", "sportType", "startDateLocal", "elapsedTime", "pausedTime", "movingTime",
+        operation.desiredKeys = ["name", "stravaType", "startDateLocal", "elapsedTime", "pausedTime", "movingTime",
                                  "activityDescription", "distance", "totalAscent", "totalDescent",
                                  "averageHeartRate", "averageCadence", "averagePower", "averageSpeed",
                                  "maxHeartRate", "maxCadence", "maxPower", "maxSpeed",
-                                 "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit", "mapSnapshot" ]
-        
+                                 "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit",
+                                 "mapSnapshot", "stravaId", "stravaSaveStatus", "trackPointGap",
+                                 "TSS", "FTP", "powerZoneLimits", "TSSbyPowerZone", "movingTimebyPowerZone",
+                                 "thesholdHR", "estimatedTSSbyHR", "HRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone"]
         
         return operation
         
@@ -212,7 +214,8 @@ class CloudKitManager: NSObject, ObservableObject {
     func saveAndDeleteRecord(recordsToSave: [CKRecord],
                              recordIDsToDelete: [CKRecord.ID],
                              recordSaveSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void,
-                             recordDeleteSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void) {
+                             recordDeleteSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void,
+                             failureCompletionFunction: @escaping () -> Void = { }) {
 
         logger.info("Saving records: \(recordsToSave.map( {$0.recordID} ))")
         logger.info("Deleting records: \(recordIDsToDelete)")
@@ -238,8 +241,9 @@ class CloudKitManager: NSObject, ObservableObject {
                     CKError.networkUnavailable,
                     CKError.serviceUnavailable,
                     CKError.zoneBusy:
-                    
+                    failureCompletionFunction()
                     self.logger.error("temporary error")
+                    
                     
                 case CKError.serverRecordChanged:
                     // Record already exists- shouldn't happen, but!
@@ -247,6 +251,7 @@ class CloudKitManager: NSObject, ObservableObject {
                     recordSaveSuccessCompletionFunction(recordID)
                     
                 default:
+                    failureCompletionFunction()
                     self.logger.error("permanent error")
                     
                 }
@@ -276,6 +281,7 @@ class CloudKitManager: NSObject, ObservableObject {
                     return
                 default:
                     self.logger.error("Deletion failed with error : \(error.localizedDescription)")
+                    failureCompletionFunction()
                     return
                 }
             }

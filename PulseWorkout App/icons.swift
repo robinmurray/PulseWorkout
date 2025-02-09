@@ -27,3 +27,8 @@ let distanceColor = Color.blue
 let speedColor = Color.purple
 let powerColor = Color.orange
 let cadenceColor = Color.teal
+
+
+// Constants
+let ACTIVITY_RECORDING_INTERVAL: Int = 2
+
