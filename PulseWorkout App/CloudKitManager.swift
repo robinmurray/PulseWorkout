@@ -123,7 +123,7 @@ class CloudKitManager: NSObject, ObservableObject {
                                  "mapSnapshot", "stravaId", "stravaSaveStatus", "trackPointGap",
                                  "TSS", "FTP", "powerZoneLimits", "TSSbyPowerZone", "movingTimebyPowerZone",
                                  "thesholdHR", "estimatedTSSbyHR", "HRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone",
-                                 "hasLocationData", "hasHRData", "hasPowerData"]
+                                 "hasLocationData", "hasHRData", "hasPowerData", "loAltitudeMeters", "hiAltitudeMeters"]
         
         return operation
         

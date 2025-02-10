@@ -219,6 +219,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var hasHRData: Bool = false
     var hasPowerData: Bool = false
     
+    var loAltitudeMeters: Double?
+    var hiAltitudeMeters: Double?
+    
+    
     var autoPause: Bool = true
     var isPaused: Bool = false
     
@@ -296,8 +300,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         timeUnderLoAlarm = fromActivityRecord.timeUnderLoAlarm
         hiHRLimit = fromActivityRecord.hiHRLimit
         loHRLimit = fromActivityRecord.loHRLimit
-        totalAscent = fromActivityRecord.totalAscent
-        totalDescent = fromActivityRecord.totalDescent
+
         stravaSaveStatus = fromActivityRecord.stravaSaveStatus
         stravaId = fromActivityRecord.stravaId
         trackPointGap = fromActivityRecord.trackPointGap
@@ -318,6 +321,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         hasHRData = fromActivityRecord.hasHRData
         hasPowerData = fromActivityRecord.hasPowerData
         
+        loAltitudeMeters = fromActivityRecord.loAltitudeMeters
+        hiAltitudeMeters = fromActivityRecord.hiAltitudeMeters
         
         setToSave(fromActivityRecord.toSave)
 
@@ -565,7 +570,7 @@ extension ActivityRecord {
              stravaSaveStatus, stravaId, trackPointGap, TSS, FTP, powerZoneLimits, TSSbyPowerZone, movingTimebyPowerZone,
              thesholdHR, estimatedTSSbyHR, HRZoneLimits, TSSEstimatebyHRZone, movingTimebyHRZone,
              totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL,
-             hasLocationData, hasHRData, hasPowerData
+             hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters
     }
     
 }
@@ -759,6 +764,9 @@ extension ActivityRecord {
         activityRecord["hasHRData"] = hasHRData
         activityRecord["hasPowerData"] = hasPowerData
         
+        activityRecord["loAltitudeMeters"] = loAltitudeMeters as CKRecordValue?
+        activityRecord["hiAltitudeMeters"] = hiAltitudeMeters as CKRecordValue?
+        
         if saveTrackRecord() {
             logger.debug("creating asset!")
             guard let tFile = tcxFileName else { return activityRecord }
@@ -801,8 +809,7 @@ extension ActivityRecord {
         timeUnderLoAlarm = activityRecord["timeUnderLoAlarm"] ?? 0 as Double
         hiHRLimit = activityRecord["hiHRLimit"] as Int?
         loHRLimit = activityRecord["loHRLimit"] as Int?
-        totalAscent = activityRecord["totalAscent"] as Double?
-        totalDescent = activityRecord["totalDescent"] as Double?
+
         stravaSaveStatus = (activityRecord["stravaSaveStatus"] ?? StravaSaveStatus.dontSave.rawValue) as Int
         stravaId = activityRecord["stravaId"] as Int?
         trackPointGap = activityRecord["trackPointGap"] ?? ACTIVITY_RECORDING_INTERVAL as Int
@@ -823,6 +830,8 @@ extension ActivityRecord {
         hasHRData = (activityRecord["hasHRData"] ?? true) as Bool
         hasPowerData = (activityRecord["hasPowerData"] ?? true) as Bool
         
+        loAltitudeMeters = activityRecord["loAltitudeMeters"] as Double?
+        hiAltitudeMeters = activityRecord["hiAltitudeMeters"] as Double?
         
         mapSnapshotAsset = activityRecord["mapSnapshot"] as CKAsset?
         if mapSnapshotAsset != nil {
@@ -927,14 +936,11 @@ extension ActivityRecord {
          "has_kudoed" : false,
          "suffer_score" : 82
          
-         
          public let id: Int?  // * Need to store StravaId - DONE - note nil/0
          public let resourceState: ResourceState?
          public let externalId: String?
          public let uploadId: Int?
-         
-         public let highElevation : Double?  // * ADD
-         public let lowElevation : Double?  // * ADD
+
 
          public let startDate: Date?
 
@@ -943,9 +949,6 @@ extension ActivityRecord {
 
          public let workoutType: WorkoutType?
 
-
-         public let deviceWatts : Bool?
-         public let hasHeartRate : Bool?
 
          */
 
@@ -1036,6 +1039,8 @@ extension ActivityRecord {
         activityDescription = stravaActivity.activityDescription ?? ""
         distanceMeters = stravaActivity.distance ?? 0
         totalAscent = stravaActivity.totalElevationGain
+        loAltitudeMeters = stravaActivity.lowElevation
+        hiAltitudeMeters = stravaActivity.highElevation
         totalDescent = 0        // *
 
         averageHeartRate = stravaActivity.averageHeartRate ?? 0
@@ -1190,10 +1195,29 @@ extension ActivityRecord {
         }
 
         TSS = getTotalTSS()
-        TSSEstimatebyHRZone = getTSSEstimatebyHRZone()
-        estimatedTSSbyHR = TSSEstimatebyHRZone.reduce(0, +)
-        TSSbyPowerZone = getTSSbyPowerZone()
-        movingTimebyPowerZone = getmovingTimebyPowerZone()
+        TSSEstimatebyHRZone = getTSSEstimateByHRZone()
+        estimatedTSSbyHR = round(TSSEstimatebyHRZone.reduce(0, +) * 10) / 10
+        TSSbyPowerZone = getTSSByPowerZone()
+        movingTimebyPowerZone = getMovingTimeByPowerZone()
+        movingTimebyHRZone = getMovingTimeByHRZone()
+        
+        loAltitudeMeters = trackPoints.filter({ $0.altitudeMeters != nil }).map({ $0.altitudeMeters! }).min()
+        hiAltitudeMeters = trackPoints.filter({ $0.altitudeMeters != nil }).map({ $0.altitudeMeters! }).max()
+        maxCadence = trackPoints.filter({ $0.cadence != nil }).map({ $0.cadence! }).max() ?? 0
+        totalDescent = getTotalDescent()
+    }
+    
+    
+    func getTotalDescent() -> Double {
+        
+        let altitudeData = trackPoints.filter({ $0.altitudeMeters != nil }).map( { $0.altitudeMeters ?? 0})
+        if altitudeData.count > 1 {
+            // altitudeChanges = array of ascnets & descents - descents are negative
+            let altitudeChanges = zip(altitudeData, altitudeData.dropFirst()).map( {$1 - $0} )
+            let descents = altitudeChanges.filter({ $0 < 0 }).map({ -1 * $0 })
+            return round(descents.reduce(0, +) * 10) / 10
+        }
+        return 0
     }
     
     
@@ -1221,7 +1245,7 @@ extension ActivityRecord {
     }
     
     
-    func getTSSEstimatebyHRZone() -> [Double] {
+    func getTSSEstimateByHRZone() -> [Double] {
        
         var calcTSSbyHRZone: [Double] = []
         var TSSSeries: [Double]
@@ -1252,7 +1276,7 @@ extension ActivityRecord {
     }
     
     
-    func getTSSbyPowerZone() -> [Double] {
+    func getTSSByPowerZone() -> [Double] {
     
         guard let currentFTP = FTP else {return []}
         
@@ -1278,7 +1302,7 @@ extension ActivityRecord {
     }
     
     
-    func getmovingTimebyPowerZone() -> [Double] {
+    func getMovingTimeByPowerZone() -> [Double] {
     
         guard let currentFTP = FTP else {return []}
         
@@ -1299,6 +1323,36 @@ extension ActivityRecord {
         }
         
         return calcMovingTimebyPowerZone
+    }
+    
+    
+    func getMovingTimeByHRZone() -> [Double] {
+    
+        var calcMovingTimebyHRZone: [Double] = []
+        var thisTime: Double
+        
+        guard let currentThesholdHR = thesholdHR else {return []}
+        
+        let movingPoints = trackPoints.filter({($0.speed ?? 0) > 0 })
+        
+        for (index, lowerLimit) in HRZoneLimits.enumerated() {
+
+            if index > HRZoneLimits.count - 2 {
+                
+                thisTime = Double(movingPoints.filter({($0.heartRate ?? 0) >= Double(lowerLimit)}).count * trackPointGap)
+                
+            } else {
+                thisTime = Double(movingPoints.filter({(($0.heartRate ?? 0) >= Double(lowerLimit)) && (($0.heartRate ?? 0) < Double(HRZoneLimits[index+1]))})
+                    .count * trackPointGap)
+            }
+
+            calcMovingTimebyHRZone.append(thisTime)
+        }
+        
+        // Make sure all elements add up to movingTime!
+        calcMovingTimebyHRZone[0] = movingTime - calcMovingTimebyHRZone.suffix(from: 1).reduce(0, +)
+        
+        return calcMovingTimebyHRZone
     }
 
 }
