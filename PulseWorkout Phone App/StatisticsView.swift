@@ -62,7 +62,7 @@ struct StatisticsView: View {
             Button("Migrate...") {
                 print("Perform migration")
                 let migrationManager = MigrationManager()
-                //! migrationManager.fetchAllRecordsToMove()
+                migrationManager.fetchAllRecordsToUpdate()
             }
 
             Spacer()

@@ -426,14 +426,20 @@ class StravaFetchActivityStreams: StravaOperation {
                 guard let self = self else { return }
                 self.stravaBusyStatus(false)
 
-                guard let streams = streams else { return }
-
+                guard let streams = streams else {
+                    self.logger.info("No streams returned")
+                    self.completionHandler([])
+                    return
+                }
+                self.logger.info("Got streams")
                 self.completionHandler(streams)
 
             }, failure: { (error: NSError) in
                 self.stravaBusyStatus(false)
-                self.logger.error("Error : \(error.localizedDescription)")
-                self.failureCompletionHandler()
+                // Note this happens when no streams, so not really an error!
+                self.logger.error("Error in streams - none returned : \(error.localizedDescription)")
+                self.completionHandler([])
+//                self.failureCompletionHandler()
             })
         }
 

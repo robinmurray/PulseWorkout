@@ -595,7 +595,7 @@ class DataCache: CloudKitManager, Codable {
         let recordDesc: String = record["name"] ?? "" + " : " + (record["startDateLocal"] as? Date ?? Date(timeIntervalSince1970: 0)).formatted(Date.ISO8601FormatStyle())
         localLogger.log("Processing record change: \(recordDesc)")
         
-        let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: settingsManager)
+        let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: settingsManager, fetchtrackData: false)
         
         changeCache(changedActivityRecord: activityRecord)
         changeUI(changedActivityRecord: activityRecord)

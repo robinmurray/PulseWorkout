@@ -509,6 +509,7 @@ class LiveActivityManager : NSObject, ObservableObject {
             case HKQuantityType.quantityType(forIdentifier: .distanceWalkingRunning), HKQuantityType.quantityType(forIdentifier: .distanceCycling):
                 let meterUnit = HKUnit.meter()
                 self.set(distanceMeters: statistics.sumQuantity()?.doubleValue(for: meterUnit) ?? 0)
+
             default:
                 return
             }
@@ -590,23 +591,61 @@ extension LiveActivityManager {
     
     func set(heartRate: Double?) {
         if liveActivityRecord != nil {
-            liveActivityRecord!.heartRate = heartRate
-        }
-    }
-    
-    func set(elapsedTime: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.elapsedTime = elapsedTime
-            liveActivityRecord!.movingTime = max(elapsedTime - liveActivityRecord!.pausedTime, 0)
-            setAverageSpeed()
+            liveActivityRecord!.set(heartRate : heartRate)
         }
     }
 
-    private func setAverageSpeed() {
-        if liveActivityRecord!.movingTime != 0 {
-            liveActivityRecord!.averageSpeed = liveActivityRecord!.distanceMeters / liveActivityRecord!.movingTime
+
+    func set(elapsedTime: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.set(elapsedTime: elapsedTime)
         }
     }
+
+    func set(watts: Int?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.set(watts: watts)
+        }
+    }
+    
+    func set(cadence:Int?) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.set(cadence: cadence)
+        }
+    }
+    
+    func set(averageHeartRate: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.set(averageHeartRate: averageHeartRate)
+        }
+    }
+    
+    
+    func increment(timeOverHiAlarm: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.increment(timeOverHiAlarm: timeOverHiAlarm)
+        }
+    }
+    
+    func increment(timeUnderLoAlarm: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.increment(timeUnderLoAlarm: timeUnderLoAlarm)
+        }
+    }
+    
+    func set(distanceMeters: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.set(distanceMeters: distanceMeters)
+        }
+    }
+    
+    func set(activeEnergy: Double) {
+        if liveActivityRecord != nil {
+            liveActivityRecord!.set(activeEnergy: activeEnergy)
+        }
+    }
+    
+    /*
     
     func increment(pausedTime: Double) {
         if liveActivityRecord != nil {
@@ -616,29 +655,13 @@ extension LiveActivityManager {
         }
     }
 
-    func set(watts: Int?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.watts = watts
-        }
-    }
+
     
-    func set(cadence:Int?) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.cadence = cadence
-        }
-    }
+
     
-    func set(averageHeartRate: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.averageHeartRate = averageHeartRate
-        }
-    }
+
     
-    func set(activeEnergy: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.activeEnergy = activeEnergy
-        }
-    }
+
     
     func set(distanceMeters: Double) {
         if liveActivityRecord != nil {
@@ -684,17 +707,7 @@ extension LiveActivityManager {
         }
     }
 
-    func increment(timeOverHiAlarm: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.timeOverHiAlarm += timeOverHiAlarm
-        }
-    }
-    
-    func increment(timeUnderLoAlarm: Double) {
-        if liveActivityRecord != nil {
-            liveActivityRecord!.timeUnderLoAlarm += timeUnderLoAlarm
-        }
-    }
 
+*/
     
 }

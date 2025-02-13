@@ -16,63 +16,85 @@ class MigrationManager: CloudKitManager {
 
     var tempFileList: [CKRecord.ID : String] = [:]
 
+    var processedRecordIndex = 0
+    var recordIdList: [CKRecord.ID] = []
+    var doneCount: Int = 0
     
-
-    
-    func createRecordZone() {
-
-        let zoneCreationOperation = CKModifyRecordZonesOperation(recordZonesToSave: [CKRecordZone(zoneID: zoneID)],
-                                                                 recordZoneIDsToDelete: [])
+    func fetchAllRecordsToUpdate() {
         
-//        let zoneCreationOperation = CKModifyRecordZonesOperation(recordZonesToSave: [],
-//                                                                 recordZoneIDsToDelete: [zoneID])
+        
+        fetchAllRecordIDs(recordCompletionFunction: { _ in },
+                          blockCompletionFunction: processRecordsToUpdate)
+        
+    }
+    
 
-        zoneCreationOperation.modifyRecordZonesResultBlock = {  (operationResult : Result<Void, any Error>) in
+    
+    func processRecordsToUpdate( records: [CKRecord.ID] ) {
+        
+        recordIdList = records
+        processedRecordIndex = 0
+        
+        if processedRecordIndex < recordIdList.count {
+            processNextRecord()
+        }
+        
+    }
+    
+    func processNextRecord() {
+        if processedRecordIndex < recordIdList.count {
+            let recordID = recordIdList[processedRecordIndex]
             
-            switch operationResult {
-            case .success:
-                self.localLogger.info("Record zone created success")
-                self.fetchAllRecordsToMove()
+            localLogger.info("record to update : \(recordID)")
+            fetchRecord(recordID: recordID,
+                        completionFunction: updateRecord,
+                        completionFailureFunction: failedFetch)
+        }
+    }
+    
+    
 
-                break
-                
-            case .failure(let error):
-                self.localLogger.error( "Record zone creation error : \(String(describing: error))")
 
-                break
+
+    func getTotalAscent(activityRecord: ActivityRecord) -> Double {
+        
+        let altitudeData = activityRecord.trackPoints.filter({ $0.altitudeMeters != nil }).map( { $0.altitudeMeters ?? 0})
+        if altitudeData.count > 1 {
+            // altitudeChanges = array of ascnets & descents - descents are negative
+            let altitudeChanges = zip(altitudeData, altitudeData.dropFirst()).map( {$1 - $0} )
+            let ascents = altitudeChanges.filter({ $0 > 0 })
+            return round(ascents.reduce(0, +) * 10) / 10
+        }
+        return 0
+    }
+    
+    func updateRecord(record: CKRecord) {
+        
+        let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: SettingsManager())
+        
+        if activityRecord.stravaId == nil {
+            localLogger.info("Updating \(activityRecord)")
+            if doneCount < 300 {
+                doneCount += 1
+                activityRecord.hasPowerData = !(activityRecord.trackPoints.filter({ ($0.watts ?? 0) > 0}).isEmpty)
+                activityRecord.hasHRData = !(activityRecord.trackPoints.filter({ ($0.heartRate ?? 0) > 0}).isEmpty)
+                activityRecord.hasLocationData = !(activityRecord.trackPoints.filter({ ($0.latitude ?? 0) != 0}).isEmpty)
+                activityRecord.totalAscent = getTotalAscent(activityRecord: activityRecord)
+
+                activityRecord.addActivityAnalysis()
+                saveAndDeleteRecord(recordsToSave: [activityRecord.asCKRecord()],
+                                    recordIDsToDelete: [],
+                                    recordSaveCompletionFunction: {
+                    self.processedRecordIndex += 1
+                    // ON COMPLETION!!
+                    self.processNextRecord() }
+                )
             }
-
-        }
- 
-
-        
-                database.add(zoneCreationOperation)
-    }
-    
-    func fetchAllRecordsToMove() {
-        
-        fetchAllRecordIDs(recordCompletionFunction: fetchRecordToMove)
-        
-    }
-    
-    func fetchRecordToMove(recordID: CKRecord.ID) {
-        
-        fetchRecord(recordID: recordID,
-                    completionFunction: moveRecord,
-                    completionFailureFunction: failedFetch)
-    }
-    
-    func moveRecord(CKrecord: CKRecord) -> Void {
-        let record = ActivityRecord(fromCKRecord: CKrecord, settingsManager: SettingsManager())
-        localLogger.info("Fetched record : \(record.name)  ID : \(record.recordID)")
-        record.recordID = CKRecord.ID(recordName: record.recordName, zoneID: zoneID)
-        let ckRecord = record.asCKRecord()
-        if record.saveTrackRecord() {
-            tempFileList[record.recordID] = record.tcxFileName!
-            saveAndDeleteRecord(recordsToSave: [ckRecord], recordIDsToDelete: [])
         } else {
-            localLogger.error("Failed to save track record")
+            self.processedRecordIndex += 1
+            self.processNextRecord()
         }
+        
         
     }
     
@@ -81,7 +103,8 @@ class MigrationManager: CloudKitManager {
     }
     
     func saveAndDeleteRecord(recordsToSave: [CKRecord],
-                             recordIDsToDelete: [CKRecord.ID]) {
+                             recordIDsToDelete: [CKRecord.ID],
+                             recordSaveCompletionFunction: @escaping () -> Void = { }) {
 
         self.localLogger.log("Saving records: \(recordsToSave.map( {$0.recordID} ))")
         self.localLogger.log("Deleting records: \(recordIDsToDelete)")
@@ -90,6 +113,7 @@ class MigrationManager: CloudKitManager {
         let modifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: recordsToSave, recordIDsToDelete: recordIDsToDelete)
         modifyRecordsOperation.qualityOfService = .userInitiated
         modifyRecordsOperation.isAtomic = false
+        modifyRecordsOperation.savePolicy = .changedKeys
         
         // recordFetched is a function that gets called for each record retrieved
         modifyRecordsOperation.perRecordSaveBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
@@ -99,6 +123,7 @@ class MigrationManager: CloudKitManager {
                 
 //                guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
                 self.localLogger.log("Saved \(record)")
+                recordSaveCompletionFunction()
                 
 //                savedActivityRecord.deleteTrackRecord()
                 break
@@ -132,7 +157,7 @@ class MigrationManager: CloudKitManager {
                 
                 break
             }
-            self.deleteTempFile(recordID: recordID)
+//            self.deleteTempFile(recordID: recordID)
 
         }
         
@@ -192,11 +217,13 @@ class MigrationManager: CloudKitManager {
         }
     }
   
-    func fetchAllRecordIDs(recordCompletionFunction: @escaping (CKRecord.ID) -> ()) {
+    func fetchAllRecordIDs(recordCompletionFunction: @escaping (CKRecord.ID) -> (), blockCompletionFunction: @escaping ([CKRecord.ID]) -> Void = {_ in }) {
                
         let pred = NSPredicate(value: true)
         var minStartDate: Date? = nil
         var recordCount: Int = 0
+        var fetchedRecordIds: [CKRecord.ID] = []
+        
         let sort = NSSortDescriptor(key: "startDateLocal", ascending: false)
         let query = CKQuery(recordType: "Activity", predicate: pred)
         query.sortDescriptors = [sort]
@@ -212,6 +239,7 @@ class MigrationManager: CloudKitManager {
             switch result {
             case .success(let record):
                 recordCompletionFunction(recordID)
+                fetchedRecordIds.append(recordID)
                 recordCount += 1
                 let startDate: Date = record["startDateLocal"]  ?? Date() as Date
                 if minStartDate == nil {
@@ -235,7 +263,7 @@ class MigrationManager: CloudKitManager {
             case .success:
 
                 self.localLogger.info("Record fetch successfully complete : record count \(recordCount) : min date \(minStartDate!.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))")
-                
+                blockCompletionFunction(fetchedRecordIds)
                 break
                     
             case .failure(let error):

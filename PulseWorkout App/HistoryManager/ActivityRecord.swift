@@ -256,10 +256,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     }
     
     // Initialise record from CloudKt record - will have recordID set
-    init(fromCKRecord: CKRecord, settingsManager: SettingsManager) {
+    init(fromCKRecord: CKRecord, settingsManager: SettingsManager, fetchtrackData: Bool = true) {
         super.init()
         self.settingsManager = settingsManager
-        self.fromCKRecord(activityRecord: fromCKRecord)
+        self.fromCKRecord(activityRecord: fromCKRecord, fetchtrackData: fetchtrackData)
     }
     
     #if os(iOS)
@@ -612,6 +612,8 @@ extension ActivityRecord {
         averageHeartRate = heartRateAnalysis.average
         averageCadence = Int(cadenceAnalysis.average)
         averagePower = Int(powerAnalysis.average)
+        
+        TSS = (TSS ?? 0) + incrementalTSS(watts: watts, ftp: 275, seconds: ACTIVITY_RECORDING_INTERVAL)
 
     }
 
@@ -694,6 +696,7 @@ extension ActivityRecord {
     }
     
     func save(dataCache: DataCache) {
+        addActivityAnalysis()
         if saveTrackRecord() {
             dataCache.add(activityRecord: self)
         }
@@ -716,25 +719,25 @@ extension ActivityRecord {
 
 //        activityRecord["sportType"] = sportType as CKRecordValue
         activityRecord["startDateLocal"] = startDateLocal as CKRecordValue
-        activityRecord["elapsedTime"] = elapsedTime as CKRecordValue
-        activityRecord["pausedTime"] = pausedTime as CKRecordValue
-        activityRecord["movingTime"] = movingTime as CKRecordValue
+        activityRecord["elapsedTime"] = (round(elapsedTime * 10) / 10) as CKRecordValue
+        activityRecord["pausedTime"] = (round(pausedTime * 10) / 10) as CKRecordValue
+        activityRecord["movingTime"] = (round(movingTime * 10) / 10) as CKRecordValue
         activityRecord["activityDescription"] = activityDescription as CKRecordValue
-        activityRecord["distance"] = distanceMeters as CKRecordValue
+        activityRecord["distance"] = (round(distanceMeters * 10) / 10) as CKRecordValue
 
-        activityRecord["averageHeartRate"] = averageHeartRate as CKRecordValue
+        activityRecord["averageHeartRate"] = (round(averageHeartRate * 10) / 10) as CKRecordValue
         activityRecord["averageCadence"] = averageCadence as CKRecordValue
         activityRecord["averagePower"] = averagePower as CKRecordValue
-        activityRecord["averageSpeed"] = averageSpeed as CKRecordValue
+        activityRecord["averageSpeed"] = (round(averageSpeed * 1000) / 1000) as CKRecordValue
         activityRecord["maxHeartRate"] = maxHeartRate as CKRecordValue
         activityRecord["maxCadence"] = maxCadence as CKRecordValue
         activityRecord["maxPower"] = maxPower as CKRecordValue
-        activityRecord["maxSpeed"] = maxSpeed as CKRecordValue
+        activityRecord["maxSpeed"] = (round(maxSpeed * 1000) / 1000) as CKRecordValue
 
-        activityRecord["activeEnergy"] = activeEnergy as CKRecordValue
+        activityRecord["activeEnergy"] = (round(activeEnergy * 10) / 10) as CKRecordValue
 
-        activityRecord["totalAscent"] = (totalAscent ?? 0) as CKRecordValue
-        activityRecord["totalDescent"] = (totalDescent ?? 0) as CKRecordValue
+        activityRecord["totalAscent"] = round(totalAscent ?? 0) as CKRecordValue
+        activityRecord["totalDescent"] = round(totalDescent ?? 0) as CKRecordValue
 
         activityRecord["timeOverHiAlarm"] = timeOverHiAlarm as CKRecordValue
         activityRecord["timeUnderLoAlarm"] = timeUnderLoAlarm as CKRecordValue
@@ -764,8 +767,8 @@ extension ActivityRecord {
         activityRecord["hasHRData"] = hasHRData
         activityRecord["hasPowerData"] = hasPowerData
         
-        activityRecord["loAltitudeMeters"] = loAltitudeMeters as CKRecordValue?
-        activityRecord["hiAltitudeMeters"] = hiAltitudeMeters as CKRecordValue?
+        activityRecord["loAltitudeMeters"] = (round((loAltitudeMeters ?? 0) * 10) / 10) as CKRecordValue?
+        activityRecord["hiAltitudeMeters"] = (round((hiAltitudeMeters ?? 0) * 10) / 10) as CKRecordValue?
         
         if saveTrackRecord() {
             logger.debug("creating asset!")
@@ -778,7 +781,7 @@ extension ActivityRecord {
 
     }
     
-    func fromCKRecord(activityRecord: CKRecord) {
+    func fromCKRecord(activityRecord: CKRecord, fetchtrackData: Bool = true) {
         
         recordID = activityRecord.recordID
         recordName = recordID.recordName
@@ -843,32 +846,34 @@ extension ActivityRecord {
         tcxFileName = baseFileName + ".gz"
         JSONFileName = baseFileName + ".json"
         
-        if activityRecord["tcx"] != nil {
-            self.logger.info("Parsing track data")
-            let asset = activityRecord["tcx"]! as CKAsset
-            let fileURL = asset.fileURL!
-            
-            do {
-                let tcxZipData = try Data(contentsOf: fileURL)
-                self.logger.log("Got tcx data of size \(tcxZipData.count)")
+        if fetchtrackData {
+            if activityRecord["tcx"] != nil {
+                self.logger.info("Parsing track data")
+                let asset = activityRecord["tcx"]! as CKAsset
+                let fileURL = asset.fileURL!
                 
                 do {
-                    let tcxData: Data = try tcxZipData.gunzipped()
-                    self.logger.log("Unzipped data to size \(tcxData.count)")
+                    let tcxZipData = try Data(contentsOf: fileURL)
+                    self.logger.log("Got tcx data of size \(tcxZipData.count)")
                     
-                    let parser = XMLParser(data: tcxData)
+                    do {
+                        let tcxData: Data = try tcxZipData.gunzipped()
+                        self.logger.log("Unzipped data to size \(tcxData.count)")
+                        
+                        let parser = XMLParser(data: tcxData)
 
-                    parser.delegate = self
-                    parser.parse()
+                        parser.delegate = self
+                        parser.parse()
+                    } catch {
+                        self.logger.error("Unzip failed")
+                    }
+                    
                 } catch {
-                    self.logger.error("Unzip failed")
+                    self.logger.error("Can't get data at url:\(fileURL)")
                 }
-                
-//                return data
-            } catch {
-                self.logger.error("Can't get data at url:\(fileURL)")
             }
         }
+
         
     }
 
@@ -1311,14 +1316,19 @@ extension ActivityRecord {
         
         for (index, lowerLimit) in powerZoneLimits.enumerated() {
             
-            if index > powerZoneLimits.count - 2 {
-                movingTime = Double(trackPoints.filter({($0.watts ?? 0) >= lowerLimit}).count * trackPointGap)
-                
-            } else {
-                movingTime = Double(trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < powerZoneLimits[index+1])}).count * trackPointGap)
+            if hasPowerData {
+                if index > powerZoneLimits.count - 2 {
+                    movingTime = Double(trackPoints.filter({($0.watts ?? 0) >= lowerLimit}).count * trackPointGap)
+                    
+                } else {
+                    movingTime = Double(trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < powerZoneLimits[index+1])}).count * trackPointGap)
 
+                }
             }
-
+            else {
+                movingTime = 0
+            }
+            
             calcMovingTimebyPowerZone.append(movingTime)
         }
         
@@ -1350,7 +1360,10 @@ extension ActivityRecord {
         }
         
         // Make sure all elements add up to movingTime!
-        calcMovingTimebyHRZone[0] = movingTime - calcMovingTimebyHRZone.suffix(from: 1).reduce(0, +)
+        for (index, value) in calcMovingTimebyHRZone.enumerated() {
+            calcMovingTimebyHRZone[index] = max((round(movingTime * 10 ) / 10) - calcMovingTimebyHRZone.reduce(0, +) + value, 0)
+        }
+//        calcMovingTimebyHRZone[0] = max((round(movingTime * 10 ) / 10) - calcMovingTimebyHRZone.suffix(from: 1).reduce(0, +), 0)
         
         return calcMovingTimebyHRZone
     }
