@@ -85,6 +85,8 @@
 		E46EF0C82955C8E9006FA603 /* PausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C72955C8E9006FA603 /* PausedView.swift */; };
 		E46EF0CA2955F615006FA603 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C92955F615006FA603 /* LiveActivityManager.swift */; };
 		E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
+		E47A2EC72D5F290D00297952 /* SegmentBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47A2EC62D5F290D00297952 /* SegmentBarView.swift */; };
+		E47A2EC92D5FAEA100297952 /* DonutChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47A2EC82D5FAEA100297952 /* DonutChartView.swift */; };
 		E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */; };
 		E48F92CC2D4B8B8D00278003 /* StravaSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E48F92CB2D4B8B8D00278003 /* StravaSwift */; };
 		E492BFE92D1835530050B6E8 /* WatchAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */; };
@@ -299,6 +301,8 @@
 		E46EF0CB29560A1F006FA603 /* PulseWorkout Watch App.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "PulseWorkout Watch App.entitlements"; sourceTree = "<group>"; };
 		E46EF0CC29560B5B006FA603 /* PulseWorkout-Watch-App-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "PulseWorkout-Watch-App-Info.plist"; sourceTree = SOURCE_ROOT; };
 		E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
+		E47A2EC62D5F290D00297952 /* SegmentBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentBarView.swift; sourceTree = "<group>"; };
+		E47A2EC82D5FAEA100297952 /* DonutChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonutChartView.swift; sourceTree = "<group>"; };
 		E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElapsedTimeView.swift; sourceTree = "<group>"; };
 		E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppDelegate.swift; sourceTree = "<group>"; };
 		E492C0042D19568A0050B6E8 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
@@ -717,6 +721,8 @@
 			isa = PBXGroup;
 			children = (
 				E4941E812CD7F4830063421F /* ActivityDetailView.swift */,
+				E47A2EC82D5FAEA100297952 /* DonutChartView.swift */,
+				E47A2EC62D5F290D00297952 /* SegmentBarView.swift */,
 				E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */,
 				E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */,
 			);
@@ -1143,6 +1149,7 @@
 				E45E3F732CF0EF25001D58B3 /* ProfileListView.swift in Sources */,
 				E4941E4F2CD2A1120063421F /* BTDeviceInfoView.swift in Sources */,
 				E4094BC82CD1512C00915CCB /* ActivityChartTraceBuilder.swift in Sources */,
+				E47A2EC72D5F290D00297952 /* SegmentBarView.swift in Sources */,
 				E4CC66AD2CDA353300AA2F9E /* ChartView.swift in Sources */,
 				E45E3F1F2CEBABBA001D58B3 /* NewProfileDetailView.swift in Sources */,
 				E4094BBA2CD0C6D200915CCB /* GeneralUtilities.swift in Sources */,
@@ -1151,6 +1158,7 @@
 				E4941E872CD7FBC50063421F /* ActivityHeaderView.swift in Sources */,
 				E4AEC0A72D2C655C00DC0082 /* CloudKitManager.swift in Sources */,
 				E45E3F272CEC8D9D001D58B3 /* HKExtensions.swift in Sources */,
+				E47A2EC92D5FAEA100297952 /* DonutChartView.swift in Sources */,
 				E4AEC0AA2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
 				E45E3F252CEC8D12001D58B3 /* ProfileManager.swift in Sources */,
 				E4941E802CD7F3F60063421F /* SummaryMetricView.swift in Sources */,

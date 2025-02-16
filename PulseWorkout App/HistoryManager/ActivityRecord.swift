@@ -222,6 +222,15 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var loAltitudeMeters: Double?
     var hiAltitudeMeters: Double?
     
+    // Length of segment in seconds to average heart rate over for HRSegmentAverages
+    var averageSegmentSize: Int?
+    // List of average heart rates per segment (eg 10 minutes)
+    var HRSegmentAverages: [Int] = []
+    // List of average power output per segment (eg 10 minutes)
+    var powerSegmentAverages: [Int] = []
+    
+    var cadenceSegmentAverages: [Int] = []
+    
     
     var autoPause: Bool = true
     var isPaused: Bool = false
@@ -323,6 +332,11 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         
         loAltitudeMeters = fromActivityRecord.loAltitudeMeters
         hiAltitudeMeters = fromActivityRecord.hiAltitudeMeters
+        
+        averageSegmentSize = fromActivityRecord.averageSegmentSize
+        HRSegmentAverages = fromActivityRecord.HRSegmentAverages
+        powerSegmentAverages = fromActivityRecord.powerSegmentAverages
+        cadenceSegmentAverages = fromActivityRecord.cadenceSegmentAverages
         
         setToSave(fromActivityRecord.toSave)
 
@@ -570,7 +584,8 @@ extension ActivityRecord {
              stravaSaveStatus, stravaId, trackPointGap, TSS, FTP, powerZoneLimits, TSSbyPowerZone, movingTimebyPowerZone,
              thesholdHR, estimatedTSSbyHR, HRZoneLimits, TSSEstimatebyHRZone, movingTimebyHRZone,
              totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL,
-             hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters
+             hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters, averageSegmentSize,
+             HRSegmentAverages, powerSegmentAverages, cadenceSegmentAverages
     }
     
 }
@@ -770,6 +785,11 @@ extension ActivityRecord {
         activityRecord["loAltitudeMeters"] = (round((loAltitudeMeters ?? 0) * 10) / 10) as CKRecordValue?
         activityRecord["hiAltitudeMeters"] = (round((hiAltitudeMeters ?? 0) * 10) / 10) as CKRecordValue?
         
+        activityRecord["averageSegmentSize"] = averageSegmentSize as CKRecordValue?
+        activityRecord["HRSegmentAverages"] = HRSegmentAverages
+        activityRecord["powerSegmentAverages"] = powerSegmentAverages
+        activityRecord["cadenceSegmentAverages"] = cadenceSegmentAverages
+        
         if saveTrackRecord() {
             logger.debug("creating asset!")
             guard let tFile = tcxFileName else { return activityRecord }
@@ -835,6 +855,11 @@ extension ActivityRecord {
         
         loAltitudeMeters = activityRecord["loAltitudeMeters"] as Double?
         hiAltitudeMeters = activityRecord["hiAltitudeMeters"] as Double?
+   
+        averageSegmentSize = activityRecord["averageSegmentSize"] as Int?
+        HRSegmentAverages = (activityRecord["HRSegmentAverages"] ?? []) as [Int]
+        powerSegmentAverages = (activityRecord["powerSegmentAverages"] ?? []) as [Int]
+        cadenceSegmentAverages = (activityRecord["cadenceSegmentAverages"] ?? []) as [Int]
         
         mapSnapshotAsset = activityRecord["mapSnapshot"] as CKAsset?
         if mapSnapshotAsset != nil {
@@ -1210,6 +1235,33 @@ extension ActivityRecord {
         hiAltitudeMeters = trackPoints.filter({ $0.altitudeMeters != nil }).map({ $0.altitudeMeters! }).max()
         maxCadence = trackPoints.filter({ $0.cadence != nil }).map({ $0.cadence! }).max() ?? 0
         totalDescent = getTotalDescent()
+        
+        averageSegmentSize = getAxisTimeGap(elapsedTimeSeries: trackPoints.map( { Int($0.time.timeIntervalSince(startDateLocal)) }))
+        HRSegmentAverages = segmentAverageSeries(
+            segmentSize: averageSegmentSize!,
+            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+            inputSeries: trackPoints.map( { $0.heartRate }),
+            includeZeros: true,
+            returnFullSeries: false).map( { Int($0) })
+        
+        powerSegmentAverages = segmentAverageSeries(
+            segmentSize: averageSegmentSize!,
+            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+            inputSeries: trackPoints.map( { Double($0.watts ?? 0) }),
+            includeZeros: settingsManager?.avePowerZeros ?? false,
+            returnFullSeries: false).map( { Int($0) })
+
+        cadenceSegmentAverages = segmentAverageSeries(
+            segmentSize: averageSegmentSize!,
+            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+            inputSeries: trackPoints.map( { Double($0.cadence ?? 0) }),
+            includeZeros: settingsManager?.aveCadenceZeros ?? false,
+            returnFullSeries: false).map( { Int($0) })
+        
+        self.logger.info("averageSegmentSize : \(self.averageSegmentSize ?? 0)")
+        self.logger.info("HRSegmentAverages : \(self.HRSegmentAverages)")
+        self.logger.info("powerSegmentAverages : \(self.powerSegmentAverages)")
+        self.logger.info("cadenceSegmentAverages : \(self.cadenceSegmentAverages)")
     }
     
     
@@ -1312,24 +1364,29 @@ extension ActivityRecord {
         guard let currentFTP = FTP else {return []}
         
         var calcMovingTimebyPowerZone: [Double] = []
-        var movingTime: Double
+        var thisTime: Double
         
         for (index, lowerLimit) in powerZoneLimits.enumerated() {
             
             if hasPowerData {
                 if index > powerZoneLimits.count - 2 {
-                    movingTime = Double(trackPoints.filter({($0.watts ?? 0) >= lowerLimit}).count * trackPointGap)
+                    thisTime = Double(trackPoints.filter({($0.watts ?? 0) >= lowerLimit}).count * trackPointGap)
                     
                 } else {
-                    movingTime = Double(trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < powerZoneLimits[index+1])}).count * trackPointGap)
+                    thisTime = Double(trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < powerZoneLimits[index+1])}).count * trackPointGap)
 
                 }
             }
             else {
-                movingTime = 0
+                thisTime = 0
             }
             
-            calcMovingTimebyPowerZone.append(movingTime)
+            calcMovingTimebyPowerZone.append(thisTime)
+        }
+        
+        // Make sure all elements add up to movingTime!
+        for (index, value) in calcMovingTimebyPowerZone.enumerated() {
+            calcMovingTimebyPowerZone[index] = max((round(movingTime * 10 ) / 10) - calcMovingTimebyPowerZone.reduce(0, +) + value, 0)
         }
         
         return calcMovingTimebyPowerZone

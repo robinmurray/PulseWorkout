@@ -86,6 +86,11 @@ func durationFormatter( elapsedSeconds: Double, minimizeLength: Bool = false ) -
     return formatter.string(from: elapsedSeconds) ?? ""
 }
 
+func elapsedTimeFormatter( elapsedSeconds: Double, minimizeLength: Bool = false ) -> String {
+    return durationFormatter( elapsedSeconds: elapsedSeconds, minimizeLength: minimizeLength )
+}
+
+
 func powerFormatter( watts: Double ) -> String {
     
     return Measurement(value: watts,

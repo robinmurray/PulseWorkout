@@ -122,7 +122,12 @@ func rollingAverage(inputArray: [Double], rollCount: Int) -> [Double] {
     return rollingAverageSequence.sequence
 }
 
-func segmentAverageSeries( segmentSize: Int, xAxisSeries: [Double], inputSeries: [Double?], includeZeros: Bool, getMidpoints: Bool = false) -> [Double] {
+func segmentAverageSeries( segmentSize: Int,
+                           xAxisSeries: [Double],
+                           inputSeries: [Double?],
+                           includeZeros: Bool,
+                           getMidpoints: Bool = false,
+                           returnFullSeries: Bool = true) -> [Double] {
 
     var outSequence: [Double] = []
     var aveVal: Double = 0
@@ -159,8 +164,13 @@ func segmentAverageSeries( segmentSize: Int, xAxisSeries: [Double], inputSeries:
         } else {
             aveSeq = Array(repeating: aveVal, count: subSeq.count)
         }
-
-        outSequence += aveSeq
+        
+        if returnFullSeries {
+            outSequence += aveSeq
+        } else {
+            outSequence.append(aveVal)
+        }
+        
     }
     
     return outSequence
@@ -200,7 +210,7 @@ func getAxisTimeGap( elapsedTimeSeries: [Int] ) -> Int {
         return 60
     }
     
-    let axisGapSeconds = [10, 15, 30, 60, 120, 300, 600, 900, 1800]
+    let axisGapSeconds = [10, 15, 30, 60, 120, 300, 600, 900, 1800, 3600]
     let MAX_AXIS_GAPS = 8
     
     for gap in axisGapSeconds {

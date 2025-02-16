@@ -72,7 +72,7 @@ class MigrationManager: CloudKitManager {
         
         let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: SettingsManager())
         
-        if activityRecord.stravaId == nil {
+//        if activityRecord.stravaId == nil {
             localLogger.info("Updating \(activityRecord)")
             if doneCount < 300 {
                 doneCount += 1
@@ -90,10 +90,10 @@ class MigrationManager: CloudKitManager {
                     self.processNextRecord() }
                 )
             }
-        } else {
-            self.processedRecordIndex += 1
-            self.processNextRecord()
-        }
+//        } else {
+//            self.processedRecordIndex += 1
+//            self.processNextRecord()
+//        }
         
         
     }

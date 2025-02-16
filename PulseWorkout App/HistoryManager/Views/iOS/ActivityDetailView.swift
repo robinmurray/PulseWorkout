@@ -22,6 +22,13 @@ struct ActivityDetailView: View {
         let value: Double
     }
     
+    struct HRbySector: Identifiable {
+        let id = UUID()
+        let sector: String
+        let startTime: Int
+        let value: Int
+    }
+    
     enum NavigationTarget {
         case MapRouteView
         case ChartViewAscent
@@ -59,25 +66,60 @@ struct ActivityDetailView: View {
         return true
     }
     
-    func trainingLoadByRange(_ activityRecord: ActivityRecord) -> [TrainingLoadByRange] {
+    func trainingLoadByRange(_ activityRecord: ActivityRecord) -> [DonutChartDataPoint] {
+        
+        var rangeValues: [Double] = []
         
         if trainingLoadEstimated(activityRecord) {
-            return [TrainingLoadByRange(range: "Low Aerobic",
-                                        value: activityRecord.TSSEstimatebyHRZone[0] + activityRecord.TSSEstimatebyHRZone[1]),
-                    TrainingLoadByRange(range: "High Aerobic",
-                                        value: activityRecord.TSSEstimatebyHRZone[2] + activityRecord.TSSEstimatebyHRZone[3]),
-                    TrainingLoadByRange(range: "Anaerobic",
-                                        value: activityRecord.TSSEstimatebyHRZone[4])]
+            rangeValues.append(activityRecord.TSSEstimatebyHRZone[0] + activityRecord.TSSEstimatebyHRZone[1])
+            rangeValues.append(activityRecord.TSSEstimatebyHRZone[2] + activityRecord.TSSEstimatebyHRZone[3])
+            rangeValues.append(activityRecord.TSSEstimatebyHRZone[4])
         }
         else {
-            return [TrainingLoadByRange(range: "Low Aerobic",
-                                        value: activityRecord.TSSbyPowerZone[0] + activityRecord.TSSbyPowerZone[1]),
-                    TrainingLoadByRange(range: "High Aerobic",
-                                        value: activityRecord.TSSbyPowerZone[2] + activityRecord.TSSbyPowerZone[3]),
-                    TrainingLoadByRange(range: "Anaerobic",
-                                        value: activityRecord.TSSbyPowerZone[4] + activityRecord.TSSbyPowerZone[5])]
+            rangeValues.append(activityRecord.TSSbyPowerZone[0] + activityRecord.TSSbyPowerZone[1])
+            rangeValues.append(activityRecord.TSSbyPowerZone[2] + activityRecord.TSSbyPowerZone[3])
+            rangeValues.append(activityRecord.TSSbyPowerZone[4] + activityRecord.TSSbyPowerZone[5])
         }
+
+        return [DonutChartDataPoint(name: "Low Aerobic",
+                                    value: rangeValues[0],
+                                    formattedValue: String(format: "%.1f", rangeValues[0])),
+                DonutChartDataPoint(name: "High Aerobic",
+                                    value: rangeValues[1],
+                                    formattedValue: String(format: "%.1f", rangeValues[1])),
+                DonutChartDataPoint(name: "Anaerobic",
+                                    value: rangeValues[2],
+                                    formattedValue: String(format: "%.1f", rangeValues[2]))]
+
     }
+    
+    func movingTimeByRange(_ activityRecord: ActivityRecord) -> [DonutChartDataPoint] {
+    
+        var rangeValues: [Double] = []
+        
+        if trainingLoadEstimated(activityRecord) {
+            rangeValues.append(activityRecord.movingTimebyHRZone[0] + activityRecord.movingTimebyHRZone[1])
+            rangeValues.append(activityRecord.movingTimebyHRZone[2] + activityRecord.movingTimebyHRZone[3])
+            rangeValues.append(activityRecord.movingTimebyHRZone[4])
+        }
+        else {
+            rangeValues.append(activityRecord.movingTimebyPowerZone[0] + activityRecord.movingTimebyPowerZone[1])
+            rangeValues.append(activityRecord.movingTimebyPowerZone[2] + activityRecord.movingTimebyPowerZone[3])
+            rangeValues.append(activityRecord.movingTimebyPowerZone[4] + activityRecord.movingTimebyPowerZone[5])
+        }
+        
+        return [DonutChartDataPoint(name: "Low Aerobic",
+                                    value: rangeValues[0],
+                                    formattedValue: elapsedTimeFormatter(elapsedSeconds: rangeValues[0], minimizeLength: true)),
+                DonutChartDataPoint(name: "High Aerobic",
+                                    value: rangeValues[1],
+                                    formattedValue: elapsedTimeFormatter(elapsedSeconds: rangeValues[1], minimizeLength: true)),
+                DonutChartDataPoint(name: "Anaerobic",
+                                    value: rangeValues[2],
+                                    formattedValue: elapsedTimeFormatter(elapsedSeconds: rangeValues[2], minimizeLength: true))]
+        
+    }
+    
     
     func totalTrainingLoad(_ activityRecord: ActivityRecord) -> Double {
         
@@ -133,45 +175,10 @@ struct ActivityDetailView: View {
                             Text("Estimated from Heart Rate").bold()
                         }
                         
-                        let trainingLoads = trainingLoadByRange(activityRecord)
-                     
-                        ZStack {
-
-                            // The donut chart
-                            Chart(trainingLoads) { trainingLoad in
-                                SectorMark(
-                                    angle: .value(
-                                        Text(verbatim: trainingLoad.range),
-                                        trainingLoad.value
-                                    ),
-                                    innerRadius: .ratio(0.618),
-                                    angularInset: 8
-                                )
-                                .foregroundStyle(
-                                    by: .value(
-                                        "Name",
-                                        trainingLoad.range
-                                    )
-                                )
-                                .cornerRadius(6)
-                                .annotation(position: .overlay) {
-                                    if trainingLoad.value > 0 {
-                                        Text(String(format: "%.1f", trainingLoad.value)).bold()
-                                    }
-                                    
-                                }
-                            }
-                            .frame(width: 300, height: 300)
-                            
-                            // The text in the centre
-                            VStack(alignment:.center) {
-                                Text("Total Load").bold()
-                                Text(String(format: "%.1f", totalTrainingLoad(activityRecord))).bold()
-                            }
-                            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                            
-                                
-                        }
+                        let chartData = trainingLoadByRange(activityRecord)
+                        DonutChartView(chartData: chartData,
+                                       totalName: "Total Load",
+                                       totalValue: String(format: "%.1f", totalTrainingLoad(activityRecord)))
 
                     }
                 }
@@ -196,176 +203,224 @@ struct ActivityDetailView: View {
             {
                 VStack
                 {
-                    
-                    SummaryMetricView(title: "Moving Time",
-                                      value: durationFormatter.string(from: activityRecord.movingTime) ?? "")
-                    
-                    SummaryMetricView(title: "Paused Time",
-                                      value: durationFormatter.string(from: activityRecord.pausedTime) ?? "")
-                    
-                    
+                    let chartData = movingTimeByRange(activityRecord)
+                    DonutChartView(chartData: chartData,
+                                   totalName: "Moving Time",
+                                   totalValue: elapsedTimeFormatter(elapsedSeconds: activityRecord.movingTime, minimizeLength: true))
+
                     SummaryMetricView(title: "Elapsed Time",
-                                      value: durationFormatter.string(from: activityRecord.elapsedTime) ?? "")
+                                      value: durationFormatter.string(from: activityRecord.elapsedTime) ?? "",
+                                      metric2title: "Paused Time",
+                                      metric2value: durationFormatter.string(from: activityRecord.pausedTime) ?? "")
                     
                 }
             }
 
-            GroupBox(label:
-                VStack {
-                HStack {
-                    Image(systemName: speedIcon)
-                            .font(.title2)
-                            .frame(width: 40, height: 40)
-                    Text("Speed / Distance")
-                    Spacer()
-                }
-                
-                Divider()
-                    
-                }
-                .foregroundColor(distanceColor)
-            )
-            {
-                VStack {
-                    
-                    SummaryMetricView(title: "Average Speed",
-                                      value: speedFormatter(speed: activityRecord.averageSpeed))
-                    
-                    SummaryMetricView(title: "Distance",
-                                      value: distanceFormatter(distance: activityRecord.distanceMeters))
-                    
-                    
-                    Button(action: {
-                        navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewAscent)
-                    })
-                    {
-                        HStack{
-                            SummaryMetricView(title: "Ascent / Descent",
-                                              value: (distanceFormatter(distance: activityRecord.totalAscent ?? 0, forceMeters: true)) + " / " +
-                                              (distanceFormatter(distance: activityRecord.totalDescent ?? 0, forceMeters: true)))
-                            
-                            Spacer()
-                            
+            if activityRecord.hasLocationData {
+                GroupBox(label:
+                    VStack {
+                    HStack {
+                        Image(systemName: speedIcon)
+                                .font(.title2)
+                                .frame(width: 40, height: 40)
+                        Text("Speed / Distance")
+                        Spacer()
+                        
+                        Button(action: {
+                            navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewAscent)
+                        })
+                        {
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
                                 .frame(width: 40, height: 40)
                                 .foregroundStyle(distanceColor)
                         }
-                    
+                        .buttonStyle(BorderlessButtonStyle())
                     }
-                    .buttonStyle(BorderlessButtonStyle())
-                         
-                }
-                .foregroundStyle(.foreground)
-            }
-            
-
-
-            GroupBox(label:
-                VStack {
-                HStack {
-                    Image(systemName: heartRateIcon)
-                            .font(.title2)
-                            .frame(width: 40, height: 40)
-                    Text("Heart Rate")
-                    Spacer()
+                    
+                    Divider()
+                        
+                    }
+                    .foregroundColor(distanceColor)
+                )
+                {
+                    VStack {
+                        
+                        SummaryMetricView(title: "Distance",
+                                          value: distanceFormatter(distance: activityRecord.distanceMeters),
+                                          metric2title: "Ascent / Descent",
+                                          metric2value: (distanceFormatter(distance: activityRecord.totalAscent ?? 0, forceMeters: true)) + " / " +
+                                          (distanceFormatter(distance: activityRecord.totalDescent ?? 0, forceMeters: true)))
+                        
+                        SummaryMetricView(title: "Average Speed",
+                                          value: speedFormatter(speed: activityRecord.averageSpeed),
+                                          metric2title: "Maximum Speed",
+                                          metric2value: speedFormatter(speed: activityRecord.maxSpeed))
+                             
+                    }
+                    .foregroundStyle(.foreground)
                 }
                 
-                Divider()
-                    
-                }
-                .foregroundColor(heartRateColor)
-            )
-            {
-                VStack {
+            }
 
-                    Button(action: {
-                        navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewHR)
-                    })
-                    {
-                        HStack{
-                            SummaryMetricView(title: "Average",
-                                              value: heartRateFormatter(heartRate: Double(activityRecord.averageHeartRate)) + " bpm")
-                            Spacer()
+
+            if activityRecord.hasHRData {
+                GroupBox(label:
+                    VStack {
+                    HStack {
+                        Image(systemName: heartRateIcon)
+                                .font(.title2)
+                                .frame(width: 40, height: 40)
+                        Text("Heart Rate")
+                        Spacer()
+ 
+                        
+                        Button(action: {
+                            navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewHR)
+                        })
+                        {
+
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
                                 .frame(width: 40, height: 40)
                                 .foregroundStyle(heartRateColor)
+
                         }
+                        .buttonStyle(BorderlessButtonStyle())
+                        
                     }
-                    .buttonStyle(BorderlessButtonStyle())
                     
-                    
-                    SummaryMetricView(title: activityRecord.hiHRLimit == nil ? "Time Over High Limit" : "Time Over High Limit (\(activityRecord.hiHRLimit!))",
-                                      value: durationFormatter.string(from: activityRecord.timeOverHiAlarm) ?? "0")
-                    
-                    SummaryMetricView(title: activityRecord.loHRLimit == nil ? "Time Under Low Limit"   : "Time Under Low Limit (\(activityRecord.loHRLimit!))",
-                                      value: durationFormatter.string(from: activityRecord.timeUnderLoAlarm) ?? "0")
+                    Divider()
+                        
+                    }
+                    .foregroundColor(heartRateColor)
+                )
+                {
+                    VStack {
+                        
+                        SegmentBarView(segmentValues: activityRecord.HRSegmentAverages,
+                                       segmentSize: activityRecord.averageSegmentSize ?? 60,
+                                       horizontalLineVal: Int(activityRecord.averageHeartRate),
+                                       colourScheme: heartRateColor)
+
+                        SummaryMetricView(title: "Average",
+                                          value: heartRateFormatter(heartRate: Double(activityRecord.averageHeartRate)) + " bpm",
+                                          metric2title: "Maximum",
+                                          metric2value: heartRateFormatter(heartRate: Double(activityRecord.maxHeartRate)) + " bpm")
+                        
+                        if (activityRecord.hiHRLimit != nil) || (activityRecord.loHRLimit != nil) {
+                            SummaryMetricView(title: activityRecord.hiHRLimit == nil ? "" : "Over Limit (\(activityRecord.hiHRLimit!))",
+                                              value: durationFormatter.string(from: activityRecord.timeOverHiAlarm) ?? "",
+                                              metric2title: activityRecord.loHRLimit == nil ? ""   : "Under Limit (\(activityRecord.loHRLimit!))",
+                                              metric2value: durationFormatter.string(from: activityRecord.timeUnderLoAlarm) ?? "")
+                        }
+                        
+                    }
+                    .foregroundStyle(.foreground)
                 }
-                .foregroundStyle(.foreground)
+
             }
 
-            GroupBox(label:
-                VStack {
-                HStack {
-                    Image(systemName: powerIcon)
-                            .font(.title2)
-                            .frame(width: 40, height: 40)
-                    Text("Power / Cadence")
-                    Spacer()
-                }
-                
-                Divider()
-                    
-                }
-                .foregroundColor(powerColor)
-            )
-            {
-                VStack {
-
-                    Button(action: {
-                        navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewPower)
-                    })
-                    {
-                        HStack{
-                            SummaryMetricView(title: "Average Power",
-                                              value: powerFormatter(watts: Double(activityRecord.averagePower))
-                                                )
-                            Spacer()
+            if activityRecord.hasPowerData {
+                GroupBox(label:
+                    VStack {
+                    HStack {
+                        Image(systemName: powerIcon)
+                                .font(.title2)
+                                .frame(width: 40, height: 40)
+                        Text("Power")
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewPower)
+                        })
+                        {
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
                                 .frame(width: 40, height: 40)
                                 .foregroundStyle(powerColor)
                         }
+                        .buttonStyle(BorderlessButtonStyle())
                     }
-                    .buttonStyle(BorderlessButtonStyle())
                     
+                    Divider()
+                        
+                    }
+                    .foregroundColor(powerColor)
+                )
+                {
+                    VStack {
 
-                    Button(action: {
-                        navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewCadence)
-                    })
-                    {
-                        HStack{
-                            SummaryMetricView(title: "Average Cadence",
-                                              value: cadenceFormatter(cadence: Double(activityRecord.averageCadence))
-                                                )
-                            Spacer()
+                        SegmentBarView(segmentValues: activityRecord.powerSegmentAverages,
+                                       segmentSize: activityRecord.averageSegmentSize ?? 60,
+                                       horizontalLineVal: Int(activityRecord.averagePower),
+                                       colourScheme: powerColor)
+                        
+
+                        
+                        SummaryMetricView(title: "Average",
+                                          value: powerFormatter(watts: Double(activityRecord.averagePower)),
+                                          metric2title: "Maximum",
+                                          metric2value: powerFormatter(watts: Double(activityRecord.maxPower)))
+                        
+                        SummaryMetricView(title: "Energy",
+                                          value: energyFormatter(energy: activityRecord.activeEnergy))
+                    }
+                    .foregroundStyle(.foreground)
+
+                }
+
+            }
+
+            
+            if activityRecord.hasPowerData {
+                GroupBox(label:
+                    VStack {
+                    HStack {
+                        Image(systemName: cadenceIcon)
+                                .font(.title2)
+                                .frame(width: 40, height: 40)
+                        Text("Cadence")
+                        
+                        Spacer()
+                        
+                        Button(action: {
+                            navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewCadence)
+                        })
+                        {
                             Image(systemName: "chart.xyaxis.line")
                                 .font(.title2)
                                 .frame(width: 40, height: 40)
                                 .foregroundStyle(cadenceColor)
                         }
+                        .buttonStyle(BorderlessButtonStyle())
                     }
-                    .buttonStyle(BorderlessButtonStyle())
                     
-                    
-                    SummaryMetricView(title: "Energy",
-                                      value: energyFormatter(energy: activityRecord.activeEnergy))
+                    Divider()
+                        
+                    }
+                    .foregroundColor(cadenceColor)
+                )
+                {
+                    VStack {
+
+                        SegmentBarView(segmentValues: activityRecord.cadenceSegmentAverages,
+                                       segmentSize: activityRecord.averageSegmentSize ?? 60,
+                                       horizontalLineVal: Int(activityRecord.averageCadence),
+                                       colourScheme: cadenceColor)
+                        
+                        SummaryMetricView(title: "Average",
+                                          value: cadenceFormatter(cadence: Double(activityRecord.averageCadence)),
+                                          metric2title: "Maximum",
+                                          metric2value: cadenceFormatter(cadence: Double(activityRecord.maxCadence)))
+
+                    }
+                    .foregroundStyle(.foreground)
+
                 }
-                .foregroundStyle(.foreground)
 
             }
-
 
 
         }

@@ -123,7 +123,9 @@ class CloudKitManager: NSObject, ObservableObject {
                                  "mapSnapshot", "stravaId", "stravaSaveStatus", "trackPointGap",
                                  "TSS", "FTP", "powerZoneLimits", "TSSbyPowerZone", "movingTimebyPowerZone",
                                  "thesholdHR", "estimatedTSSbyHR", "HRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone",
-                                 "hasLocationData", "hasHRData", "hasPowerData", "loAltitudeMeters", "hiAltitudeMeters"]
+                                 "hasLocationData", "hasHRData", "hasPowerData", "loAltitudeMeters", "hiAltitudeMeters",
+                                 "averageSegmentSize", "HRSegmentAverages", "powerSegmentAverages", "cadenceSegmentAverages"]
+
         
         return operation
         
@@ -187,6 +189,10 @@ class CloudKitManager: NSObject, ObservableObject {
                     
             case .failure(let error):
 
+                DispatchQueue.main.async {
+                    self.fetchComplete = true
+                }
+                
                 switch error {
                 case CKError.accountTemporarilyUnavailable,
                     CKError.networkFailure,
