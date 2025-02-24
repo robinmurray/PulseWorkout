@@ -185,37 +185,6 @@ struct ActivityDetailView: View {
             }
 
             
-            GroupBox(label:
-                        VStack {
-                HStack {
-                    Image(systemName: "stopwatch")
-                        .font(.title2)
-                        .frame(width: 40, height: 40)
-                    Text("Activity Time")
-                    Spacer()
-
-                }
-                .foregroundColor(.green)
-                
-                Divider()
-            }
-            )
-            {
-                VStack
-                {
-                    let chartData = movingTimeByRange(activityRecord)
-                    DonutChartView(chartData: chartData,
-                                   totalName: "Moving Time",
-                                   totalValue: elapsedTimeFormatter(elapsedSeconds: activityRecord.movingTime, minimizeLength: true))
-
-                    SummaryMetricView(title: "Elapsed Time",
-                                      value: durationFormatter.string(from: activityRecord.elapsedTime) ?? "",
-                                      metric2title: "Paused Time",
-                                      metric2value: durationFormatter.string(from: activityRecord.pausedTime) ?? "")
-                    
-                }
-            }
-
             if activityRecord.hasLocationData {
                 GroupBox(label:
                     VStack {
@@ -245,22 +214,65 @@ struct ActivityDetailView: View {
                 )
                 {
                     VStack {
-                        
-                        SummaryMetricView(title: "Distance",
-                                          value: distanceFormatter(distance: activityRecord.distanceMeters),
-                                          metric2title: "Ascent / Descent",
-                                          metric2value: (distanceFormatter(distance: activityRecord.totalAscent ?? 0, forceMeters: true)) + " / " +
-                                          (distanceFormatter(distance: activityRecord.totalDescent ?? 0, forceMeters: true)))
-                        
-                        SummaryMetricView(title: "Average Speed",
-                                          value: speedFormatter(speed: activityRecord.averageSpeed),
-                                          metric2title: "Maximum Speed",
-                                          metric2value: speedFormatter(speed: activityRecord.maxSpeed))
-                             
+                        Image(uiImage: activityRecord.altitudeImage ?? UIImage(systemName: "photo")!)
+                            .resizable()
+                            .scaledToFit()
+                            .padding(.horizontal)
+                            .background(Color.gray.opacity(0))
+
+                        VStack {
+
+                            Spacer()
+                            
+                            SummaryMetricView(title: "Distance",
+                                              value: distanceFormatter(distance: activityRecord.distanceMeters),
+                                              metric2title: "Ascent / Descent",
+                                              metric2value: (distanceFormatter(distance: activityRecord.totalAscent ?? 0, forceMeters: true)) + " / " +
+                                              (distanceFormatter(distance: activityRecord.totalDescent ?? 0, forceMeters: true)))
+                            
+                            SummaryMetricView(title: "Average Speed",
+                                              value: speedFormatter(speed: activityRecord.averageSpeed),
+                                              metric2title: "Maximum Speed",
+                                              metric2value: speedFormatter(speed: activityRecord.maxSpeed))
+                                 
+                        }
+                        .foregroundStyle(.foreground)
                     }
-                    .foregroundStyle(.foreground)
+
                 }
                 
+            }
+            
+            
+            GroupBox(label:
+                        VStack {
+                HStack {
+                    Image(systemName: "stopwatch")
+                        .font(.title2)
+                        .frame(width: 40, height: 40)
+                    Text("Activity Time")
+                    Spacer()
+
+                }
+                .foregroundColor(.green)
+                
+                Divider()
+            }
+            )
+            {
+                VStack
+                {
+                    let chartData = movingTimeByRange(activityRecord)
+                    DonutChartView(chartData: chartData,
+                                   totalName: "Moving Time",
+                                   totalValue: elapsedTimeFormatter(elapsedSeconds: activityRecord.movingTime, minimizeLength: true))
+
+                    SummaryMetricView(title: "Elapsed Time",
+                                      value: durationFormatter.string(from: activityRecord.elapsedTime) ?? "",
+                                      metric2title: "Paused Time",
+                                      metric2value: durationFormatter.string(from: activityRecord.pausedTime) ?? "")
+                    
+                }
             }
 
 
@@ -424,7 +436,20 @@ struct ActivityDetailView: View {
 
 
         }
-        .onAppear( perform: { activityRecord.getMapSnapshot(dataCache: dataCache) })
+        .onAppear( perform: {
+
+            ActivityRecordSnapshotImage(activityRecord: activityRecord,
+                                        dataCache: dataCache)
+            .get(image: &activityRecord.mapSnapshotImage,
+                 url: &activityRecord.mapSnapshotURL,
+                 asset: activityRecord.mapSnapshotAsset)
+            
+            ActivityRecordAltitudeImage(activityRecord: activityRecord,
+                                        dataCache: dataCache)
+            .get(image: &activityRecord.altitudeImage,
+                 url: &activityRecord.altitudeImageURL,
+                 asset: activityRecord.altitudeImageAsset)
+        })
 
         .navigationDestination(for: NavigationTarget.self) { pathValue in
 

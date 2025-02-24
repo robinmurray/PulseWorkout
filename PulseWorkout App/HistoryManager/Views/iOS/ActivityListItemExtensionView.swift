@@ -61,7 +61,13 @@ struct ActivityListItemExtensionView: View {
             }
 
         }
-        .onAppear( perform: { activityRecord.getMapSnapshot(dataCache: dataCache) })
+        .onAppear( perform: {
+            ActivityRecordSnapshotImage(activityRecord: activityRecord,
+                                        dataCache: dataCache)
+            .get(image: &activityRecord.mapSnapshotImage,
+                 url: &activityRecord.mapSnapshotURL,
+                 asset: activityRecord.mapSnapshotAsset)
+        })
 
         
     }

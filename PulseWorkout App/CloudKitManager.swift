@@ -124,7 +124,8 @@ class CloudKitManager: NSObject, ObservableObject {
                                  "TSS", "FTP", "powerZoneLimits", "TSSbyPowerZone", "movingTimebyPowerZone",
                                  "thesholdHR", "estimatedTSSbyHR", "HRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone",
                                  "hasLocationData", "hasHRData", "hasPowerData", "loAltitudeMeters", "hiAltitudeMeters",
-                                 "averageSegmentSize", "HRSegmentAverages", "powerSegmentAverages", "cadenceSegmentAverages"]
+                                 "averageSegmentSize", "HRSegmentAverages", "powerSegmentAverages", "cadenceSegmentAverages",
+                                 "altitudeImage"]
 
         
         return operation

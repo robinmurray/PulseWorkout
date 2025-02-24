@@ -88,6 +88,7 @@
 		E47A2EC72D5F290D00297952 /* SegmentBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47A2EC62D5F290D00297952 /* SegmentBarView.swift */; };
 		E47A2EC92D5FAEA100297952 /* DonutChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47A2EC82D5FAEA100297952 /* DonutChartView.swift */; };
 		E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */; };
+		E48D4D632D6325D0001104AC /* AltitudeChartImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */; };
 		E48F92CC2D4B8B8D00278003 /* StravaSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E48F92CB2D4B8B8D00278003 /* StravaSwift */; };
 		E492BFE92D1835530050B6E8 /* WatchAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */; };
 		E492C0052D19568A0050B6E8 /* ImageCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E492C0042D19568A0050B6E8 /* ImageCache.swift */; };
@@ -107,7 +108,6 @@
 		E492C0152D1DC9800050B6E8 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F232CEC8D12001D58B3 /* ProfileManager.swift */; };
 		E492C0162D1DC9800050B6E8 /* ProfileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F232CEC8D12001D58B3 /* ProfileManager.swift */; };
 		E492C0172D1DC9B20050B6E8 /* HapticsSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E632CD76E100063421F /* HapticsSettingsView.swift */; };
-		E492C0182D1DCA360050B6E8 /* MapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CC66AE2CDBE1A600AA2F9E /* MapManager.swift */; };
 		E492C01B2D1DCA580050B6E8 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
 		E492C01C2D1DCA580050B6E8 /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
 		E492C01D2D1DCA600050B6E8 /* BTPeripheralManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46121F12AAE178600E07749 /* BTPeripheralManager.swift */; };
@@ -141,6 +141,10 @@
 		E4941E862CD7FBC50063421F /* ActivityHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */; };
 		E4941E872CD7FBC50063421F /* ActivityHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */; };
 		E4968AD8296D710100DE0082 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4968AD7296D710000DE0082 /* HealthKit.framework */; };
+		E49CB5E62D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */; };
+		E49CB5E72D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */; };
+		E49CB5E82D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */; };
+		E49CB5E92D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */; };
 		E4A0839329A9FA09007B50D3 /* BTDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */; };
 		E4A0839529AA1790007B50D3 /* BTKnownDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */; };
 		E4A0839729AA18E7007B50D3 /* BTDiscoveredDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */; };
@@ -180,7 +184,6 @@
 		E4CC66A72CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CC66A62CDA341100AA2F9E /* ActivityLineChartView.swift */; };
 		E4CC66A82CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CC66A62CDA341100AA2F9E /* ActivityLineChartView.swift */; };
 		E4CC66AD2CDA353300AA2F9E /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CC66AB2CDA353300AA2F9E /* ChartView.swift */; };
-		E4CC66AF2CDBE1A600AA2F9E /* MapManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CC66AE2CDBE1A600AA2F9E /* MapManager.swift */; };
 		E4D28B152CC3A7A700F27626 /* DataCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D28B142CC3A7A700F27626 /* DataCacheTest.swift */; };
 		E4D41B2F2C8A20E50014C1D9 /* LiveAlwaysOnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */; };
 		E4D41B312C8A230F0014C1D9 /* LiveMetricsCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */; };
@@ -304,6 +307,7 @@
 		E47A2EC62D5F290D00297952 /* SegmentBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentBarView.swift; sourceTree = "<group>"; };
 		E47A2EC82D5FAEA100297952 /* DonutChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonutChartView.swift; sourceTree = "<group>"; };
 		E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElapsedTimeView.swift; sourceTree = "<group>"; };
+		E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltitudeChartImage.swift; sourceTree = "<group>"; };
 		E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppDelegate.swift; sourceTree = "<group>"; };
 		E492C0042D19568A0050B6E8 /* ImageCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageCache.swift; sourceTree = "<group>"; };
 		E4941E512CD3EAB80063421F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -315,6 +319,7 @@
 		E4941E812CD7F4830063421F /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
 		E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHeaderView.swift; sourceTree = "<group>"; };
 		E4968AD7296D710000DE0082 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS9.1.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
+		E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecordImage.swift; sourceTree = "<group>"; };
 		E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceView.swift; sourceTree = "<group>"; };
 		E4A0839429AA1790007B50D3 /* BTKnownDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTKnownDeviceView.swift; sourceTree = "<group>"; };
 		E4A0839629AA18E7007B50D3 /* BTDiscoveredDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDiscoveredDeviceView.swift; sourceTree = "<group>"; };
@@ -339,7 +344,6 @@
 		E4C428322CB0431B0069F61D /* ActivityChartTraceBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityChartTraceBuilder.swift; sourceTree = "<group>"; };
 		E4CC66A62CDA341100AA2F9E /* ActivityLineChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityLineChartView.swift; sourceTree = "<group>"; };
 		E4CC66AB2CDA353300AA2F9E /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
-		E4CC66AE2CDBE1A600AA2F9E /* MapManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapManager.swift; sourceTree = "<group>"; };
 		E4D28B142CC3A7A700F27626 /* DataCacheTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCacheTest.swift; sourceTree = "<group>"; };
 		E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveAlwaysOnView.swift; sourceTree = "<group>"; };
 		E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsCarouselView.swift; sourceTree = "<group>"; };
@@ -682,7 +686,7 @@
 				E40F886A2AA5D31400E00F25 /* SimpleXML.swift */,
 				E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */,
 				E492C0042D19568A0050B6E8 /* ImageCache.swift */,
-				E4CC66AE2CDBE1A600AA2F9E /* MapManager.swift */,
+				E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */,
 				E4941E7A2CD7F2710063421F /* Views */,
 			);
 			path = HistoryManager;
@@ -725,6 +729,7 @@
 				E47A2EC62D5F290D00297952 /* SegmentBarView.swift */,
 				E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */,
 				E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */,
+				E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -1119,7 +1124,6 @@
 				E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */,
 				E4941E532CD3EAB80063421F /* SettingsView.swift in Sources */,
 				E4941E4A2CD2A0E40063421F /* BTKnownDeviceView.swift in Sources */,
-				E4CC66AF2CDBE1A600AA2F9E /* MapManager.swift in Sources */,
 				E4094BB62CD0C6D200915CCB /* SimpleXML.swift in Sources */,
 				E4941E472CD29FC30063421F /* BTPeripheralManager.swift in Sources */,
 				E4094BB82CD0C6D200915CCB /* DataCache.swift in Sources */,
@@ -1149,10 +1153,12 @@
 				E45E3F732CF0EF25001D58B3 /* ProfileListView.swift in Sources */,
 				E4941E4F2CD2A1120063421F /* BTDeviceInfoView.swift in Sources */,
 				E4094BC82CD1512C00915CCB /* ActivityChartTraceBuilder.swift in Sources */,
+				E49CB5E62D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
 				E47A2EC72D5F290D00297952 /* SegmentBarView.swift in Sources */,
 				E4CC66AD2CDA353300AA2F9E /* ChartView.swift in Sources */,
 				E45E3F1F2CEBABBA001D58B3 /* NewProfileDetailView.swift in Sources */,
 				E4094BBA2CD0C6D200915CCB /* GeneralUtilities.swift in Sources */,
+				E48D4D632D6325D0001104AC /* AltitudeChartImage.swift in Sources */,
 				E4941E4D2CD2A1030063421F /* BTDetailDeviceView.swift in Sources */,
 				E4094BBC2CD0C6D200915CCB /* ActivityProfile.swift in Sources */,
 				E4941E872CD7FBC50063421F /* ActivityHeaderView.swift in Sources */,
@@ -1190,7 +1196,7 @@
 				E492C0232D1DCA820050B6E8 /* SwipeButton.swift in Sources */,
 				E492C0222D1DCA710050B6E8 /* GeneralUtilities.swift in Sources */,
 				E41501182D06196500C09200 /* Formatters.swift in Sources */,
-				E492C0182D1DCA360050B6E8 /* MapManager.swift in Sources */,
+				E49CB5E92D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
 				E492C00E2D19BDD00050B6E8 /* ActivityProfile.swift in Sources */,
 				E492C00A2D19BC1B0050B6E8 /* ActivityRecord.swift in Sources */,
 			);
@@ -1257,6 +1263,7 @@
 				E46EF08429537CA1006FA603 /* PulseWorkout_Watch_App.swift in Sources */,
 				E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */,
 				E4C11F5B29CCCC43008DB769 /* BTDevice.swift in Sources */,
+				E49CB5E72D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
 				E45E3F7A2CF1F037001D58B3 /* NavigationCoordinator.swift in Sources */,
 				E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */,
 				E46121F22AAE178700E07749 /* BTPeripheralManager.swift in Sources */,
@@ -1286,6 +1293,7 @@
 				E4AEC0A02D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E492C0152D1DC9800050B6E8 /* ProfileManager.swift in Sources */,
 				E492C00F2D19BDDE0050B6E8 /* SimpleXML.swift in Sources */,
+				E49CB5E82D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
 				E41501172D06196500C09200 /* Formatters.swift in Sources */,
 				E4D28B152CC3A7A700F27626 /* DataCacheTest.swift in Sources */,
 				E406C7C52C667F6F0015C4F3 /* GeneralUtilitiesTest.swift in Sources */,

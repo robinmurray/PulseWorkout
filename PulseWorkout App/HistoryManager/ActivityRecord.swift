@@ -242,6 +242,13 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
 
     @Published var mapSnapshotImage: UIImage?
 
+    // Altitude background image
+    @Published var altitudeImage: UIImage?
+    var altitudeImageAsset: CKAsset?
+    var altitudeImageURL: URL?
+    var altitudeImageFileURL: URL?
+
+    
     private var settingsManager: SettingsManager?
     
     // tag path during XML parse
@@ -348,6 +355,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         mapSnapshotURL = fromActivityRecord.mapSnapshotURL
         mapSnapshotImage = fromActivityRecord.mapSnapshotImage
         mapSnapshotAsset = fromActivityRecord.mapSnapshotAsset
+        
+        altitudeImage = fromActivityRecord.altitudeImage
+        altitudeImageURL = fromActivityRecord.altitudeImageURL
+        altitudeImageAsset = fromActivityRecord.altitudeImageAsset
         
         // This should take a copy!
         trackPoints = fromActivityRecord.trackPoints
@@ -791,7 +802,7 @@ extension ActivityRecord {
         activityRecord["cadenceSegmentAverages"] = cadenceSegmentAverages
         
         if saveTrackRecord() {
-            logger.debug("creating asset!")
+            logger.debug("creating tcx asset!")
             guard let tFile = tcxFileName else { return activityRecord }
             guard let tURL = CacheURL(fileName: tFile) else { return activityRecord }
             activityRecord["tcx"] = CKAsset(fileURL: tURL)
@@ -866,6 +877,11 @@ extension ActivityRecord {
             mapSnapshotURL = mapSnapshotAsset!.fileURL
         }
 
+        altitudeImageAsset = activityRecord["altitudeImage"] as CKAsset?
+        if altitudeImageAsset != nil {
+            altitudeImageURL = altitudeImageAsset!.fileURL
+        }
+        
         setToSave(false)
         toDelete = false
         tcxFileName = baseFileName + ".gz"
@@ -1236,6 +1252,19 @@ extension ActivityRecord {
         maxCadence = trackPoints.filter({ $0.cadence != nil }).map({ $0.cadence! }).max() ?? 0
         totalDescent = getTotalDescent()
         
+        // Calculate average power
+        var powerSeries = trackPoints.filter( { $0.watts != nil } ).map( { $0.watts! } )
+        if !(settingsManager?.avePowerZeros ?? false) {
+            powerSeries = powerSeries.filter( { $0 != 0 } )
+        }
+
+        let powerSeriesLen = powerSeries.count
+        if powerSeriesLen > 0 {
+            averagePower = powerSeries.reduce(0, +) / powerSeriesLen
+        } else {
+            averagePower = 0
+        }
+
         averageSegmentSize = getAxisTimeGap(elapsedTimeSeries: trackPoints.map( { Int($0.time.timeIntervalSince(startDateLocal)) }))
         HRSegmentAverages = segmentAverageSeries(
             segmentSize: averageSegmentSize!,
@@ -1262,6 +1291,9 @@ extension ActivityRecord {
         self.logger.info("HRSegmentAverages : \(self.HRSegmentAverages)")
         self.logger.info("powerSegmentAverages : \(self.powerSegmentAverages)")
         self.logger.info("cadenceSegmentAverages : \(self.cadenceSegmentAverages)")
+        
+
+
     }
     
     
@@ -1425,6 +1457,14 @@ extension ActivityRecord {
         return calcMovingTimebyHRZone
     }
 
+    func getRouteCoordinates() -> [CLLocationCoordinate2D] {
+        
+        // Create list of non-null locations
+        return self.trackPoints.filter(
+            {$0.latitude != nil && $0.longitude != nil}).map(
+                {CLLocationCoordinate2D(latitude: $0.latitude!, longitude: $0.longitude!)})
+
+    }
 }
 
 

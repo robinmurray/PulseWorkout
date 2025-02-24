@@ -19,6 +19,10 @@ func getCacheDirectory(testMode: Bool = false) -> URL? {
     
     do {
         try FileManager.default.createDirectory(at: cachePath, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: cachePath.appendingPathComponent(ActivityImageType.mapSnapshot.rawValue),
+                                                withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: cachePath.appendingPathComponent(ActivityImageType.altitudeImage.rawValue),
+                                                withIntermediateDirectories: true)
     } catch {
         print("error \(error.localizedDescription)")
         return nil
@@ -35,28 +39,42 @@ func CacheURL(fileName: String, testMode: Bool = false) -> URL? {
     return cachePath.appendingPathComponent(fileName)
 }
 
+func ImageCacheURL(fileName: String, imageType: ActivityImageType, testMode: Bool = false) -> URL? {
+
+    guard let cachePath = getCacheDirectory(testMode: testMode) else { return nil }
+
+    return cachePath.appendingPathComponent(imageType.rawValue).appendingPathComponent(fileName)
+}
+
+
+/// Delete content of cache directory and remove all sub-directories
 func clearCache(testMode: Bool = false) {
     let fm = FileManager.default
-
+    
     do {
-        let files = try fm.contentsOfDirectory(atPath: getCacheDirectory(testMode: testMode)!.path)
-//            let jsonFiles = files.filter{ $0.pathExtension == "json" }
+        
+        guard let baseCachePath = getCacheDirectory(testMode: testMode) else {return}
+ 
+        let files = try fm.contentsOfDirectory(atPath: baseCachePath.path)
+
+        // NOTE - this removes files AND whole subdirectories
         for file in files {
-            let path = getCacheDirectory(testMode: testMode)!.appendingPathComponent(file)
+            let path = baseCachePath.appendingPathComponent(file)
             do {
+
                 try FileManager.default.removeItem(at: path)
 
             } catch {
                 print(error)
             }
-
-            
         }
+
     } catch {
-        print("Directory search failed!")
+        print("Directory search failed! \(error)")
         // failed to read directory – bad permissions, perhaps?
     }
 }
+
 
 class FullActivityRecordCache: NSObject {
     
@@ -279,6 +297,7 @@ class DataCache: CloudKitManager, Codable {
 
         activities.remove(at: index)
         
+        imageCache.remove(recordName: recordID.recordName)
         _ = write()
         
     }
