@@ -45,6 +45,10 @@
 		E413D42B2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E413D4292D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift */; };
 		E413D42C2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E413D4292D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift */; };
 		E413D42D2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = E413D4292D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift */; };
+		E413D42F2D6F4EA80086FBB2 /* TrackPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E413D42E2D6F4EA80086FBB2 /* TrackPoint.swift */; };
+		E413D4302D6F4EA80086FBB2 /* TrackPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E413D42E2D6F4EA80086FBB2 /* TrackPoint.swift */; };
+		E413D4312D6F4EA80086FBB2 /* TrackPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E413D42E2D6F4EA80086FBB2 /* TrackPoint.swift */; };
+		E413D4322D6F4EA80086FBB2 /* TrackPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = E413D42E2D6F4EA80086FBB2 /* TrackPoint.swift */; };
 		E41501172D06196500C09200 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E41501182D06196500C09200 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E41CFBA72AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */; };
@@ -275,6 +279,7 @@
 		E413D41F2D6F48300086FBB2 /* ActivityRecord_Strava.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord_Strava.swift; sourceTree = "<group>"; };
 		E413D4242D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord_TrackRecord.swift; sourceTree = "<group>"; };
 		E413D4292D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord_XMLParser.swift; sourceTree = "<group>"; };
+		E413D42E2D6F4EA80086FBB2 /* TrackPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackPoint.swift; sourceTree = "<group>"; };
 		E41CFBA62AFCCBEF00FBEE5D /* LiveMetricCarouselItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricCarouselItem.swift; sourceTree = "<group>"; };
 		E420D7852B03D55300C0D7B2 /* LocationNotAuthView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationNotAuthView.swift; sourceTree = "<group>"; };
 		E4212957298D79D3001B8AA9 /* BTDeviceDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceDiscoverView.swift; sourceTree = "<group>"; };
@@ -446,6 +451,8 @@
 				E413D41F2D6F48300086FBB2 /* ActivityRecord_Strava.swift */,
 				E413D4242D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift */,
 				E413D4292D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift */,
+				E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */,
+				E413D42E2D6F4EA80086FBB2 /* TrackPoint.swift */,
 			);
 			path = ActivityRecordClass;
 			sourceTree = "<group>";
@@ -761,7 +768,6 @@
 				E47A2EC62D5F290D00297952 /* SegmentBarView.swift */,
 				E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */,
 				E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */,
-				E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -1147,6 +1153,7 @@
 			files = (
 				E4941E5F2CD4CAA90063421F /* AverageSettingsView.swift in Sources */,
 				E4941E4E2CD2A10B0063421F /* BTDiscoveredDeviceView.swift in Sources */,
+				E413D42F2D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E4941E452CD29FB30063421F /* BTContentView.swift in Sources */,
 				E45E3F142CEB9BED001D58B3 /* LiveMetricsView.swift in Sources */,
 				E45E3F052CE7B91E001D58B3 /* ActivityListItemExtensionView.swift in Sources */,
@@ -1223,6 +1230,7 @@
 				E413D4262D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift in Sources */,
 				E4AEC0AC2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
 				E492C0102D19BDDE0050B6E8 /* SimpleXML.swift in Sources */,
+				E413D4312D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E492C0082D19BBF90050B6E8 /* DataCache.swift in Sources */,
 				E4AEC0A22D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E492C01C2D1DCA580050B6E8 /* BluetoothManager.swift in Sources */,
@@ -1279,6 +1287,7 @@
 				E4D41B2F2C8A20E50014C1D9 /* LiveAlwaysOnView.swift in Sources */,
 				E4A333B82CC15DA500995AC4 /* FetchFailedView.swift in Sources */,
 				E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */,
+				E413D4302D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E40306832B22211000658A80 /* TopMenuView.swift in Sources */,
 				E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */,
 				E468DC8129E931A10002FEA9 /* ProfileListView.swift in Sources */,
@@ -1355,6 +1364,7 @@
 				E413D4212D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
 				E492C01F2D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E413D41E2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
+				E413D4322D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E4AEC0AB2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
 				E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */,
 				E492C0212D1DCA710050B6E8 /* GeneralUtilities.swift in Sources */,

@@ -21,6 +21,31 @@ enum StravaSaveStatus: Int {
     case saved = 2
 }
 
+// Calculated averages
+struct analysedVariable {
+    var N: Int = 0
+    var total: Double = 0
+    var maxVal: Double = 0
+    
+    var average: Double {
+        get {
+            N == 0 ? 0 : total / Double(N)
+        }
+    }
+    
+    mutating func add( _ newVal: Double?, includeZeros: Bool = true) {
+        
+        if newVal == nil {return}
+        
+        if !includeZeros && (newVal == 0) {return}
+        
+        maxVal = max(newVal!, maxVal)
+        N += 1
+        total += newVal!
+        
+    }
+}
+
 
 class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
@@ -125,9 +150,34 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var parsedTime: Date?
 
     
+    var heartRateAnalysis: analysedVariable = analysedVariable()
+    var cadenceAnalysis: analysedVariable = analysedVariable()
+    var powerAnalysis: analysedVariable = analysedVariable()
+
+    var averageHeartRate: Double = 0
+    var averageCadence: Int = 0
+    var averagePower: Int = 0
+    var averageSpeed: Double = 0
+    var maxHeartRate: Double = 0
+    var maxCadence: Int = 0
+    var maxPower: Int = 0
+    var maxSpeed: Double = 0
+    
+    // fields used for storing to Cloudkit only
+    let recordType = "Activity"
+    var recordID: CKRecord.ID!
+    var recordName: String!
+    var tcxAsset: CKAsset?
+    
+
+    var trackPoints: [TrackPoint] = []
+    
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "activityRecord")
     
+    
+    // MARK: - Initialisers
+
     // Create new activity record - create recordID and recordName
     init(settingsManager: SettingsManager) {
         super.init()
@@ -154,6 +204,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         self.fromStravaActivity(fromStravaActivity)
     }
     #endif
+    
+    
     
     // Initialise from another Acivity Record and take a deep copy -- NOTE will have same recordID!
     init(fromActivityRecord: ActivityRecord, settingsManager: SettingsManager) {
@@ -233,6 +285,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         trackPoints = fromActivityRecord.trackPoints
     }
     
+    
+    
     func setToSave( _ newStatus: Bool ) {
 
         self.toSave = newStatus
@@ -241,143 +295,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         }
     }
 
-    // Calculated averages
-    struct analysedVariable {
-        var N: Int = 0
-        var total: Double = 0
-        var maxVal: Double = 0
-        
-        var average: Double {
-            get {
-                N == 0 ? 0 : total / Double(N)
-            }
-        }
-        
-        mutating func add( _ newVal: Double?, includeZeros: Bool = true) {
-            
-            if newVal == nil {return}
-            
-            if !includeZeros && (newVal == 0) {return}
-            
-            maxVal = max(newVal!, maxVal)
-            N += 1
-            total += newVal!
-            
-        }
-    }
-    
-    var heartRateAnalysis: analysedVariable = analysedVariable()
-    var cadenceAnalysis: analysedVariable = analysedVariable()
-    var powerAnalysis: analysedVariable = analysedVariable()
 
-    var averageHeartRate: Double = 0
-    var averageCadence: Int = 0
-    var averagePower: Int = 0
-    var averageSpeed: Double = 0
-    var maxHeartRate: Double = 0
-    var maxCadence: Int = 0
-    var maxPower: Int = 0
-    var maxSpeed: Double = 0
-    
-    // fields used for storing to Cloudkit only
-    let recordType = "Activity"
-    var recordID: CKRecord.ID!
-    var recordName: String!
-    var tcxAsset: CKAsset?
-    
-    
-    struct TrackPoint {
-        var time: Date
-        var heartRate: Double?
-        var latitude: Double?
-        var longitude: Double?
-        var altitudeMeters: Double?
-        var distanceMeters: Double?
-        var cadence: Int?
-        var speed: Double?
-        var watts: Int?
-        
-        
-        func addXMLtoNode(node: XMLElement) {
-            let trackPointNode = node.addNode(name: "Trackpoint")
-            trackPointNode.addValue(name: "Time", value: time.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))
-
-            if ((latitude != nil) && (longitude != nil)) {
-                let positionNode = trackPointNode.addNode(name: "Position")
-                positionNode.addValue(name: "LatitudeDegrees", value: String(format: "%.7f", latitude!))
-                positionNode.addValue(name: "LongitudeDegrees", value: String(format: "%.7f", longitude!))
-
-            }
-            if altitudeMeters != nil {
-                trackPointNode.addValue(name: "AltitudeMeters", value: String(format: "%.1f", altitudeMeters!))
-            }
-    
-            if heartRate != nil {
-                let HRNode = trackPointNode.addNode(name: "HeartRateBpm")
-                HRNode.addValue(name: "Value", value: String(Int(heartRate!)))
-            }
-
-            if distanceMeters != nil {
-                trackPointNode.addValue(name: "DistanceMeters", value: String(Int(distanceMeters!)))
-            }
-
-            if cadence != nil {
-                trackPointNode.addValue(name: "Cadence", value: String(cadence!))
-            }
-            
-            if (speed != nil && (speed ?? -1) > 0) || watts != nil {
-                let extNode = trackPointNode.addNode(name: "Extensions")
-                let tpxNode = extNode.addNode(name: "TPX", attributes: ["xmlns" : "http://www.garmin.com/xmlschemas/ActivityExtension/v2"])
-                if (speed != nil && (speed ?? -1) > 0) {
-                    tpxNode.addValue(name: "Speed", value: String(format: "%.1f", speed!))
-                }
-                if watts != nil {
-                    tpxNode.addValue(name: "Watts", value: String(watts!))
-                }
-                
-            }
-
-        }
-        
-    }
-
-    var trackPoints: [TrackPoint] = []
-    
-    /// Return true / false depending on whether a heart rate trace exists in the tracke points.
-    func heartRateTraceExists() -> Bool {
-        
-        return trackPoints.map( { $0.heartRate ?? 0 } ).max() ?? Double(0) > 0
-        
-    }
-    
-    /// Return true / false depending on whether altitude trace exists in the tracke points.
-    func altitudeTraceExists() -> Bool {
-        
-        return trackPoints.map( { $0.altitudeMeters ?? 0 } ).max() ?? Double(0) > 0
-        
-    }
-    
-    /// Return true / false depending on whether distance trace exists in the tracke points.
-    func distanceTraceExists() -> Bool {
-        
-        return trackPoints.map( { $0.distanceMeters ?? 0 } ).max() ?? Double(0) > 0
-        
-    }
-
-    /// Return true / false depending on whether power trace exists in the tracke points.
-    func powerTraceExists() -> Bool {
-        
-        return trackPoints.map( { $0.watts ?? 0 } ).max() ?? 0 > 0
-        
-    }
-
-    /// Return true / false depending on whether power trace exists in the tracke points.
-    func cadenceTraceExists() -> Bool {
-        
-        return trackPoints.map( { $0.cadence ?? 0 } ).max() ?? 0 > 0
-        
-    }
-    
     func start(activityProfile: ActivityProfile, startDate: Date) {
     
 //        type = "Ride"
@@ -477,6 +395,48 @@ extension ActivityRecord {
     
 }
 
+
+// MARK: - Activity record status functions
+
+extension ActivityRecord {
+ 
+    
+    /// Return true / false depending on whether a heart rate trace exists in the tracke points.
+    func heartRateTraceExists() -> Bool {
+        
+        return trackPoints.map( { $0.heartRate ?? 0 } ).max() ?? Double(0) > 0
+        
+    }
+
+    /// Return true / false depending on whether altitude trace exists in the tracke points.
+    func altitudeTraceExists() -> Bool {
+        
+        return trackPoints.map( { $0.altitudeMeters ?? 0 } ).max() ?? Double(0) > 0
+        
+    }
+
+    /// Return true / false depending on whether distance trace exists in the tracke points.
+    func distanceTraceExists() -> Bool {
+        
+        return trackPoints.map( { $0.distanceMeters ?? 0 } ).max() ?? Double(0) > 0
+        
+    }
+
+    /// Return true / false depending on whether power trace exists in the tracke points.
+    func powerTraceExists() -> Bool {
+        
+        return trackPoints.map( { $0.watts ?? 0 } ).max() ?? 0 > 0
+        
+    }
+
+    /// Return true / false depending on whether power trace exists in the tracke points.
+    func cadenceTraceExists() -> Bool {
+        
+        return trackPoints.map( { $0.cadence ?? 0 } ).max() ?? 0 > 0
+        
+    }
+
+}
 
 
 
