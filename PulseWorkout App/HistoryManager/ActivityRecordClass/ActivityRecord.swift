@@ -53,13 +53,13 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var dataCache: DataCache?
     
     /// Apple HK workout type.
-    var workoutTypeId: UInt = 1
+    @Published var workoutTypeId: UInt = 1
     
     /// Apple HK workout location.
-    var workoutLocationId: Int = 1
+    @Published var workoutLocationId: Int = 1
     
-    var name: String = "Morning Ride"
-    var stravaType: String = "Ride"
+    @Published var name: String = "Morning Ride"
+    @Published var stravaType: String = "Ride"
 //    var sportType = "Ride"
     let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
     
@@ -67,7 +67,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var elapsedTime: Double = 0
     var pausedTime: Double = 0
     var movingTime: Double = 0
-    var activityDescription: String = ""
+    @Published var activityDescription: String = ""
     var activeEnergy: Double = 0
     var timeOverHiAlarm: Double = 0
     var timeUnderLoAlarm: Double = 0
@@ -89,7 +89,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var speed: Double?
     var latitude: Double?
     var longitude: Double?
-    var totalAscent: Double?
+    @Published var totalAscent: Double?
     var totalDescent: Double?
     var altitudeMeters: Double?
     var distanceMeters: Double = 0
@@ -178,29 +178,125 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
     // MARK: - Initialisers
 
-    /*
+    
     required init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         recordName = try container.decode(String.self, forKey: .recordName)
         name = try container.decode(String.self, forKey: .name)
-        
-        workoutTypeId, workoutLocationId, stravaType, startDateLocal,
-             elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
-             averageHeartRate, averageCadence, averagePower, averageSpeed, maxHeartRate, maxCadence, maxPower, maxSpeed,
-             activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
-             stravaSaveStatus, stravaId, trackPointGap, TSS, FTP, powerZoneLimits, TSSbyPowerZone, movingTimebyPowerZone,
-             thesholdHR, estimatedTSSbyHR, HRZoneLimits, TSSEstimatebyHRZone, movingTimebyHRZone,
-             totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL,
-             hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters, averageSegmentSize,
-             HRSegmentAverages, powerSegmentAverages, cadenceSegmentAverages
+        workoutTypeId = try container.decode(UInt.self, forKey: .workoutTypeId)
+        workoutLocationId = try container.decode(Int.self, forKey: .workoutLocationId)
+        stravaType = try container.decode(String.self, forKey: .stravaType)
+        startDateLocal = try container.decode(Date.self, forKey: .startDateLocal)
+        elapsedTime = try container.decode(Double.self, forKey: .elapsedTime)
+        pausedTime = try container.decode(Double.self, forKey: .pausedTime)
+        movingTime = try container.decode(Double.self, forKey: .movingTime)
+        activityDescription = try container.decode(String.self, forKey: .activityDescription)
+        distanceMeters = try container.decode(Double.self, forKey: .distanceMeters)
+        averageHeartRate = try container.decode(Double.self, forKey: .averageHeartRate)
+        averageCadence = try container.decode(Int.self, forKey: .averageCadence)
+        averagePower = try container.decode(Int.self, forKey: .averagePower)
+        averageSpeed = try container.decode(Double.self, forKey: .averageSpeed)
+        maxHeartRate = try container.decode(Double.self, forKey: .maxHeartRate)
+        maxCadence = try container.decode(Int.self, forKey: .maxCadence)
+        maxPower = try container.decode(Int.self, forKey: .maxPower)
+        maxSpeed = try container.decode(Double.self, forKey: .maxSpeed)
+        activeEnergy = try container.decode(Double.self, forKey: .activeEnergy)
+        timeOverHiAlarm = try container.decode(Double.self, forKey: .timeOverHiAlarm)
+        timeUnderLoAlarm = try container.decode(Double.self, forKey: .timeUnderLoAlarm)
+        hiHRLimit = try container.decode(Int.self, forKey: .hiHRLimit)
+        loHRLimit = try container.decode(Int.self, forKey: .loHRLimit)
+        stravaSaveStatus = try container.decode(Int.self, forKey: .stravaSaveStatus)
+        stravaId = try container.decode(Int.self, forKey: .stravaId)
+        trackPointGap = try container.decode(Int.self, forKey: .trackPointGap)
+        TSS = try container.decode(Double.self, forKey: .TSS)
+        FTP = try container.decode(Int.self, forKey: .FTP)
+        powerZoneLimits = try container.decode([Int].self, forKey: .powerZoneLimits)
+        TSSbyPowerZone = try container.decode([Double].self, forKey: .TSSbyPowerZone)
+        movingTimebyPowerZone = try container.decode([Double].self, forKey: .TSSbyPowerZone)
+        thesholdHR = try container.decode(Int.self, forKey: .thesholdHR)
+        estimatedTSSbyHR = try container.decode(Double.self, forKey: .estimatedTSSbyHR)
+        HRZoneLimits = try container.decode([Int].self, forKey: .HRZoneLimits)
+        TSSEstimatebyHRZone = try container.decode([Double].self, forKey: .TSSEstimatebyHRZone)
+        movingTimebyHRZone = try container.decode([Double].self, forKey: .movingTimebyHRZone)
+        totalAscent = try container.decode(Double.self, forKey: .totalAscent)
+        totalDescent = try container.decode(Double.self, forKey: .totalDescent)
+        tcxFileName = try container.decode(String.self, forKey: .tcxFileName)
+        JSONFileName = try container.decode(String.self, forKey: .JSONFileName)
+        toSave = try container.decode(Bool.self, forKey: .toSave)
+        toDelete = try container.decode(Bool.self, forKey: .toDelete)
+        mapSnapshotURL = try container.decode(URL.self, forKey: .mapSnapshotURL)
+        hasLocationData = try container.decode(Bool.self, forKey: .hasLocationData)
+        hasHRData = try container.decode(Bool.self, forKey: .hasHRData)
+        hasPowerData = try container.decode(Bool.self, forKey: .hasPowerData)
+        loAltitudeMeters = try container.decode(Double.self, forKey: .loAltitudeMeters)
+        hiAltitudeMeters = try container.decode(Double.self, forKey: .hiAltitudeMeters)
+        averageSegmentSize = try container.decode(Int.self, forKey: .averageSegmentSize)
+        HRSegmentAverages = try container.decode([Int].self, forKey: .HRSegmentAverages)
+        powerSegmentAverages = try container.decode([Int].self, forKey: .powerSegmentAverages)
+        cadenceSegmentAverages = try container.decode([Int].self, forKey: .cadenceSegmentAverages)
+
     }
      
      func encode(to encoder: Encoder) throws {
+
          var container = encoder.container(keyedBy: CodingKeys.self)
+
+         try container.encode(recordName, forKey: .recordName)
          try container.encode(name, forKey: .name)
+         try container.encode(workoutTypeId, forKey: .workoutTypeId)
+         try container.encode(workoutLocationId, forKey: .workoutLocationId)
+         try container.encode(stravaType, forKey: .stravaType)
+         try container.encode(startDateLocal, forKey: .startDateLocal)
+         try container.encode(elapsedTime, forKey: .elapsedTime)
+         try container.encode(pausedTime, forKey: .pausedTime)
+         try container.encode(movingTime, forKey: .movingTime)
+         try container.encode(activityDescription, forKey: .activityDescription)
+         try container.encode(distanceMeters, forKey: .distanceMeters)
+         try container.encode(averageHeartRate, forKey: .averageHeartRate)
+         try container.encode(averageCadence, forKey: .averageCadence)
+         try container.encode(averagePower, forKey: .averagePower)
+         try container.encode(averageSpeed, forKey: .averageSpeed)
+         try container.encode(maxHeartRate, forKey: .maxHeartRate)
+         try container.encode(maxCadence, forKey: .maxCadence)
+         try container.encode(maxPower, forKey: .maxPower)
+         try container.encode(maxSpeed, forKey: .maxSpeed)
+         try container.encode(activeEnergy, forKey: .activeEnergy)
+         try container.encode(timeOverHiAlarm, forKey: .timeOverHiAlarm)
+         try container.encode(timeUnderLoAlarm, forKey: .timeUnderLoAlarm)
+         try container.encode(hiHRLimit, forKey: .hiHRLimit)
+         try container.encode(hiHRLimit, forKey: .loHRLimit)
+         try container.encode(stravaSaveStatus, forKey: .stravaSaveStatus)
+         try container.encode(stravaId, forKey: .stravaId)
+         try container.encode(trackPointGap, forKey: .trackPointGap)
+         try container.encode(TSS, forKey: .TSS)
+         try container.encode(FTP, forKey: .FTP)
+         try container.encode(powerZoneLimits, forKey: .powerZoneLimits)
+         try container.encode(TSSbyPowerZone, forKey: .TSSbyPowerZone)
+         try container.encode(movingTimebyPowerZone, forKey: .movingTimebyPowerZone)
+         try container.encode(thesholdHR, forKey: .thesholdHR)
+         try container.encode(estimatedTSSbyHR, forKey: .estimatedTSSbyHR)
+         try container.encode(HRZoneLimits, forKey: .HRZoneLimits)
+         try container.encode(TSSEstimatebyHRZone, forKey: .TSSEstimatebyHRZone)
+         try container.encode(movingTimebyHRZone, forKey: .movingTimebyHRZone)
+         try container.encode(totalAscent, forKey: .totalAscent)
+         try container.encode(totalDescent, forKey: .totalDescent)
+         try container.encode(tcxFileName, forKey: .tcxFileName)
+         try container.encode(JSONFileName, forKey: .JSONFileName)
+         try container.encode(toSave, forKey: .toSave)
+         try container.encode(toDelete, forKey: .toDelete)
+         try container.encode(mapSnapshotURL, forKey: .mapSnapshotURL)
+         try container.encode(hasLocationData, forKey: .hasLocationData)
+         try container.encode(hasHRData, forKey: .hasHRData)
+         try container.encode(hasPowerData, forKey: .hasPowerData)
+         try container.encode(loAltitudeMeters, forKey: .loAltitudeMeters)
+         try container.encode(hiAltitudeMeters, forKey: .hiAltitudeMeters)
+         try container.encode(averageSegmentSize, forKey: .averageSegmentSize)
+         try container.encode(HRSegmentAverages, forKey: .HRSegmentAverages)
+         try container.encode(powerSegmentAverages, forKey: .powerSegmentAverages)
+         try container.encode(cadenceSegmentAverages, forKey: .cadenceSegmentAverages)
      }
      
-    */
+    
     
     // Create new activity record - create recordID and recordName
     init(settingsManager: SettingsManager) {

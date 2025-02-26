@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ActivityHeaderView: View {
 
-    @State var activityRecord: ActivityRecord
+    @ObservedObject var activityRecord: ActivityRecord
 
     var body: some View {
         

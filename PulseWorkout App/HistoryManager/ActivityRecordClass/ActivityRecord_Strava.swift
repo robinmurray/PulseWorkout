@@ -229,23 +229,26 @@ extension ActivityRecord {
         logger.info("Updating record after strava fetch")
         
 
-        self.name = stravaActivity.name ?? ""
-        self.stravaType = stravaActivity.type?.rawValue ?? "Ride"
-        self.workoutTypeId = getHKWorkoutActivityType(self.stravaType).rawValue
-        self.workoutLocationId = getHKWorkoutSessionLocationType(self.stravaType).rawValue
-        self.activityDescription = stravaActivity.activityDescription ?? ""
-        self.totalAscent = stravaActivity.totalElevationGain
+        DispatchQueue.main.async {
+            self.name = stravaActivity.name ?? ""
+            self.stravaType = stravaActivity.type?.rawValue ?? "Ride"
+            self.workoutTypeId = getHKWorkoutActivityType(self.stravaType).rawValue
+            self.workoutLocationId = getHKWorkoutSessionLocationType(self.stravaType).rawValue
+            self.activityDescription = stravaActivity.activityDescription ?? ""
+            self.totalAscent = stravaActivity.totalElevationGain
+        }
+
 
 
         if let dc = dataCache {
             let activityCKRecord = CKRecord(recordType: recordType,
                                             recordID: recordID)
-            activityCKRecord["name"] = name as CKRecordValue
-            activityCKRecord["stravaType"] = stravaType as CKRecordValue
-            activityCKRecord["workoutTypeId"] = workoutTypeId as CKRecordValue
-            activityCKRecord["workoutLocationId"] = workoutLocationId as CKRecordValue
-            activityCKRecord["activityDescription"] = activityDescription as CKRecordValue
-            activityCKRecord["totalAscent"] = totalAscent as CKRecordValue?
+            activityCKRecord["name"] = (stravaActivity.name ?? "") as CKRecordValue
+            activityCKRecord["stravaType"] = (stravaActivity.type?.rawValue ?? "Ride") as CKRecordValue
+            activityCKRecord["workoutTypeId"] = getHKWorkoutActivityType(self.stravaType).rawValue as CKRecordValue
+            activityCKRecord["workoutLocationId"] = getHKWorkoutSessionLocationType(self.stravaType).rawValue as CKRecordValue
+            activityCKRecord["activityDescription"] = (stravaActivity.activityDescription ?? "") as CKRecordValue
+            activityCKRecord["totalAscent"] = stravaActivity.totalElevationGain as CKRecordValue?
 
             // Only update if already saved! - should get picked up by record save
             // if not then will update saved record on next display...
