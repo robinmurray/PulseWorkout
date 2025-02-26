@@ -210,7 +210,56 @@ extension ActivityRecord {
         trackPoints = [] // *
     }
 
+    
+    /// Fetch the strava record for this activityRecord and update any fields
+    func fetchUpdateFromStrava(dataCache: DataCache) {
+        
+        self.dataCache = dataCache
+        
+        if let id = stravaId {
+            StravaFetchActivity(stravaActivityId: id,
+                                completionHandler: updateFromStravaActivity).execute()
+        }
+        
+    }
+    
+    
+    /// Update fields from strava record as completion to fetch
+    func updateFromStravaActivity(stravaActivity: StravaActivity) {
+        logger.info("Updating record after strava fetch")
+        
 
+        self.name = stravaActivity.name ?? ""
+        self.stravaType = stravaActivity.type?.rawValue ?? "Ride"
+        self.workoutTypeId = getHKWorkoutActivityType(self.stravaType).rawValue
+        self.workoutLocationId = getHKWorkoutSessionLocationType(self.stravaType).rawValue
+        self.activityDescription = stravaActivity.activityDescription ?? ""
+        self.totalAscent = stravaActivity.totalElevationGain
+
+
+        if let dc = dataCache {
+            let activityCKRecord = CKRecord(recordType: recordType,
+                                            recordID: recordID)
+            activityCKRecord["name"] = name as CKRecordValue
+            activityCKRecord["stravaType"] = stravaType as CKRecordValue
+            activityCKRecord["workoutTypeId"] = workoutTypeId as CKRecordValue
+            activityCKRecord["workoutLocationId"] = workoutLocationId as CKRecordValue
+            activityCKRecord["activityDescription"] = activityDescription as CKRecordValue
+            activityCKRecord["totalAscent"] = totalAscent as CKRecordValue?
+
+            // Only update if already saved! - should get picked up by record save
+            // if not then will update saved record on next display...
+            if !toSave {
+                dc.CKForceUpdate(activityCKRecord: activityCKRecord,
+                                 completionFunction: { _ in })
+            }
+        }
+
+        
+    }
+
+    
+    
     /// Add trackpoints to activity record derived from strava streams
     func addStreams(_ streams: [StravaSwift.Stream]) {
         var desiredStreamLength: Int?

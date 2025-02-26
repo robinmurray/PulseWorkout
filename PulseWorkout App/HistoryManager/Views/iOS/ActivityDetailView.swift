@@ -450,6 +450,12 @@ struct ActivityDetailView: View {
                  url: &activityRecord.altitudeImageURL,
                  asset: activityRecord.altitudeImageAsset)
         })
+        
+        .refreshable {
+            if activityRecord.stravaId != nil {
+                activityRecord.fetchUpdateFromStrava(dataCache: dataCache)
+            }
+        }
 
         .navigationDestination(for: NavigationTarget.self) { pathValue in
 

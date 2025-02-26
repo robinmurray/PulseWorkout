@@ -178,6 +178,30 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
     // MARK: - Initialisers
 
+    /*
+    required init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        recordName = try container.decode(String.self, forKey: .recordName)
+        name = try container.decode(String.self, forKey: .name)
+        
+        workoutTypeId, workoutLocationId, stravaType, startDateLocal,
+             elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
+             averageHeartRate, averageCadence, averagePower, averageSpeed, maxHeartRate, maxCadence, maxPower, maxSpeed,
+             activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
+             stravaSaveStatus, stravaId, trackPointGap, TSS, FTP, powerZoneLimits, TSSbyPowerZone, movingTimebyPowerZone,
+             thesholdHR, estimatedTSSbyHR, HRZoneLimits, TSSEstimatebyHRZone, movingTimebyHRZone,
+             totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL,
+             hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters, averageSegmentSize,
+             HRSegmentAverages, powerSegmentAverages, cadenceSegmentAverages
+    }
+     
+     func encode(to encoder: Encoder) throws {
+         var container = encoder.container(keyedBy: CodingKeys.self)
+         try container.encode(name, forKey: .name)
+     }
+     
+    */
+    
     // Create new activity record - create recordID and recordName
     init(settingsManager: SettingsManager) {
         super.init()
