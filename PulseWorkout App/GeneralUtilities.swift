@@ -149,27 +149,30 @@ func segmentAverageSeries( segmentSize: Int,
     for segmentStart in stride(from: 0, to: segmentCount * segmentSize, by: segmentSize) {
 //        let firstIndex: Int = xAxisSeries.firstIndex(where: { $0 <= Double(segmentStart) })!
         let lastIndex: Int = xAxisSeries.lastIndex(where: { $0 < Double(segmentStart + segmentSize)}) ?? (xAxisSeries.count - 1)
-        let subSeq: [Double?] = Array(inputSeries[firstIndex...lastIndex])
-        firstIndex = lastIndex + 1
+        if lastIndex >= firstIndex {
+            let subSeq: [Double?] = Array(inputSeries[firstIndex...lastIndex])
+            firstIndex = lastIndex + 1
 
-        let s = includeZeros ? subSeq.compactMap({ $0 }) : subSeq.filter( { ($0 ?? 0) != 0 } )
+            let s = includeZeros ? subSeq.compactMap({ $0 }) : subSeq.filter( { ($0 ?? 0) != 0 } )
 
-        aveVal = (s.count == 0) ? 0 : vDSP.mean(s as! [Double])
-        
-        if getMidpoints {
-            aveSeq = Array(repeating: 0, count: subSeq.count)
-            if subSeq.count != 0 {
-                aveSeq[(subSeq.count - 1)/2] = 1
+            aveVal = (s.count == 0) ? 0 : vDSP.mean(s as! [Double])
+            
+            if getMidpoints {
+                aveSeq = Array(repeating: 0, count: subSeq.count)
+                if subSeq.count != 0 {
+                    aveSeq[(subSeq.count - 1)/2] = 1
+                }
+            } else {
+                aveSeq = Array(repeating: aveVal, count: subSeq.count)
             }
-        } else {
-            aveSeq = Array(repeating: aveVal, count: subSeq.count)
+            
+            if returnFullSeries {
+                outSequence += aveSeq
+            } else {
+                outSequence.append(aveVal)
+            }
         }
-        
-        if returnFullSeries {
-            outSequence += aveSeq
-        } else {
-            outSequence.append(aveVal)
-        }
+
         
     }
     

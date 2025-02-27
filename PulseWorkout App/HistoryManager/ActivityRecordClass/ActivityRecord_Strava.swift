@@ -303,7 +303,7 @@ extension ActivityRecord {
 
                 // Set trackpoint gap to time difference between items in series (ignoring pauses!)
                 trackPointGap = Int(medianTimeGap)
-
+                logger.info("trackPointGap : \(self.trackPointGap)")
                 break
 
             case "distance":
