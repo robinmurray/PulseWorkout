@@ -453,7 +453,10 @@ struct ActivityDetailView: View {
         
         .refreshable {
             if activityRecord.stravaId != nil {
-                activityRecord.fetchUpdateFromStrava(dataCache: dataCache)
+                if dataCache.settingsManager.fetchFromStrava() {
+                    activityRecord.fetchUpdateFromStrava(dataCache: dataCache)
+                }
+                
             }
         }
 

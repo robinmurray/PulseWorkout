@@ -26,40 +26,15 @@ struct CloudConnectionsView: View {
 
                 }
 
-                VStack {
-                    Toggle(isOn: $settingsManager.saveStrava) {
-                        Text("Strava")
-                    }
-                    HStack {
-                        Text("Save activities and routes to Strava.")
-                            .font(.footnote).foregroundColor(.gray)
-                        Spacer()
-                    }
-                }
-
-                VStack {
-                    Button("Clear local cache") {
-                        clearCache()
-                    }.buttonStyle(.borderedProminent)
-                        .tint(Color.blue)
-                    
-                    HStack {
-                        Text("Delete locally stored activities that have not been uploaded to cloud storage.")
-                            .font(.footnote).foregroundColor(.gray)
-                        Spacer()
-                    }
-
-                }
-
 
             }
 #if os(watchOS)
             .navigationTitle {
-                Label("Cloud Connections", systemImage: "cloud")
+                Label("Apple Health", systemImage: "cloud")
                     .foregroundColor(.gray)
             }
 #else
-            .navigationTitle("Cloud Connections")
+            .navigationTitle("Apple Health")
 #endif
             .onDisappear(perform: settingsManager.save)
         }

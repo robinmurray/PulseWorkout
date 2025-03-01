@@ -16,11 +16,12 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
                         category: "sceneDelegate")
     
     let strava: StravaClient
+    let settingsManager: SettingsManager = SettingsManager()
     
     override init() {
         let config = StravaConfig(
-            clientId: 138595,
-            clientSecret: "86ff0c43b3bdaddc87264a2b85937237639a1ac9",
+            clientId: settingsManager.stravaClientId ?? 0,        // 138595,
+            clientSecret: settingsManager.stravaClientSecret,    //"86ff0c43b3bdaddc87264a2b85937237639a1ac9",
             redirectUri: "aleph://localhost",
             scopes: [.activityReadAll, .activityWrite],
             delegate: PersistentTokenDelegate()
@@ -95,12 +96,13 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "appDelegate")
     
+    let settingsManager: SettingsManager = SettingsManager()
     let strava: StravaClient
     
     override init() {
         let config = StravaConfig(
-            clientId: 138595,
-            clientSecret: "86ff0c43b3bdaddc87264a2b85937237639a1ac9",
+            clientId: settingsManager.stravaClientId ?? 0,        // 138595,
+            clientSecret: settingsManager.stravaClientSecret,    //"86ff0c43b3bdaddc87264a2b85937237639a1ac9",
             redirectUri: "aleph://localhost",
             scopes: [.activityReadAll, .activityWrite]
         )

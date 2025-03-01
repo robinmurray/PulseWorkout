@@ -208,6 +208,10 @@
 		E4D41B2F2C8A20E50014C1D9 /* LiveAlwaysOnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */; };
 		E4D41B312C8A230F0014C1D9 /* LiveMetricsCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */; };
 		E4E4DFEE29E88A6200979AA2 /* ProfileListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */; };
+		E4E8BAAB2D70C0900098D8E3 /* SettingsResetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8BAAA2D70C0900098D8E3 /* SettingsResetView.swift */; };
+		E4E8BAAC2D70C0900098D8E3 /* SettingsResetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8BAAA2D70C0900098D8E3 /* SettingsResetView.swift */; };
+		E4E8BAAE2D70C0AE0098D8E3 /* StravaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8BAAD2D70C0AE0098D8E3 /* StravaSettingsView.swift */; };
+		E4E8BAAF2D70C0AE0098D8E3 /* StravaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8BAAD2D70C0AE0098D8E3 /* StravaSettingsView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -373,6 +377,8 @@
 		E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveAlwaysOnView.swift; sourceTree = "<group>"; };
 		E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsCarouselView.swift; sourceTree = "<group>"; };
 		E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListItemView.swift; sourceTree = "<group>"; };
+		E4E8BAAA2D70C0900098D8E3 /* SettingsResetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsResetView.swift; sourceTree = "<group>"; };
+		E4E8BAAD2D70C0AE0098D8E3 /* StravaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StravaSettingsView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -685,6 +691,8 @@
 			children = (
 				E46121ED2AACCF2300E07749 /* WatchAsDeviceView.swift */,
 				E46121F32AAF6D1600E07749 /* CloudConnectionsView.swift */,
+				E4E8BAAA2D70C0900098D8E3 /* SettingsResetView.swift */,
+				E4E8BAAD2D70C0AE0098D8E3 /* StravaSettingsView.swift */,
 			);
 			path = shared;
 			sourceTree = "<group>";
@@ -1171,12 +1179,14 @@
 				E4094BC92CD1513400915CCB /* ActivityChartsController.swift in Sources */,
 				E42313732CF752E100E6F4FB /* SwipeButton.swift in Sources */,
 				E4941E432CD29F920063421F /* CloudConnectionsView.swift in Sources */,
+				E4E8BAAE2D70C0AE0098D8E3 /* StravaSettingsView.swift in Sources */,
 				E4094BC52CD1503600915CCB /* ActivityHistoryView.swift in Sources */,
 				E413D42C2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */,
 				E4CC66A82CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */,
 				E4941E462CD29FBC0063421F /* BluetoothManager.swift in Sources */,
 				E4094BB92CD0C6D200915CCB /* LocationManager.swift in Sources */,
 				E4AEC0902D1EC5CA00DC0082 /* icons.swift in Sources */,
+				E4E8BAAB2D70C0900098D8E3 /* SettingsResetView.swift in Sources */,
 				E4941E482CD29FCA0063421F /* BTDevice.swift in Sources */,
 				E492C0062D19568A0050B6E8 /* ImageCache.swift in Sources */,
 				E423136F2CF628EE00E6F4FB /* ProfileListItemView.swift in Sources */,
@@ -1261,6 +1271,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E4E8BAAF2D70C0AE0098D8E3 /* StravaSettingsView.swift in Sources */,
 				E492C0052D19568A0050B6E8 /* ImageCache.swift in Sources */,
 				E45E3F242CEC8D12001D58B3 /* ProfileManager.swift in Sources */,
 				E46EF0C82955C8E9006FA603 /* PausedView.swift in Sources */,
@@ -1313,6 +1324,7 @@
 				E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */,
 				E46EF08429537CA1006FA603 /* PulseWorkout_Watch_App.swift in Sources */,
 				E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */,
+				E4E8BAAC2D70C0900098D8E3 /* SettingsResetView.swift in Sources */,
 				E4C11F5B29CCCC43008DB769 /* BTDevice.swift in Sources */,
 				E49CB5E72D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
 				E413D4222D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,

@@ -48,8 +48,28 @@ class SettingsManager: NSObject, ObservableObject  {
     /// The number of seconds to average power over on the cycle power graph
     @Published var cyclePowerGraphSeconds: Int
     
-    /// Whether to fetch data from Strava
-    @Published var fetchFromStrava: Bool = true
+    /// **Strava Integration Settings**
+    /// Whether Strava interface is enabled
+    @Published var stravaEnabled: Bool = false
+    
+    /// Strava ClientID for authentication
+    @Published var stravaClientId: Int?
+    
+    /// Strava Client Secret for authentication
+    @Published var stravaClientSecret: String = ""
+    
+    /// Whether to fetch data from Strava if Strava integration is enabled
+    @Published var stravaFetch: Bool = true
+    
+    /// Whether to save data to Strava if Strava integration is enabled
+    @Published var stravaSave: Bool = true
+    
+    /// Whether save Strava data is configured by Activity Profile
+    @Published var stravaSaveByProfile: Bool = false
+    
+    /// If Strava save is global (not by profile) whether to save everything, or optional
+    @Published var stravaSaveAll: Bool = false
+    
     
     override init() {
         
@@ -76,6 +96,13 @@ class SettingsManager: NSObject, ObservableObject  {
         let _cyclePowerGraphSeconds: Int =  UserDefaults.standard.integer(forKey: "cyclePowerGraphSeconds")
         cyclePowerGraphSeconds = _cyclePowerGraphSeconds == 0 ? 30 : _cyclePowerGraphSeconds
         
+        stravaEnabled = UserDefaults.standard.bool(forKey: "stravaEnabled")
+        stravaClientId = UserDefaults.standard.integer(forKey: "stravaClientId")
+        stravaClientSecret = UserDefaults.standard.string(forKey: "stravaClientSecret") ?? ""
+        stravaFetch = UserDefaults.standard.bool(forKey: "stravaFetch")
+        stravaSave = UserDefaults.standard.bool(forKey: "stravaSave")
+        stravaSaveByProfile = UserDefaults.standard.bool(forKey: "stravaSaveByProfile")
+        stravaSaveAll = UserDefaults.standard.bool(forKey: "stravaSaveAll")
         
         super.init()
 
@@ -104,8 +131,18 @@ class SettingsManager: NSObject, ObservableObject  {
         UserDefaults.standard.set(use3sCyclePower, forKey: "use3sCyclePower")
         UserDefaults.standard.set(cyclePowerGraphSeconds, forKey: "cyclePowerGraphSeconds")
 
+        UserDefaults.standard.set(stravaEnabled, forKey: "stravaEnabled")
+        UserDefaults.standard.set(stravaClientId, forKey: "stravaClientId")
+        UserDefaults.standard.set(stravaClientSecret, forKey: "stravaClientSecret")
+        UserDefaults.standard.set(stravaFetch, forKey: "stravaFetch")
+        UserDefaults.standard.set(stravaSave, forKey: "stravaSave")
+        UserDefaults.standard.set(stravaSaveByProfile, forKey: "stravaSaveByProfile")
+        UserDefaults.standard.set(stravaSaveAll, forKey: "stravaSaveAll")
     }
     
+    func fetchFromStrava() -> Bool {
+        return (stravaEnabled && stravaFetch)
+    }
 }
 
 #if os(watchOS)

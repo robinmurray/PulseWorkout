@@ -114,7 +114,7 @@ struct ActivityHistoryView: View {
             dataCache.refreshUI()
 #endif
 #if os(iOS)
-            if dataCache.settingsManager.fetchFromStrava {
+            if dataCache.settingsManager.fetchFromStrava() {
                 if !stravaFetchInProgress {
                     stravaFetchInProgress = true
                     StravaFetchLatestActivities(dataCache: dataCache,

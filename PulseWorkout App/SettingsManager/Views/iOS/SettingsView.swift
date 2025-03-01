@@ -78,12 +78,29 @@ struct SettingsView: View {
                 NavigationLink(
                     destination: CloudConnectionsView(settingsManager: settingsManager)) {
                         HStack {
-                            Label("Cloud Connections", systemImage: "cloud")
-                                .foregroundColor(.gray)
+                            Label("Apple Health", systemImage: "heart.text.clipboard")
+                                .foregroundColor(.red)
+                            Spacer()
+                        }
+                    }
+                
+                NavigationLink(
+                    destination: StravaSettingsView(settingsManager: settingsManager)) {
+                        HStack {
+                            Label("Strava Integration", systemImage: "location.circle")
+                                .foregroundColor(.orange)
                             Spacer()
                         }
                     }
 
+                NavigationLink(
+                    destination: SettingsResetView(settingsManager: settingsManager)) {
+                        HStack {
+                            Label("Reset", systemImage: "gearshape")
+                                .foregroundColor(.indigo)
+                            Spacer()
+                        }
+                    }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
