@@ -15,19 +15,21 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "sceneDelegate")
     
-    let strava: StravaClient
+//    let strava: StravaClient
     let settingsManager: SettingsManager = SettingsManager()
     
     override init() {
-        let config = StravaConfig(
-            clientId: settingsManager.stravaClientId ?? 0,        // 138595,
-            clientSecret: settingsManager.stravaClientSecret,    //"86ff0c43b3bdaddc87264a2b85937237639a1ac9",
-            redirectUri: "aleph://localhost",
-            scopes: [.activityReadAll, .activityWrite],
-            delegate: PersistentTokenDelegate()
-        )
-        strava = StravaClient.sharedInstance.initWithConfig(config)
-
+        if settingsManager.stravaEnabled {
+            let config = StravaConfig(
+                clientId: settingsManager.stravaClientId ?? 0,        // 138595,
+                clientSecret: settingsManager.stravaClientSecret,    //"86ff0c43b3bdaddc87264a2b85937237639a1ac9",
+                redirectUri: "aleph://localhost",
+                scopes: [.activityReadAll, .activityWrite],
+                delegate: PersistentTokenDelegate()
+            )
+            _ = StravaClient.sharedInstance.initWithConfig(config)
+        }
+        
         super.init()
     }
     
@@ -80,7 +82,7 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
             logger.info("source application = \(sendingAppID ?? "Unknown")")
             logger.info("url = \(url)")
             
-            _ = strava.handleAuthorizationRedirect(url)
+            _ = StravaClient.sharedInstance.handleAuthorizationRedirect(url)
 
 
             // Process the URL similarly to the UIApplicationDelegate example.
@@ -97,19 +99,19 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
                         category: "appDelegate")
     
     let settingsManager: SettingsManager = SettingsManager()
-    let strava: StravaClient
+//    let strava: StravaClient
     
     override init() {
-        let config = StravaConfig(
-            clientId: settingsManager.stravaClientId ?? 0,        // 138595,
-            clientSecret: settingsManager.stravaClientSecret,    //"86ff0c43b3bdaddc87264a2b85937237639a1ac9",
-            redirectUri: "aleph://localhost",
-            scopes: [.activityReadAll, .activityWrite]
-        )
-        strava = StravaClient.sharedInstance.initWithConfig(config)
-        
-        let token = StravaClient.sharedInstance.token
-        print("Strava Token: \(String(describing: token))")
+        if settingsManager.stravaEnabled {
+            let config = StravaConfig(
+                clientId: settingsManager.stravaClientId ?? 0,        // 138595,
+                clientSecret: settingsManager.stravaClientSecret,    //"86ff0c43b3bdaddc87264a2b85937237639a1ac9",
+                redirectUri: "aleph://localhost",
+                scopes: [.activityReadAll, .activityWrite],
+                delegate: PersistentTokenDelegate()
+            )
+            _ = StravaClient.sharedInstance.initWithConfig(config)
+        }
 
         super.init()
     }
@@ -126,7 +128,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 
     func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
         logger.info("In handle authorization")
-        return strava.handleAuthorizationRedirect(url)
+        return StravaClient.sharedInstance.handleAuthorizationRedirect(url)
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {

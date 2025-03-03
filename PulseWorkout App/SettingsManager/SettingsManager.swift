@@ -6,12 +6,17 @@
 //
 
 import Foundation
+import SwiftUI
+import UIKit
 
 #if os(watchOS)
 import WatchKit
-
 var hapticTypes: [WKHapticType] = [.notification, .directionUp, .directionDown,
     .success, .failure, .retry, .start, .stop, .click]
+#endif
+
+#if os(iOS)
+import StravaSwift
 #endif
 
 class SettingsManager: NSObject, ObservableObject  {
@@ -138,6 +143,20 @@ class SettingsManager: NSObject, ObservableObject  {
         UserDefaults.standard.set(stravaSave, forKey: "stravaSave")
         UserDefaults.standard.set(stravaSaveByProfile, forKey: "stravaSaveByProfile")
         UserDefaults.standard.set(stravaSaveAll, forKey: "stravaSaveAll")
+        
+        #if os(iOS)
+        if stravaEnabled {
+            let config = StravaConfig(
+                clientId: stravaClientId ?? 0,        // 138595,
+                clientSecret: stravaClientSecret,    //"86ff0c43b3bdaddc87264a2b85937237639a1ac9",
+                redirectUri: "aleph://localhost",
+                scopes: [.activityReadAll, .activityWrite],
+                delegate: PersistentTokenDelegate()
+            )
+            _ = StravaClient.sharedInstance.initWithConfig(config)
+        }
+        #endif
+        
     }
     
     func fetchFromStrava() -> Bool {
