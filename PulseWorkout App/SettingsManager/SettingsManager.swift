@@ -6,8 +6,7 @@
 //
 
 import Foundation
-import SwiftUI
-import UIKit
+
 
 #if os(watchOS)
 import WatchKit
@@ -25,7 +24,6 @@ class SettingsManager: NSObject, ObservableObject  {
     @Published var transmitPowerMeter: Bool
     
     @Published var saveAppleHealth: Bool
-    @Published var saveStrava: Bool
        
     /// If auto-pause enabled, pause activity if speed drops below this limit
     @Published var autoPauseSpeed: Double
@@ -82,7 +80,6 @@ class SettingsManager: NSObject, ObservableObject  {
         transmitPowerMeter = UserDefaults.standard.bool(forKey: "transmitPowerMeter")
         
         saveAppleHealth = UserDefaults.standard.bool(forKey: "saveAppleHealth")
-        saveStrava = UserDefaults.standard.bool(forKey: "saveStrava")
         
         autoPauseSpeed = UserDefaults.standard.object(forKey: "autoPauseSpeed") != nil ? UserDefaults.standard.double(forKey: "autoPauseSpeed") : 0.2
         autoResumeSpeed = UserDefaults.standard.object(forKey: "autoResumeSpeed") != nil ? UserDefaults.standard.double(forKey: "autoResumeSpeed") : 0.4
@@ -119,7 +116,6 @@ class SettingsManager: NSObject, ObservableObject  {
         UserDefaults.standard.set(transmitPowerMeter, forKey: "transmitPowerMeter")
         
         UserDefaults.standard.set(saveAppleHealth, forKey: "saveAppleHealth")
-        UserDefaults.standard.set(saveStrava, forKey: "saveStrava")
         
         UserDefaults.standard.set(autoPauseSpeed, forKey: "autoPauseSpeed")
         UserDefaults.standard.set(autoResumeSpeed, forKey: "autoResumeSpeed")
@@ -161,6 +157,10 @@ class SettingsManager: NSObject, ObservableObject  {
     
     func fetchFromStrava() -> Bool {
         return (stravaEnabled && stravaFetch)
+    }
+    
+    func offerSaveToStrava() -> Bool {
+        return (stravaEnabled && stravaSave)
     }
 }
 

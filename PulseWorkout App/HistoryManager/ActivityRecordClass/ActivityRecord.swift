@@ -16,9 +16,9 @@ import StravaSwift
 #endif
 
 enum StravaSaveStatus: Int {
-    case dontSave = 0
-    case toSave = 1
-    case saved = 2
+    case notSaved = 0       // This record not to be saved to strava - offer optional save
+    case toSave = 1         // This record should be saved to strava, but has not been saved yet
+    case saved = 2          // This record has been saved to Strava
 }
 
 // Calculated averages
@@ -73,7 +73,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var timeUnderLoAlarm: Double = 0
     var hiHRLimit: Int?
     var loHRLimit: Int?
-    var stravaSaveStatus: Int = StravaSaveStatus.dontSave.rawValue
+    var stravaSaveStatus: Int = StravaSaveStatus.notSaved.rawValue
     var stravaId: Int?          // id of this record in Strava
     var tcxFileName: String?    // Temporary cache file for tcx file
     var JSONFileName: String?   // Temporary cache file for JSON serialisation of activity record

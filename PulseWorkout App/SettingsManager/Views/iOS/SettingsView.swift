@@ -87,8 +87,10 @@ struct SettingsView: View {
                 NavigationLink(
                     destination: StravaSettingsView(settingsManager: settingsManager)) {
                         HStack {
-                            Label("Strava Integration", systemImage: "location.circle")
-                                .foregroundColor(.orange)
+                            HStack{
+                                Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                                Text("Strava Integration").foregroundColor(Color("StravaColor"))
+                            }
                             Spacer()
                         }
                     }

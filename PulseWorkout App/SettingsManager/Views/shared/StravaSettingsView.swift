@@ -46,7 +46,7 @@ struct StravaSettingsView: View {
                                 "ClientId",
                                 value: $settingsManager.stravaClientId,
                                 format: .number.grouping(.never)
-                        ).textFieldStyle(.roundedBorder)
+                        ) // .textFieldStyle(.roundedBorder)
                     }
                     HStack {
                         
@@ -54,7 +54,7 @@ struct StravaSettingsView: View {
                         TextField(
                                 "Client Secret",
                                 text: $settingsManager.stravaClientSecret
-                        ).textFieldStyle(.roundedBorder)
+                        ) // .textFieldStyle(.roundedBorder)
                     }
                 }
                 .disabled(!settingsManager.stravaEnabled)
@@ -116,6 +116,7 @@ struct StravaSettingsView: View {
                 
             }
             
+            #if os(iOS)
             GroupBox(label:
                         HStack {
                 Spacer()
@@ -143,6 +144,8 @@ struct StravaSettingsView: View {
                 
             }
             .disabled((!settingsManager.stravaEnabled) || (!settingsManager.stravaFetch))
+            
+            #endif
         }
         .navigationTitle("Strava Integration")
         .onDisappear(perform: settingsManager.save)

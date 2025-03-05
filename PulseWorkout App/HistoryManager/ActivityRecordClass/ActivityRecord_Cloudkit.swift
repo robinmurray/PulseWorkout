@@ -121,7 +121,7 @@ extension ActivityRecord {
         hiHRLimit = activityRecord["hiHRLimit"] as Int?
         loHRLimit = activityRecord["loHRLimit"] as Int?
 
-        stravaSaveStatus = (activityRecord["stravaSaveStatus"] ?? StravaSaveStatus.dontSave.rawValue) as Int
+        stravaSaveStatus = (activityRecord["stravaSaveStatus"] ?? StravaSaveStatus.notSaved.rawValue) as Int
         stravaId = activityRecord["stravaId"] as Int?
         trackPointGap = activityRecord["trackPointGap"] ?? ACTIVITY_RECORDING_INTERVAL as Int
         

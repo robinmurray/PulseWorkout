@@ -45,6 +45,15 @@ struct ActivityDetailView: View {
         return formatter
     }()
     
+    func viewOnStrava(recordId: Int) {
+
+        if let url = URL(string: "strava://activities/" + String(recordId)) {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:])
+            }
+        }
+
+    }
     func hasTrainingLoad(_ activityRecord: ActivityRecord) -> Bool {
         
         if (((activityRecord.TSS ?? 0) > 0) &&
@@ -434,7 +443,57 @@ struct ActivityDetailView: View {
 
             }
 
+            if dataCache.settingsManager.offerSaveToStrava() {
+                switch activityRecord.stravaSaveStatus {
+                case StravaSaveStatus.notSaved.rawValue:
+                    Button(action: {
+                        
+                    })
+                    {
+                        HStack {
+                            Text("Save to Strava")
+                                .font(.title2)
+                                .foregroundStyle(Color("StravaColor"))
+                            Image("StravaIcon").resizable().frame(width: 30, height: 30)
 
+                        }
+
+                    }
+                    .tint(Color.orange)
+                    .buttonStyle(.bordered)
+                    
+                case StravaSaveStatus.saved.rawValue:
+                    Button(action: {
+                        if let stravaId = activityRecord.stravaId {
+                            viewOnStrava(recordId: stravaId)
+                        }
+                    })
+                    {
+                        HStack {
+                            Text("View data on Strava")
+                                .font(.title2)
+                                .foregroundStyle(Color("StravaColor"))
+                            Image("StravaIcon").resizable().frame(width: 30, height: 30)
+
+                        }
+
+                    }
+                    .tint(Color.orange)
+                    .buttonStyle(.bordered)
+                    
+                case StravaSaveStatus.toSave.rawValue:
+                    Text("Saving...")
+                        .foregroundStyle(Color("StravaColor"))
+                    
+                default:
+                    Text("")
+                }
+            }
+            if (activityRecord.stravaSaveStatus == StravaSaveStatus.notSaved.rawValue) &&
+                dataCache.settingsManager.offerSaveToStrava() {
+                
+
+            }
         }
         .onAppear( perform: {
 

@@ -212,6 +212,8 @@
 		E4E8BAAC2D70C0900098D8E3 /* SettingsResetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8BAAA2D70C0900098D8E3 /* SettingsResetView.swift */; };
 		E4E8BAAE2D70C0AE0098D8E3 /* StravaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8BAAD2D70C0AE0098D8E3 /* StravaSettingsView.swift */; };
 		E4E8BAAF2D70C0AE0098D8E3 /* StravaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8BAAD2D70C0AE0098D8E3 /* StravaSettingsView.swift */; };
+		E4E8BAB32D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */; };
+		E4E8BAB42D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1337,6 +1339,7 @@
 				E413D42D2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */,
 				E4941E7F2CD7F3F60063421F /* SummaryMetricView.swift in Sources */,
 				E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */,
+				E4E8BAB32D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */,
 				E4A0839329A9FA09007B50D3 /* BTDeviceView.swift in Sources */,
 				E421295C299D4D91001B8AA9 /* BTDeviceBarView.swift in Sources */,
 				E46EF0BA29537E24006FA603 /* StartView.swift in Sources */,
@@ -1373,6 +1376,7 @@
 				E492C00D2D19BDD00050B6E8 /* ActivityProfile.swift in Sources */,
 				E4A372FE2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
 				E492C0172D1DC9B20050B6E8 /* HapticsSettingsView.swift in Sources */,
+				E4E8BAB42D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */,
 				E413D4212D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
 				E492C01F2D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E413D41E2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,

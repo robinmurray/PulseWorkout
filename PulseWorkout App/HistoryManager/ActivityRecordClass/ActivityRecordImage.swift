@@ -150,6 +150,7 @@ class ActivityRecordImage: NSObject {
 }
 
 
+#if os(iOS)
 /// Concrete sub-class of ActivityRecordImage to manage map snapshot image
 class ActivityRecordSnapshotImage: ActivityRecordImage {
     
@@ -229,7 +230,7 @@ class ActivityRecordSnapshotImage: ActivityRecordImage {
 
     
 }
-
+#endif
 
 /// Concrete sub-class of ActivityRecordImage to manage altitude image
 class ActivityRecordAltitudeImage: ActivityRecordImage {
