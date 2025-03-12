@@ -447,7 +447,7 @@ struct ActivityDetailView: View {
                 switch activityRecord.stravaSaveStatus {
                 case StravaSaveStatus.notSaved.rawValue:
                     Button(action: {
-                        
+                        activityRecord.saveToStrava()
                     })
                     {
                         HStack {
@@ -470,7 +470,7 @@ struct ActivityDetailView: View {
                     })
                     {
                         HStack {
-                            Text("View data on Strava")
+                            Text("View on Strava")
                                 .font(.title2)
                                 .foregroundStyle(Color("StravaColor"))
                             Image("StravaIcon").resizable().frame(width: 30, height: 30)
@@ -482,18 +482,22 @@ struct ActivityDetailView: View {
                     .buttonStyle(.bordered)
                     
                 case StravaSaveStatus.toSave.rawValue:
-                    Text("Saving...")
+                    Text("To be saved...")
                         .foregroundStyle(Color("StravaColor"))
+
+                case StravaSaveStatus.saving.rawValue:
+                    HStack {
+                        Text("Saving...")
+                            .foregroundStyle(Color("StravaColor"))
+                        ProgressView()
+                    }
+
                     
                 default:
                     Text("")
                 }
             }
-            if (activityRecord.stravaSaveStatus == StravaSaveStatus.notSaved.rawValue) &&
-                dataCache.settingsManager.offerSaveToStrava() {
-                
 
-            }
         }
         .onAppear( perform: {
 

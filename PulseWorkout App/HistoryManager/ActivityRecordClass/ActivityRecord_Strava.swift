@@ -16,6 +16,42 @@ import Accelerate
 extension ActivityRecord {
 
     #if os(iOS)
+    
+    func saveToStrava() {
+        
+        stravaSaveStatus = StravaSaveStatus.saving.rawValue
+        StravaUploadActivity(activityRecord: self,
+                             completionHandler: saveStravaId,
+                             failureCompletionHandler: { self.stravaSaveStatus = StravaSaveStatus.notSaved.rawValue }).execute()
+        
+    }
+    
+    
+    /// On completion of save to Strava, update the cloudkit record
+    func saveStravaId(newStravaId: Int) {
+        self.logger.info("Record saved to Strava with Id \(newStravaId)")
+        // Set strava status and strava Id
+        
+        self.stravaId = newStravaId
+        self.stravaSaveStatus = StravaSaveStatus.saved.rawValue
+   
+        let activityCKRecord = CKRecord(recordType: recordType,
+                                        recordID: recordID)
+        activityCKRecord["stravaSaveStatus"] = stravaSaveStatus
+        activityCKRecord["stravaId"] = stravaId
+
+        // Only update if already saved! - should get picked up by record save
+        // if not then will update saved record on next display...
+        if !toSave {
+            self.logger.info("Updating activity record :: \(self.name) :: saved to Strava with Id \(newStravaId)")
+            
+            CloudKitManager().forceUpdate(ckRecord: activityCKRecord,
+                                          completionFunction: { _ in })
+
+        }
+        
+    }
+    
     func fromStravaActivity(_ stravaActivity: StravaActivity) {
 
         /*

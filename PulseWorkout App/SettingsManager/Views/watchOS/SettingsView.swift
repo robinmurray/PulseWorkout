@@ -55,6 +55,15 @@ struct SettingsView: View {
                             Spacer()
                         }
                     }
+                
+                NavigationLink(
+                    destination: SettingsResetView(settingsManager: settingsManager)) {
+                        HStack {
+                            Label("Reset", systemImage: "gearshape")
+                                .foregroundColor(.indigo)
+                            Spacer()
+                        }
+                    }
 
                 }
                 .navigationTitle {

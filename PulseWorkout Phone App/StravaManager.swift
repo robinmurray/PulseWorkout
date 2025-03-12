@@ -313,22 +313,24 @@ class StravaFetchLatestActivities: StravaOperation {
             getNextPage()
         }
         else {
-            StravaFetchFullActivity(stravaActivityId: self.stravaActivityPage[activityIndex].id!,
-                                    completionHandler: {
-                activityRecord in
-                
+            StravaFetchFullActivity(
+                stravaActivityId: self.stravaActivityPage[activityIndex].id!,
+                completionHandler: {
+                    activityRecord in
+                    
                     activityRecord.save(dataCache: self.dataCache)
-                
-                    self.dataCache.saveAndDeleteRecord(recordsToSave: [activityRecord.asCKRecord()],
-                                                       recordIDsToDelete: [],
-                                                       recordSaveSuccessCompletionFunction: {_ in
-                        self.activityIndex += 1
-                        self.processNextRecord()
-                    },
-                                                       recordDeleteSuccessCompletionFunction: {_ in })
-                
+                    
+                    self.dataCache.saveAndDeleteRecord(
+                        recordsToSave: [activityRecord.asCKRecord()],
+                        recordIDsToDelete: [],
+                        recordSaveSuccessCompletionFunction: {_ in
+                            self.activityIndex += 1
+                            self.processNextRecord()
+                        },
+                        recordDeleteSuccessCompletionFunction: {_ in })
+                    
                 },
-                                    failureCompletionHandler: self.failureCompletionHandler
+                failureCompletionHandler: self.failureCompletionHandler
             ).execute()
         }
 
@@ -530,3 +532,90 @@ class StravaFetchFullActivity: StravaOperation {
 }
 
 
+/// Upload strava activity - this is asynchronous - just get an uploadId as completion. Use this poll for actual strava activity...
+class StravaUploadActivity: StravaOperation {
+
+    var activityRecord: ActivityRecord
+    var completionHandler: (Int) -> Void
+    var failureCompletionHandler: () -> Void
+
+    
+    init(activityRecord: ActivityRecord,
+         completionHandler: @escaping (Int) -> Void,
+         failureCompletionHandler: @escaping () -> Void = { },
+         forceReauth: Bool = false,
+         forceRefresh: Bool = false) {
+        
+        self.activityRecord = activityRecord
+        self.completionHandler = completionHandler
+        self.failureCompletionHandler = failureCompletionHandler
+        
+
+        super.init(forceReauth: forceReauth, forceRefresh: forceRefresh)
+
+
+    }
+    
+    
+    /// If tcx asset alreday loaded use it, else fetch from cloudkit and call upload on completion
+    func execute() {
+        
+        if let asset = activityRecord.tcxAsset {
+
+            let fileURL = asset.fileURL!
+            
+            do {
+                let tcxgzData = try Data(contentsOf: fileURL)
+                self.logger.log("Got tcx data of size \(tcxgzData.count)")
+                
+                upload(tcxgzData: tcxgzData)
+
+            } catch {
+                self.logger.error("Can't get data at url:\(fileURL)")
+                self.failureCompletionHandler()
+            }
+        } else {
+            CKFetchTcxAsset(recordID: activityRecord.recordID,
+                            completionHandler: upload,
+                            failureCompletionHandler: self.failureCompletionHandler
+            ).execute()
+        }
+
+    }
+
+    /// Perform upload to strava - call configured completion handlers on success / failure
+    func upload(tcxgzData: Data) {
+        
+        let uploadData = UploadData(activityType: ActivityType(rawValue: activityRecord.stravaType) ?? .ride,
+                                    name: activityRecord.name,
+                                    description: nil,
+                                    private: false,
+                                    trainer: nil,
+                                    externalId: activityRecord.recordID.recordName,
+                                    dataType: .tcxGz,
+                                    file: tcxgzData)
+
+
+        if validToken(execFunction: self.execute, failureCompletionHandler: failureCompletionHandler) {
+
+            StravaClient.sharedInstance.upload(Router.uploadFile(upload: uploadData), upload: uploadData, result: { [weak self] (uploadStatus: UploadStatus?) in
+
+                guard let self = self else { return }
+                self.stravaBusyStatus(false)
+
+                guard let uploadStatus = uploadStatus else {
+                    self.logger.error("Error : No Upload status")
+                    self.failureCompletionHandler()
+                    return }
+                
+                self.logger.info("Upload Status \(uploadStatus)")
+                self.completionHandler(uploadStatus.id!)
+
+            }, failure: { (error: NSError) in
+                self.stravaBusyStatus(false)
+                self.logger.error("Error : \(error.localizedDescription) :: \(error)")
+                self.failureCompletionHandler()
+            })
+        }
+    }
+}
