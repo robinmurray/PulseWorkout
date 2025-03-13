@@ -41,7 +41,7 @@ struct LiveMetricsView: View {
         self.liveActivityManager = liveActivityManager
         self.dataCache = dataCache
         self.activityData = liveActivityManager.liveActivityRecord ??
-        ActivityRecord(settingsManager: liveActivityManager.settingsManager)
+        ActivityRecord()
         
     }
     
@@ -49,7 +49,7 @@ struct LiveMetricsView: View {
         liveActivityManager.endWorkout()
         liveActivityManager.saveLiveActivityRecord()
         navigationCoordinator.selectedActivityRecord = liveActivityManager.liveActivityRecord ??
-            ActivityRecord(settingsManager: liveActivityManager.settingsManager)
+            ActivityRecord()
         
         navigationCoordinator.goToView(targetView: NavigationTarget.ActivitySaveView)
     }
@@ -349,15 +349,13 @@ struct LiveMetricsView: View {
     @Previewable @State var newProfile: ActivityProfile = ProfileManager().newProfile()
 
     let navigationCoordinator = NavigationCoordinator()
-    let settingsManager = SettingsManager()
-    let locationManager = LocationManager(settingsManager: settingsManager)
-    let dataCache = DataCache(settingsManager: settingsManager)
+    let locationManager = LocationManager()
+    let dataCache = DataCache()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                         bluetoothManager: bluetoothManager,
-                                                         settingsManager: settingsManager,
-                                                         dataCache: dataCache)
+                                                  bluetoothManager: bluetoothManager,
+                                                  dataCache: dataCache)
 
     LiveMetricsView(navigationCoordinator: navigationCoordinator,
                     profile: $newProfile,

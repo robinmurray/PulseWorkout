@@ -10,13 +10,12 @@ import XCTest
 final class ImageCacheTest: XCTestCase {
 
     var dataCache: DataCache
-    var settingsManager: SettingsManager
+    let settingsManager: SettingsManager = SettingsManager.shared
     var imageCache: ImageCache?
     
     override init() {
-        
-        settingsManager = SettingsManager()
-        dataCache = DataCache(settingsManager: settingsManager, testMode: true)
+
+        dataCache = DataCache(testMode: true)
         
         super.init()
     }
@@ -39,14 +38,14 @@ final class ImageCacheTest: XCTestCase {
         // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
         
         let imageData = UIImage(systemName: "tray.full")?.jpegData(compressionQuality: 0.5)
-        let activityRecord = ActivityRecord(settingsManager: SettingsManager())
+        let activityRecord = ActivityRecord()
         imageCache = ImageCache(dataCache: dataCache, testMode: true)
 
-        XCTAssert(imageCache?.getImage(record: activityRecord) == nil)
+        XCTAssert(imageCache?.getImage(record: activityRecord, imageType: .mapSnapshot) == nil)
         
         // activityRecord is not in main cache, so should not add image
-        imageCache?.add(record: activityRecord, image: imageData!)
-        XCTAssert(imageCache?.getImage(record: activityRecord) == nil)
+        imageCache?.add(record: activityRecord, image: imageData!, imageType: .mapSnapshot)
+        XCTAssert(imageCache?.getImage(record: activityRecord, imageType: .mapSnapshot) == nil)
         
 //        dataCache.add(activityRecord: activityRecord)
         // activityRecord IS in main cache, so should add image

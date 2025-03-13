@@ -58,9 +58,8 @@ struct ActivityListItemView: View {
 
 struct ActivityListItemView_Previews: PreviewProvider {
     
-    static var settingsManager = SettingsManager()
-    static var dataCache = DataCache(settingsManager: settingsManager)
-    static var activityRecord = ActivityRecord(settingsManager: settingsManager)
+    static var dataCache = DataCache()
+    static var activityRecord = ActivityRecord()
     
     static var previews: some View {
         ActivityListItemView(activityRecord: activityRecord,

@@ -17,13 +17,12 @@ private func getFetchDate() -> Date {
 }
 
 struct StravaSettingsView: View {
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
 
     @State private var stravaFetchFromDate: Date
     
-    init(settingsManager: SettingsManager) {
+    init() {
         self.stravaFetchFromDate = getFetchDate()
-        self.settingsManager = settingsManager
     }
     
     var body: some View {
@@ -155,7 +154,6 @@ struct StravaSettingsView: View {
 }
 
 #Preview {
-    let settingsManager = SettingsManager()
-    
-    StravaSettingsView(settingsManager: settingsManager)
+
+    StravaSettingsView()
 }

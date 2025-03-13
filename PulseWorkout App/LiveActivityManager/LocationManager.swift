@@ -43,7 +43,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var location: CLLocation?
     var lastGeoLocation: CLLocation?
 
-    var settingsManager: SettingsManager
+    let settingsManager: SettingsManager = SettingsManager.shared
     @Published var pinnedLocation: CLLocation?
     var pinnedPlaceName: String?
     var pinnedLocationDistance: Double?
@@ -58,9 +58,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                         category: "locationManager")
     
     
-    init(settingsManager: SettingsManager) {
+    override init() {
 
-        self.settingsManager = settingsManager
         locManager = CLLocationManager()
         headingsOk = CLLocationManager.headingAvailable()
         self.distanceMeters = 0

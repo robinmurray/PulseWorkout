@@ -70,7 +70,7 @@ class MigrationManager: CloudKitManager {
     
     func updateRecord(record: CKRecord) {
         
-        let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: SettingsManager())
+        let activityRecord = ActivityRecord(fromCKRecord: record)
         
 //        if activityRecord.stravaId == nil {
             localLogger.info("Updating \(activityRecord)")

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct WatchAsDeviceView: View {
     
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
             Form {
@@ -56,9 +56,7 @@ struct WatchAsDeviceView: View {
 
 struct WatchAsDeviceView_Previews: PreviewProvider {
     
-    static var settingsManager = SettingsManager()
-    
     static var previews: some View {
-        WatchAsDeviceView(settingsManager: settingsManager)
+        WatchAsDeviceView()
     }
 }

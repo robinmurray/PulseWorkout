@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AutoPauseSettingsView: View {
     
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
         Form {
@@ -125,7 +125,5 @@ struct AutoPauseSettingsView: View {
 
 #Preview {
     
-    let settingsManager = SettingsManager()
-    
-    AutoPauseSettingsView(settingsManager: settingsManager)
+    AutoPauseSettingsView()
 }

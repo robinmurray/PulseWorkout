@@ -98,5 +98,51 @@
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "42245820-37C1-427E-8115-61F89D732E14"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../StravaSwift-Local/Sources/StravaSwift/StravaClient.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "238"
+            endingLineNumber = "238"
+            landmarkName = "request(_:result:failure:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "42245820-37C1-427E-8115-61F89D732E14 - 8704caa637eb5bcf"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "StravaSwift.StravaClient.request&lt;&#x3c4;_0_0 where &#x3c4;_0_0: StravaSwift.Strava&gt;(_: StravaSwift.Router, result: (Swift.Optional&lt;&#x3c4;_0_0&gt;) -&gt; (), failure: (__C.NSError) -&gt; ()) -&gt; ()"
+                  moduleName = "PulseWorkout Phone App.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/robinmurray/SWIFT/StravaSwift-Local/Sources/StravaSwift/StravaClient.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "238"
+                  endingLineNumber = "238">
+               </Location>
+               <Location
+                  uuid = "42245820-37C1-427E-8115-61F89D732E14 - a2723b0843093169"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Alamofire.DataResponse&lt;&#x3c4;_0_0&gt;) -&gt; () in StravaSwift.StravaClient.request&lt;&#x3c4;_0_0 where &#x3c4;_0_0: StravaSwift.Strava&gt;(_: StravaSwift.Router, result: (Swift.Optional&lt;&#x3c4;_0_0&gt;) -&gt; (), failure: (__C.NSError) -&gt; ()) -&gt; ()"
+                  moduleName = "PulseWorkout Phone App.debug.dylib"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/robinmurray/SWIFT/StravaSwift-Local/Sources/StravaSwift/StravaClient.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "238"
+                  endingLineNumber = "238">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
    </Breakpoints>
 </Bucket>

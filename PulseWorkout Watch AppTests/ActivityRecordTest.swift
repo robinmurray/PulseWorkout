@@ -36,13 +36,13 @@ public func differenceBetweenStrings(s1: String, s2: String) -> String {
 
 final class ActivityRecordTest: XCTestCase {
 
-    var settingsManager: SettingsManager!
+    let settingsManager = SettingsManager.shared
     var activityRecord: ActivityRecord!
     
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        settingsManager = SettingsManager()
-        activityRecord = ActivityRecord(settingsManager: settingsManager)
+
+        activityRecord = ActivityRecord()
     }
 
     override func tearDownWithError() throws {

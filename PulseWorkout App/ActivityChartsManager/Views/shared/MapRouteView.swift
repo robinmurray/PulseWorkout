@@ -70,9 +70,8 @@ struct MapRouteView: View {
 
 struct MapRouteView_Previews: PreviewProvider {
     
-    static var settingsManager = SettingsManager()
-    static var activityRecord = ActivityRecord(settingsManager: settingsManager)
-    static var dataCache = DataCache(settingsManager: settingsManager)
+    static var activityRecord = ActivityRecord()
+    static var dataCache = DataCache()
     
     static var previews: some View {
         MapRouteView(activityRecord: activityRecord, dataCache: dataCache)

@@ -16,7 +16,7 @@ class SceneDelegate: NSObject, UIWindowSceneDelegate {
                         category: "sceneDelegate")
     
 //    let strava: StravaClient
-    let settingsManager: SettingsManager = SettingsManager()
+    let settingsManager: SettingsManager = SettingsManager.shared
     
     override init() {
         if settingsManager.stravaEnabled {
@@ -98,7 +98,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "appDelegate")
     
-    let settingsManager: SettingsManager = SettingsManager()
+    let settingsManager: SettingsManager = SettingsManager.shared
 //    let strava: StravaClient
     
     override init() {

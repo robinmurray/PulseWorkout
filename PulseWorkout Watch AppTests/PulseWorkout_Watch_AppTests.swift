@@ -10,16 +10,15 @@ import XCTest
 
 final class PulseWorkout_Watch_AppTests: XCTestCase {
 
-    var settingsManager: SettingsManager?
-    var dataCache: DataCache = DataCache(settingsManager: SettingsManager(), readCache: false)
+    var dataCache: DataCache = DataCache(readCache: false)
 
     var dummyActivityRecord: ActivityRecord?
     
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
-        settingsManager = SettingsManager()
-        dummyActivityRecord = ActivityRecord(settingsManager: settingsManager!)
+
+        dummyActivityRecord = ActivityRecord()
     }
 
     override func tearDownWithError() throws {

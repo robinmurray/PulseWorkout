@@ -17,7 +17,7 @@ class ActivityChartsController: NSObject, ObservableObject {
     @Published var buildingChartTraces: Bool = false
     @Published var recordFetchFailed: Bool = false
     @Published var chartTraces: [ActivityChartTraceData] = []
-    var settingsManager: SettingsManager
+    let settingsManager: SettingsManager = SettingsManager.shared
  
     
     @Published var routeCoordinates: [CLLocationCoordinate2D] = []
@@ -25,7 +25,7 @@ class ActivityChartsController: NSObject, ObservableObject {
     
     init(dataCache: DataCache) {
         self.dataCache = dataCache
-        self.settingsManager = dataCache.settingsManager
+
     }
     
     func buildChartTraces(recordID: CKRecord.ID) {
@@ -72,7 +72,7 @@ class ActivityChartsController: NSObject, ObservableObject {
                                                      backgroundAxisSuffix: "M",
                                                      averagesIncludeZeros: settingsManager.avePowerZeros)
         
-        traceBuilder.rollingAverageCount = max(Int(dataCache.settingsManager!.cyclePowerGraphSeconds / 2), 1)
+        traceBuilder.rollingAverageCount = max(Int(SettingsManager.shared.cyclePowerGraphSeconds / 2), 1)
         let trace = traceBuilder.build(
             id: "Power",
             colorScheme: powerColor,
@@ -90,7 +90,7 @@ class ActivityChartsController: NSObject, ObservableObject {
         let traceBuilder = ActivityChartTraceBuilder(defaultPrimaryMax: 100,
                                                      backgroundAxisSuffix: "M",
                                                      averagesIncludeZeros: settingsManager.aveCadenceZeros)
-        traceBuilder.rollingAverageCount = max(Int(dataCache.settingsManager!.cyclePowerGraphSeconds / 2), 1)
+        traceBuilder.rollingAverageCount = max(Int(SettingsManager.shared.cyclePowerGraphSeconds / 2), 1)
         let trace = traceBuilder.build(
             id: "Cadence",
             colorScheme: cadenceColor,

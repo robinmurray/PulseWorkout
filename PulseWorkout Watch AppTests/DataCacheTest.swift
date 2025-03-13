@@ -22,12 +22,12 @@ final class DataCacheTest: XCTestCase {
     func testFullActivityRecordCache() throws {
 
         let fullActivityRecordCache = FullActivityRecordCache()
-        let settingsManager = SettingsManager()
+        let settingsManager = SettingsManager.shared
         
         var activityRecords: [ActivityRecord] = []
         
         for _ in (0...5) {
-            activityRecords.append(ActivityRecord(settingsManager: settingsManager))
+            activityRecords.append(ActivityRecord())
         }
 
         XCTAssert(fullActivityRecordCache.get(recordID: activityRecords[0].recordID) == nil)

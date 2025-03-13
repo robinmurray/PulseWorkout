@@ -435,7 +435,7 @@ extension ActivityRecord {
 
         // Calculate average power
         var powerSeries = trackPoints.filter( { $0.watts != nil } ).map( { $0.watts! } )
-        if !(settingsManager?.avePowerZeros ?? false) {
+        if !(settingsManager.avePowerZeros) {
             powerSeries = powerSeries.filter( { $0 != 0 } )
         }
 
@@ -458,14 +458,14 @@ extension ActivityRecord {
             segmentSize: averageSegmentSize!,
             xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
             inputSeries: trackPoints.map( { Double($0.watts ?? 0) }),
-            includeZeros: settingsManager?.avePowerZeros ?? false,
+            includeZeros: settingsManager.avePowerZeros,
             returnFullSeries: false).map( { Int($0) })
 
         cadenceSegmentAverages = segmentAverageSeries(
             segmentSize: averageSegmentSize!,
             xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
             inputSeries: trackPoints.map( { Double($0.cadence ?? 0) }),
-            includeZeros: settingsManager?.aveCadenceZeros ?? false,
+            includeZeros: settingsManager.aveCadenceZeros,
             returnFullSeries: false).map( { Int($0) })
 
         self.logger.info("averageSegmentSize : \(self.averageSegmentSize ?? 0)")

@@ -65,7 +65,7 @@ struct LiveMetricsView: View {
         self.navigationCoordinator = navigationCoordinator
         self.liveActivityManager = liveActivityManager
         self.activityData = liveActivityManager.liveActivityRecord ??
-        ActivityRecord(settingsManager: liveActivityManager.settingsManager)
+        ActivityRecord()
         
     }
     
@@ -143,14 +143,12 @@ struct LiveMetricsView_Previews: PreviewProvider {
     
     static var navigationCoordinator = NavigationCoordinator()
     static var activityProfile = ProfileManager()
-    static var settingsManager = SettingsManager()
-    static var locationManager = LocationManager(settingsManager: settingsManager)
-    static var dataCache = DataCache(settingsManager: settingsManager)
+    static var locationManager = LocationManager()
+    static var dataCache = DataCache()
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
     
     static var liveActivityManager = LiveActivityManager(locationManager: locationManager,
                                                          bluetoothManager: bluetoothManager,
-                                                         settingsManager: settingsManager,
                                                          dataCache: dataCache)
 
     

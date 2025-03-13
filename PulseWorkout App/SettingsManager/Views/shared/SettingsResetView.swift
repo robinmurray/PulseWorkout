@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsResetView: View {
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
         Form {
@@ -36,7 +36,6 @@ struct SettingsResetView: View {
 }
 
 #Preview {
-    let settingsManager = SettingsManager()
-    
-    SettingsResetView(settingsManager: settingsManager)
+
+    SettingsResetView()
 }

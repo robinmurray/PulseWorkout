@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GeneralSettingsView: View {
     
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
             Form {
@@ -252,10 +252,9 @@ struct GeneralSettingsView: View {
 }
 
 struct GeneralSettingsView_Previews: PreviewProvider {
-    
-    static var settingsManager = SettingsManager()
+
     
     static var previews: some View {
-        GeneralSettingsView(settingsManager: settingsManager)
+        GeneralSettingsView()
     }
 }

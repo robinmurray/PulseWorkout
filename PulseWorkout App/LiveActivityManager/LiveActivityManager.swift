@@ -40,10 +40,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     @Published var workoutLocation: HKWorkoutSessionLocationType = HKWorkoutSessionLocationType.outdoor
 
     @Published var heartRate: Double?
- //   @Published var distance: Double?
- //   @Published var cyclingPower: Int?
- //   @Published var cyclingCadence: Int?
-   
+
     @Published var workout: HKWorkout?
     @Published var running = false
     
@@ -86,7 +83,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     
     var locationManager: LocationManager
 
-    var settingsManager: SettingsManager
+    let settingsManager: SettingsManager = SettingsManager.shared
     var dataCache: DataCache
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
@@ -95,11 +92,9 @@ class LiveActivityManager : NSObject, ObservableObject {
     init(profileName: String = "",
          locationManager: LocationManager,
          bluetoothManager: BTDevicesController,
-         settingsManager: SettingsManager,
          dataCache: DataCache) {
 
         self.locationManager = locationManager
-        self.settingsManager = settingsManager
         self.dataCache = dataCache
         self.bluetoothManager = bluetoothManager
         
@@ -178,7 +173,7 @@ class LiveActivityManager : NSObject, ObservableObject {
         alarmRepeatCount = 0
         
         let startDate = Date()
-        liveActivityRecord = ActivityRecord(settingsManager: settingsManager)
+        liveActivityRecord = ActivityRecord()
         liveActivityRecord?.start(activityProfile: activityProfile, startDate: startDate)
 
 

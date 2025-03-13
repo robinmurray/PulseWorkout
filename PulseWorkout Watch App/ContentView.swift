@@ -15,8 +15,9 @@ struct ContentView: View {
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var dataCache: DataCache
-    @ObservedObject var settingsManager: SettingsManager
     @ObservedObject var locationManager: LocationManager
+
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
 
     
     var body: some View {
@@ -36,13 +37,11 @@ struct ContentView: View {
 
 struct ContentView_Previews: PreviewProvider {
     static var navigationCoordinator = NavigationCoordinator()
-    static var settingsManager = SettingsManager()
-    static var locationManager = LocationManager(settingsManager: settingsManager)
-    static var dataCache = DataCache(settingsManager: settingsManager)
+    static var locationManager = LocationManager()
+    static var dataCache = DataCache()
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
     static var liveActivityManager = LiveActivityManager(locationManager: locationManager,
                                                          bluetoothManager: bluetoothManager,
-                                                         settingsManager: settingsManager,
                                                          dataCache: dataCache)
     static var profileManager = ProfileManager()
 
@@ -52,7 +51,6 @@ struct ContentView_Previews: PreviewProvider {
                     liveActivityManager: liveActivityManager,
                     profileManager: profileManager,
                     dataCache: dataCache,
-                    settingsManager: settingsManager,
                     locationManager: locationManager)
     }
 }

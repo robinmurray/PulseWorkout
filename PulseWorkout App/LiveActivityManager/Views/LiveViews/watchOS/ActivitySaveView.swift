@@ -25,7 +25,7 @@ struct ActivitySaveView: View {
         VStack(alignment: .leading) {
 
             ActivityHeaderView(activityRecord: liveActivityManager.liveActivityRecord ??
-                               ActivityRecord(settingsManager: liveActivityManager.settingsManager))
+                               ActivityRecord())
             Divider()
             
             Button {
@@ -52,7 +52,7 @@ struct ActivitySaveView: View {
                 ActivityDetailView(
                     navigationCoordinator: navigationCoordinator,
                     activityRecord: liveActivityManager.liveActivityRecord ??
-                                                ActivityRecord(settingsManager: liveActivityManager.settingsManager),
+                                                ActivityRecord(),
                     dataCache: dataCache)
             }
 
@@ -64,15 +64,14 @@ struct ActivitySaveView: View {
 
 struct ActivitySaveView_Previews: PreviewProvider {
     static var navigationCoordinator = NavigationCoordinator()
-    static var settingsManager = SettingsManager()
-    static var record = ActivityRecord(settingsManager: settingsManager)
-    static var locationManager = LocationManager(settingsManager: settingsManager)
-    static var dataCache = DataCache(settingsManager: settingsManager)
+    static var settingsManager = SettingsManager.shared
+    static var record = ActivityRecord()
+    static var locationManager = LocationManager()
+    static var dataCache = DataCache()
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
     
     static var liveActivityManager = LiveActivityManager(locationManager: locationManager,
                                                          bluetoothManager: bluetoothManager,
-                                                         settingsManager: settingsManager,
                                                          dataCache: dataCache)
     
 

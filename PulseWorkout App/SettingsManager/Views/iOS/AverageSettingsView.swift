@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AverageSettingsView: View {
     
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
         Form {
@@ -65,7 +65,5 @@ struct AverageSettingsView: View {
 
 #Preview {
     
-    let settingsManager = SettingsManager()
-    
-    AverageSettingsView(settingsManager: settingsManager)
+    AverageSettingsView()
 }

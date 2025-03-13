@@ -104,7 +104,7 @@ class FullActivityRecordCache: NSObject {
 
 class DataCache: CloudKitManager, Codable {
     
-    var settingsManager: SettingsManager!
+    let settingsManager: SettingsManager = SettingsManager.shared
     var testMode: Bool = false
     
 //    let cloudKitManager: CloudKitManager = CloudKitManager()
@@ -132,10 +132,9 @@ class DataCache: CloudKitManager, Codable {
         case activities
     }
 
-    init(settingsManager: SettingsManager, readCache: Bool = true, testMode: Bool = false) {
+    init(readCache: Bool = true, testMode: Bool = false) {
 
         super.init()
-        self.settingsManager = settingsManager
         self.testMode = testMode
         imageCache = ImageCache(dataCache: self)
         
@@ -489,7 +488,7 @@ class DataCache: CloudKitManager, Codable {
     func blockFetchCompletion(ckRecordList: [CKRecord]) -> Void {
         
         if !self.dirty() {
-            self.activities = ckRecordList.map( {ActivityRecord(fromCKRecord: $0, settingsManager: self.settingsManager)})
+            self.activities = ckRecordList.map( {ActivityRecord(fromCKRecord: $0)})
             _ = self.write()
 
             self.updateUI()
@@ -523,7 +522,7 @@ class DataCache: CloudKitManager, Codable {
         
         localLogger.log("Next block fetch completion")
         DispatchQueue.main.async {
-            self.UIRecordSet += records.map( {ActivityRecord(fromCKRecord: $0, settingsManager: self.settingsManager)})
+            self.UIRecordSet += records.map( {ActivityRecord(fromCKRecord: $0)})
         }
     }
   
@@ -552,8 +551,7 @@ class DataCache: CloudKitManager, Codable {
         // TODO - check if record not saved yet!!!
         if let unsavedActivity = activities.filter({$0.recordID == recordID && $0.toSave}).first {
             self.localLogger.log("Required record not yet saved, so copying existing object")
-            let unsavedRecord = ActivityRecord(fromActivityRecord: unsavedActivity,
-                                               settingsManager: settingsManager)
+            let unsavedRecord = ActivityRecord(fromActivityRecord: unsavedActivity)
             fullActivityRecordCache.add(activityRecord: unsavedRecord)
             completionFunction(unsavedRecord)
 
@@ -562,7 +560,7 @@ class DataCache: CloudKitManager, Codable {
 
         fetchRecord(recordID: recordID,
                     completionFunction: { ckRecord in
-            let record = ActivityRecord(fromCKRecord: ckRecord, settingsManager: self.settingsManager)
+            let record = ActivityRecord(fromCKRecord: ckRecord)
             self.fullActivityRecordCache.add(activityRecord: record)
             completionFunction(record) },
                     completionFailureFunction: completionFailureFunction)
@@ -614,7 +612,7 @@ class DataCache: CloudKitManager, Codable {
         let recordDesc: String = record["name"] ?? "" + " : " + (record["startDateLocal"] as? Date ?? Date(timeIntervalSince1970: 0)).formatted(Date.ISO8601FormatStyle())
         localLogger.log("Processing record change: \(recordDesc)")
         
-        let activityRecord = ActivityRecord(fromCKRecord: record, settingsManager: settingsManager, fetchtrackData: false)
+        let activityRecord = ActivityRecord(fromCKRecord: record, fetchtrackData: false)
         
         changeCache(changedActivityRecord: activityRecord)
         changeUI(changedActivityRecord: activityRecord)

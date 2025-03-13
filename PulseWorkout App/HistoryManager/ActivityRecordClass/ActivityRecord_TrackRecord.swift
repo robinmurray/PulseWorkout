@@ -15,11 +15,6 @@ extension ActivityRecord {
     /// Perform incremental analysis of data
     func addTrackPoint(trackPointTime: Date = Date()) {
 
-        guard let SM = settingsManager else {
-            logger.error("Settings manager not set")
-            return
-        }
-
         trackPoints.append(TrackPoint(time: trackPointTime,
                                       heartRate: heartRate,
                                       latitude: latitude,
@@ -31,12 +26,12 @@ extension ActivityRecord {
                                       watts: watts
                                      )
                             )
-        if !(isPaused && !SM.aveHRPaused) {
+        if !(isPaused && !settingsManager.aveHRPaused) {
             heartRateAnalysis.add(heartRate)
         }
 
-        cadenceAnalysis.add(cadence == nil ? nil : Double(cadence!), includeZeros: SM.aveCadenceZeros)
-        powerAnalysis.add(cadence == nil ? nil : Double(watts!), includeZeros: SM.avePowerZeros)
+        cadenceAnalysis.add(cadence == nil ? nil : Double(cadence!), includeZeros: settingsManager.aveCadenceZeros)
+        powerAnalysis.add(cadence == nil ? nil : Double(watts!), includeZeros: settingsManager.avePowerZeros)
 
         averageHeartRate = heartRateAnalysis.average
         averageCadence = Int(cadenceAnalysis.average)

@@ -10,7 +10,7 @@ import SwiftUI
 
 struct CloudConnectionsView: View {
     
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
             Form {
@@ -43,10 +43,8 @@ struct CloudConnectionsView: View {
 }
 
 struct CloudConnectionsView_Previews: PreviewProvider {
-    
-    static var settingsManager = SettingsManager()
 
     static var previews: some View {
-        CloudConnectionsView(settingsManager: settingsManager)
+        CloudConnectionsView()
     }
 }

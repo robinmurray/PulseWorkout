@@ -92,11 +92,9 @@ struct LiveMetricsCarouselView: View {
 }
 
 struct LiveMetricsCarouselView_Previews: PreviewProvider {
-    
-    static var settingsManager = SettingsManager()
 
     static var previews: some View {
-        LiveMetricsCarouselView(activityData: ActivityRecord(settingsManager: settingsManager), contextDate: Date())
+        LiveMetricsCarouselView(activityData: ActivityRecord(), contextDate: Date())
     }
 }
 

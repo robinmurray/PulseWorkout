@@ -144,7 +144,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var altitudeImageFileURL: URL?
 
     
-    var settingsManager: SettingsManager?
+    let settingsManager: SettingsManager = SettingsManager.shared
     
     // tag path during XML parse
     var tagPath: [String] = []
@@ -300,10 +300,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
     
     // Create new activity record - create recordID and recordName
-    init(settingsManager: SettingsManager) {
+    override init() {
         super.init()
-        self.settingsManager = settingsManager
-        
         
         self.tcxFileName = baseFileName + ".gz"
         self.JSONFileName = baseFileName + ".json"
@@ -312,16 +310,15 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     }
     
     // Initialise record from CloudKt record - will have recordID set
-    init(fromCKRecord: CKRecord, settingsManager: SettingsManager, fetchtrackData: Bool = true) {
+    init(fromCKRecord: CKRecord, fetchtrackData: Bool = true) {
         super.init()
-        self.settingsManager = settingsManager
+
         self.fromCKRecord(activityRecord: fromCKRecord, fetchtrackData: fetchtrackData)
     }
     
     #if os(iOS)
-    init(fromStravaActivity: StravaActivity, settingsManager: SettingsManager) {
+    init(fromStravaActivity: StravaActivity) {
         super.init()
-        self.settingsManager = settingsManager
         self.fromStravaActivity(fromStravaActivity)
     }
     #endif
@@ -329,10 +326,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
     
     // Initialise from another Acivity Record and take a deep copy -- NOTE will have same recordID!
-    init(fromActivityRecord: ActivityRecord, settingsManager: SettingsManager) {
+    init(fromActivityRecord: ActivityRecord) {
         super.init()
 
-        self.settingsManager = settingsManager
         recordID = fromActivityRecord.recordID
         recordName = fromActivityRecord.recordName
         name = fromActivityRecord.name

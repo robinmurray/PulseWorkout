@@ -276,9 +276,8 @@ struct ActivityDetailView: View {
 struct ActivityDetailView_Previews: PreviewProvider {
     
     static var navigationCoordinator = NavigationCoordinator()
-    static var settingsManager = SettingsManager()
-    static var record = ActivityRecord(settingsManager: settingsManager)
-    static var dataCache = DataCache(settingsManager: settingsManager)
+    static var record = ActivityRecord()
+    static var dataCache = DataCache()
     
     static var previews: some View {
         if #available(watchOS 10.0, *) {

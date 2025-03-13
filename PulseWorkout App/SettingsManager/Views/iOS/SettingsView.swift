@@ -11,7 +11,7 @@ struct SettingsView: View {
     
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var bluetoothManager: BTDevicesController
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
         
@@ -20,7 +20,7 @@ struct SettingsView: View {
             Form {
 
                 NavigationLink(
-                    destination: AutoPauseSettingsView(settingsManager: settingsManager)) {
+                    destination: AutoPauseSettingsView()) {
                         HStack {
                             Label("Auto-Pause", systemImage: "pause.circle")
                                 .foregroundColor(.orange)
@@ -29,7 +29,7 @@ struct SettingsView: View {
                     }
                 
                 NavigationLink(
-                    destination: AverageSettingsView(settingsManager: settingsManager)) {
+                    destination: AverageSettingsView()) {
                         HStack {
                             Label("Average Calculations", systemImage: meanIcon)
                                 .foregroundColor(.green)
@@ -47,7 +47,7 @@ struct SettingsView: View {
                     }
                 
                 NavigationLink(
-                    destination: CyclingPowerSettingsView(settingsManager: settingsManager)) {
+                    destination: CyclingPowerSettingsView()) {
                         HStack {
                             Label("Cycling Power", systemImage: "bolt.circle")
                                 .foregroundColor(.red)
@@ -56,7 +56,7 @@ struct SettingsView: View {
                     }
                 
                 NavigationLink(
-                    destination: WatchAsDeviceView(settingsManager: settingsManager)) {
+                    destination: WatchAsDeviceView()) {
                         HStack {
                             Label("Watch as Sensor", systemImage: "applewatch.radiowaves.left.and.right")
                                 .foregroundColor(.mint)
@@ -66,7 +66,7 @@ struct SettingsView: View {
                 }
                 #if os(watchOS)
                 NavigationLink(
-                    destination: HapticsSettingsView(settingsManager: settingsManager)) {
+                    destination: HapticsSettingsView()) {
                         HStack {
                             Label("Haptics", systemImage: "applewatch.radiowaves.left.and.right")
                                 .foregroundColor(.teal)
@@ -76,7 +76,7 @@ struct SettingsView: View {
                 }
                 #endif
                 NavigationLink(
-                    destination: CloudConnectionsView(settingsManager: settingsManager)) {
+                    destination: CloudConnectionsView()) {
                         HStack {
                             Label("Apple Health", systemImage: "heart.text.clipboard")
                                 .foregroundColor(.red)
@@ -85,7 +85,7 @@ struct SettingsView: View {
                     }
                 
                 NavigationLink(
-                    destination: StravaSettingsView(settingsManager: settingsManager)) {
+                    destination: StravaSettingsView()) {
                         HStack {
                             HStack{
                                 Image("StravaIcon").resizable().frame(width: 30, height: 30)
@@ -96,7 +96,7 @@ struct SettingsView: View {
                     }
 
                 NavigationLink(
-                    destination: SettingsResetView(settingsManager: settingsManager)) {
+                    destination: SettingsResetView()) {
                         HStack {
                             Label("Reset", systemImage: "gearshape")
                                 .foregroundColor(.indigo)
@@ -116,9 +116,7 @@ struct SettingsView: View {
 #Preview {
     let navigationCoordinator = NavigationCoordinator()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
-    let settingsManager = SettingsManager()
     
     SettingsView(navigationCoordinator: navigationCoordinator,
-                 bluetoothManager: bluetoothManager,
-                 settingsManager: settingsManager)
+                 bluetoothManager: bluetoothManager)
 }

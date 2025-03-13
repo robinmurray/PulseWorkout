@@ -37,8 +37,8 @@ struct ActivityHeaderView: View {
     }
 }
 #Preview {
-    let settingsManager = SettingsManager()
-    let record = ActivityRecord(settingsManager: settingsManager)
+
+    let record = ActivityRecord()
     
     ActivityHeaderView(activityRecord: record)
 }

@@ -20,6 +20,9 @@ import StravaSwift
 
 class SettingsManager: NSObject, ObservableObject  {
     
+    ///Access SettingsManager through SettingsManager.shared
+    public static let shared = SettingsManager()
+    
     @Published var transmitHR: Bool
     @Published var transmitPowerMeter: Bool
     

@@ -463,23 +463,46 @@ struct ActivityDetailView: View {
                     .buttonStyle(.bordered)
                     
                 case StravaSaveStatus.saved.rawValue:
-                    Button(action: {
-                        if let stravaId = activityRecord.stravaId {
-                            viewOnStrava(recordId: stravaId)
-                        }
-                    })
-                    {
-                        HStack {
-                            Text("View on Strava")
-                                .font(.title2)
-                                .foregroundStyle(Color("StravaColor"))
-                            Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                    VStack {
+                        Button(action: {
+                            if let stravaId = activityRecord.stravaId {
+                                viewOnStrava(recordId: stravaId)
+                            }
+                        })
+                        {
+                            HStack {
+                                Text("View on Strava")
+                                    .font(.title2)
+                                    .foregroundStyle(Color("StravaColor"))
+                                Image("StravaIcon").resizable().frame(width: 30, height: 30)
+
+                            }
 
                         }
+                        .tint(Color.orange)
+                        .buttonStyle(.bordered)
 
+                        Button(action: {
+                            if let stravaId = activityRecord.stravaId {
+                                StravaUpdateActivity(activityRecord: activityRecord,
+                                                     completionHandler: { _ in }).execute()
+                            }
+                        })
+                        {
+                            HStack {
+                                Text("Update on Strava")
+                                    .font(.title2)
+                                    .foregroundStyle(Color("StravaColor"))
+                                Image("StravaIcon").resizable().frame(width: 30, height: 30)
+
+                            }
+
+                        }
+                        .tint(Color.orange)
+                        .buttonStyle(.bordered)
+                        
                     }
-                    .tint(Color.orange)
-                    .buttonStyle(.bordered)
+
                     
                 case StravaSaveStatus.toSave.rawValue:
                     Text("To be saved...")
@@ -564,9 +587,8 @@ struct ActivityDetailView: View {
 struct ActivityDetailView_Previews: PreviewProvider {
     
     static var navigationCoordinator = NavigationCoordinator()
-    static var settingsManager = SettingsManager()
-    static var record = ActivityRecord(settingsManager: settingsManager)
-    static var dataCache = DataCache(settingsManager: settingsManager)
+    static var record = ActivityRecord()
+    static var dataCache = DataCache()
     
     static var previews: some View {
         if #available(watchOS 10.0, *) {

@@ -98,14 +98,12 @@ struct ProfileListView: View {
 #Preview {
     
     let profileManager = ProfileManager()
-    let settingsManager = SettingsManager()
-    let locationManager = LocationManager(settingsManager: settingsManager)
-    let dataCache = DataCache(settingsManager: settingsManager)
+    let locationManager = LocationManager()
+    let dataCache = DataCache()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                         bluetoothManager: bluetoothManager,
-                                                         settingsManager: settingsManager,
-                                                         dataCache: dataCache)
+                                                  bluetoothManager: bluetoothManager,
+                                                  dataCache: dataCache)
     let navigationCoordinator = NavigationCoordinator()
     
     ProfileListView(navigationCoordinator: navigationCoordinator,

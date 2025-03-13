@@ -75,9 +75,9 @@ struct ActivityListItemExtensionView: View {
 }
 
 #Preview {
-    let settingsManager = SettingsManager()
-    let dataCache = DataCache(settingsManager: settingsManager)
-    let activityRecord = ActivityRecord(settingsManager: settingsManager)
+
+    let dataCache = DataCache()
+    let activityRecord = ActivityRecord()
     
     ActivityListItemExtensionView(activityRecord: activityRecord, dataCache: dataCache)
 }

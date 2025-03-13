@@ -136,14 +136,12 @@ struct StatisticsView: View {
 #Preview {
 
     let navigationCoordinator = NavigationCoordinator()
-    let settingsManager = SettingsManager()
-    let locationManager = LocationManager(settingsManager: settingsManager)
-    let dataCache = DataCache(settingsManager: settingsManager)
+    let locationManager = LocationManager()
+    let dataCache = DataCache()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                         bluetoothManager: bluetoothManager,
-                                                         settingsManager: settingsManager,
-                                                         dataCache: dataCache)
+                                                  bluetoothManager: bluetoothManager,
+                                                  dataCache: dataCache)
     let profileManager = ProfileManager()
     
     

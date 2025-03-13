@@ -138,9 +138,8 @@ struct ActivityHistoryView: View {
 struct ActivityHistoryView_Previews: PreviewProvider {
     
     static var navigationCoordinator = NavigationCoordinator()
-    static var settingsManager = SettingsManager()
-    static var dataCache = DataCache(settingsManager: settingsManager)
-    static var activityRecord = ActivityRecord(settingsManager: settingsManager)
+    static var dataCache = DataCache()
+    static var activityRecord = ActivityRecord()
     
     init() {
 

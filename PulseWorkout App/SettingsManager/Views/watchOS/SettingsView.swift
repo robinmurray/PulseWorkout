@@ -10,7 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     
     @ObservedObject var bluetoothManager: BTDevicesController
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
 //        NavigationStack {
@@ -19,7 +19,7 @@ struct SettingsView: View {
             VStack {
 
                 NavigationLink(
-                    destination: GeneralSettingsView(settingsManager: settingsManager)) {
+                    destination: GeneralSettingsView()) {
                         HStack {
                             Label("General", systemImage: "folder")
                                 .foregroundColor(.white)
@@ -38,7 +38,7 @@ struct SettingsView: View {
                     }
 
                 NavigationLink(
-                    destination: WatchAsDeviceView(settingsManager: settingsManager)) {
+                    destination: WatchAsDeviceView()) {
                         HStack {
                             Label("Watch as Sensor", systemImage: "applewatch.radiowaves.left.and.right")
                                 .foregroundColor(.mint)
@@ -48,7 +48,7 @@ struct SettingsView: View {
                 }
 
                 NavigationLink(
-                    destination: CloudConnectionsView(settingsManager: settingsManager)) {
+                    destination: CloudConnectionsView()) {
                         HStack {
                             Label("Cloud Connections", systemImage: "cloud")
                                 .foregroundColor(.gray)
@@ -57,7 +57,7 @@ struct SettingsView: View {
                     }
                 
                 NavigationLink(
-                    destination: SettingsResetView(settingsManager: settingsManager)) {
+                    destination: SettingsResetView()) {
                         HStack {
                             Label("Reset", systemImage: "gearshape")
                                 .foregroundColor(.indigo)
@@ -82,9 +82,8 @@ struct SettingsView: View {
 struct SettingsView_Previews: PreviewProvider {
     
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
-    static var settingsManager = SettingsManager()
 
     static var previews: some View {
-        SettingsView(bluetoothManager: bluetoothManager, settingsManager: settingsManager)
+        SettingsView(bluetoothManager: bluetoothManager)
     }
 }

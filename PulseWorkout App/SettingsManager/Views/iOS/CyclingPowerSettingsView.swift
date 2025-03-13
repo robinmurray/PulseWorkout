@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CyclingPowerSettingsView: View {
     
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
         Form {
@@ -69,7 +69,5 @@ struct CyclingPowerSettingsView: View {
 
 #Preview {
     
-    let settingsManager = SettingsManager()
-    
-    CyclingPowerSettingsView(settingsManager: settingsManager)
+    CyclingPowerSettingsView()
 }

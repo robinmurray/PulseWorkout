@@ -9,7 +9,7 @@ import SwiftUI
 
 struct HapticsSettingsView: View {
     
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
         Form {
@@ -79,8 +79,6 @@ struct HapticsSettingsView: View {
 
 
 #Preview {
-    
-    var settingsManager = SettingsManager()
-    
-    HapticsSettingsView(settingsManager: settingsManager)
+
+    HapticsSettingsView()
 }

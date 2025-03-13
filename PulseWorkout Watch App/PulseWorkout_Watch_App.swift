@@ -17,10 +17,13 @@ struct PulseWorkout_Watch_App: App {
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var locationManager: LocationManager
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var settingsManager: SettingsManager
     @ObservedObject var dataCache: DataCache
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var navigationCoordinator: NavigationCoordinator
+    
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
+
+    
     var cloudKitNotificationManager: CloudKitNotificationManager
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
@@ -28,20 +31,17 @@ struct PulseWorkout_Watch_App: App {
     
     init() {
         let myCloudKitNotificationManager = CloudKitNotificationManager()
-        let mySettingsManager = SettingsManager()
-        let myLocationManager = LocationManager(settingsManager: mySettingsManager)
-        let myDataCache = DataCache(settingsManager: mySettingsManager)
+        let myLocationManager = LocationManager()
+        let myDataCache = DataCache()
         let myBluetoothManager = BTDevicesController(requestedServices: nil)
         
         self.cloudKitNotificationManager = myCloudKitNotificationManager
 
         self.liveActivityManager = LiveActivityManager(locationManager: myLocationManager,
                                                        bluetoothManager: myBluetoothManager,
-                                                       settingsManager: mySettingsManager,
                                                        dataCache: myDataCache)
         self.locationManager = myLocationManager
         self.profileManager = ProfileManager()
-        self.settingsManager = mySettingsManager
         self.dataCache = myDataCache
         self.bluetoothManager = myBluetoothManager
         self.navigationCoordinator = NavigationCoordinator()
@@ -90,7 +90,6 @@ struct PulseWorkout_Watch_App: App {
                         liveActivityManager: liveActivityManager,
                         profileManager: profileManager,
                         dataCache: dataCache,
-                        settingsManager: settingsManager,
                         locationManager: locationManager)
         }
         .onChange(of: scenePhase) { oldScenePhase, newScenePhase in

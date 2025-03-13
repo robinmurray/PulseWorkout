@@ -13,9 +13,9 @@ struct ContentView: View {
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var dataCache: DataCache
-    @ObservedObject var settingsManager: SettingsManager
     @ObservedObject var locationManager: LocationManager
     @ObservedObject var bluetoothManager: BTDevicesController
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
         TabView(selection: $navigationCoordinator.selectedTab) {
@@ -53,8 +53,7 @@ struct ContentView: View {
 
             NavigationStack(path: $navigationCoordinator.settingsPath) {
                 SettingsView(navigationCoordinator: navigationCoordinator,
-                             bluetoothManager: bluetoothManager,
-                             settingsManager: settingsManager)
+                             bluetoothManager: bluetoothManager)
             }
             .tabItem {
                 Label("Settings", systemImage: "gearshape")
@@ -73,14 +72,12 @@ struct ContentView: View {
 
 #Preview {
 
-    let settingsManager = SettingsManager()
-    let locationManager = LocationManager(settingsManager: settingsManager)
-    let dataCache = DataCache(settingsManager: settingsManager)
+    let locationManager = LocationManager()
+    let dataCache = DataCache()
     let profileManager = ProfileManager()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
                                                   bluetoothManager: bluetoothManager,
-                                                  settingsManager: settingsManager,
                                                   dataCache: dataCache)
     let navigationCoordinator = NavigationCoordinator()
     
@@ -88,7 +85,6 @@ struct ContentView: View {
                 liveActivityManager: liveActivityManager,
                 profileManager: profileManager,
                 dataCache: dataCache,
-                settingsManager: settingsManager,
                 locationManager: locationManager,
                 bluetoothManager: bluetoothManager)
 }

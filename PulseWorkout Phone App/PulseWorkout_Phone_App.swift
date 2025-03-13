@@ -13,7 +13,7 @@ struct PulseWorkout_Phone_App: App {
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var locationManager: LocationManager
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var settingsManager: SettingsManager
+    @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     @ObservedObject var dataCache: DataCache
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var navigationCoordinator: NavigationCoordinator
@@ -23,21 +23,20 @@ struct PulseWorkout_Phone_App: App {
     
     
     init() {
+
         let myCloudKitNotificationManager = CloudKitNotificationManager()
-        let mySettingsManager = SettingsManager()
-        let myLocationManager = LocationManager(settingsManager: mySettingsManager)
-        let myDataCache = DataCache(settingsManager: mySettingsManager)
+        let myLocationManager = LocationManager()
+        let myDataCache = DataCache()
         let myBluetoothManager = BTDevicesController(requestedServices: nil)
-        
+
         self.cloudKitNotificationManager = myCloudKitNotificationManager
 
         self.liveActivityManager = LiveActivityManager(locationManager: myLocationManager,
                                                        bluetoothManager: myBluetoothManager,
-                                                       settingsManager: mySettingsManager,
                                                        dataCache: myDataCache)
-        self.locationManager = myLocationManager
         self.profileManager = ProfileManager()
-        self.settingsManager = mySettingsManager
+
+        self.locationManager = myLocationManager
         self.dataCache = myDataCache
         self.bluetoothManager = myBluetoothManager
         self.navigationCoordinator = NavigationCoordinator()
@@ -57,7 +56,6 @@ struct PulseWorkout_Phone_App: App {
                         liveActivityManager: liveActivityManager,
                         profileManager: profileManager,
                         dataCache: dataCache,
-                        settingsManager: settingsManager,
                         locationManager: locationManager,
                         bluetoothManager: bluetoothManager)
         }
