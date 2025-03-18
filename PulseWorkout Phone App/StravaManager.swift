@@ -317,9 +317,18 @@ class StravaFetchLatestActivities: StravaOperation {
                 stravaActivityId: self.stravaActivityPage[activityIndex].id!,
                 completionHandler: {
                     activityRecord in
+ 
+// NEED TO WORK OUT WAY OF INTEGRATING CACHE!!!
+//                    activityRecord.save(dataCache: self.dataCache)
+                    CKSaveOrUpdateActivityRecord(
+                        activityRecord: activityRecord,
+                        completionFunction: {_ in
+                            self.activityIndex += 1
+                            self.processNextRecord()
+                        }
+                    ).execute()
                     
-                    activityRecord.save(dataCache: self.dataCache)
-                    
+                    /*
                     self.dataCache.saveAndDeleteRecord(
                         recordsToSave: [activityRecord.asCKRecord()],
                         recordIDsToDelete: [],
@@ -328,7 +337,7 @@ class StravaFetchLatestActivities: StravaOperation {
                             self.processNextRecord()
                         },
                         recordDeleteSuccessCompletionFunction: {_ in })
-                    
+                    */
                 },
                 failureCompletionHandler: self.failureCompletionHandler
             ).execute()
@@ -608,7 +617,12 @@ class StravaUploadActivity: StravaOperation {
                     return }
                 
                 self.logger.info("Upload Status \(uploadStatus)")
-                self.completionHandler(uploadStatus.id!)
+
+                let uploadId = uploadStatus.id!
+                self.pollUploadStatus(uploadId: uploadId,
+                                      retryCount: 5,
+                                      currentRetry: 1)
+                
 
             }, failure: { (error: NSError) in
                 self.stravaBusyStatus(false)
@@ -617,6 +631,60 @@ class StravaUploadActivity: StravaOperation {
             })
         }
     }
+    
+    func pollUploadStatus(uploadId: Int, retryCount: Int, currentRetry: Int) {
+        
+        let PAUSE_TIME: TimeInterval = 3  // Delay between attempts as Strava processes the upload..
+        
+        if currentRetry >= retryCount {
+            self.logger.error("Polling complete without success :: \(currentRetry)")
+            self.failureCompletionHandler()
+        }
+        
+        else {
+
+            // Poll for upload status...
+            DispatchQueue.main.asyncAfter(deadline: .now() + PAUSE_TIME) {
+                
+                self.logger.info("Polling upload status : Count :: \(currentRetry)")
+                
+                StravaClient.sharedInstance.request(Router.uploads(id: uploadId), result: { /*[weak self]*/ (status: UploadStatus?) in
+//                    guard let self = self else {
+//                        print("No Self!")
+//                        return
+//                    }
+                    guard let status = status else {
+                        self.logger.error("Error : No Upload status")
+                        self.failureCompletionHandler()
+                        return
+                    }
+                    if let error = status.error {
+                        self.logger.error("Upload failed with error : \(error)")
+                        self.failureCompletionHandler()
+                        return
+                    } else if let stravaId = status.activityId {
+                        // We have a valid activityID so the upload is considered complete.
+                        // However, note that segment processing can continue for quite a while.
+                        self.logger.info("Polling completed successfully :: retry count \(currentRetry) :: id \(stravaId)")
+                        self.activityRecord.stravaId = stravaId
+                        StravaUpdateActivity(activityRecord: self.activityRecord,
+                                             completionHandler: { _ in self.completionHandler(stravaId)},
+                                             failureCompletionHandler: { self.completionHandler(stravaId)}).execute()
+                    } else {
+                        // Start another timer
+                        self.logger.info("Trying again...")
+                        self.pollUploadStatus(uploadId: uploadId, retryCount: retryCount, currentRetry: currentRetry + 1)
+                    }
+                }, failure: { (error: NSError) in
+                    debugPrint(error)
+                })
+                
+                
+            }
+        }
+
+    }
+    
 }
 
 
@@ -644,7 +712,7 @@ class StravaUpdateActivity: StravaOperation {
         if let id = activityRecord.stravaId {
             json.dictionaryObject = [
                 "id": id,
-                "description": "Winter is back!", // activityRecord.description,
+                "description": activityRecord.activityDescription,
                 "name": activityRecord.name,
                 "sport_type": activityRecord.stravaType
             ]
@@ -669,8 +737,6 @@ class StravaUpdateActivity: StravaOperation {
 
             StravaClient.sharedInstance.request(Router.updateActivity(activity: updatableActivity), result: { [weak self] (activity: StravaActivity?) in
 
-
-//            StravaClient.sharedInstance.request(Router.updateActivity(activity: updatableActivity), result: { [weak self] (activity: StravaActivity?) in
                 guard let self = self else { return }
                 self.stravaBusyStatus(false)
                 self.logger.info("Update completed :: \(activity?.name ?? "NONE")")

@@ -527,7 +527,7 @@ class DataCache: CloudKitManager, Codable {
     }
   
     
-    func CKForceUpdate(activityCKRecord: CKRecord, completionFunction: @escaping (CKRecord?) -> Void) {
+    func CKForceUpdate(activityCKRecord: CKRecord, completionFunction: @escaping (CKRecord.ID?) -> Void) {
         
         forceUpdate(ckRecord: activityCKRecord, completionFunction: completionFunction)
 

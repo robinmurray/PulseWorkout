@@ -85,7 +85,7 @@ struct StatisticsView: View {
                 StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion,
                                       forceRefresh: true).execute()
             }
-            Button("Test Strava Fetch and save first...") {
+            Button("Test Strava Fetch and save 5 days...") {
                 print("Fetch from Strava and save")
                 
                 StravaFetchLatestActivities(after: Date.now.addingTimeInterval(-86400 * 5),

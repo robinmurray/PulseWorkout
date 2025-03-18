@@ -89,6 +89,19 @@ extension ActivityRecord {
 
     }
     
+    func asMinimalUpdateCKRecord() -> CKRecord {
+        let activityRecord = CKRecord(recordType: recordType, recordID: recordID)
+        activityRecord["stravaType"] = stravaType as CKRecordValue
+        activityRecord["name"] = name as CKRecordValue
+
+        activityRecord["activityDescription"] = activityDescription as CKRecordValue
+        activityRecord["totalAscent"] = round(totalAscent ?? 0) as CKRecordValue
+        activityRecord["stravaId"] = stravaId as CKRecordValue?
+
+        return activityRecord
+
+    }
+    
     func fromCKRecord(activityRecord: CKRecord, fetchtrackData: Bool = true) {
         
         recordID = activityRecord.recordID

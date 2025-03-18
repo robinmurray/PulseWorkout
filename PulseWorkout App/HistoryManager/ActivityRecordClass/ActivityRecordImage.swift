@@ -79,7 +79,7 @@ class ActivityRecordImage: NSObject {
     
 
     /// Remove file from image cache if activityRecord is not cached
-    func saveCompletion(activityCKRecord: CKRecord?) {
+    func saveCompletion(CKRecordID: CKRecord.ID?) {
         
         dataCache.imageCache.remove(record: activityRecord)
 

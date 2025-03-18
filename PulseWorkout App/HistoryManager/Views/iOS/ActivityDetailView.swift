@@ -106,7 +106,7 @@ struct ActivityDetailView: View {
     
         var rangeValues: [Double] = []
         
-        if trainingLoadEstimated(activityRecord) {
+        if activityRecord.hasHRData {
             rangeValues.append(activityRecord.movingTimebyHRZone[0] + activityRecord.movingTimebyHRZone[1])
             rangeValues.append(activityRecord.movingTimebyHRZone[2] + activityRecord.movingTimebyHRZone[3])
             rangeValues.append(activityRecord.movingTimebyHRZone[4])
@@ -259,7 +259,14 @@ struct ActivityDetailView: View {
                     Image(systemName: "stopwatch")
                         .font(.title2)
                         .frame(width: 40, height: 40)
-                    Text("Activity Time")
+                    if activityRecord.hasHRData {
+                        Text("Activity Time - by Heart Rate Zone")
+                    } else if activityRecord.hasPowerData {
+                        Text("Activity Time - by Power Zone")
+                    } else {
+                        Text("Activity Time")
+                    }
+                    
                     Spacer()
 
                 }
@@ -443,7 +450,7 @@ struct ActivityDetailView: View {
 
             }
 
-            if dataCache.settingsManager.offerSaveToStrava() {
+            if SettingsManager.shared.offerSaveToStrava() {
                 switch activityRecord.stravaSaveStatus {
                 case StravaSaveStatus.notSaved.rawValue:
                     Button(action: {
@@ -539,7 +546,7 @@ struct ActivityDetailView: View {
         
         .refreshable {
             if activityRecord.stravaId != nil {
-                if dataCache.settingsManager.fetchFromStrava() {
+                if SettingsManager.shared.fetchFromStrava() {
                     activityRecord.fetchUpdateFromStrava(dataCache: dataCache)
                 }
                 

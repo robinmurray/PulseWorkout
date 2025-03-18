@@ -318,7 +318,7 @@ class CloudKitManager: NSObject, ObservableObject {
  
   
    
-    func forceUpdate(ckRecord: CKRecord, completionFunction: @escaping (CKRecord?) -> Void) {
+    func forceUpdate(ckRecord: CKRecord, completionFunction: @escaping (CKRecord.ID?) -> Void) {
         
         logger.log("updating \(ckRecord.recordID)")
         
@@ -333,7 +333,7 @@ class CloudKitManager: NSObject, ObservableObject {
                         switch recordResult.value {
                         case .success(let record):
                             self.logger.log("Record updated \(record)")
-                            completionFunction(record)
+                            completionFunction(record.recordID)
 
                         case .failure(let error):
                             self.logger.error("Single Record update failed with error \(error.localizedDescription)")
@@ -460,3 +460,102 @@ class CKFetchTcxAsset: CloudKitManager {
         }
     }
 }
+
+
+/// If the record has a stravaId and that stravaId already exists then update that record
+/// Otherwise create record
+class CKSaveOrUpdateActivityRecord: CloudKitManager {
+    
+    var activityRecord: ActivityRecord
+    var completionFunction: (CKRecord.ID?) -> Void
+    var failureCompletionFunction: () -> Void
+    
+    init(activityRecord: ActivityRecord,
+         completionFunction: @escaping (CKRecord.ID?) -> Void,
+         failureCompletionFunction: @escaping () -> Void = { } ) {
+        
+        self.activityRecord = activityRecord
+        self.completionFunction = completionFunction
+        self.failureCompletionFunction = failureCompletionFunction
+        
+        super.init()
+    }
+    
+    func execute() {
+        // If no stravaId, then save
+        if let stravaId = activityRecord.stravaId {
+            // If stravaId exists then query to see if stravaId already on existing record
+            // If so, then do an update, if not do a create.
+            
+            CKQueryForStravaId(stravaId: stravaId,
+                               completionFunction: self.updateOrSave).execute()
+
+        }
+        else {
+            // No stravaId so save...
+            self.logger.info("No stravaID - saving \(self.activityRecord.recordName)")
+            save()
+        }
+
+    }
+    
+    /// Completion function for query to find activity record with given StravaId
+    func updateOrSave(ckRecords: [CKRecord]) {
+        
+        if ckRecords.count == 0 {
+            self.logger.info("stravaID NOT found - saving \(self.activityRecord.recordName)")
+            save()
+        }
+        else {
+            let fetchedRecordId = ckRecords.first!.recordID
+            // set recordID from fetched record, and just update fields that can be changed in Strava
+            self.logger.info("stravaID found - updating \(self.activityRecord.recordName)")
+            activityRecord.recordID = fetchedRecordId
+            forceUpdate(ckRecord: activityRecord.asMinimalUpdateCKRecord(),
+                        completionFunction: completionFunction)
+        }
+    }
+    
+    /// Save activity Record to CK
+    func save() {
+        saveAndDeleteRecord(
+            recordsToSave: [activityRecord.asCKRecord()],
+            recordIDsToDelete: [],
+            recordSaveSuccessCompletionFunction: completionFunction,
+            recordDeleteSuccessCompletionFunction: {_ in },
+            failureCompletionFunction: failureCompletionFunction)
+    }
+}
+
+
+class CKQueryForStravaId: CloudKitManager {
+    
+    var stravaId: Int
+    var completionFunction: ([CKRecord]) -> Void
+    var qualityOfService: QualityOfService
+    
+    init(stravaId: Int, completionFunction: @escaping ([CKRecord]) -> Void, qualityOfService: QualityOfService = .utility) {
+
+        self.stravaId = stravaId
+        self.completionFunction = completionFunction
+        self.qualityOfService = qualityOfService
+        
+        super.init()
+    }
+    
+    func execute() {
+
+        let pred = NSPredicate(format: "stravaId == \(stravaId)")
+        let query = CKQuery(recordType: "Activity", predicate: pred)
+        let operation = CKQueryOperation(query: query)
+        
+        // Just fetch minimal details - only really checking for existence
+        operation.desiredKeys = ["name", "startDateLocal", "stravaId"]
+
+        fetchRecordBlock(query: operation,
+                         blockCompletionFunction: completionFunction,
+                         qualityOfService: qualityOfService)
+    }
+    
+}
+

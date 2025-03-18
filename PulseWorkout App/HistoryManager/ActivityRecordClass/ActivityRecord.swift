@@ -403,7 +403,6 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     }
     
     
-    
     func setToSave( _ newStatus: Bool ) {
 
         self.toSave = newStatus

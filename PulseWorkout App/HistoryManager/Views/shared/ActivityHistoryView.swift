@@ -114,14 +114,15 @@ struct ActivityHistoryView: View {
             dataCache.refreshUI()
 #endif
 #if os(iOS)
-            if dataCache.settingsManager.fetchFromStrava() {
+            if SettingsManager.shared.fetchFromStrava() {
                 if !stravaFetchInProgress {
                     stravaFetchInProgress = true
-                    StravaFetchLatestActivities(dataCache: dataCache,
-                                                completionHandler: { stravaFetchInProgress = false
-                                                                     dataCache.refreshUI() },
-                                                failureCompletionHandler: { stravaFetchInProgress = false
-                                                                            dataCache.refreshUI()}).execute()
+                    StravaFetchLatestActivities(
+                        dataCache: dataCache,
+                        completionHandler: { stravaFetchInProgress = false
+                            dataCache.refreshUI() },
+                        failureCompletionHandler: { stravaFetchInProgress = false
+                            dataCache.refreshUI()}).execute()
                 }
             }
             else {

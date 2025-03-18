@@ -153,8 +153,9 @@ class ProfileManager: CloudKitManager {
                     profiles[index] = updatedActivityProfile
                     
                     let CKRecordID = getCKRecordID(recordID: profile.id)
+
                     forceUpdate(ckRecord: profiles[index].asCKRecord(recordID: CKRecordID),
-                                completionFunction: nilUpdateCompletion)
+                                completionFunction: { _ in })
 
                     self.write(sortBeforeWrite: false)
                 }
