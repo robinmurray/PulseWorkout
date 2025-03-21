@@ -144,9 +144,8 @@ class StravaOperation: NSObject, ObservableObject {
         return true
     }
 
-    
-    
 }
+
 
 class StravaFetchActivities: StravaOperation {
 
@@ -200,7 +199,10 @@ class StravaFetchActivities: StravaOperation {
 
             }, failure: { (error: NSError) in
                 self.stravaBusyStatus(false)
-                self.logger.error("Error : \(error.localizedDescription)")
+                self.logger.error("Error : \(error.localizedDescription) :: \(error)")
+                if error.code == 429 {
+                    self.logger.error("Strava API limit exceeded")
+                }
                 
                 // Call passed failure handler, if present
                 self.failureCompletionHandler()
@@ -231,7 +233,6 @@ class StravaFetchLatestActivities: StravaOperation {
     var after: Date
     var activityIndex: Int = 0
     var stravaActivityPage: [StravaActivity] = []
-    var dataCache: DataCache
     var thisFetchDate: Int
     var completionHandler: () -> Void
     var failureCompletionHandler: () -> Void
@@ -240,7 +241,6 @@ class StravaFetchLatestActivities: StravaOperation {
          after: Date? = nil,
          forceReauth: Bool = false,
          forceRefresh: Bool = false,
-         dataCache: DataCache,
          completionHandler: @escaping () -> Void,
          failureCompletionHandler: @escaping () -> Void = { }) {
         
@@ -261,7 +261,6 @@ class StravaFetchLatestActivities: StravaOperation {
             self.after = Date()
         }
 
-        self.dataCache = dataCache
         self.completionHandler = completionHandler
         self.failureCompletionHandler = failureCompletionHandler
         
@@ -313,36 +312,47 @@ class StravaFetchLatestActivities: StravaOperation {
             getNextPage()
         }
         else {
-            StravaFetchFullActivity(
-                stravaActivityId: self.stravaActivityPage[activityIndex].id!,
-                completionHandler: {
-                    activityRecord in
- 
-// NEED TO WORK OUT WAY OF INTEGRATING CACHE!!!
-//                    activityRecord.save(dataCache: self.dataCache)
-                    CKSaveOrUpdateActivityRecord(
-                        activityRecord: activityRecord,
-                        completionFunction: {_ in
-                            self.activityIndex += 1
-                            self.processNextRecord()
-                        }
-                    ).execute()
-                    
-                    /*
-                    self.dataCache.saveAndDeleteRecord(
-                        recordsToSave: [activityRecord.asCKRecord()],
-                        recordIDsToDelete: [],
-                        recordSaveSuccessCompletionFunction: {_ in
-                            self.activityIndex += 1
-                            self.processNextRecord()
-                        },
-                        recordDeleteSuccessCompletionFunction: {_ in })
-                    */
-                },
-                failureCompletionHandler: self.failureCompletionHandler
-            ).execute()
+            let stravaId = self.stravaActivityPage[activityIndex].id!
+            self.logger.info("processing stravaID \(stravaId)")
+            CKQueryForStravaId(stravaId: stravaId,
+                               completionFunction: {
+                ckRecords in
+                    if ckRecords.count == 0 {
+                        self.logger.info("stravaID NOT found - saving")
+                        self.fetchAndProcess(stravaId: stravaId)
+                    }
+                    else {
+                        self.logger.info("stravaID found - not updating")
+                        self.activityIndex += 1
+                        self.processNextRecord()
+                    }
+              
+
+            }).execute()
+
         }
 
+    }
+    
+    func fetchAndProcess(stravaId: Int) {
+        StravaFetchFullActivity(
+            stravaActivityId: stravaId,
+            completionHandler: {
+                activityRecord in
+
+// NEED TO WORK OUT WAY OF INTEGRATING CACHE!!!
+//                    activityRecord.save(dataCache: self.dataCache)
+                CKSaveOrUpdateActivityRecord(
+                    activityRecord: activityRecord,
+                    completionFunction: {_ in
+                        self.activityIndex += 1
+                        self.processNextRecord()
+                    }
+                ).execute()
+
+            },
+            failureCompletionHandler: self.failureCompletionHandler
+        ).execute()
     }
     
 }
@@ -384,7 +394,10 @@ class StravaFetchActivity: StravaOperation {
 
             }, failure: { (error: NSError) in
                 self.stravaBusyStatus(false)
-                self.logger.error("Error : \(error.localizedDescription)")
+                self.logger.error("Error : \(error.localizedDescription) :: \(error)")
+                if error.code == 429 {
+                    self.logger.error("Strava API limit exceeded")
+                }
                 self.failureCompletionHandler()
             })
         }
@@ -627,6 +640,9 @@ class StravaUploadActivity: StravaOperation {
             }, failure: { (error: NSError) in
                 self.stravaBusyStatus(false)
                 self.logger.error("Error : \(error.localizedDescription) :: \(error)")
+                if error.code == 429 {
+                    self.logger.error("Strava API limit exceeded")
+                }
                 self.failureCompletionHandler()
             })
         }
@@ -747,6 +763,9 @@ class StravaUpdateActivity: StravaOperation {
             }, failure: { (error: NSError) in
                 self.stravaBusyStatus(false)
                 self.logger.error("Error : \(error.localizedDescription) :: \(error)")
+                if error.code == 429 {
+                    self.logger.error("Strava API limit exceeded")
+                }
                 self.failureCompletionHandler()
             })
 

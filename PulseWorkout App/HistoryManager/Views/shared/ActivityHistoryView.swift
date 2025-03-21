@@ -118,7 +118,6 @@ struct ActivityHistoryView: View {
                 if !stravaFetchInProgress {
                     stravaFetchInProgress = true
                     StravaFetchLatestActivities(
-                        dataCache: dataCache,
                         completionHandler: { stravaFetchInProgress = false
                             dataCache.refreshUI() },
                         failureCompletionHandler: { stravaFetchInProgress = false

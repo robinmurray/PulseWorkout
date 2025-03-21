@@ -119,7 +119,10 @@ struct StravaSettingsView: View {
             GroupBox(label:
                         HStack {
                 Spacer()
-                Button("Fetch/Refresh Strava Records", action: { })
+                Button("Fetch/Refresh Strava Records", action: {
+                    StravaFetchLatestActivities(after: stravaFetchFromDate,
+                                                completionHandler: { }).execute()
+                })
                     .buttonStyle(.borderedProminent)
                 Spacer()
             }

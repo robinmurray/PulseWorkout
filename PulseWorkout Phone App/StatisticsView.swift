@@ -89,8 +89,7 @@ struct StatisticsView: View {
                 print("Fetch from Strava and save")
                 
                 StravaFetchLatestActivities(after: Date.now.addingTimeInterval(-86400 * 5),
-                                            dataCache: dataCache,
-                                            completionHandler: { }).execute()
+                                            completionHandler: { dataCache.refreshUI()}).execute()
                 /*
                 StravaFetchActivities(completionHandler: {fetchedActivities in
                     
