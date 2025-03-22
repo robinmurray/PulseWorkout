@@ -265,8 +265,12 @@ struct ActivityDetailView: View {
             }
             
         }
-        
+        .onAppear(perform: {
+            // Save any changes if any unsaved records
+            dataCache.flushCache(qualityOfService: .userInitiated)
+        })
     }
+
 
 }
 

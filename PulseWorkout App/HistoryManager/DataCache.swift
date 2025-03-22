@@ -185,10 +185,13 @@ class DataCache: CloudKitManager, Codable {
     
     
     /// push changes in cache to cloudkit
-    private func flushCache(qualityOfService: QualityOfService = .utility) {
-        CKsaveAndDeleteRecord(recordsToSave: toBeSavedCKRecords(),
-                              recordIDsToDelete: toBeDeletedIDs(),
-                              qualityOfService: qualityOfService)
+    func flushCache(qualityOfService: QualityOfService = .utility) {
+        
+        if dirty() {
+            CKsaveAndDeleteRecord(recordsToSave: toBeSavedCKRecords(),
+                                  recordIDsToDelete: toBeDeletedIDs(),
+                                  qualityOfService: qualityOfService)
+        }
     }
     
     
