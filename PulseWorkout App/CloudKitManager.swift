@@ -223,13 +223,14 @@ class CloudKitManager: NSObject, ObservableObject {
                              recordIDsToDelete: [CKRecord.ID],
                              recordSaveSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void,
                              recordDeleteSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void,
-                             failureCompletionFunction: @escaping () -> Void = { }) {
+                             failureCompletionFunction: @escaping () -> Void = { },
+                             qualityOfService: QualityOfService = .utility) {
 
         logger.info("Saving records: \(recordsToSave.map( {$0.recordID} ))")
         logger.info("Deleting records: \(recordIDsToDelete)")
 
         let modifyRecordsOperation = CKModifyRecordsOperation(recordsToSave: recordsToSave, recordIDsToDelete: recordIDsToDelete)
-        modifyRecordsOperation.qualityOfService = .utility
+        modifyRecordsOperation.qualityOfService = qualityOfService
         modifyRecordsOperation.isAtomic = false
         
         // recordFetched is a function that gets called for each record retrieved

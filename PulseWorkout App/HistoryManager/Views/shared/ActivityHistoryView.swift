@@ -97,13 +97,27 @@ struct ActivityHistoryView: View {
         }
     #if os(watchOS)
         .navigationTitle {
+
             HStack {
-                Image(systemName: "book.circle")
+/*                Image(systemName: "book.circle")
                     .foregroundColor(Color.black)
                     .background(Color.yellow)
                     .clipShape(Circle())
                 Text("History")
                     .foregroundColor(Color.yellow)
+                */
+                Button(action: {
+                    dataCache.refreshUI(qualityOfService: .userInitiated)
+                })
+                {
+                    HStack {
+                        Spacer()
+                        Image(systemName: "arrow.clockwise")
+                        Text("Refresh")
+                    }
+                    
+                }
+                .foregroundColor(Color.yellow)
             }
         }
     #endif

@@ -170,13 +170,13 @@ class DataCache: CloudKitManager, Codable {
     }
 
     
-    func refreshUI() {
+    func refreshUI(qualityOfService: QualityOfService = .userInitiated) {
         
         if !dirty() {
-            refreshCache()
+            refreshCache(qualityOfService: qualityOfService)
         }
         else {
-            flushCache()
+            flushCache(qualityOfService: qualityOfService)
 
             updateUI()
         }
@@ -185,9 +185,10 @@ class DataCache: CloudKitManager, Codable {
     
     
     /// push changes in cache to cloudkit
-    private func flushCache() {
+    private func flushCache(qualityOfService: QualityOfService = .utility) {
         CKsaveAndDeleteRecord(recordsToSave: toBeSavedCKRecords(),
-                              recordIDsToDelete: toBeDeletedIDs())
+                              recordIDsToDelete: toBeDeletedIDs(),
+                              qualityOfService: qualityOfService)
     }
     
     
@@ -496,12 +497,12 @@ class DataCache: CloudKitManager, Codable {
     }
     
     
-    private func refreshCache() {
+    private func refreshCache(qualityOfService: QualityOfService = .userInitiated) {
         
         fetchRecordBlock(query: activityQuery(startDate: nil),
                          blockCompletionFunction: blockFetchCompletion,
                          resultsLimit: cacheSize,
-                         qualityOfService: .userInitiated)
+                         qualityOfService: qualityOfService)
     }
   
     
@@ -581,12 +582,14 @@ class DataCache: CloudKitManager, Codable {
     }
     
     func CKsaveAndDeleteRecord(recordsToSave: [CKRecord],
-                               recordIDsToDelete: [CKRecord.ID]) {
+                               recordIDsToDelete: [CKRecord.ID],
+                               qualityOfService: QualityOfService = .utility) {
 
         saveAndDeleteRecord(recordsToSave: recordsToSave,
                             recordIDsToDelete: recordIDsToDelete,
                             recordSaveSuccessCompletionFunction: recordSaveCompletion,
-                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion)
+                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion,
+                            qualityOfService: qualityOfService)
 
     }
     

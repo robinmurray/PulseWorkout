@@ -111,10 +111,12 @@ struct ActivityDetailView: View {
             rangeValues.append(activityRecord.movingTimebyHRZone[2] + activityRecord.movingTimebyHRZone[3])
             rangeValues.append(activityRecord.movingTimebyHRZone[4])
         }
-        else {
+        else if activityRecord.hasPowerData {
             rangeValues.append(activityRecord.movingTimebyPowerZone[0] + activityRecord.movingTimebyPowerZone[1])
             rangeValues.append(activityRecord.movingTimebyPowerZone[2] + activityRecord.movingTimebyPowerZone[3])
             rangeValues.append(activityRecord.movingTimebyPowerZone[4] + activityRecord.movingTimebyPowerZone[5])
+        } else {
+            return []
         }
         
         return [DonutChartDataPoint(name: "Low Aerobic",
@@ -279,9 +281,16 @@ struct ActivityDetailView: View {
                 VStack
                 {
                     let chartData = movingTimeByRange(activityRecord)
-                    DonutChartView(chartData: chartData,
-                                   totalName: "Moving Time",
-                                   totalValue: elapsedTimeFormatter(elapsedSeconds: activityRecord.movingTime, minimizeLength: true))
+                    if chartData.count > 0 {
+                        DonutChartView(chartData: chartData,
+                                       totalName: "Moving Time",
+                                       totalValue: elapsedTimeFormatter(elapsedSeconds: activityRecord.movingTime, minimizeLength: true))
+                    }
+                    else {
+                        SummaryMetricView(title: "Moving Time",
+                                          value: elapsedTimeFormatter(elapsedSeconds: activityRecord.movingTime, minimizeLength: false))
+                    }
+
 
                     SummaryMetricView(title: "Elapsed Time",
                                       value: durationFormatter.string(from: activityRecord.elapsedTime) ?? "",
