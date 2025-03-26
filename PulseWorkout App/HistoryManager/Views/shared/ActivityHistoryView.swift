@@ -12,9 +12,8 @@ struct ActivityHistoryView: View {
     
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var dataCache: DataCache
+    @StateObject var refreshProgress: AsyncProgress = AsyncProgress()
 
-    @State var stravaFetchInProgress: Bool = false
-    
     enum NavigationTarget {
         case ActivityDetailView
         case MapRouteView
@@ -26,12 +25,17 @@ struct ActivityHistoryView: View {
     }
     
     var body: some View {
-        
-        #if os(iOS)
-        ActivityHistoryHeaderView()
-        #endif
-        
+#if os(iOS)
+        ZStack {
+            if refreshProgress.displayProgressView {
+                AsyncProgressView(asyncProgress: refreshProgress)
+            }
+            
+            ActivityHistoryHeaderView()
+        }
+#endif
         List {
+
             ForEach(dataCache.UIRecordSet) {activityRecord in
                 VStack {
                     Button(action: {
@@ -124,18 +128,26 @@ struct ActivityHistoryView: View {
         .refreshable {
 
 #if os(watchOS)
-            print("REFRESHING!!!")
             dataCache.refreshUI()
 #endif
 #if os(iOS)
             if SettingsManager.shared.fetchFromStrava() {
-                if !stravaFetchInProgress {
-                    stravaFetchInProgress = true
+                if !refreshProgress.inProgress {
+                    refreshProgress.start(asyncProgressModel: .mixed,
+                                          title: "Fetching from Strava",
+                                          maxStatus: 2)
+
                     StravaFetchLatestActivities(
-                        completionHandler: { stravaFetchInProgress = false
-                            dataCache.refreshUI() },
-                        failureCompletionHandler: { stravaFetchInProgress = false
-                            dataCache.refreshUI()}).execute()
+                        completionHandler: {
+                            refreshProgress.complete()
+                            dataCache.refreshUI()
+                        },
+                        failureCompletionHandler: {
+                            refreshProgress.complete()
+                            dataCache.refreshUI()
+                        },
+                        asyncProgressNotifier: refreshProgress
+                    ).execute()
                 }
             }
             else {
