@@ -27,11 +27,13 @@ struct ActivityHistoryView: View {
     var body: some View {
 #if os(iOS)
         ZStack {
+            
+            ActivityHistoryHeaderView()
+
             if refreshProgress.displayProgressView {
                 AsyncProgressView(asyncProgress: refreshProgress)
             }
-            
-            ActivityHistoryHeaderView()
+
         }
 #endif
         List {
@@ -134,8 +136,8 @@ struct ActivityHistoryView: View {
             if SettingsManager.shared.fetchFromStrava() {
                 if !refreshProgress.inProgress {
                     refreshProgress.start(asyncProgressModel: .mixed,
-                                          title: "Fetching from Strava",
-                                          maxStatus: 2)
+                                          title: "Fetching Strava updates...",
+                                          maxStatus: 3)
 
                     StravaFetchLatestActivities(
                         completionHandler: {

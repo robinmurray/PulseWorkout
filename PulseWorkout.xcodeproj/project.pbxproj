@@ -211,6 +211,16 @@
 		E4CD4B1A2D8DBB6100BC1FC3 /* UploadActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B192D8DBB6100BC1FC3 /* UploadActivity.swift */; };
 		E4CD4B1C2D8DBBB300BC1FC3 /* FetchFullActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B1B2D8DBBB300BC1FC3 /* FetchFullActivity.swift */; };
 		E4CD4B1E2D8DBC2700BC1FC3 /* FetchActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B1D2D8DBC2700BC1FC3 /* FetchActivity.swift */; };
+		E4CD4B242D8FFF8900BC1FC3 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B232D8FFF8900BC1FC3 /* AlertView.swift */; };
+		E4CD4B252D8FFF8900BC1FC3 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B232D8FFF8900BC1FC3 /* AlertView.swift */; };
+		E4CD4B262D8FFF8900BC1FC3 /* AlertView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B232D8FFF8900BC1FC3 /* AlertView.swift */; };
+		E4CD4B282D91409900BC1FC3 /* AsyncProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B272D91409900BC1FC3 /* AsyncProgress.swift */; };
+		E4CD4B292D91409900BC1FC3 /* AsyncProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B272D91409900BC1FC3 /* AsyncProgress.swift */; };
+		E4CD4B2A2D91409900BC1FC3 /* AsyncProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B272D91409900BC1FC3 /* AsyncProgress.swift */; };
+		E4CD4B2B2D91409900BC1FC3 /* AsyncProgress.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B272D91409900BC1FC3 /* AsyncProgress.swift */; };
+		E4CD4B2D2D915A7000BC1FC3 /* AsyncProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B2C2D915A7000BC1FC3 /* AsyncProgressView.swift */; };
+		E4CD4B2E2D915A7000BC1FC3 /* AsyncProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B2C2D915A7000BC1FC3 /* AsyncProgressView.swift */; };
+		E4CD4B2F2D915A7000BC1FC3 /* AsyncProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B2C2D915A7000BC1FC3 /* AsyncProgressView.swift */; };
 		E4D28B152CC3A7A700F27626 /* DataCacheTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D28B142CC3A7A700F27626 /* DataCacheTest.swift */; };
 		E4D41B2F2C8A20E50014C1D9 /* LiveAlwaysOnView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */; };
 		E4D41B312C8A230F0014C1D9 /* LiveMetricsCarouselView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */; };
@@ -389,6 +399,9 @@
 		E4CD4B192D8DBB6100BC1FC3 /* UploadActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadActivity.swift; sourceTree = "<group>"; };
 		E4CD4B1B2D8DBBB300BC1FC3 /* FetchFullActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchFullActivity.swift; sourceTree = "<group>"; };
 		E4CD4B1D2D8DBC2700BC1FC3 /* FetchActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchActivity.swift; sourceTree = "<group>"; };
+		E4CD4B232D8FFF8900BC1FC3 /* AlertView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlertView.swift; sourceTree = "<group>"; };
+		E4CD4B272D91409900BC1FC3 /* AsyncProgress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncProgress.swift; sourceTree = "<group>"; };
+		E4CD4B2C2D915A7000BC1FC3 /* AsyncProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncProgressView.swift; sourceTree = "<group>"; };
 		E4D28B142CC3A7A700F27626 /* DataCacheTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCacheTest.swift; sourceTree = "<group>"; };
 		E4D41B2E2C8A20E50014C1D9 /* LiveAlwaysOnView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveAlwaysOnView.swift; sourceTree = "<group>"; };
 		E4D41B302C8A230F0014C1D9 /* LiveMetricsCarouselView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsCarouselView.swift; sourceTree = "<group>"; };
@@ -483,6 +496,8 @@
 			isa = PBXGroup;
 			children = (
 				E42313722CF752E100E6F4FB /* SwipeButton.swift */,
+				E4CD4B232D8FFF8900BC1FC3 /* AlertView.swift */,
+				E4CD4B2C2D915A7000BC1FC3 /* AsyncProgressView.swift */,
 			);
 			path = Controls;
 			sourceTree = "<group>";
@@ -577,6 +592,7 @@
 				E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */,
 				E4AEC0872D1EC5CA00DC0082 /* icons.swift */,
 				E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */,
+				E4CD4B272D91409900BC1FC3 /* AsyncProgress.swift */,
 				E423138B2CF9D1BA00E6F4FB /* Controls */,
 				E4C11F5629CCC91F008DB769 /* BluetoothManager */,
 				E46121EB2AAB67C900E07749 /* SettingsManager */,
@@ -1210,6 +1226,7 @@
 				E45E3F072CE8A461001D58B3 /* ActivityHistoryHeaderView.swift in Sources */,
 				E4094BC92CD1513400915CCB /* ActivityChartsController.swift in Sources */,
 				E42313732CF752E100E6F4FB /* SwipeButton.swift in Sources */,
+				E4CD4B2D2D915A7000BC1FC3 /* AsyncProgressView.swift in Sources */,
 				E4941E432CD29F920063421F /* CloudConnectionsView.swift in Sources */,
 				E4E8BAAE2D70C0AE0098D8E3 /* StravaSettingsView.swift in Sources */,
 				E4094BC52CD1503600915CCB /* ActivityHistoryView.swift in Sources */,
@@ -1246,10 +1263,12 @@
 				E4CD4B1E2D8DBC2700BC1FC3 /* FetchActivity.swift in Sources */,
 				E45E3F1F2CEBABBA001D58B3 /* NewProfileDetailView.swift in Sources */,
 				E4094BBA2CD0C6D200915CCB /* GeneralUtilities.swift in Sources */,
+				E4CD4B242D8FFF8900BC1FC3 /* AlertView.swift in Sources */,
 				E48D4D632D6325D0001104AC /* AltitudeChartImage.swift in Sources */,
 				E4941E4D2CD2A1030063421F /* BTDetailDeviceView.swift in Sources */,
 				E4094BBC2CD0C6D200915CCB /* ActivityProfile.swift in Sources */,
 				E4941E872CD7FBC50063421F /* ActivityHeaderView.swift in Sources */,
+				E4CD4B292D91409900BC1FC3 /* AsyncProgress.swift in Sources */,
 				E4AEC0A72D2C655C00DC0082 /* CloudKitManager.swift in Sources */,
 				E45E3F272CEC8D9D001D58B3 /* HKExtensions.swift in Sources */,
 				E47A2EC92D5FAEA100297952 /* DonutChartView.swift in Sources */,
@@ -1273,8 +1292,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				E492C0202D1DCA680050B6E8 /* BTDevice.swift in Sources */,
+				E4CD4B252D8FFF8900BC1FC3 /* AlertView.swift in Sources */,
 				E492C0132D1DC7D90050B6E8 /* ImageCache.swift in Sources */,
 				E492C01E2D1DCA600050B6E8 /* BTPeripheralManager.swift in Sources */,
+				E4CD4B282D91409900BC1FC3 /* AsyncProgress.swift in Sources */,
 				E413D4262D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift in Sources */,
 				E4AEC0AC2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
 				E492C0102D19BDDE0050B6E8 /* SimpleXML.swift in Sources */,
@@ -1282,6 +1303,7 @@
 				E492C0082D19BBF90050B6E8 /* DataCache.swift in Sources */,
 				E4AEC0A22D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E492C01C2D1DCA580050B6E8 /* BluetoothManager.swift in Sources */,
+				E4CD4B2F2D915A7000BC1FC3 /* AsyncProgressView.swift in Sources */,
 				E413D4202D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
 				E492C00C2D19BC260050B6E8 /* SettingsManager.swift in Sources */,
 				E413D41C2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
@@ -1341,6 +1363,7 @@
 				E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */,
 				E468DC8129E931A10002FEA9 /* ProfileListView.swift in Sources */,
 				E46EF0C229543FEA006FA603 /* StopView.swift in Sources */,
+				E4CD4B2E2D915A7000BC1FC3 /* AsyncProgressView.swift in Sources */,
 				E4A333B62CC01EE900995AC4 /* ActivityChartsController.swift in Sources */,
 				E4C25BAE2A4F55FB002F315D /* ActivityListItemView.swift in Sources */,
 				E406C7C32C667EDA0015C4F3 /* GeneralUtilities.swift in Sources */,
@@ -1356,6 +1379,7 @@
 				E4AEC09F2D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E4C428332CB0431B0069F61D /* ActivityChartTraceBuilder.swift in Sources */,
 				E4B5CEA82D02E0AC0094CA4F /* Formatters.swift in Sources */,
+				E4CD4B262D8FFF8900BC1FC3 /* AlertView.swift in Sources */,
 				E4941E862CD7FBC50063421F /* ActivityHeaderView.swift in Sources */,
 				E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */,
 				E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */,
@@ -1375,6 +1399,7 @@
 				E413D42D2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */,
 				E4941E7F2CD7F3F60063421F /* SummaryMetricView.swift in Sources */,
 				E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */,
+				E4CD4B2B2D91409900BC1FC3 /* AsyncProgress.swift in Sources */,
 				E4E8BAB32D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */,
 				E4A0839329A9FA09007B50D3 /* BTDeviceView.swift in Sources */,
 				E421295C299D4D91001B8AA9 /* BTDeviceBarView.swift in Sources */,
@@ -1414,6 +1439,7 @@
 				E492C0172D1DC9B20050B6E8 /* HapticsSettingsView.swift in Sources */,
 				E4E8BAB42D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */,
 				E413D4212D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
+				E4CD4B2A2D91409900BC1FC3 /* AsyncProgress.swift in Sources */,
 				E492C01F2D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E413D41E2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
 				E413D4322D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,

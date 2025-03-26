@@ -18,13 +18,15 @@ class StravaFetchLatestActivities: StravaOperation {
     var thisFetchDate: Int
     var completionHandler: () -> Void
     var failureCompletionHandler: () -> Void
+    var asyncProgressNotifier: AsyncProgress?
     
     init(perPage: Int = 30,
          after: Date? = nil,
          forceReauth: Bool = false,
          forceRefresh: Bool = false,
          completionHandler: @escaping () -> Void,
-         failureCompletionHandler: @escaping () -> Void = { }) {
+         failureCompletionHandler: @escaping () -> Void = { },
+         asyncProgressNotifier: AsyncProgress? = nil) {
         
         self.perPage = perPage
         
@@ -45,6 +47,7 @@ class StravaFetchLatestActivities: StravaOperation {
 
         self.completionHandler = completionHandler
         self.failureCompletionHandler = failureCompletionHandler
+        self.asyncProgressNotifier = asyncProgressNotifier
         
         super.init(forceReauth: forceReauth, forceRefresh: forceRefresh)
 
@@ -55,7 +58,11 @@ class StravaFetchLatestActivities: StravaOperation {
     }
     
     func getNextPage() {
-        
+
+        if let notifier = asyncProgressNotifier {
+            notifier.majorIncrement(message: "Fetching Page...")
+        }
+
         StravaFetchActivities(page: page,
                               perPage: perPage,
                               before: nil,
@@ -69,19 +76,24 @@ class StravaFetchLatestActivities: StravaOperation {
     func gotPage(stravaActivities: [StravaActivity]) {
         
         self.stravaActivityPage = stravaActivities
-        
+
         if stravaActivities.count == 0 {
             // has fetched last page!
             logger.info("Multi-page fetch completed")
 
             UserDefaults.standard.set(thisFetchDate, forKey: "stravaFetchDate")
-
+            if let notifier = asyncProgressNotifier {
+                notifier.majorIncrement(message: "Fetch completed")
+            }
             completionHandler()
             
         }
         else {
             page += 1
             activityIndex = 0
+            if let notifier = asyncProgressNotifier {
+                notifier.minorIncrement(message: "Fetched record list")
+            }
             processNextRecord()
         }
         
@@ -94,8 +106,14 @@ class StravaFetchLatestActivities: StravaOperation {
             getNextPage()
         }
         else {
+
             let stravaId = self.stravaActivityPage[activityIndex].id!
+            
             self.logger.info("processing stravaID \(stravaId)")
+            if let notifier = asyncProgressNotifier {
+                notifier.resetStatus()
+                notifier.majorIncrement(message: "Processing \(self.stravaActivityPage[activityIndex].name ?? String(stravaId))")
+            }
             CKQueryForStravaId(stravaId: stravaId,
                                completionFunction: {
                 ckRecords in
@@ -117,6 +135,11 @@ class StravaFetchLatestActivities: StravaOperation {
     }
     
     func fetchAndProcess(stravaId: Int) {
+        
+        if let notifier = asyncProgressNotifier {
+            notifier.majorIncrement(message: "Fetching \(stravaId)")
+        }
+        
         StravaFetchFullActivity(
             stravaActivityId: stravaId,
             completionHandler: {
@@ -124,6 +147,11 @@ class StravaFetchLatestActivities: StravaOperation {
 
 // NEED TO WORK OUT WAY OF INTEGRATING CACHE!!!
 //                    activityRecord.save(dataCache: self.dataCache)
+                
+                if let notifier = self.asyncProgressNotifier {
+                    notifier.majorIncrement(message: "Saving / Updating : \(activityRecord.name)")
+                }
+                
                 CKSaveOrUpdateActivityRecord(
                     activityRecord: activityRecord,
                     completionFunction: {_ in
