@@ -470,14 +470,17 @@ class CKSaveOrUpdateActivityRecord: CloudKitManager {
     var activityRecord: ActivityRecord
     var completionFunction: (CKRecord.ID?) -> Void
     var failureCompletionFunction: () -> Void
+    var asyncProgressNotifier: AsyncProgress?
     
     init(activityRecord: ActivityRecord,
          completionFunction: @escaping (CKRecord.ID?) -> Void,
-         failureCompletionFunction: @escaping () -> Void = { } ) {
+         failureCompletionFunction: @escaping () -> Void = { },
+         asyncProgressNotifier: AsyncProgress? = nil) {
         
         self.activityRecord = activityRecord
         self.completionFunction = completionFunction
         self.failureCompletionFunction = failureCompletionFunction
+        self.asyncProgressNotifier = asyncProgressNotifier
         
         super.init()
     }
@@ -495,6 +498,9 @@ class CKSaveOrUpdateActivityRecord: CloudKitManager {
         else {
             // No stravaId so save...
             self.logger.info("No stravaID - saving \(self.activityRecord.recordName)")
+            if let notifier = asyncProgressNotifier {
+                notifier.majorIncrement(message: "Saving \(self.activityRecord.recordName ?? "")")
+            }
             save()
         }
 
@@ -505,12 +511,18 @@ class CKSaveOrUpdateActivityRecord: CloudKitManager {
         
         if ckRecords.count == 0 {
             self.logger.info("stravaID NOT found - saving \(self.activityRecord.recordName)")
+            if let notifier = asyncProgressNotifier {
+                notifier.majorIncrement(message: "Saving \(self.activityRecord.recordName ?? "")")
+            }
             save()
         }
         else {
             let fetchedRecordId = ckRecords.first!.recordID
             // set recordID from fetched record, and just update fields that can be changed in Strava
             self.logger.info("stravaID found - updating \(self.activityRecord.recordName)")
+            if let notifier = asyncProgressNotifier {
+                notifier.majorIncrement(message: "Updating \(self.activityRecord.recordName ?? "")")
+            }
             activityRecord.recordID = fetchedRecordId
             forceUpdate(ckRecord: activityRecord.asMinimalUpdateCKRecord(),
                         completionFunction: completionFunction)

@@ -26,18 +26,15 @@ struct ActivityHistoryView: View {
     
     var body: some View {
 #if os(iOS)
-        ZStack {
+        ActivityHistoryHeaderView()
+#endif
+        
+        List {
             
-            ActivityHistoryHeaderView()
-
             if refreshProgress.displayProgressView {
                 AsyncProgressView(asyncProgress: refreshProgress)
             }
-
-        }
-#endif
-        List {
-
+            
             ForEach(dataCache.UIRecordSet) {activityRecord in
                 VStack {
                     Button(action: {

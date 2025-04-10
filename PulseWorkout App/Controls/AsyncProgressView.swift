@@ -65,9 +65,7 @@ struct AsyncProgressView: View {
             }
             .padding([.leading, .trailing], 10)
             .padding([.top, .bottom], 5)
-            .background(Color.gray)
-            .cornerRadius(15)
-            .opacity(0.95)
+
             
             Spacer(minLength: 10)
         }

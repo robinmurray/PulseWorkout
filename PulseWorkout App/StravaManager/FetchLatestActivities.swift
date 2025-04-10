@@ -60,7 +60,7 @@ class StravaFetchLatestActivities: StravaOperation {
     func getNextPage() {
 
         if let notifier = asyncProgressNotifier {
-            notifier.majorIncrement(message: "Fetching Page...")
+            notifier.majorIncrement(message: "Fetching new activities...")
         }
 
         StravaFetchActivities(page: page,
@@ -83,7 +83,7 @@ class StravaFetchLatestActivities: StravaOperation {
 
             UserDefaults.standard.set(thisFetchDate, forKey: "stravaFetchDate")
             if let notifier = asyncProgressNotifier {
-                notifier.majorIncrement(message: "Fetch completed")
+                notifier.majorIncrement(message: "Fetch complete")
             }
             completionHandler()
             
@@ -92,7 +92,7 @@ class StravaFetchLatestActivities: StravaOperation {
             page += 1
             activityIndex = 0
             if let notifier = asyncProgressNotifier {
-                notifier.minorIncrement(message: "Fetched record list")
+                notifier.minorIncrement(message: "Fetched next activity list")
             }
             processNextRecord()
         }
@@ -108,18 +108,20 @@ class StravaFetchLatestActivities: StravaOperation {
         else {
 
             let stravaId = self.stravaActivityPage[activityIndex].id!
+            let stravaName = self.stravaActivityPage[activityIndex].name ?? String(stravaId)
+            
             
             self.logger.info("processing stravaID \(stravaId)")
             if let notifier = asyncProgressNotifier {
                 notifier.resetStatus()
-                notifier.majorIncrement(message: "Processing \(self.stravaActivityPage[activityIndex].name ?? String(stravaId))")
+                notifier.majorIncrement(message: "Processing \(stravaName)")
             }
             CKQueryForStravaId(stravaId: stravaId,
                                completionFunction: {
                 ckRecords in
                     if ckRecords.count == 0 {
                         self.logger.info("stravaID NOT found - saving")
-                        self.fetchAndProcess(stravaId: stravaId)
+                        self.fetchAndProcess(stravaId: stravaId, stravaName: stravaName)
                     }
                     else {
                         self.logger.info("stravaID found - not updating")
@@ -134,10 +136,10 @@ class StravaFetchLatestActivities: StravaOperation {
 
     }
     
-    func fetchAndProcess(stravaId: Int) {
+    func fetchAndProcess(stravaId: Int, stravaName: String) {
         
         if let notifier = asyncProgressNotifier {
-            notifier.majorIncrement(message: "Fetching \(stravaId)")
+            notifier.majorIncrement(message: "Fetching \(stravaName)")
         }
         
         StravaFetchFullActivity(
@@ -157,7 +159,8 @@ class StravaFetchLatestActivities: StravaOperation {
                     completionFunction: {_ in
                         self.activityIndex += 1
                         self.processNextRecord()
-                    }
+                    },
+                    asyncProgressNotifier: self.asyncProgressNotifier
                 ).execute()
 
             },
