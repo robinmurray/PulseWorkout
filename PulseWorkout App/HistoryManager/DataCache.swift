@@ -102,13 +102,11 @@ class FullActivityRecordCache: NSObject {
     }
 }
 
-class DataCache: CloudKitManager, Codable {
+class DataCache: NSObject, Codable, ObservableObject {
     
     let settingsManager: SettingsManager = SettingsManager.shared
     var testMode: Bool = false
-    
-//    let cloudKitManager: CloudKitManager = CloudKitManager()
-    
+        
 
     @Published var UIRecordSet: [ActivityRecord] = []
 
@@ -137,25 +135,7 @@ class DataCache: CloudKitManager, Codable {
         super.init()
         self.testMode = testMode
         imageCache = ImageCache(dataCache: self)
-        
-//        container = CKContainer(identifier: containerName)
-//        database = container.privateCloudDatabase
-//        zoneID = CKRecordZone.ID(zoneName: DataCache.zoneName)
                 
-/*
-        Task {
-            do {
-                try await createCKZoneIfNeeded()
-            } catch {
-                logger.error("error \(error)")
-            }
-
-        }
-  */
-
-        // Create subscription for record change notifications
-//        createSubscription()
-        
         if readCache {
             _ = read()
                         
@@ -188,9 +168,13 @@ class DataCache: CloudKitManager, Codable {
     func flushCache(qualityOfService: QualityOfService = .utility) {
         
         if dirty() {
-            CKsaveAndDeleteRecord(recordsToSave: toBeSavedCKRecords(),
-                                  recordIDsToDelete: toBeDeletedIDs(),
-                                  qualityOfService: qualityOfService)
+            
+            CKSaveAndDeleteOperation(recordsToSave: toBeSavedCKRecords(),
+                                     recordIDsToDelete: toBeDeletedIDs(),
+                                     recordSaveSuccessCompletionFunction: recordSaveCompletion,
+                                     recordDeleteSuccessCompletionFunction: recordDeletionCompletion,
+                                     qualityOfService: qualityOfService).execute()
+            
         }
     }
     
@@ -204,20 +188,7 @@ class DataCache: CloudKitManager, Codable {
         
     }
     
-    
-    private func createCKZoneIfNeeded(zoneID: CKRecordZone.ID) async throws {
 
-        guard !UserDefaults.standard.bool(forKey: "zoneCreated") else {
-            return
-        }
-
-        localLogger.log("creating zone")
-        let newZone = CKRecordZone(zoneID: zoneID)
-        _ = try await database.modifyRecordZones(saving: [newZone], deleting: [])
-
-        UserDefaults.standard.set(true, forKey: "zoneCreated")
-    }
- 
     
     func add(activityRecord: ActivityRecord) {
         
@@ -275,7 +246,8 @@ class DataCache: CloudKitManager, Codable {
         
         guard let index = cachedIndex(recordID: recordID) else {
             // Record is not in cache, just attempt deletion
-            CKsaveAndDeleteRecord(recordsToSave: [], recordIDsToDelete: [recordID])
+            CKDeleteOperation(recordIDsToDelete: [recordID],
+                              recordDeleteSuccessCompletionFunction: recordDeletionCompletion).execute()
             return
         }
                
@@ -442,7 +414,7 @@ class DataCache: CloudKitManager, Codable {
             
             for activity in JSONData.activities {
 
-                activity.recordID = getCKRecordID(recordID: UUID(uuidString: activity.recordName))
+                activity.recordID = CloudKitOperation().getCKRecordID(recordID: UUID(uuidString: activity.recordName))
 
                 // set toSavePublished equal to toSave
                 activity.setToSave(activity.toSave)
@@ -489,7 +461,7 @@ class DataCache: CloudKitManager, Codable {
 
     
     /// On block completion copy temporary list to the main device list
-    func blockFetchCompletion(ckRecordList: [CKRecord]) -> Void {
+    func refreshCacheCompletion(ckRecordList: [CKRecord]) -> Void {
         
         if !self.dirty() {
             self.activities = ckRecordList.map( {ActivityRecord(fromCKRecord: $0)})
@@ -502,42 +474,35 @@ class DataCache: CloudKitManager, Codable {
     
     private func refreshCache(qualityOfService: QualityOfService = .userInitiated) {
         
-        fetchRecordBlock(query: activityQuery(startDate: nil),
-                         blockCompletionFunction: blockFetchCompletion,
-                         resultsLimit: cacheSize,
-                         qualityOfService: qualityOfService)
+        CKActivityQueryOperation(startDate: nil,
+                                 blockCompletionFunction: refreshCacheCompletion,
+                                 resultsLimit: cacheSize,
+                                 qualityOfService: qualityOfService).execute()
     }
   
     
-    func fetchNextBlock() {
-                
-        let latestUIDate = UIRecordSet.last?.startDateLocal ?? nil
-        localLogger.log("Fetch next block with start date \(String(describing: latestUIDate?.formatted()))")
-
-        fetchRecordBlock(query: activityQuery(startDate: latestUIDate),
-                         blockCompletionFunction: nextBlockCompletion,
-                         resultsLimit: cacheSize,
-                         qualityOfService: .userInitiated)
-        
+    func getLatestUIDate() -> Date? {
+        return UIRecordSet.last?.startDateLocal ?? nil
     }
     
     
-    private func nextBlockCompletion(records : [CKRecord] ) -> Void {
-        
-        localLogger.log("Next block fetch completion")
+    func addRecordsToUI(records : [CKRecord] ) -> Void {
         DispatchQueue.main.async {
             self.UIRecordSet += records.map( {ActivityRecord(fromCKRecord: $0)})
         }
     }
-  
     
-    func CKForceUpdate(activityCKRecord: CKRecord, completionFunction: @escaping (CKRecord.ID?) -> Void) {
+    func isFetchComplete(records : [CKRecord] ) -> Bool {
+     
+        if records.count == cacheSize {
+            return false
+        }
         
-        forceUpdate(ckRecord: activityCKRecord, completionFunction: completionFunction)
-
+        return true
+        
     }
-   
     
+
     func fetchRecord(recordID: CKRecord.ID,
                      completionFunction: @escaping (ActivityRecord) -> (),
                      completionFailureFunction: @escaping () -> ()) {
@@ -561,13 +526,13 @@ class DataCache: CloudKitManager, Codable {
 
             return
         }
-
-        fetchRecord(recordID: recordID,
-                    completionFunction: { ckRecord in
+        
+        CKFetchRecordOperation(recordID: recordID,
+                               completionFunction: { ckRecord in
             let record = ActivityRecord(fromCKRecord: ckRecord)
             self.fullActivityRecordCache.add(activityRecord: record)
             completionFunction(record) },
-                    completionFailureFunction: completionFailureFunction)
+                               completionFailureFunction: completionFailureFunction).execute()
         
     }
     
@@ -584,17 +549,6 @@ class DataCache: CloudKitManager, Codable {
         removeFromCache(recordID: recordID)
     }
     
-    func CKsaveAndDeleteRecord(recordsToSave: [CKRecord],
-                               recordIDsToDelete: [CKRecord.ID],
-                               qualityOfService: QualityOfService = .utility) {
-
-        saveAndDeleteRecord(recordsToSave: recordsToSave,
-                            recordIDsToDelete: recordIDsToDelete,
-                            recordSaveSuccessCompletionFunction: recordSaveCompletion,
-                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion,
-                            qualityOfService: qualityOfService)
-
-    }
     
     
     func registerNotifications(notificationManager: CloudKitNotificationManager) {
@@ -623,77 +577,6 @@ class DataCache: CloudKitManager, Codable {
         changeCache(changedActivityRecord: activityRecord)
         changeUI(changedActivityRecord: activityRecord)
         
-    }
-    
-    func fetchAllRecordIDs(recordCompletionFunction: @escaping (CKRecord.ID) -> ()) {
-               
-        let pred = NSPredicate(value: true)
-        var minStartDate: Date? = nil
-        var recordCount: Int = 0
-        let sort = NSSortDescriptor(key: "startDateLocal", ascending: false)
-        let query = CKQuery(recordType: "Activity", predicate: pred)
-        query.sortDescriptors = [sort]
-
-        let operation = CKQueryOperation(query: query)
-
-        operation.desiredKeys = ["name", "startDateLocal"]
-        operation.qualityOfService = .userInitiated
-        operation.resultsLimit = 200
-
-
-        operation.recordMatchedBlock = { recordID, result in
-            switch result {
-            case .success(let record):
-                recordCompletionFunction(recordID)
-                recordCount += 1
-                let startDate: Date = record["startDateLocal"]  ?? Date() as Date
-                if minStartDate == nil {
-                    minStartDate = startDate
-                } else {
-                    minStartDate = min(startDate, minStartDate!)
-                }
-                
-                break
-                
-            case .failure(let error):
-                self.localLogger.error( "Fetch failed for recordID \(recordID) : \(String(describing: error))")
-                
-                break
-            }
-        }
-            
-        operation.queryResultBlock = { result in
-
-            switch result {
-            case .success:
-
-                self.localLogger.info("Record fetch successfully complete : record count \(recordCount) : min date \(minStartDate!.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))")
-                
-                break
-                    
-            case .failure(let error):
-
-                switch error {
-                case CKError.accountTemporarilyUnavailable,
-                    CKError.networkFailure,
-                    CKError.networkUnavailable,
-                    CKError.serviceUnavailable,
-                    CKError.zoneBusy:
-                    
-                    self.localLogger.log("temporary refresh error")
-
-                    
-                default:
-                    self.localLogger.error("permanent refresh error - not retrying")
-                }
-                self.localLogger.error( "Fetch failed \(String(describing: error))")
-                break
-            }
-
-        }
-        
-        database.add(operation)
-
     }
 
 }

@@ -53,9 +53,9 @@ class StravaUploadActivity: StravaOperation {
                 self.failureCompletionHandler()
             }
         } else {
-            CKFetchTcxAsset(recordID: activityRecord.recordID,
-                            completionHandler: upload,
-                            failureCompletionHandler: self.failureCompletionHandler
+            CKFetchTcxAssetOperation(recordID: activityRecord.recordID,
+                                     completionHandler: upload,
+                                     failureCompletionHandler: self.failureCompletionHandler
             ).execute()
         }
 

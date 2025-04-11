@@ -13,6 +13,8 @@ struct ActivityHistoryView: View {
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var dataCache: DataCache
     @StateObject var refreshProgress: AsyncProgress = AsyncProgress()
+    @State var fetching: Bool = false
+    @State var fetchComplete: Bool = false
 
     enum NavigationTarget {
         case ActivityDetailView
@@ -70,13 +72,24 @@ struct ActivityHistoryView: View {
                 }
 
             }
-            if !dataCache.fetching && !dataCache.fetchComplete {
+            if fetching {
+                ProgressView()
+            }
+            
+            if !fetching && !fetchComplete {
               ProgressView()
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .foregroundColor(.black)
-                .foregroundColor(.red)
+//                .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .onAppear {
-                    dataCache.fetchNextBlock()
+                    fetching = true
+                    let latestUIDate = dataCache.getLatestUIDate()
+
+                    CKActivityQueryOperation(startDate: latestUIDate,
+                                             blockCompletionFunction: {records in
+                        dataCache.addRecordsToUI(records: records)
+                        fetching = false
+                        fetchComplete = dataCache.isFetchComplete(records: records)},
+                                             resultsLimit: dataCache.cacheSize,
+                                             qualityOfService: .userInitiated).execute()
                 }
             }
         }
@@ -128,6 +141,7 @@ struct ActivityHistoryView: View {
 
 #if os(watchOS)
             dataCache.refreshUI()
+            fetchComplete = false
 #endif
 #if os(iOS)
             if SettingsManager.shared.fetchFromStrava() {
@@ -140,10 +154,12 @@ struct ActivityHistoryView: View {
                         completionHandler: {
                             refreshProgress.complete()
                             dataCache.refreshUI()
+                            fetchComplete = false
                         },
                         failureCompletionHandler: {
                             refreshProgress.complete()
                             dataCache.refreshUI()
+                            fetchComplete = false
                         },
                         asyncProgressNotifier: refreshProgress
                     ).execute()
@@ -151,6 +167,7 @@ struct ActivityHistoryView: View {
             }
             else {
                 dataCache.refreshUI()
+                fetchComplete = false
             }
 
             

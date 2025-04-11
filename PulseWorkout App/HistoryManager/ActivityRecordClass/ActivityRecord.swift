@@ -305,7 +305,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         
         self.tcxFileName = baseFileName + ".gz"
         self.JSONFileName = baseFileName + ".json"
-        self.recordID = CloudKitManager().getCKRecordID()
+        self.recordID = CloudKitOperation().getCKRecordID()
         self.recordName = self.recordID.recordName
     }
     

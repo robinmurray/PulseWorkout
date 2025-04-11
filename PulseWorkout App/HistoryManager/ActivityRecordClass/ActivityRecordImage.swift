@@ -65,8 +65,9 @@ class ActivityRecordImage: NSObject {
                 // Only update if already saved! - should get picked up by record save
                 // if not then will update saved record on next display...
                 if !activityRecord.toSave {
-                    dataCache.CKForceUpdate(activityCKRecord: activityCKRecord,
-                                            completionFunction: saveCompletion)
+
+                    CKForceUpdateOperation(ckRecord: activityCKRecord,
+                                           completionFunction: saveCompletion).execute()
                 }
                 
                 

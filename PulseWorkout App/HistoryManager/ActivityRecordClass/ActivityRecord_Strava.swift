@@ -45,8 +45,7 @@ extension ActivityRecord {
         if !toSave {
             self.logger.info("Updating activity record :: \(self.name) :: saved to Strava with Id \(newStravaId)")
             
-            CloudKitManager().forceUpdate(ckRecord: activityCKRecord,
-                                          completionFunction: { _ in })
+            CKForceUpdateOperation(ckRecord: activityCKRecord, completionFunction: { _ in }).execute()
 
         }
         
@@ -124,7 +123,7 @@ extension ActivityRecord {
 
          */
 
-        self.recordID = CloudKitManager().getCKRecordID()  // *
+        self.recordID = CloudKitOperation().getCKRecordID()  // *
         self.recordName = self.recordID.recordName      // *
 
         stravaId = stravaActivity.id
@@ -289,9 +288,10 @@ extension ActivityRecord {
             // Only update if already saved! - should get picked up by record save
             // if not then will update saved record on next display...
             if !toSave {
-                dc.CKForceUpdate(activityCKRecord: activityCKRecord,
-                                 completionFunction: { _ in })
+                CKForceUpdateOperation(ckRecord: activityCKRecord,
+                                       completionFunction: { _ in }).execute()
             }
+            
         }
 
         

@@ -9,7 +9,7 @@ import Foundation
 import CloudKit
 import os
 
-class MigrationManager: CloudKitManager {
+class MigrationManager: CloudKitOperation {
     
     let localLogger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "migrationManager")
@@ -46,9 +46,10 @@ class MigrationManager: CloudKitManager {
             let recordID = recordIdList[processedRecordIndex]
             
             localLogger.info("record to update : \(recordID)")
-            fetchRecord(recordID: recordID,
-                        completionFunction: updateRecord,
-                        completionFailureFunction: failedFetch)
+            
+            CKFetchRecordOperation(recordID: recordID,
+                                   completionFunction: updateRecord,
+                                   completionFailureFunction: failedFetch).execute()
         }
     }
     

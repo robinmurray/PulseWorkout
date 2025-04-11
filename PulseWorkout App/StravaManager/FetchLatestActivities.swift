@@ -116,8 +116,8 @@ class StravaFetchLatestActivities: StravaOperation {
                 notifier.resetStatus()
                 notifier.majorIncrement(message: "Processing \(stravaName)")
             }
-            CKQueryForStravaId(stravaId: stravaId,
-                               completionFunction: {
+            CKQueryForStravaIdOperation(stravaId: stravaId,
+                                        completionFunction: {
                 ckRecords in
                     if ckRecords.count == 0 {
                         self.logger.info("stravaID NOT found - saving")
@@ -154,7 +154,7 @@ class StravaFetchLatestActivities: StravaOperation {
                     notifier.majorIncrement(message: "Saving / Updating : \(activityRecord.name)")
                 }
                 
-                CKSaveOrUpdateActivityRecord(
+                CKSaveOrUpdateActivityRecordOperation(
                     activityRecord: activityRecord,
                     completionFunction: {_ in
                         self.activityIndex += 1

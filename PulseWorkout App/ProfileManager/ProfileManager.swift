@@ -10,7 +10,7 @@ import os
 import HealthKit
 import CloudKit
 
-class ProfileManager: CloudKitManager {
+class ProfileManager: NSObject, ObservableObject {
 
     @Published var profiles: [ActivityProfile] = []
     private var lastSavedProfiles: [ActivityProfile] = []
@@ -113,8 +113,10 @@ class ProfileManager: CloudKitManager {
         profiles.insert(newActivityProfile, at: 0)
 
         // Save to cloudkit - gets saved to local JSON file on completion
-        let IDToAdd = getCKRecordID(recordID: newActivityProfile.id)
-        CKsaveAndDeleteRecord(recordsToSave: [newActivityProfile.asCKRecord(recordID: IDToAdd)], recordIDsToDelete: [])
+        let IDToAdd = CloudKitOperation().getCKRecordID(recordID: newActivityProfile.id)
+        
+        CKSaveOperation(recordsToSave: [newActivityProfile.asCKRecord(recordID: IDToAdd)],
+                        recordSaveSuccessCompletionFunction: recordSaveCompletion).execute()
 
         // return index of new entry
         return (0)
@@ -130,11 +132,11 @@ class ProfileManager: CloudKitManager {
         
         if let index = profiles.firstIndex(where: { $0.id == activityProfile.id  }) {
 
-            let IDToRemove = getCKRecordID(recordID: profiles[index].id)
+            let IDToRemove = CloudKitOperation().getCKRecordID(recordID: profiles[index].id)
             profiles.remove(at: index)
-
-            CKsaveAndDeleteRecord(recordsToSave: [],
-                                  recordIDsToDelete: [IDToRemove])
+            
+            CKDeleteOperation(recordIDsToDelete: [IDToRemove],
+                              recordDeleteSuccessCompletionFunction: recordDeletionCompletion).execute()
 
         }
     }
@@ -152,10 +154,10 @@ class ProfileManager: CloudKitManager {
                     updatedActivityProfile.lastUsed = Date()
                     profiles[index] = updatedActivityProfile
                     
-                    let CKRecordID = getCKRecordID(recordID: profile.id)
-
-                    forceUpdate(ckRecord: profiles[index].asCKRecord(recordID: CKRecordID),
-                                completionFunction: { _ in })
+                    let CKRecordID = CloudKitOperation().getCKRecordID(recordID: profile.id)
+                    
+                    CKForceUpdateOperation(ckRecord: profiles[index].asCKRecord(recordID: CKRecordID),
+                                           completionFunction: { _ in }).execute()
 
                     self.write(sortBeforeWrite: false)
                 }
@@ -193,9 +195,8 @@ class ProfileManager: CloudKitManager {
                 
             }
         }
-        
-        fetchRecordBlock(query: profileQueryOperation(),
-                         blockCompletionFunction: blockFetchCompletion)
+
+        CKProfileQueryOperation(blockCompletionFunction: blockFetchCompletion).execute()
     }
 
     
@@ -234,18 +235,7 @@ class ProfileManager: CloudKitManager {
         
     }
     
-    
-    private func CKsaveAndDeleteRecord(recordsToSave: [CKRecord],
-                                     recordIDsToDelete: [CKRecord.ID]) {
-        
-        saveAndDeleteRecord(recordsToSave: recordsToSave,
-                            recordIDsToDelete: recordIDsToDelete,
-                            recordSaveSuccessCompletionFunction: recordSaveCompletion,
-                            recordDeleteSuccessCompletionFunction: recordDeletionCompletion)
-
- 
-    }
-   
+       
     /// Callback functions for CloudKit record fetch
     /// On block completion copy temporary list to the main device list
     private func blockFetchCompletion(ckRecordList: [CKRecord]) -> Void {
