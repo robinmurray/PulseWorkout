@@ -11,6 +11,7 @@ import Accelerate
 
 struct MapPinView: View {
     
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
     var pinLocation: CLLocationCoordinate2D?
     // @State private
     var route: MapPolyline?
@@ -19,7 +20,11 @@ struct MapPinView: View {
     @State private var displayUserAnnotation: Bool = false
     
     
-    init(pinLatitude: Double, pinLongitude: Double) {
+    init(navigationCoordinator: NavigationCoordinator,
+         pinLatitude: Double,
+         pinLongitude: Double) {
+        
+        self.navigationCoordinator = navigationCoordinator
         pinLocation = CLLocationCoordinate2D(latitude: pinLatitude, longitude: pinLongitude)
 
         cameraPos = MapCameraPosition.region( MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: pinLatitude, longitude: pinLongitude), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)) )
@@ -91,10 +96,13 @@ struct MapPinView: View {
 
 struct MapPinView_Previews: PreviewProvider {
     
+    static var navigationCoordinator = NavigationCoordinator()
     static var latitude = 0.123
     static var longitude = 20.234
     
     static var previews: some View {
-        MapPinView(pinLatitude: latitude, pinLongitude: longitude)
+        MapPinView(navigationCoordinator: navigationCoordinator,
+                   pinLatitude: latitude,
+                   pinLongitude: longitude)
     }
 }

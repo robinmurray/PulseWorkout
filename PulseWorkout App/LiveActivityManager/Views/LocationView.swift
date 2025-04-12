@@ -15,6 +15,10 @@ struct Location: Identifiable {
 
 
 struct LocationView: View {
+
+    enum NavigationTarget {
+        case MapPinView
+    }
     
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var locationManager: LocationManager
@@ -163,23 +167,21 @@ struct LocationView: View {
                                         .foregroundColor(Color.yellow)
                                     }
                                     
-                                    NavigationStack {
-                                        NavigationLink(
-                                            destination: MapPinView(pinLatitude: locationManager.pinnedLocation!.coordinate.latitude,
-                                                                    pinLongitude: locationManager.pinnedLocation!.coordinate.longitude)) {
-                                                                     HStack {
-                                                                         Text("Map")
+                                    Button {
+                                        navigationCoordinator.goToView(targetView: NavigationTarget.MapPinView)
+                                    } label: {
+                                        HStack {
+                                            Text("Map")
 
-                                                                         Spacer()
+                                            Spacer()
 
-                                                                         Image(systemName: "map.circle")
-                                                                             .foregroundColor(Color.blue)
-                                                                             .font(.title2)
-                                                                             .frame(width: 40, height: 40)
-                                                                     }
-                                                                     
-                                                                 }
+                                            Image(systemName: "map.circle")
+                                                .foregroundColor(Color.blue)
+                                                .font(.title2)
+                                                .frame(width: 40, height: 40)
+                                        }
                                     }
+
                                 }
                                 
                             }
@@ -191,6 +193,18 @@ struct LocationView: View {
                 }
                 .onAppear(perform: locationManager.startFGLocationServices)
                 .onDisappear(perform: locationManager.stopFGLocationServices)
+
+                
+            }
+
+        }
+        .navigationDestination(for: NavigationTarget.self) { pathValue in
+            
+            if pathValue == .MapPinView {
+
+                MapPinView(navigationCoordinator: navigationCoordinator,
+                           pinLatitude: locationManager.pinnedLocation!.coordinate.latitude,
+                           pinLongitude: locationManager.pinnedLocation!.coordinate.longitude)
                 
             }
 
