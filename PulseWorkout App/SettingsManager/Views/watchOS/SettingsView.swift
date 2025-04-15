@@ -57,6 +57,17 @@ struct SettingsView: View {
                     }
                 
                 NavigationLink(
+                    destination: StravaSettingsView()) {
+                        HStack {
+                            Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                            HStack{
+                                Text("Strava Integration").foregroundColor(.white).multilineTextAlignment(.leading)
+                                Spacer()
+                            }
+                        }
+                    }
+                
+                NavigationLink(
                     destination: SettingsResetView()) {
                         HStack {
                             Label("Reset", systemImage: "gearshape")

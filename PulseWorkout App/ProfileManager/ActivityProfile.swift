@@ -13,8 +13,6 @@ import HealthKit
 /** The main data structure for maintaining workout / profile infromation */
 struct ActivityProfile: Codable, Identifiable, Equatable {
    
-
-    
     /// The unique identifier of the activity profile.
     var id: UUID?
 
@@ -59,6 +57,9 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
     
     /// Whether to enable auto-pause on this profile
     var autoPause: Bool
+    
+    /// Whether all actiities of this profile are automatically saved to Strava
+    var stravaSaveAll: Bool
 
     init(name: String,
          workoutTypeId: UInt,
@@ -71,7 +72,8 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
          playHaptic: Bool,
          constantRepeat: Bool,
          lockScreen: Bool,
-         autoPause: Bool) {
+         autoPause: Bool,
+         stravaSaveAll: Bool) {
         
         self.id = UUID()
         self.name = name
@@ -87,6 +89,7 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
         self.constantRepeat = constantRepeat
         self.lockScreen = lockScreen
         self.autoPause = autoPause
+        self.stravaSaveAll = stravaSaveAll
         
     }
     
@@ -115,6 +118,7 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
         lockScreen = record["lockScreen"] ?? false as Bool
         lastUsed = record["lastUsed"] as Date?
         autoPause = record["autoPause"] ?? true as Bool
+        stravaSaveAll = record["stravaSaveAll"] ?? false as Bool
         
         // FIX!
         stravaType = HKWorkoutActivityType(rawValue: self.workoutTypeId)?.defaultStravaType ?? "Ride"
@@ -139,8 +143,24 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
         record["lockScreen"] = lockScreen as CKRecordValue
         record["lastUsed"] = lastUsed as CKRecordValue?
         record["autoPause"] = autoPause as CKRecordValue
+        record["stravaSaveAll"] = stravaSaveAll as CKRecordValue
         
         return record
+    }
+    
+    
+    
+    /// Whether activities of this profile should be automatically saved to Strava
+    func autoSaveToStrava() -> Bool {
+        if !SettingsManager.shared.offerSaveToStrava() {
+            return false
+        }
+        
+        if SettingsManager.shared.stravaSaveByProfile {
+            return stravaSaveAll
+        } else {
+            return SettingsManager.shared.stravaSaveAll
+        }
     }
 }
 

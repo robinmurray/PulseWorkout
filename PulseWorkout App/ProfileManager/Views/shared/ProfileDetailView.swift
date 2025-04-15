@@ -124,6 +124,29 @@ struct ProfileDetailForm: View {
             .disabled(!(profile.hiLimitAlarmActive || profile.loLimitAlarmActive))
                 
         }
+        
+        Section(header: Text("Strava Integration")) {
+            VStack {
+                
+                HStack {
+                    Text("To enable this section, in Settings: Strava Integration must be enabled, Enable save to Strava must be on, and Set save options by activity profile must be on.")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+                
+                Toggle(isOn: $profile.stravaSaveAll) {
+                    Text("Auto-save all activities to Strava")
+                }
+                HStack {
+                    Text("If enabled, then all new activities of this type will be automatically saved to Strava. If not enabled, then a button is provided on each activity detail screen to optionally save to Strava")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+                
+            }
+
+            
+        }.disabled(!SettingsManager.shared.offerSaveByProfile() )
 
     }
 

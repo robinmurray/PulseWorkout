@@ -542,6 +542,12 @@ class DataCache: NSObject, Codable, ObservableObject {
         savedActivityRecord.deleteTrackRecord()
         savedActivityRecord.setToSave(false)
         
+#if os(iOS)
+        if savedActivityRecord.stravaSaveStatus == StravaSaveStatus.toSave.rawValue {
+            savedActivityRecord.saveToStrava()
+        }
+#endif
+        
         _ = self.write()
     }
     

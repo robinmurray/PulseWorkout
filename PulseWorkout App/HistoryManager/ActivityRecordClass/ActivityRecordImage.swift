@@ -83,6 +83,12 @@ class ActivityRecordImage: NSObject {
     func saveCompletion(CKRecordID: CKRecord.ID?) {
         
         dataCache.imageCache.remove(record: activityRecord)
+        
+        #if os(iOS)
+        if activityRecord.stravaSaveStatus == StravaSaveStatus.toSave.rawValue {
+            activityRecord.saveToStrava()
+        }
+        #endif
 
     }
     

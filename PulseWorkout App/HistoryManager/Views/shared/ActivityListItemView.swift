@@ -24,6 +24,9 @@ struct ActivityListItemView: View {
                 #if os(iOS)
                     .fontWeight(.bold)
                 #endif
+                #if os(watchOS)
+                    .lineLimit(3)
+                #endif
                 Spacer()
                 HStack {
                     if activityRecord.toSavePublished {

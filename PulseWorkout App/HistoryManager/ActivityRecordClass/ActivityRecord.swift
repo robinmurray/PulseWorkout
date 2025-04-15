@@ -424,6 +424,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         workoutLocationId = activityProfile.workoutLocationId
         autoPause = activityProfile.autoPause
         
+        // Set status to automatically save to strava depending onc configuration options
+        stravaSaveStatus = activityProfile.autoSaveToStrava() ? StravaSaveStatus.toSave.rawValue : StravaSaveStatus.notSaved.rawValue
+        
         var localStartHour = Int(startDateLocal.formatted(
             Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
                 .hour(.defaultDigits(amPM: .omitted))

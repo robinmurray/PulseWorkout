@@ -274,27 +274,22 @@ extension ActivityRecord {
         }
 
 
+        let activityCKRecord = CKRecord(recordType: recordType,
+                                        recordID: recordID)
+        activityCKRecord["name"] = (stravaActivity.name ?? "") as CKRecordValue
+        activityCKRecord["stravaType"] = (stravaActivity.type?.rawValue ?? "Ride") as CKRecordValue
+        activityCKRecord["workoutTypeId"] = getHKWorkoutActivityType(self.stravaType).rawValue as CKRecordValue
+        activityCKRecord["workoutLocationId"] = getHKWorkoutSessionLocationType(self.stravaType).rawValue as CKRecordValue
+        activityCKRecord["activityDescription"] = (stravaActivity.activityDescription ?? "") as CKRecordValue
+        activityCKRecord["totalAscent"] = stravaActivity.totalElevationGain as CKRecordValue?
 
-        if let dc = dataCache {
-            let activityCKRecord = CKRecord(recordType: recordType,
-                                            recordID: recordID)
-            activityCKRecord["name"] = (stravaActivity.name ?? "") as CKRecordValue
-            activityCKRecord["stravaType"] = (stravaActivity.type?.rawValue ?? "Ride") as CKRecordValue
-            activityCKRecord["workoutTypeId"] = getHKWorkoutActivityType(self.stravaType).rawValue as CKRecordValue
-            activityCKRecord["workoutLocationId"] = getHKWorkoutSessionLocationType(self.stravaType).rawValue as CKRecordValue
-            activityCKRecord["activityDescription"] = (stravaActivity.activityDescription ?? "") as CKRecordValue
-            activityCKRecord["totalAscent"] = stravaActivity.totalElevationGain as CKRecordValue?
-
-            // Only update if already saved! - should get picked up by record save
-            // if not then will update saved record on next display...
-            if !toSave {
-                CKForceUpdateOperation(ckRecord: activityCKRecord,
-                                       completionFunction: { _ in }).execute()
-            }
-            
+        // Only update if already saved! - should get picked up by record save
+        // if not then will update saved record on next display...
+        if !toSave {
+            CKForceUpdateOperation(ckRecord: activityCKRecord,
+                                   completionFunction: { _ in }).execute()
         }
 
-        
     }
 
     

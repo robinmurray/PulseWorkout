@@ -106,7 +106,7 @@ struct StravaSettingsView: View {
                         Text("Auto-save all activities to Strava")
                     }.disabled(settingsManager.stravaSaveByProfile)
                     HStack {
-                        Text("If enabled, then all new activities will be auomatically saved to Strava. If not enabled, then a button is provided on each activity detail screen to optionally save to Strava")
+                        Text("If enabled, then all new activities will be automatically saved to Strava. If not enabled, then a button is provided on each activity detail screen to optionally save to Strava")
                             .font(.footnote).foregroundColor(.gray)
                         Spacer()
                     }

@@ -165,6 +165,10 @@ class SettingsManager: NSObject, ObservableObject  {
     func offerSaveToStrava() -> Bool {
         return (stravaEnabled && stravaSave)
     }
+    
+    func offerSaveByProfile() -> Bool {
+        return (offerSaveToStrava() && stravaSaveByProfile)
+    }
 }
 
 #if os(watchOS)

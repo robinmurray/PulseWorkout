@@ -46,7 +46,8 @@ class ProfileManager: NSObject, ObservableObject {
                                 playHaptic: false,
                                 constantRepeat: false,
                                 lockScreen: false,
-                                autoPause: true)
+                                autoPause: true,
+                                stravaSaveAll: false)
         
     }
     
@@ -71,7 +72,8 @@ class ProfileManager: NSObject, ObservableObject {
                                                    playHaptic: true,
                                                    constantRepeat: false,
                                                    lockScreen: false,
-                                                   autoPause: true))
+                                                   autoPause: true,
+                                                   stravaSaveAll: false))
 
         _ = add(activityProfile: ActivityProfile ( name: "Aerobic",
                                                    workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
@@ -84,7 +86,8 @@ class ProfileManager: NSObject, ObservableObject {
                                                    playHaptic: true,
                                                    constantRepeat: false,
                                                    lockScreen: false,
-                                                   autoPause: true))
+                                                   autoPause: true,
+                                                   stravaSaveAll: false))
 
         _ = add(activityProfile: ActivityProfile ( name: "Recovery",
                                                    workoutTypeId: HKWorkoutActivityType.cycling.rawValue,
@@ -97,7 +100,8 @@ class ProfileManager: NSObject, ObservableObject {
                                                    playHaptic: true,
                                                    constantRepeat: false,
                                                    lockScreen: false,
-                                                   autoPause: true))
+                                                   autoPause: true,
+                                                   stravaSaveAll: false))
 
     }
 
