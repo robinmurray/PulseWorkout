@@ -61,6 +61,12 @@ class CloudKitOperation: NSObject {
         let recordName = CKRecord.ID().recordName
         return CKRecord.ID(recordName: recordName, zoneID: zoneID)
     }
+
+    /// Function to create a new recordID in correct zone from a given fixed name
+    func getCKRecordID(recordName: String) -> CKRecord.ID {
+
+        return CKRecord.ID(recordName: recordName, zoneID: zoneID)
+    }
     
 }
 

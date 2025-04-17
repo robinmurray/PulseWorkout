@@ -6,7 +6,8 @@
 //
 
 import Foundation
-
+import CloudKit
+import os
 
 #if os(watchOS)
 import WatchKit
@@ -19,6 +20,11 @@ import StravaSwift
 #endif
 
 class SettingsManager: NSObject, ObservableObject  {
+    
+    let CK_RECORD_NAME: String = "App_Settings"
+    let CK_RECORD_TYPE = "Settings"
+    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
+                        category: "SettingsManager")
     
     ///Access SettingsManager through SettingsManager.shared
     public static let shared = SettingsManager()
@@ -79,6 +85,7 @@ class SettingsManager: NSObject, ObservableObject  {
     
     override init() {
         
+        // First read from user defaults, then attempt cloudkit fetch...
         transmitHR = UserDefaults.standard.bool(forKey: "transmitHR")
         transmitPowerMeter = UserDefaults.standard.bool(forKey: "transmitPowerMeter")
         
@@ -111,9 +118,75 @@ class SettingsManager: NSObject, ObservableObject  {
         
         super.init()
 
+        readFromCloudKit()
     }
     
+    
+    func readFromCloudKit() {
+        
+        let recordID = CloudKitOperation().getCKRecordID(recordName: CK_RECORD_NAME)
+        
+        CKFetchRecordOperation(recordID: recordID,
+                               completionFunction: fromCKRecord,
+                               completionFailureFunction: { }).execute()
+        
+        
+        
+    }
+    
+    
+    /// Convert CKRecord to settings
+    func fromCKRecord(ckRecord: CKRecord) {
+        
+        if ckRecord.recordType != CK_RECORD_TYPE {
+            logger.error("Incorrect record type for Settings")
+            return
+        }
+        
+        DispatchQueue.main.async {
+            self.transmitHR = ckRecord["transmitHR"] ?? false as Bool
+            self.transmitPowerMeter = ckRecord["transmitPowerMeter"] ?? false as Bool
+            self.saveAppleHealth = ckRecord["saveAppleHealth"] ?? false as Bool
+            self.autoPauseSpeed = ckRecord["autoPauseSpeed"] ?? 0.2 as Double
+            self.autoResumeSpeed = ckRecord["autoResumeSpeed"] ?? 0.4 as Double
+            self.minAutoPauseSeconds = ckRecord["minAutoPauseSeconds"] ?? 3 as Int
+            self.aveCadenceZeros = ckRecord["aveCadenceZeros"] ?? false as Bool
+            self.avePowerZeros = ckRecord["avePowerZeros"] ?? false as Bool
+            self.aveHRPaused = ckRecord["aveHRPaused"] ?? false as Bool
+    #if os(watchOS)
+            self.hapticType = WKHapticType(rawValue: (ckRecord["hapticType"] ?? WKHapticType.notification.rawValue as Int)) ?? WKHapticType.notification
+    #endif
+            
+            self.maxAlarmRepeatCount = ckRecord["maxAlarmRepeatCount"] ?? 1 as Int
+            self.use3sCyclePower = ckRecord["use3sCyclePower"] ?? false as Bool
+            self.cyclePowerGraphSeconds = ckRecord["cyclePowerGraphSeconds"] ?? 30 as Int
+            self.stravaEnabled = ckRecord["stravaEnabled"] ?? false as Bool
+            self.stravaClientId = ckRecord["stravaClientId"] as Int?
+            self.stravaClientSecret = ckRecord["stravaClientSecret"] ?? "" as String
+            self.stravaFetch = ckRecord["stravaFetch"] ?? false as Bool
+            self.stravaSave = ckRecord["stravaSave"] ?? false as Bool
+            self.stravaSaveByProfile = ckRecord["stravaSaveByProfile"] ?? false as Bool
+            self.stravaSaveAll = ckRecord["stravaSaveAll"] ?? false as Bool
+            
+            self.saveToUserDefaults()
+        }
+            
+
+    }
+    
+    /// Save to local user defaults and then save to shared CloudKit
     func save() {
+
+        saveToUserDefaults()
+        
+        // Save settings data to CloudKit
+        saveToCloudKit()
+
+    }
+    
+    
+    
+    func saveToUserDefaults() {
 
         UserDefaults.standard.set(transmitHR, forKey: "transmitHR")
         UserDefaults.standard.set(transmitPowerMeter, forKey: "transmitPowerMeter")
@@ -155,7 +228,57 @@ class SettingsManager: NSObject, ObservableObject  {
             _ = StravaClient.sharedInstance.initWithConfig(config)
         }
         #endif
+
+    }
+    
+
+   
+    
+    /// Save settings to CloudKit
+    func saveToCloudKit() {
+        CKForceUpdateOperation(ckRecord: asCKRecord(),
+                               completionFunction: {_ in }).execute()
+    }
+    
+    
+    /// Convert settings data to CKRecord
+    func asCKRecord() -> CKRecord {
+
+//      Create record with fixed recordID for single settings record
+        let record = CKRecord(recordType: CK_RECORD_TYPE, recordID: CloudKitOperation().getCKRecordID(recordName: CK_RECORD_NAME))
         
+        record["transmitHR"] = transmitHR as CKRecordValue
+        record["transmitPowerMeter"] = transmitPowerMeter as CKRecordValue
+        record["saveAppleHealth"] = saveAppleHealth as CKRecordValue
+        record["autoPauseSpeed"] = autoPauseSpeed as CKRecordValue
+        record["autoResumeSpeed"] = autoResumeSpeed as CKRecordValue
+        record["minAutoPauseSeconds"] = minAutoPauseSeconds as CKRecordValue
+        record["aveCadenceZeros"] = aveCadenceZeros as CKRecordValue
+        record["avePowerZeros"] = avePowerZeros as CKRecordValue
+        record["aveHRPaused"] = aveHRPaused as CKRecordValue
+#if os(watchOS)
+        record["hapticType"] = hapticType.rawValue as CKRecordValue
+#endif
+        
+        record["maxAlarmRepeatCount"] = maxAlarmRepeatCount as CKRecordValue
+        record["use3sCyclePower"] = use3sCyclePower as CKRecordValue
+        record["cyclePowerGraphSeconds"] = cyclePowerGraphSeconds as CKRecordValue
+        record["stravaEnabled"] = stravaEnabled as CKRecordValue
+        record["stravaClientId"] = stravaClientId as CKRecordValue?
+        record["stravaClientSecret"] = stravaClientSecret as CKRecordValue
+        record["stravaFetch"] = stravaFetch as CKRecordValue
+        record["stravaSave"] = stravaSave as CKRecordValue
+        record["stravaSaveByProfile"] = stravaSaveByProfile as CKRecordValue
+        record["stravaSaveAll"] = stravaSaveAll as CKRecordValue
+        
+        return record
+    }
+   
+    
+    func registerNotifications(notificationManager: CloudKitNotificationManager) {
+        notificationManager.registerNotificationFunctions(recordType: CK_RECORD_TYPE,
+                                                          recordDeletionFunction: { _ in },                         // record should not get deleted!!
+                                                          recordChangeFunction: { _ in self.readFromCloudKit() })   // only a single record!
     }
     
     func fetchFromStrava() -> Bool {

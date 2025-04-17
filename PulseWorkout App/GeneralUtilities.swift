@@ -48,6 +48,14 @@ func getAxisMarksFor125(max: Double, intervals: Int) -> [Int] {
 
 func getScaleFactor(axisMarks1: [Int], axisMarks2: [Int]) -> Double {
     
+    if (axisMarks2.max() ?? 0) <= 0 {
+        return 1
+    }
+
+    if (axisMarks1.max() ?? 0) <= 0 {
+        return 1
+    }
+    
     return Double(axisMarks1.max()!) / Double(axisMarks2.max()!)
     
 }

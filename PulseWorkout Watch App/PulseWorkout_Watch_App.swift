@@ -50,6 +50,7 @@ struct PulseWorkout_Watch_App: App {
         // Register notifications
         myDataCache.registerNotifications(notificationManager: myCloudKitNotificationManager)
         self.profileManager.registerNotifications(notificationManager: myCloudKitNotificationManager)
+        SettingsManager.shared.registerNotifications(notificationManager: myCloudKitNotificationManager)
         
         // register datacache in app delegate so can perform cache updates
         appDelegate.notificationManager = myCloudKitNotificationManager
