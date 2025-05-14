@@ -402,15 +402,12 @@ extension ActivityRecord {
 
 
     func addActivityAnalysis() {
-        FTP = 275
+
+        FTP = settingsManager.userPowerMetrics.currentFTP
+        powerZoneLimits = settingsManager.userPowerMetrics.powerZoneLimits
+        
         thesholdHR = 154
-
-
-        let powerZoneRatios = [0, 0.55, 0.75, 0.9, 1.05, 1.2]
-        if let currentFTP = FTP {
-            powerZoneLimits = powerZoneRatios.map({ Int(round($0 * Double(currentFTP))) })
-        }
-
+        
         let HRZoneRatios = [0, 0.68, 0.83, 0.94, 1.05]
         if let currentThesholdHR = thesholdHR {
             HRZoneLimits = HRZoneRatios.map({ Int(round($0 * Double(currentThesholdHR))) })

@@ -82,6 +82,8 @@ class SettingsManager: NSObject, ObservableObject  {
     /// If Strava save is global (not by profile) whether to save everything, or optional
     @Published var stravaSaveAll: Bool = false
     
+    var userPowerMetrics: UserPowerMetrics
+    
     
     override init() {
         
@@ -115,6 +117,8 @@ class SettingsManager: NSObject, ObservableObject  {
         stravaSave = UserDefaults.standard.bool(forKey: "stravaSave")
         stravaSaveByProfile = UserDefaults.standard.bool(forKey: "stravaSaveByProfile")
         stravaSaveAll = UserDefaults.standard.bool(forKey: "stravaSaveAll")
+        
+        userPowerMetrics = UserPowerMetrics()
         
         super.init()
 

@@ -575,10 +575,19 @@ class DataCache: NSObject, Codable, ObservableObject {
 
     private func processRecordChangeNofification(record: CKRecord) {
 
+        var activityRecord: ActivityRecord
+        
         let recordDesc: String = record["name"] ?? "" + " : " + (record["startDateLocal"] as? Date ?? Date(timeIntervalSince1970: 0)).formatted(Date.ISO8601FormatStyle())
         localLogger.log("Processing record change: \(recordDesc)")
         
-        let activityRecord = ActivityRecord(fromCKRecord: record, fetchtrackData: false)
+        activityRecord = ActivityRecord(fromCKRecord: record, fetchtrackData: false)
+        
+        #if os(iOS)
+        if activityRecord.stravaSaveStatus == StravaSaveStatus.toSave.rawValue {
+            activityRecord = ActivityRecord(fromCKRecord: record, fetchtrackData: true)
+            activityRecord.saveToStrava()
+        }
+        #endif
         
         changeCache(changedActivityRecord: activityRecord)
         changeUI(changedActivityRecord: activityRecord)

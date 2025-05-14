@@ -424,6 +424,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         workoutLocationId = activityProfile.workoutLocationId
         autoPause = activityProfile.autoPause
         
+        // Get current FTP settings
+        FTP = settingsManager.userPowerMetrics.currentFTP
+        powerZoneLimits = settingsManager.userPowerMetrics.powerZoneLimits
+        
         // Set status to automatically save to strava depending onc configuration options
         stravaSaveStatus = activityProfile.autoSaveToStrava() ? StravaSaveStatus.toSave.rawValue : StravaSaveStatus.notSaved.rawValue
         

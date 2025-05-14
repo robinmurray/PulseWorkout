@@ -46,7 +46,7 @@ struct AutoPauseSettingsView: View {
                 }
                 
                 HStack {
-                    Text("Start auto-pause when speed drops below this setting for longer than 'Mminumu Duration'.")
+                    Text("Start auto-pause when speed drops below this setting for longer than 'Minumum Duration'.")
                         .font(.footnote).foregroundColor(.gray)
                     Spacer()
                 }

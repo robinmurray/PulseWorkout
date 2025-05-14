@@ -7,12 +7,27 @@
 
 import SwiftUI
 
+func getBuildNumber() -> String {
+    if let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
+        return buildNumber
+    }
+    return "Unknown"
+}
+
+func getAppVersion() -> String {
+    if let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String {
+        return appVersion
+    }
+    return "Unknown"
+}
+
 struct SettingsResetView: View {
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     
     var body: some View {
         Form {
-
+            Text("Version: \(getAppVersion()) (Build: \(getBuildNumber()))")
+            
                 VStack {
                     Button("Clear local cache") {
                         clearCache()

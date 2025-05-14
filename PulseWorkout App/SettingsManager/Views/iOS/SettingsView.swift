@@ -20,6 +20,16 @@ struct SettingsView: View {
             Form {
 
                 NavigationLink(
+                    destination: UserMetricsView()) {
+                        HStack {
+                            Label("My Profile", systemImage: "figure.run.circle")
+                                .foregroundStyle(.foreground)
+
+                            Spacer()
+                        }
+                    }
+                
+                NavigationLink(
                     destination: AutoPauseSettingsView()) {
                         HStack {
                             Label("Auto-Pause", systemImage: "pause.circle")
