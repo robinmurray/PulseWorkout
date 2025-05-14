@@ -7,12 +7,44 @@
 
 import SwiftUI
 
+
 struct UserMetricsView: View {
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        
+        Form {
+
+            NavigationLink(
+                destination: CyclePowerZonesView(userPowerMetrics: SettingsManager.shared.userPowerMetrics)) {
+                    HStack {
+                        Label("Cycling Power Zones", systemImage: powerIcon)
+                            .foregroundStyle(powerColor)
+
+                        Spacer()
+                    }
+                }
+            
+            NavigationLink(
+                destination: CyclePowerZonesView(userPowerMetrics: SettingsManager.shared.userPowerMetrics)) {
+                    HStack {
+                        Label("Heart Rate Zones", systemImage: heartRateIcon)
+                            .foregroundStyle(heartRateColor)
+
+                        Spacer()
+                    }
+                }
+            
+        }
+        .navigationTitle("My Profile")
+        .navigationBarTitleDisplayMode(.inline)
+
+        
     }
+
 }
 
 #Preview {
+    
     UserMetricsView()
+    
 }
