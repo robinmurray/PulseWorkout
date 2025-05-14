@@ -12,7 +12,7 @@
 		<key>Playground (Playground).xcscheme</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>4</integer>
 		</dict>
 		<key>PulseWorkout Phone App.xcscheme_^#shared#^_</key>
 		<dict>
@@ -32,6 +32,21 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>E4094B8A2CD0C22800915CCB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E4094B992CD0C22A00915CCB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>E4094BA32CD0C22B00915CCB</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>E46EF07729537CA1006FA603</key>
 		<dict>
 			<key>primary</key>
