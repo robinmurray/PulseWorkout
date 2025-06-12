@@ -120,3 +120,7 @@ func energyFormatter( energy: Double ) -> String {
                         usage: .workout))
 }
 
+func TSSFormatter(TSS: Double) -> String {
+    return String(format: "%.1f", TSS)
+}
+

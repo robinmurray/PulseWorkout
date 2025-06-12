@@ -22,12 +22,14 @@ let movingTimeIcon = "figure.run"
 
 
 // Colours
+let activitiesColor = Color.mint
 let heartRateColor = Color.red
 let distanceColor = Color.blue
 let speedColor = Color.purple
 let powerColor = Color.orange
 let cadenceColor = Color.teal
-
+let TSSColor = Color.purple
+let timeByHRColor = Color.green
 
 // Constants
 let ACTIVITY_RECORDING_INTERVAL: Int = 2

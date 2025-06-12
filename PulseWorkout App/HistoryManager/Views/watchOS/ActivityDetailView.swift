@@ -81,10 +81,10 @@ struct ActivityDetailView: View {
 
                     HStack {
                         Image(systemName:"stopwatch")
-                            .foregroundColor(Color.green)
+                            .foregroundColor(timeByHRColor)
                         Spacer()
                         Text(durationFormatter.string(from: activityRecord.movingTime) ?? "")
-                            .foregroundStyle(.green)
+                            .foregroundStyle(timeByHRColor)
                             .font(.system(.title3, design: .rounded).lowercaseSmallCaps())
                     }
                     Divider()
@@ -152,12 +152,12 @@ struct ActivityDetailView: View {
                 }
                 
                 GraphButtonView(navigationCoordinator: navigationCoordinator,
-                                buttonColor: .green,
+                                buttonColor: timeByHRColor,
                                 activityRecord: activityRecord,
                                 dataCache: dataCache)
                 
             }
-            .containerBackground(.green.gradient, for: .tabView)
+            .containerBackground(timeByHRColor.gradient, for: .tabView)
             
             HStack {
                 VStack {

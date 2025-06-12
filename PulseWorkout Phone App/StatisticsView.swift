@@ -56,8 +56,12 @@ struct StatisticsView: View {
     @ObservedObject var dataCache: DataCache
     
     var body: some View {
-        VStack {
+        
+
+        ScrollView {
             ActivityHistoryHeaderView()
+            Spacer()
+            StatisticsSummaryView(navigationCoordinator: navigationCoordinator)
             Spacer()
             Button("Migrate...") {
                 print("Perform migration")

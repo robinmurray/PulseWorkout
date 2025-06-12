@@ -6,28 +6,45 @@
 //
 
 import SwiftUI
+import Charts
 
 struct ActivityHistoryHeaderView: View {
+    
+    @ObservedObject var statisticsManager = StatisticsManager.shared
+    
     var body: some View {
-        VStack {
 
-            HStack{
+        VStack {
+            
+        HStack{
                 VStack {
                     HStack {
                         Text("This week").bold().foregroundStyle(.blue)
                         Spacer()
                     }
                     
+
+
+
+
                     HStack {
-                        Text("7 Activities")
+                        Text("\(Int(statisticsManager.weekActivities[0])) Activities")
                         Spacer()
                     }
+
                     HStack {
-                        Text("350 km")
+                        Text(durationFormatter(elapsedSeconds: statisticsManager.weekTime[0],
+                                               minimizeLength: true))
                         Spacer()
                     }
+                    
                     HStack {
-                        Text("800 TS")
+                        Text(distanceFormatter(distance: statisticsManager.weekDistance[0]))
+                        Spacer()
+                    }
+
+                    HStack {
+                        Text("\(TSSFormatter(TSS: statisticsManager.weekTSS[0])) TS")
                         Spacer()
                     }
                     
@@ -36,23 +53,30 @@ struct ActivityHistoryHeaderView: View {
                 Spacer()
                 VStack {
                     HStack {
-                        Text("Previous 7 days").bold().foregroundStyle(.blue)
+                        Text("Last Week").bold().foregroundStyle(.blue)
                         Spacer()
                     }
                     
                     HStack {
-                        Text("5 Activities")
-                        Spacer()
-                    }
-                    HStack {
-                        Text("150 km")
-                        Spacer()
-                    }
-                    HStack {
-                        Text("600 TS")
+                        Text("\(Int(statisticsManager.weekActivities[1])) Activities")
                         Spacer()
                     }
                     
+                    HStack {
+                        Text(durationFormatter(elapsedSeconds: statisticsManager.weekTime[1],
+                                               minimizeLength: true))
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        Text(distanceFormatter(distance: statisticsManager.weekDistance[1]))
+                        Spacer()
+                    }
+
+                    HStack {
+                        Text("\(TSSFormatter(TSS: statisticsManager.weekTSS[1])) TS")
+                        Spacer()
+                    }
                 }
 
             }

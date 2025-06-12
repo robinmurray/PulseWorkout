@@ -174,7 +174,7 @@ struct ActivityDetailView: View {
                         Spacer()
 
                     }
-                    .foregroundColor(.purple)
+                    .foregroundColor(TSSColor)
                     
                     Divider()
                 }
