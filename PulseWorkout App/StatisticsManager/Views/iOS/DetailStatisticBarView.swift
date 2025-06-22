@@ -14,40 +14,49 @@ struct DetailStatisticBarView: View {
     
     
     var body: some View {
-    
-        ScrollView {
-            GroupBox(label: Text("This Week")
-                .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
-                .fontWeight(.bold))
-            {
-
-                StackedBarView(stackedBarData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: propertyName))
-
-            }
+        VStack {
+            ActivityHistoryHeaderView()
+            Spacer()
             
-            GroupBox(label: Text("Last Week")
-                .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
-                .fontWeight(.bold))
-            {
+            ScrollView {
+                GroupBox(label: Text("This Week")
+                    .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
+                    .fontWeight(.bold))
+                {
 
-                StackedBarView(stackedBarData: statisticsManager.lastWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: propertyName))
+                    StackedBarView(stackedBarData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: propertyName),
+                                   formatter: propertyValueFormatter(propertyName, shortForm: true))
 
+                }
+                
+                GroupBox(label: Text("Last Week")
+                    .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
+                    .fontWeight(.bold))
+                {
+
+                    StackedBarView(stackedBarData: statisticsManager.lastWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: propertyName),
+                                   formatter: propertyValueFormatter(propertyName, shortForm: true))
+
+                }
+                
+                GroupBox(label: Text("Last 12 Weeks")
+                    .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
+                    .fontWeight(.bold))
+                {
+                    StackedBarView(stackedBarData: statisticsManager.weekBuckets.asWeekStackedBarData(propertyName: propertyName),
+                                   formatter: propertyValueFormatter(propertyName, shortForm: true))
+                }
+                
+                GroupBox(label: Text("By Quarters")
+                    .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
+                    .fontWeight(.bold))
+                {
+                    StackedBarView(stackedBarData: statisticsManager.quarterBuckets.asQuarterStackedBarData(propertyName: propertyName),
+                                   formatter: propertyValueFormatter(propertyName, shortForm: true))
+                }
+                
+                
             }
-            
-            GroupBox(label: Text("Last 12 Weeks")
-                .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
-                .fontWeight(.bold))
-            {
-                StackedBarView(stackedBarData: statisticsManager.weekBuckets.asWeekStackedBarData(propertyName: propertyName))
-            }
-            
-            GroupBox(label: Text("By Quarters")
-                .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
-                .fontWeight(.bold))
-            {
-                StackedBarView(stackedBarData: statisticsManager.quarterBuckets.asQuarterStackedBarData(propertyName: propertyName))
-            }
-            
             
         }
         .navigationTitle(PropertyViewParamaters[propertyName]?.navigationTitle ?? "Error!")

@@ -32,7 +32,11 @@ func durationFormatter( seconds: Int ) -> String {
 
 
 
-func distanceFormatter (distance: Double, forceMeters: Bool = false) -> String {
+func distanceFormatter (distance: Double, forceMeters: Bool = false, justKilometers: Bool = false) -> String {
+    
+    if justKilometers {
+        return String(format: "%.0f", (distance / 1000).rounded() )
+    }
     var unit = UnitLength.meters
     var displayDistance: Double = distance.rounded()
     if (distance > 1000) && (!forceMeters) {
@@ -67,7 +71,7 @@ func speedFormatter( speed: Double ) -> String {
     
 }
 
-func durationFormatter( elapsedSeconds: Double, minimizeLength: Bool = false ) -> String {
+func durationFormatter(elapsedSeconds: Double, minimizeLength: Bool = false, showSeconds: Bool = true) -> String {
     
     let formatter = DateComponentsFormatter()
     formatter.allowedUnits = [.hour, .minute, .second]
@@ -80,14 +84,22 @@ func durationFormatter( elapsedSeconds: Double, minimizeLength: Bool = false ) -
         if (Int(elapsedSeconds) % 60) == 0 {
             formatter.allowedUnits = [.hour, .minute]
         }
+
+
     }
     
+    if !showSeconds {
+        formatter.allowedUnits = [.hour, .minute]
+        if minimizeLength {
+            formatter.zeroFormattingBehavior = .default
+        }
+    }
     
     return formatter.string(from: elapsedSeconds) ?? ""
 }
 
-func elapsedTimeFormatter( elapsedSeconds: Double, minimizeLength: Bool = false ) -> String {
-    return durationFormatter( elapsedSeconds: elapsedSeconds, minimizeLength: minimizeLength )
+func elapsedTimeFormatter(elapsedSeconds: Double, minimizeLength: Bool = false, showSeconds: Bool = true) -> String {
+    return durationFormatter( elapsedSeconds: elapsedSeconds, minimizeLength: minimizeLength, showSeconds: showSeconds )
 }
 
 

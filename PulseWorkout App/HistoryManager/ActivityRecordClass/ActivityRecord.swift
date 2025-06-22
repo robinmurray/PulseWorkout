@@ -517,6 +517,17 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         TSSByRange = TSSByRange.map( {round($0 * 10) / 10} )
         return TSSByRange
     }
+ 
+    func TSSorEstimate() -> Double {
+        let ts = TSS ?? 0
+        let ets = estimatedTSSbyHR ?? 0
+        if ts != 0 {
+            return (round(ts * 10) / 10)
+        }
+        return (round(ets * 10) / 10)
+        
+    }
+ 
     
     /// Convert5 heart rate zones to 3  ranges.
     /// If no heart rate, use power reading 

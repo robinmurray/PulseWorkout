@@ -57,82 +57,86 @@ struct StatisticsView: View {
     
     var body: some View {
         
-
-        ScrollView {
+        VStack {
             ActivityHistoryHeaderView()
             Spacer()
-            StatisticsSummaryView(navigationCoordinator: navigationCoordinator)
-            Spacer()
-            Button("Migrate...") {
-                print("Perform migration")
-                let migrationManager = MigrationManager()
-                migrationManager.fetchAllRecordsToUpdate()
-            }
 
-            Spacer()
+            ScrollView {
+                StatisticsSummaryView(navigationCoordinator: navigationCoordinator)
+                Spacer()
+                Button("Migrate...") {
+                    print("Perform migration")
+                    let migrationManager = MigrationManager()
+                    migrationManager.fetchAllRecordsToUpdate()
+                }
 
-            Button("Test Strava Fetch...") {
-                print("Fetch from Strava")
-//                let stravaManager = StravaManager()
-//                stravaManager.fetchActivities(perPage: 5,
-//                                              completionHandler: stravaManager.dummyFetchCompletion)
+                Spacer()
 
-                StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion).execute()
-            }
-            Button("Fetch - force reauth...") {
+                Button("Test Strava Fetch...") {
+                    print("Fetch from Strava")
+    //                let stravaManager = StravaManager()
+    //                stravaManager.fetchActivities(perPage: 5,
+    //                                              completionHandler: stravaManager.dummyFetchCompletion)
 
-                StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion,
-                                      forceReauth: true).execute()
-            }
-            Button("Fetch - force refresh...") {
+                    StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion).execute()
+                }
+                Button("Fetch - force reauth...") {
 
-                StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion,
-                                      forceRefresh: true).execute()
-            }
-            Button("Test Strava Fetch and save 5 days...") {
-                print("Fetch from Strava and save")
-                
-                StravaFetchLatestActivities(after: Date.now.addingTimeInterval(-86400 * 5),
-                                            completionHandler: { dataCache.refreshUI()}).execute()
-                /*
-                StravaFetchActivities(completionHandler: {fetchedActivities in
+                    StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion,
+                                          forceReauth: true).execute()
+                }
+                Button("Fetch - force refresh...") {
+
+                    StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion,
+                                          forceRefresh: true).execute()
+                }
+                Button("Test Strava Fetch and save 5 days...") {
+                    print("Fetch from Strava and save")
                     
-                    for (index, activity) in fetchedActivities.enumerated() {
-                        if index < 1 {
-                            StravaFetchFullActivity(stravaActivityId: activity.id!,
-                                                    completionHandler: {activityRecord in
-                                
-                                activityRecord.save(dataCache: self.dataCache)
+                    StravaFetchLatestActivities(after: Date.now.addingTimeInterval(-86400 * 5),
+                                                completionHandler: { dataCache.refreshUI()}).execute()
+                    /*
+                    StravaFetchActivities(completionHandler: {fetchedActivities in
+                        
+                        for (index, activity) in fetchedActivities.enumerated() {
+                            if index < 1 {
+                                StravaFetchFullActivity(stravaActivityId: activity.id!,
+                                                        completionHandler: {activityRecord in
+                                    
+                                    activityRecord.save(dataCache: self.dataCache)
+                                }
+                                ).execute()
                             }
-                            ).execute()
                         }
                     }
+                    ).execute()
+                    */
                 }
-                ).execute()
-                */
+                
+                Spacer()
+                SwipeButton(swipeText: "Swipe to go Home",
+                            perform : {navigationCoordinator.goToTab(tab: .home)},
+                            buttonColor: Color.yellow)
+
+                Spacer()
+                Text("Statistics!")
+                Spacer()
+                Button("Go!") {
+                    navigationCoordinator.goToTab(tab: .home)
+                }
+                .buttonStyle(.bordered)
+                Spacer()
             }
-            
-            Spacer()
-            SwipeButton(swipeText: "Swipe to go Home",
-                        perform : {navigationCoordinator.goToTab(tab: .home)},
-                        buttonColor: Color.yellow)
+            .navigationDestination(for: MyViews.self) { pathValue in
 
-            Spacer()
-            Text("Statistics!")
-            Spacer()
-            Button("Go!") {
-                navigationCoordinator.goToTab(tab: .home)
+                if pathValue == MyViews.DestinationView {
+
+                    DestinationView(navigationCoordinator: navigationCoordinator, type: "Hello World")
+                }
             }
-            .buttonStyle(.bordered)
-            Spacer()
         }
-        .navigationDestination(for: MyViews.self) { pathValue in
+        
 
-            if pathValue == MyViews.DestinationView {
-
-                DestinationView(navigationCoordinator: navigationCoordinator, type: "Hello World")
-            }            
-        }
     }
 }
 

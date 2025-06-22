@@ -14,14 +14,15 @@ struct StackedBarAndDonutView: View {
     var donutChartData: [DonutChartDataPoint]
     var donutChartTotalName: String
     var donutChartTotalValue: String
-
+    var formatter: (Double) -> String
     
     
     var body: some View {
         
         VStack {
 
-            StackedBarView(stackedBarData: stackedBarData)
+            StackedBarView(stackedBarData: stackedBarData,
+                           formatter: formatter)
             
             DonutChartView(chartData: donutChartData,
                            totalName: donutChartTotalName,
@@ -50,5 +51,6 @@ struct StackedBarAndDonutView: View {
     StackedBarAndDonutView(stackedBarData: testBarData,
                            donutChartData: testDonutData,
                            donutChartTotalName: "Total",
-                           donutChartTotalValue: "999")
+                           donutChartTotalValue: "999",
+                           formatter: propertyValueFormatter("TSS"))
 }

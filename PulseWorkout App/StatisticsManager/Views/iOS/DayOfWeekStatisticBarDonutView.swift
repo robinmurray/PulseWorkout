@@ -46,7 +46,8 @@ struct DayOfWeekStatisticBarDonutView: View {
                     stackedBarData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
                     donutChartData: statisticsManager.thisWeek().asZoneDonutChartData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
                     donutChartTotalName: PropertyViewParamaters[propertyName]?.totalLabel ?? "Total",
-                    donutChartTotalValue: statisticsManager.thisWeek().formattedValue(propertyName: propertyName))
+                    donutChartTotalValue: statisticsManager.thisWeek().formattedValue(propertyName: propertyName),
+                    formatter: propertyValueFormatter(propertyName, shortForm: true))
                 
             }
         }

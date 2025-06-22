@@ -44,7 +44,8 @@ struct DayOfWeekStatisticBarView: View {
             }
             )
             {
-                StackedBarView(stackedBarData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: propertyName))
+                StackedBarView(stackedBarData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: propertyName),
+                formatter:propertyValueFormatter(propertyName, shortForm: true))
                 
             }
         }

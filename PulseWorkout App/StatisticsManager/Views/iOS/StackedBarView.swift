@@ -18,6 +18,7 @@ struct StackedBarChartDataPoint: Identifiable {
 struct StackedBarView: View {
     
     var stackedBarData: [StackedBarChartDataPoint]
+    var formatter: (Double) -> String
     
     var body: some View {
         Chart {
@@ -27,6 +28,19 @@ struct StackedBarView: View {
                     y: .value("Total Count", dataPoint.value)
                 )
                 .foregroundStyle(by: .value("Shape Color", dataPoint.type))
+                .annotation(position: .top) {
+                    let summedValues = stackedBarData.filter( {$0.index == dataPoint.index} ).reduce(0) { result, dp
+                        in
+                        result + dp.value }
+                    
+                    let rotationDegrees = Set(stackedBarData.map({$0.index})).count > 8 ? 315 : 0
+                    if dataPoint.type == stackedBarData.last!.type {
+                        Text(formatter(summedValues))
+                            .rotationEffect(.degrees(Double(rotationDegrees)))
+                            .foregroundColor(.secondary)
+                            .font(.caption)
+                    }
+                }
             }
         }
         .chartLegend(.hidden)
@@ -47,5 +61,6 @@ struct StackedBarView: View {
      StackedBarChartDataPoint(index: "T", type: "high aerobic", value: 20),
      StackedBarChartDataPoint(index: "T", type: "anaerobic", value: 10)
      ]
-    StackedBarView(stackedBarData: testData)
+    StackedBarView(stackedBarData: testData,
+                   formatter: propertyValueFormatter("TSS"))
 }
