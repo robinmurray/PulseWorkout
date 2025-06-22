@@ -496,6 +496,51 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
           return str
         
     }
+    
+    /// Convert 6 power zones to 3 power ranges.
+    /// If no power reading use HR estaimates
+    /// If nothing return array of zeros
+    func TSSbyRangeFromZone() -> [Double] {
+        var TSSByRange: [Double] = [0, 0, 0]
+        if TSSbyPowerZone.count == 6 {
+            TSSByRange[0] = TSSbyPowerZone[0] + TSSbyPowerZone[1]
+            TSSByRange[1] = TSSbyPowerZone[2] + TSSbyPowerZone[3]
+            TSSByRange[2] = TSSbyPowerZone[4] + TSSbyPowerZone[5]
+        }
+        if TSSByRange.reduce(0, +) == 0 {
+            if TSSEstimatebyHRZone.count == 5 {
+                TSSByRange[0] = TSSEstimatebyHRZone[0] + TSSEstimatebyHRZone[1]
+                TSSByRange[1] = TSSEstimatebyHRZone[2] + TSSEstimatebyHRZone[3]
+                TSSByRange[2] = TSSEstimatebyHRZone[4]
+            }
+        }
+        TSSByRange = TSSByRange.map( {round($0 * 10) / 10} )
+        return TSSByRange
+    }
+    
+    /// Convert5 heart rate zones to 3  ranges.
+    /// If no heart rate, use power reading 
+    /// If nothing return array of zeros
+    func movingTimebyRangeFromZone() -> [Double] {
+        var movingTimebyRange: [Double] = [0, 0, 0]
+        if movingTimebyHRZone.count == 5 {
+            movingTimebyRange[0] = movingTimebyHRZone[0] + movingTimebyHRZone[1]
+            movingTimebyRange[1] = movingTimebyHRZone[2] + movingTimebyHRZone[3]
+            movingTimebyRange[2] = movingTimebyHRZone[4]
+        }
+        if movingTimebyRange.reduce(0, +) == 0 {
+            if movingTimebyPowerZone.count == 6 {
+                movingTimebyRange[0] = movingTimebyPowerZone[0] + movingTimebyPowerZone[1]
+                movingTimebyRange[1] = movingTimebyPowerZone[2] + movingTimebyPowerZone[3]
+                movingTimebyRange[2] = movingTimebyPowerZone[4] + movingTimebyPowerZone[5]
+            }
+        }
+        movingTimebyRange = movingTimebyRange.map( {round($0 * 10) / 10} )
+
+        return movingTimebyRange
+        
+    }
+    
 }
 
 // MARK: - Serialise Activity Record to JSON

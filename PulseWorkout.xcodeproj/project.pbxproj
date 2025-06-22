@@ -7,12 +7,32 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E400A97B2DF567C200620569 /* ZoneStatisticsSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400A97A2DF567C200620569 /* ZoneStatisticsSummaryView.swift */; };
 		E400AB732DF5EA1B00620569 /* StatisticsSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400AB722DF5EA1B00620569 /* StatisticsSummaryView.swift */; };
 		E400ABC02DF5EC7400620569 /* StatisticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400ABBF2DF5EC7400620569 /* StatisticsManager.swift */; };
-		E400B56F2DFB0F1C00620569 /* TypeStatisticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400B56E2DFB0F1C00620569 /* TypeStatisticsManager.swift */; };
-		E400B5732DFB162500620569 /* TypeStatisticsSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400B5722DFB162500620569 /* TypeStatisticsSummaryView.swift */; };
-		E400B6882DFB24E700620569 /* TypeStatisticsDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400B6872DFB24E700620569 /* TypeStatisticsDetailView.swift */; };
+		E400B6ED2DFC173600620569 /* icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* icons.swift */; };
+		E400B6EE2DFC173600620569 /* icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* icons.swift */; };
+		E400B6EF2DFC174800620569 /* CloudKitOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B342DA5831D00BC1FC3 /* CloudKitOperation.swift */; };
+		E400B6F02DFC174800620569 /* CloudKitOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B342DA5831D00BC1FC3 /* CloudKitOperation.swift */; };
+		E400B6F12DFC175A00620569 /* StravaOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B002D8B146200BC1FC3 /* StravaOperation.swift */; };
+		E400B6F22DFC177F00620569 /* CKForceUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B3A2DA8199D00BC1FC3 /* CKForceUpdate.swift */; };
+		E400B6F32DFC177F00620569 /* CKForceUpdate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B3A2DA8199D00BC1FC3 /* CKForceUpdate.swift */; };
+		E400B6F42DFC179400620569 /* AltitudeChartImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */; };
+		E400B6F52DFC17B900620569 /* UserMetricsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B532DB0DFE200BC1FC3 /* UserMetricsManager.swift */; };
+		E400B6F62DFC17CD00620569 /* HKExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F262CEC8D9D001D58B3 /* HKExtensions.swift */; };
+		E400B6F72DFC17E100620569 /* CKSaveAndDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B372DA8195700BC1FC3 /* CKSaveAndDelete.swift */; };
+		E400B6F82DFC17E100620569 /* CKSaveAndDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B372DA8195700BC1FC3 /* CKSaveAndDelete.swift */; };
+		E400B6F92DFC17FB00620569 /* CKProfileQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B402DA81F9300BC1FC3 /* CKProfileQuery.swift */; };
+		E400B6FA2DFC17FB00620569 /* CKProfileQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B402DA81F9300BC1FC3 /* CKProfileQuery.swift */; };
+		E400B6FB2DFC181600620569 /* CKFetchRecordBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B3D2DA81D7500BC1FC3 /* CKFetchRecordBlock.swift */; };
+		E400B6FC2DFC181600620569 /* CKFetchRecordBlock.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B3D2DA81D7500BC1FC3 /* CKFetchRecordBlock.swift */; };
+		E400B6FD2DFC188C00620569 /* CKUserMetricQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B562DB2879C00BC1FC3 /* CKUserMetricQuery.swift */; };
+		E400B6FE2DFC188C00620569 /* CKUserMetricQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B562DB2879C00BC1FC3 /* CKUserMetricQuery.swift */; };
+		E400B6FF2DFC195300620569 /* UserMetricsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B532DB0DFE200BC1FC3 /* UserMetricsManager.swift */; };
+		E400B7002DFC198000620569 /* CKFetchRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B4F2DA9444D00BC1FC3 /* CKFetchRecord.swift */; };
+		E400B7012DFC198000620569 /* CKFetchRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B4F2DA9444D00BC1FC3 /* CKFetchRecord.swift */; };
+		E400B7022DFC199C00620569 /* CKActivityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B432DA821B300BC1FC3 /* CKActivityQuery.swift */; };
+		E400B7032DFC199C00620569 /* CKActivityQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B432DA821B300BC1FC3 /* CKActivityQuery.swift */; };
+		E400B7042DFC19B600620569 /* HKExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F262CEC8D9D001D58B3 /* HKExtensions.swift */; };
 		E40306812B1F1D7900658A80 /* ActivityRecordTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40306802B1F1D7900658A80 /* ActivityRecordTest.swift */; };
 		E40306832B22211000658A80 /* TopMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40306822B22211000658A80 /* TopMenuView.swift */; };
 		E406C7C32C667EDA0015C4F3 /* GeneralUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */; };
@@ -68,6 +88,11 @@
 		E42313732CF752E100E6F4FB /* SwipeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42313722CF752E100E6F4FB /* SwipeButton.swift */; };
 		E42AD0912AE82094008E7B05 /* NewProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */; };
 		E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */; };
+		E45803DF2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45803DE2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift */; };
+		E45804172E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45804162E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift */; };
+		E45804F12E04614F00DCE79F /* DetailStatisticBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45804F02E04614F00DCE79F /* DetailStatisticBarView.swift */; };
+		E45805B02E05775200DCE79F /* DetailStatisticBarDonutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45805AF2E05775200DCE79F /* DetailStatisticBarDonutView.swift */; };
+		E45807622E05B49B00DCE79F /* StackedBarAndDonutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45807612E05B49B00DCE79F /* StackedBarAndDonutView.swift */; };
 		E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */; };
 		E45E3F052CE7B91E001D58B3 /* ActivityListItemExtensionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */; };
 		E45E3F072CE8A461001D58B3 /* ActivityHistoryHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */; };
@@ -191,8 +216,6 @@
 		E4AEC0AA2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0A82D36443300DC0082 /* CloudKitNotificationManager.swift */; };
 		E4AEC0AB2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0A82D36443300DC0082 /* CloudKitNotificationManager.swift */; };
 		E4AEC0AC2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0A82D36443300DC0082 /* CloudKitNotificationManager.swift */; };
-		E4B02F102DF46DF3006594AD /* ZoneStatisticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B02F0F2DF46DF3006594AD /* ZoneStatisticsManager.swift */; };
-		E4B02F132DF47412006594AD /* ZoneStatisticsDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B02F122DF47412006594AD /* ZoneStatisticsDetailView.swift */; };
 		E4B5CEA82D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEA92D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */; };
@@ -319,12 +342,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E400A97A2DF567C200620569 /* ZoneStatisticsSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneStatisticsSummaryView.swift; sourceTree = "<group>"; };
 		E400AB722DF5EA1B00620569 /* StatisticsSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsSummaryView.swift; sourceTree = "<group>"; };
 		E400ABBF2DF5EC7400620569 /* StatisticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsManager.swift; sourceTree = "<group>"; };
-		E400B56E2DFB0F1C00620569 /* TypeStatisticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeStatisticsManager.swift; sourceTree = "<group>"; };
-		E400B5722DFB162500620569 /* TypeStatisticsSummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeStatisticsSummaryView.swift; sourceTree = "<group>"; };
-		E400B6872DFB24E700620569 /* TypeStatisticsDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeStatisticsDetailView.swift; sourceTree = "<group>"; };
 		E40306802B1F1D7900658A80 /* ActivityRecordTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecordTest.swift; sourceTree = "<group>"; };
 		E40306822B22211000658A80 /* TopMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopMenuView.swift; sourceTree = "<group>"; };
 		E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GeneralUtilities.swift; sourceTree = "<group>"; };
@@ -353,6 +372,11 @@
 		E42313722CF752E100E6F4FB /* SwipeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeButton.swift; sourceTree = "<group>"; };
 		E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProfileDetailView.swift; sourceTree = "<group>"; };
 		E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsPausedView.swift; sourceTree = "<group>"; };
+		E45803DE2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayOfWeekStatisticBarView.swift; sourceTree = "<group>"; };
+		E45804162E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayOfWeekStatisticBarDonutView.swift; sourceTree = "<group>"; };
+		E45804F02E04614F00DCE79F /* DetailStatisticBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailStatisticBarView.swift; sourceTree = "<group>"; };
+		E45805AF2E05775200DCE79F /* DetailStatisticBarDonutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailStatisticBarDonutView.swift; sourceTree = "<group>"; };
+		E45807612E05B49B00DCE79F /* StackedBarAndDonutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackedBarAndDonutView.swift; sourceTree = "<group>"; };
 		E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListItemExtensionView.swift; sourceTree = "<group>"; };
 		E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryHeaderView.swift; sourceTree = "<group>"; };
 		E45E3F122CEB9BED001D58B3 /* LiveMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsView.swift; sourceTree = "<group>"; };
@@ -417,8 +441,6 @@
 		E4AEC0872D1EC5CA00DC0082 /* icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = icons.swift; sourceTree = "<group>"; };
 		E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceList.swift; sourceTree = "<group>"; };
 		E4AEC0A82D36443300DC0082 /* CloudKitNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitNotificationManager.swift; sourceTree = "<group>"; };
-		E4B02F0F2DF46DF3006594AD /* ZoneStatisticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneStatisticsManager.swift; sourceTree = "<group>"; };
-		E4B02F122DF47412006594AD /* ZoneStatisticsDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ZoneStatisticsDetailView.swift; sourceTree = "<group>"; };
 		E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattersTest.swift; sourceTree = "<group>"; };
 		E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCache.swift; sourceTree = "<group>"; };
@@ -555,6 +577,28 @@
 				E4CD4B2C2D915A7000BC1FC3 /* AsyncProgressView.swift */,
 			);
 			path = Controls;
+			sourceTree = "<group>";
+		};
+		E458083B2E0717CF00DCE79F /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				E458083C2E0717DE00DCE79F /* iOS */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		E458083C2E0717DE00DCE79F /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				E4100B192DF4946800FB1179 /* StackedBarView.swift */,
+				E45807612E05B49B00DCE79F /* StackedBarAndDonutView.swift */,
+				E400AB722DF5EA1B00620569 /* StatisticsSummaryView.swift */,
+				E45803DE2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift */,
+				E45804F02E04614F00DCE79F /* DetailStatisticBarView.swift */,
+				E45804162E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift */,
+				E45805AF2E05775200DCE79F /* DetailStatisticBarDonutView.swift */,
+			);
+			path = iOS;
 			sourceTree = "<group>";
 		};
 		E45E3F0F2CEB9B54001D58B3 /* shared */ = {
@@ -900,15 +944,8 @@
 		E4B02F0E2DF46D9B006594AD /* StatisticsManager */ = {
 			isa = PBXGroup;
 			children = (
-				E4B02F0F2DF46DF3006594AD /* ZoneStatisticsManager.swift */,
-				E400B56E2DFB0F1C00620569 /* TypeStatisticsManager.swift */,
-				E4B02F122DF47412006594AD /* ZoneStatisticsDetailView.swift */,
-				E400A97A2DF567C200620569 /* ZoneStatisticsSummaryView.swift */,
-				E400AB722DF5EA1B00620569 /* StatisticsSummaryView.swift */,
-				E400B6872DFB24E700620569 /* TypeStatisticsDetailView.swift */,
-				E4100B192DF4946800FB1179 /* StackedBarView.swift */,
+				E458083B2E0717CF00DCE79F /* Views */,
 				E400ABBF2DF5EC7400620569 /* StatisticsManager.swift */,
-				E400B5722DFB162500620569 /* TypeStatisticsSummaryView.swift */,
 			);
 			path = StatisticsManager;
 			sourceTree = "<group>";
@@ -1340,7 +1377,6 @@
 				E413D4232D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
 				E4094BB62CD0C6D200915CCB /* SimpleXML.swift in Sources */,
 				E4941E472CD29FC30063421F /* BTPeripheralManager.swift in Sources */,
-				E400B5732DFB162500620569 /* TypeStatisticsSummaryView.swift in Sources */,
 				E4094BB82CD0C6D200915CCB /* DataCache.swift in Sources */,
 				E45E3F072CE8A461001D58B3 /* ActivityHistoryHeaderView.swift in Sources */,
 				E4094BC92CD1513400915CCB /* ActivityChartsController.swift in Sources */,
@@ -1348,9 +1384,7 @@
 				E4CD4B2D2D915A7000BC1FC3 /* AsyncProgressView.swift in Sources */,
 				E4941E432CD29F920063421F /* CloudConnectionsView.swift in Sources */,
 				E400ABC02DF5EC7400620569 /* StatisticsManager.swift in Sources */,
-				E400A97B2DF567C200620569 /* ZoneStatisticsSummaryView.swift in Sources */,
 				E4E8BAAE2D70C0AE0098D8E3 /* StravaSettingsView.swift in Sources */,
-				E400B6882DFB24E700620569 /* TypeStatisticsDetailView.swift in Sources */,
 				E4094BC52CD1503600915CCB /* ActivityHistoryView.swift in Sources */,
 				E4CD4B1A2D8DBB6100BC1FC3 /* UploadActivity.swift in Sources */,
 				E413D42C2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */,
@@ -1362,17 +1396,17 @@
 				E4CD4B4E2DA8ED5000BC1FC3 /* CKFetchTcxAsset.swift in Sources */,
 				E4094BB92CD0C6D200915CCB /* LocationManager.swift in Sources */,
 				E4AEC0902D1EC5CA00DC0082 /* icons.swift in Sources */,
+				E45804172E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift in Sources */,
 				E4E8BAAB2D70C0900098D8E3 /* SettingsResetView.swift in Sources */,
 				E4941E482CD29FCA0063421F /* BTDevice.swift in Sources */,
 				E492C0062D19568A0050B6E8 /* ImageCache.swift in Sources */,
-				E4B02F102DF46DF3006594AD /* ZoneStatisticsManager.swift in Sources */,
 				E423136F2CF628EE00E6F4FB /* ProfileListItemView.swift in Sources */,
 				E45E3F202CEBABD7001D58B3 /* ProfileDetailView.swift in Sources */,
+				E45804F12E04614F00DCE79F /* DetailStatisticBarView.swift in Sources */,
 				E4100B1A2DF4946800FB1179 /* StackedBarView.swift in Sources */,
 				E4941E4B2CD2A0F10063421F /* BTDeviceView.swift in Sources */,
 				E45E3F2E2CECE6AA001D58B3 /* ElapsedTimeView.swift in Sources */,
 				E4941E5D2CD4BC5B0063421F /* AutoPauseSettingsView.swift in Sources */,
-				E4B02F132DF47412006594AD /* ZoneStatisticsDetailView.swift in Sources */,
 				E45E3F082CEB944F001D58B3 /* LiveActivityManager.swift in Sources */,
 				E45E3F2C2CECD8FC001D58B3 /* StartView.swift in Sources */,
 				E45E3F2B2CECD407001D58B3 /* BTDeviceBarView.swift in Sources */,
@@ -1388,6 +1422,7 @@
 				E4CD4B442DA821B300BC1FC3 /* CKActivityQuery.swift in Sources */,
 				E4094BC82CD1512C00915CCB /* ActivityChartTraceBuilder.swift in Sources */,
 				E413D41B2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
+				E45807622E05B49B00DCE79F /* StackedBarAndDonutView.swift in Sources */,
 				E49CB5E62D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
 				E4CD4B5F2DB64A3D00BC1FC3 /* CyclePowerZonesView.swift in Sources */,
 				E4CD4B3B2DA8199D00BC1FC3 /* CKForceUpdate.swift in Sources */,
@@ -1397,7 +1432,6 @@
 				E4CD4B1E2D8DBC2700BC1FC3 /* FetchActivity.swift in Sources */,
 				E45E3F1F2CEBABBA001D58B3 /* NewProfileDetailView.swift in Sources */,
 				E4094BBA2CD0C6D200915CCB /* GeneralUtilities.swift in Sources */,
-				E400B56F2DFB0F1C00620569 /* TypeStatisticsManager.swift in Sources */,
 				E4CD4B582DB2879C00BC1FC3 /* CKUserMetricQuery.swift in Sources */,
 				E4CD4B242D8FFF8900BC1FC3 /* AlertView.swift in Sources */,
 				E48D4D632D6325D0001104AC /* AltitudeChartImage.swift in Sources */,
@@ -1408,12 +1442,14 @@
 				E4CD4B352DA5831D00BC1FC3 /* CloudKitOperation.swift in Sources */,
 				E4CD4B292D91409900BC1FC3 /* AsyncProgress.swift in Sources */,
 				E45E3F272CEC8D9D001D58B3 /* HKExtensions.swift in Sources */,
+				E45805B02E05775200DCE79F /* DetailStatisticBarDonutView.swift in Sources */,
 				E47A2EC92D5FAEA100297952 /* DonutChartView.swift in Sources */,
 				E4CD4B392DA8195700BC1FC3 /* CKSaveAndDelete.swift in Sources */,
 				E4CD4B082D8B146200BC1FC3 /* StravaOperation.swift in Sources */,
 				E4CD4B142D8DBA4E00BC1FC3 /* UpdateActivity.swift in Sources */,
 				E413D4252D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift in Sources */,
 				E4AEC0AA2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
+				E45803DF2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift in Sources */,
 				E45E3F252CEC8D12001D58B3 /* ProfileManager.swift in Sources */,
 				E4941E802CD7F3F60063421F /* SummaryMetricView.swift in Sources */,
 				E4941E832CD7F4830063421F /* ActivityDetailView.swift in Sources */,
@@ -1430,6 +1466,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E400B6FA2DFC17FB00620569 /* CKProfileQuery.swift in Sources */,
+				E400B6F12DFC175A00620569 /* StravaOperation.swift in Sources */,
 				E492C0202D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E4CD4B252D8FFF8900BC1FC3 /* AlertView.swift in Sources */,
 				E492C0132D1DC7D90050B6E8 /* ImageCache.swift in Sources */,
@@ -1438,20 +1476,31 @@
 				E413D4262D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift in Sources */,
 				E4AEC0AC2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
 				E492C0102D19BDDE0050B6E8 /* SimpleXML.swift in Sources */,
+				E400B6F52DFC17B900620569 /* UserMetricsManager.swift in Sources */,
+				E400B6EE2DFC173600620569 /* icons.swift in Sources */,
+				E400B6FE2DFC188C00620569 /* CKUserMetricQuery.swift in Sources */,
 				E413D4312D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
+				E400B6F82DFC17E100620569 /* CKSaveAndDelete.swift in Sources */,
+				E400B6F32DFC177F00620569 /* CKForceUpdate.swift in Sources */,
 				E492C0082D19BBF90050B6E8 /* DataCache.swift in Sources */,
 				E4AEC0A22D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
+				E400B7012DFC198000620569 /* CKFetchRecord.swift in Sources */,
+				E400B7032DFC199C00620569 /* CKActivityQuery.swift in Sources */,
 				E492C01C2D1DCA580050B6E8 /* BluetoothManager.swift in Sources */,
 				E4CD4B2F2D915A7000BC1FC3 /* AsyncProgressView.swift in Sources */,
 				E413D4202D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
+				E400B6FC2DFC181600620569 /* CKFetchRecordBlock.swift in Sources */,
 				E492C00C2D19BC260050B6E8 /* SettingsManager.swift in Sources */,
 				E413D41C2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
+				E400B6F42DFC179400620569 /* AltitudeChartImage.swift in Sources */,
 				E4A372FB2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
 				E492C0162D1DC9800050B6E8 /* ProfileManager.swift in Sources */,
 				E492C0232D1DCA820050B6E8 /* SwipeButton.swift in Sources */,
 				E413D42B2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */,
 				E492C0222D1DCA710050B6E8 /* GeneralUtilities.swift in Sources */,
+				E400B6F62DFC17CD00620569 /* HKExtensions.swift in Sources */,
 				E41501182D06196500C09200 /* Formatters.swift in Sources */,
+				E400B6F02DFC174800620569 /* CloudKitOperation.swift in Sources */,
 				E49CB5E92D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
 				E492C00E2D19BDD00050B6E8 /* ActivityProfile.swift in Sources */,
 				E492C00A2D19BC1B0050B6E8 /* ActivityRecord.swift in Sources */,
@@ -1570,11 +1619,15 @@
 			buildActionMask = 2147483647;
 			files = (
 				E492C0072D19BBF90050B6E8 /* DataCache.swift in Sources */,
+				E400B7022DFC199C00620569 /* CKActivityQuery.swift in Sources */,
 				E4AEC0A02D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E492C0152D1DC9800050B6E8 /* ProfileManager.swift in Sources */,
 				E492C00F2D19BDDE0050B6E8 /* SimpleXML.swift in Sources */,
+				E400B6FF2DFC195300620569 /* UserMetricsManager.swift in Sources */,
 				E49CB5E82D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
+				E400B6FB2DFC181600620569 /* CKFetchRecordBlock.swift in Sources */,
 				E41501172D06196500C09200 /* Formatters.swift in Sources */,
+				E400B6F72DFC17E100620569 /* CKSaveAndDelete.swift in Sources */,
 				E4D28B152CC3A7A700F27626 /* DataCacheTest.swift in Sources */,
 				E406C7C52C667F6F0015C4F3 /* GeneralUtilitiesTest.swift in Sources */,
 				E46EF09529537CA3006FA603 /* PulseWorkout_Watch_AppTests.swift in Sources */,
@@ -1583,10 +1636,14 @@
 				E492C01D2D1DCA600050B6E8 /* BTPeripheralManager.swift in Sources */,
 				E413D4272D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift in Sources */,
 				E40306812B1F1D7900658A80 /* ActivityRecordTest.swift in Sources */,
+				E400B6F22DFC177F00620569 /* CKForceUpdate.swift in Sources */,
 				E413D42A2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */,
 				E492C00D2D19BDD00050B6E8 /* ActivityProfile.swift in Sources */,
 				E4A372FE2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
 				E492C0172D1DC9B20050B6E8 /* HapticsSettingsView.swift in Sources */,
+				E400B6FD2DFC188C00620569 /* CKUserMetricQuery.swift in Sources */,
+				E400B7042DFC19B600620569 /* HKExtensions.swift in Sources */,
+				E400B6ED2DFC173600620569 /* icons.swift in Sources */,
 				E4E8BAB42D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */,
 				E413D4212D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
 				E4CD4B2A2D91409900BC1FC3 /* AsyncProgress.swift in Sources */,
@@ -1594,10 +1651,13 @@
 				E413D41E2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
 				E413D4322D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E4AEC0AB2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
+				E400B7002DFC198000620569 /* CKFetchRecord.swift in Sources */,
 				E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */,
 				E492C0212D1DCA710050B6E8 /* GeneralUtilities.swift in Sources */,
 				E492C0142D1DC8E20050B6E8 /* ImageCache.swift in Sources */,
 				E492C01B2D1DCA580050B6E8 /* BluetoothManager.swift in Sources */,
+				E400B6F92DFC17FB00620569 /* CKProfileQuery.swift in Sources */,
+				E400B6EF2DFC174800620569 /* CloudKitOperation.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1649,7 +1709,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -1692,7 +1752,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -1733,7 +1793,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1758,7 +1818,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1782,7 +1842,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1810,7 +1870,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1950,7 +2010,7 @@
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -1990,7 +2050,7 @@
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -2029,7 +2089,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
 				MARKETING_VERSION = 1.0;
@@ -2047,7 +2107,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
 				MARKETING_VERSION = 1.0;
@@ -2066,7 +2126,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -2087,7 +2147,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -2108,7 +2168,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -2129,7 +2189,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 252;
+				CURRENT_PROJECT_VERSION = 347;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";

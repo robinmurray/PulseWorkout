@@ -10,7 +10,7 @@ import HealthKit
 
 
 
-extension HKWorkoutActivityType: @retroactive Identifiable {
+extension HKWorkoutActivityType: @retroactive Identifiable  {
     public var id: UInt {
         rawValue
     }

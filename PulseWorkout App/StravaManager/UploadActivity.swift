@@ -107,7 +107,7 @@ class StravaUploadActivity: StravaOperation {
     
     func pollUploadStatus(uploadId: Int, retryCount: Int, currentRetry: Int) {
         
-        let PAUSE_TIME: TimeInterval = 3  // Delay between attempts as Strava processes the upload..
+        let PAUSE_TIME: TimeInterval = 3 * Double(currentRetry)  // Delay between attempts as Strava processes the upload..
         
         if currentRetry >= retryCount {
             self.logger.error("Polling complete without success :: \(currentRetry)")

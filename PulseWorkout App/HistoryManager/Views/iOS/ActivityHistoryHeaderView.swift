@@ -28,23 +28,23 @@ struct ActivityHistoryHeaderView: View {
 
 
                     HStack {
-                        Text("\(Int(statisticsManager.weekActivities[0])) Activities")
+                        Text("Activities: \(statisticsManager.thisWeek().formattedValue(propertyName: "activities"))")
                         Spacer()
                     }
 
                     HStack {
-                        Text(durationFormatter(elapsedSeconds: statisticsManager.weekTime[0],
-                                               minimizeLength: true))
+                        Text(statisticsManager.thisWeek().formattedValue(propertyName: "time"))
                         Spacer()
                     }
                     
                     HStack {
-                        Text(distanceFormatter(distance: statisticsManager.weekDistance[0]))
+                        Text(statisticsManager.thisWeek().formattedValue(propertyName: "distanceMeters"))
                         Spacer()
                     }
 
                     HStack {
-                        Text("\(TSSFormatter(TSS: statisticsManager.weekTSS[0])) TS")
+                        Text("TSS: \(statisticsManager.thisWeek().formattedValue(propertyName: "TSS"))")
+
                         Spacer()
                     }
                     
@@ -58,23 +58,24 @@ struct ActivityHistoryHeaderView: View {
                     }
                     
                     HStack {
-                        Text("\(Int(statisticsManager.weekActivities[1])) Activities")
+                        Text("Activities: \(statisticsManager.lastWeek().formattedValue(propertyName: "activities"))")
                         Spacer()
                     }
                     
                     HStack {
-                        Text(durationFormatter(elapsedSeconds: statisticsManager.weekTime[1],
-                                               minimizeLength: true))
+                        Text(statisticsManager.lastWeek().formattedValue(propertyName: "time"))
                         Spacer()
                     }
                     
                     HStack {
-                        Text(distanceFormatter(distance: statisticsManager.weekDistance[1]))
+                        Text(statisticsManager.lastWeek().formattedValue(propertyName: "distanceMeters"))
                         Spacer()
                     }
 
                     HStack {
-                        Text("\(TSSFormatter(TSS: statisticsManager.weekTSS[1])) TS")
+                        Text("TSS: \(statisticsManager.lastWeek().formattedValue(propertyName: "TSS"))")
+
+
                         Spacer()
                     }
                 }

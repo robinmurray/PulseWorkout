@@ -41,6 +41,20 @@ struct SettingsResetView: View {
                     }
 
                 }
+            
+            VStack {
+                Button("Rebuild Statistics") {
+                    StatisticsManager.shared.buildStatistics()
+                }.buttonStyle(.borderedProminent)
+                    .tint(Color.blue)
+                
+                HStack {
+                    Text("Rebuild all statistics.")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+
+            }
 
             }
             .navigationTitle("Reset")
