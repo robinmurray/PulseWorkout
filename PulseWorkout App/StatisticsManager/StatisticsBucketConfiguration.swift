@@ -53,6 +53,7 @@ private let ShortFormPropertyValueFormatter: [String: (Double) -> String] = ["TS
                                                                              "distanceMeters": {val in distanceFormatter(distance: val, forceMeters: false, justKilometers: true)}]
 
 
+/// Return value formatter for given property name - either short form or long form
 func propertyValueFormatter(_ propertyName: String, shortForm: Bool = false) -> (Double) -> String {
 
     var formatter = PropertyValueFormatter[propertyName] ?? {val in String(format: "%.0f", val)}

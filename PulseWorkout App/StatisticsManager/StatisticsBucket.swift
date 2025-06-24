@@ -76,64 +76,57 @@ struct StatisticsBucket: Codable {
     // Create a statistics bucket as 7-day average from array of buckets - which must be of the same type
     init(bucketArray: [StatisticsBucket]) {
         
+        // Initialise version in case of error - THIS SHOULD NOT BE RETURNED!
+        self = StatisticsBucket(startDate: Date.now, bucketType: .day)
+        
+        // Now do the job for real!
         if let first = bucketArray.first {
-            let hasAllSameType = bucketArray.allSatisfy({ $0.bucketType == first.bucketType })
-            let bucketsStartDate = first.startDate
-            
-            self.id = UUID()
-            self.startDate = first.startDate
-            self.endDate = bucketArray.last!.endDate
-            
-            let dateFormatter = ISO8601DateFormatter()
-            dateFormatter.formatOptions = [.withFullDate]
-            dateFormatter.timeZone = .current
-            self.startDateString = startDate.formatted(.iso8601
-                .year()
-                .month()
-                .day())
-            self.endDateString = endDate.formatted(.iso8601
-                .year()
-                .month()
-                .day())
-            self.bucketType = first.bucketType
-            
-            let days: Int = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 1  // FIX TO DATE STRINGS!
-            let daysToNow = Calendar.current.dateComponents([.day], from: startDate, to: Date.now).day ?? 1  // FIX TO DATE STRINGS!
-            let divisorDays = max(min(days, daysToNow), 1)
-            let divisor: Double = Double(divisorDays) / 7
-            self.activities = bucketArray.reduce(0) { result, bucket
-                in
-                result + (bucket.activities / divisor)}
-            self.distanceMeters = bucketArray.reduce(0) { result, bucket
-                in
-                result + (bucket.distanceMeters / divisor)}
-            self.time = bucketArray.reduce(0) { result, bucket
-                in
-                result + (bucket.time / divisor)}
-            self.TSS = bucketArray.reduce(0) { result, bucket
-                in
-                result + (bucket.TSS / divisor)}
-            self.TSSByZone = bucketArray.reduce([0, 0, 0]) { result, bucket
-                in
-                [result[0] + (bucket.TSSByZone[0] / divisor),
-                 result[1] + (bucket.TSSByZone[1] / divisor),
-                 result[2] + (bucket.TSSByZone[2] / divisor),
-                ]
+            if bucketArray.allSatisfy({ $0.bucketType == first.bucketType }) {
+                
+                self.id = UUID()
+                self.startDate = first.startDate
+                self.endDate = bucketArray.last!.endDate
+                
+                let dateFormatter = ISO8601DateFormatter()
+                dateFormatter.formatOptions = [.withFullDate]
+                dateFormatter.timeZone = .current
+                self.startDateString = startDate.formatted(.iso8601
+                    .year()
+                    .month()
+                    .day())
+                self.endDateString = endDate.formatted(.iso8601
+                    .year()
+                    .month()
+                    .day())
+                self.bucketType = first.bucketType
+                
+                let days: Int = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 1  // FIX TO DATE STRINGS!
+                let daysToNow = Calendar.current.dateComponents([.day], from: startDate, to: Date.now).day ?? 1  // FIX TO DATE STRINGS!
+                let divisorDays = max(min(days, daysToNow), 1)
+                let divisor: Double = Double(divisorDays) / 7
+                self.activities = bucketArray.reduce(0) { result, bucket
+                    in
+                    result + (bucket.activities / divisor)}
+                self.distanceMeters = bucketArray.reduce(0) { result, bucket
+                    in
+                    result + (bucket.distanceMeters / divisor)}
+                self.time = bucketArray.reduce(0) { result, bucket
+                    in
+                    result + (bucket.time / divisor)}
+                self.TSS = bucketArray.reduce(0) { result, bucket
+                    in
+                    result + (bucket.TSS / divisor)}
+                self.TSSByZone = bucketArray.reduce([0, 0, 0]) { result, bucket
+                    in
+                    zip(result, bucket.TSSByZone.map( { $0 / divisor } )).map(+)
+                }
+                
+                self.timeByZone = bucketArray.reduce([0, 0, 0]) { result, bucket
+                    in
+                    zip(result, bucket.TSSByZone.map( { $0 / divisor } )).map(+)
+                }
             }
-
-            self.timeByZone = bucketArray.reduce([0, 0, 0]) { result, bucket
-                in
-                [result[0] + (bucket.timeByZone[0] / divisor),
-                 result[1] + (bucket.timeByZone[1] / divisor),
-                 result[2] + (bucket.timeByZone[2] / divisor),
-                ]
-            }
-            
         }
-        else {
-            self = StatisticsBucket(startDate: Date.now, bucketType: .day)
-        }
-
 
     }
     

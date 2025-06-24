@@ -56,28 +56,31 @@ class StatisticsManager: ObservableObject {
     }
     
     
+    /// Return this week statistic bucket
     func thisWeek() -> StatisticsBucket {
         return weekBuckets.elements.last!
     }
 
-    
+
+    /// Return last week statistic bucket
     func lastWeek() -> StatisticsBucket {
         let weekCount = weekBuckets.elements.count
         let lastWeekIndex = max(weekCount - 2, 0)
         return weekBuckets.elements[lastWeekIndex]
     }
     
-    
+    /// Return this year statistic bucket
     func thisYear() -> StatisticsBucket {
         return yearBuckets.elements.last!
     }
 
-    
+    /// Return last week statistic bucket
     func lastYear() -> StatisticsBucket {
         return yearBuckets.elements.first!
     }
     
     
+    /// Build all statistic buckets from activities
     func buildStatistics() {
         statsBuckets.emptyTempBuckets()
         

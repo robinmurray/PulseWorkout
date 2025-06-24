@@ -35,53 +35,21 @@ class StatisticsBucketArray: NSObject, Codable {
         
         tempBuckets = []
         
-        var todayComponents = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
-        todayComponents.timeZone = .gmt
-        let today = Calendar.current.date(from: todayComponents)!
-        print("now \(Date.now)")
-        print("today \(today)")
-        print("components \(todayComponents)")
+        let bucketStartDates = getBucketStartDates()
         let formatter = DateFormatter()
         formatter.dateFormat = "dd MM yyyy HH:mm:ss"
-        
-        print("today 2...")
-        print(formatter.string(from: today))
-        
-        var weekComponents = Calendar.current.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: Date.now)
-        weekComponents.timeZone = .gmt
-        let weekStart = Calendar.current.date(from: weekComponents)!
-        
-        var quarterComponents = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
-        quarterComponents.timeZone = .gmt
-        quarterComponents.day = 1
-        quarterComponents.month = (((quarterComponents.month! - 1) / 3) * 3) + 1
-        let quarterStart = Calendar.current.date(from: quarterComponents)!
-        
-        var yearComponents  = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
-        yearComponents.timeZone = .gmt
-        yearComponents.day = 1
-        yearComponents.month = 1
-        let yearStart = Calendar.current.date(from: yearComponents)!
-
-        
-        let bucketStartDate: [BucketType: Date] = [.day: today,
-                                                   .week: weekStart,
-                                                   .quarter: quarterStart,
-                                                   .year: yearStart]
         
         for bucketType in BucketType.allCases {
             
             for count in 0..<StatisticsBucketCount[bucketType]! {
                 
-                // need buckettypestartdate istead of just today
                 if let bucketDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
                                                           value: -1 * count * StatisticsBucketDuration[bucketType]!.count,
-                                                          to: bucketStartDate[bucketType]!) {
-                    print("bucketDate:")
-                    print(formatter.string(from: bucketDate))
+                                                          to: bucketStartDates[bucketType]!) {
+
                     if let index = elements.firstIndex(where: {(formatter.string(from: $0.startDate) == formatter.string(from: bucketDate)) &&
                         ( $0.bucketType == bucketType.rawValue)} ) {
-                        print("Found at index: \(index)")
+
                         tempBuckets.append(elements[index])
                     }
                     else {
@@ -94,15 +62,12 @@ class StatisticsBucketArray: NSObject, Codable {
         }
         
         elements = tempBuckets
-        print(elements)
+
         _ = write()
     }
     
     
-    /// Create a set of empty buckets
-    func emptyTempBuckets() {
-        
-        tempBuckets = []
+    func getBucketStartDates() -> [BucketType: Date] {
         
         var todayComponents = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
         todayComponents.timeZone = .gmt
@@ -123,11 +88,23 @@ class StatisticsBucketArray: NSObject, Codable {
         yearComponents.day = 1
         yearComponents.month = 1
         let yearStart = Calendar.current.date(from: yearComponents)!
+
         
-        let bucketStartDate: [BucketType: Date] = [.day: today,
-                                                   .week: weekStart,
-                                                   .quarter: quarterStart,
-                                                   .year: yearStart]
+        let bucketStartDates: [BucketType: Date] = [.day: today,
+                                                    .week: weekStart,
+                                                    .quarter: quarterStart,
+                                                    .year: yearStart]
+        
+        return bucketStartDates
+    }
+    
+    
+    /// Create a set of empty buckets
+    func emptyTempBuckets() {
+        
+        tempBuckets = []
+        
+        let bucketStartDates = getBucketStartDates()
         
         for bucketType in BucketType.allCases {
             
@@ -135,10 +112,10 @@ class StatisticsBucketArray: NSObject, Codable {
                 
                 if let bucketDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
                                                           value: -1 * count * StatisticsBucketDuration[bucketType]!.count,
-                                                          to: bucketStartDate[bucketType]!) {
+                                                          to: bucketStartDates[bucketType]!) {
  
                     tempBuckets.append(StatisticsBucket(startDate: bucketDate,
-                                                    bucketType: bucketType))
+                                                        bucketType: bucketType))
 
                 }
                 
