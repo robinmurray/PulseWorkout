@@ -35,7 +35,7 @@ class CKProfileQueryOperation: CloudKitOperation {
                                  "hiLimitAlarmActive", "hiLimitAlarm", "loLimitAlarmActive",
                                  "loLimitAlarm", "playSound", "playHaptic",
                                  "constantRepeat", "lockScreen", "lastUsed",
-                                 "autoPause"]
+                                 "autoPause", "stravaSaveAll"]
         
         return operation
 

@@ -28,12 +28,12 @@ struct StackedBarView: View {
                     y: .value("Total Count", dataPoint.value)
                 )
                 .foregroundStyle(by: .value("Shape Color", dataPoint.type))
-                .annotation(position: .top) {
+                .annotation(position: .top, spacing: 10) {
                     let summedValues = stackedBarData.filter( {$0.index == dataPoint.index} ).reduce(0) { result, dp
                         in
                         result + dp.value }
                     
-                    let rotationDegrees = Set(stackedBarData.map({$0.index})).count > 8 ? 315 : 0
+                    let rotationDegrees = Set(stackedBarData.map({$0.index})).count > 8 ? 300 : 0
                     if dataPoint.type == stackedBarData.last!.type {
                         Text(formatter(summedValues))
                             .rotationEffect(.degrees(Double(rotationDegrees)))

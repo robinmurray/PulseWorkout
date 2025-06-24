@@ -103,7 +103,7 @@ class StatisticsManager: ObservableObject {
     }
     
     
-    /// Add s dingle activity records to stats buckets
+    /// Add single activity records to stats buckets
     func addActivityToStats(activity: ActivityRecord) -> Void {
         
         statsBuckets.addActivity(activity)

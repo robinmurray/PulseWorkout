@@ -41,10 +41,11 @@ let StatisticsBucketDuration: [BucketType: BucketDuration] = [BucketType.day: Bu
 private let PropertyValueFormatter: [String: (Double) -> String] = ["TSS": TSSFormatter,
                                                             "TSSByZone": TSSFormatter,
                                                             "time": {val in elapsedTimeFormatter(elapsedSeconds: val, minimizeLength: true)},
-                                                            "timeByZone": {val in elapsedTimeFormatter(elapsedSeconds: val, minimizeLength: true)},
+                                                            "timeByZone": {val in elapsedTimeFormatter(elapsedSeconds: val, minimizeLength: false, showSeconds: true)},
                                                             "activities": {val in String(format: "%.0f", val)},
                                                             "distanceMeters": {val in distanceFormatter(distance: val, forceMeters: false)}]
 
+/// Configure abbreviated value formatter for each property name
 private let ShortFormPropertyValueFormatter: [String: (Double) -> String] = ["TSS": {val in String(format: "%.0f", val)},
                                                                              "TSSByZone": {val in String(format: "%.0f", val)},
                                                                              "time": {val in elapsedTimeFormatter(elapsedSeconds: val, minimizeLength: true, showSeconds: false)},

@@ -408,7 +408,9 @@ extension ActivityRecord {
         
         thesholdHR = 154
         
-        let HRZoneRatios = [0, 0.68, 0.83, 0.94, 1.05]
+//        let HRZoneRatios = [0, 0.68, 0.83, 0.94, 1.05]
+        let HRZoneRatios = [0, 0.68, 0.83, 0.93, 1.00]
+
         if let currentThesholdHR = thesholdHR {
             HRZoneLimits = HRZoneRatios.map({ Int(round($0 * Double(currentThesholdHR))) })
         }

@@ -76,8 +76,6 @@ struct StatisticsBucket: Codable {
     // Create a statistics bucket as 7-day average from array of buckets - which must be of the same type
     init(bucketArray: [StatisticsBucket]) {
         
-        let hasAllSameType = bucketArray.allSatisfy({ $0.bucketType == bucketArray.first?.bucketType })
-        
         if let first = bucketArray.first {
             let hasAllSameType = bucketArray.allSatisfy({ $0.bucketType == first.bucketType })
             let bucketsStartDate = first.startDate
@@ -133,35 +131,16 @@ struct StatisticsBucket: Codable {
             
         }
         else {
-            self.id = UUID()
-            self.startDate = Date.now
-            self.endDate = Date.now
-            let dateFormatter = ISO8601DateFormatter()
-            dateFormatter.formatOptions = [.withFullDate]
-            dateFormatter.timeZone = .current
-            self.startDateString = startDate.formatted(.iso8601
-                .year()
-                .month()
-                .day())
-            self.endDateString = endDate.formatted(.iso8601
-                .year()
-                .month()
-                .day())
-            self.bucketType = 0
-            self.activities = 0
-            self.distanceMeters = 0
-            self.time = 0
-            self.TSS = 0
-            self.TSSByZone = [0, 0, 0]
-            self.timeByZone = [0, 0, 0]
+            self = StatisticsBucket(startDate: Date.now, bucketType: .day)
         }
 
-    
+
     }
     
     
+    /// Convert bucket to CKRecord, also allow properties to be addressed as a dictionary...
     func asCKRecord() -> CKRecord {
-// !!        recordID = CKRecord.ID()
+
         let ckRecord = CKRecord(recordType: "StatisticBucket", recordID: CloudKitOperation().getCKRecordID())
         ckRecord["startDate"] = startDate as CKRecordValue
         ckRecord["endDate"] = endDate as CKRecordValue

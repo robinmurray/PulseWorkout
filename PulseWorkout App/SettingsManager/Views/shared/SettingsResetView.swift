@@ -41,7 +41,8 @@ struct SettingsResetView: View {
                     }
 
                 }
-            
+
+            #if os(iOS)
             VStack {
                 Button("Rebuild Statistics") {
                     StatisticsManager.shared.buildStatistics()
@@ -55,7 +56,7 @@ struct SettingsResetView: View {
                 }
 
             }
-
+            #endif
             }
             .navigationTitle("Reset")
             .onDisappear(perform: settingsManager.save)
