@@ -123,7 +123,7 @@ struct StatisticsBucket: Codable {
                 
                 self.timeByZone = bucketArray.reduce([0, 0, 0]) { result, bucket
                     in
-                    zip(result, bucket.TSSByZone.map( { $0 / divisor } )).map(+)
+                    zip(result, bucket.timeByZone.map( { $0 / divisor } )).map(+)
                 }
             }
         }
