@@ -47,7 +47,7 @@ struct ContentView: View {
                                dataCache: dataCache)
             }
             .tabItem {
-                Label("Stats", systemImage: "person")
+                Label("Stats", systemImage: "chart.line.text.clipboard")
             }
             .tag(ContentViewTab.stats)
 

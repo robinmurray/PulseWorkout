@@ -81,11 +81,13 @@ class StatisticsManager: ObservableObject {
     
     
     /// Build all statistic buckets from activities
-    func buildStatistics() {
+    func buildStatistics(completionFunction: @escaping () -> Void) {
         statsBuckets.emptyTempBuckets()
         
         CKActivityQueryOperation(startDate: nil,
-                                 blockCompletionFunction: addActivitiesToStats,
+                                 blockCompletionFunction: {
+                                    ckRecordList in self.addActivitiesToStats(ckRecordList: ckRecordList)
+                                    completionFunction() },
                                  resultsLimit: 100,
                                  qualityOfService: .userInitiated).execute()
     }

@@ -23,6 +23,7 @@ func getAppVersion() -> String {
 
 struct SettingsResetView: View {
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
+    @State var buildingStatistics: Bool = false
     
     var body: some View {
         Form {
@@ -44,10 +45,28 @@ struct SettingsResetView: View {
 
             #if os(iOS)
             VStack {
-                Button("Rebuild Statistics") {
-                    StatisticsManager.shared.buildStatistics()
-                }.buttonStyle(.borderedProminent)
+                Button(action: {
+                    if !buildingStatistics {
+                        buildingStatistics = true
+                        StatisticsManager.shared.buildStatistics(completionFunction: {buildingStatistics = false})
+                    }
+
+                }) {
+                    if buildingStatistics {
+                        HStack {
+                            Text("Building Statistics")
+                            ProgressView()                            
+                        }
+                    }
+                    else {
+                        Text("Rebuild Statistics")
+                    }
+                    
+                }
+                .buttonStyle(.borderedProminent)
                     .tint(Color.blue)
+                    .disabled(buildingStatistics)
+                
                 
                 HStack {
                     Text("Rebuild all statistics.")

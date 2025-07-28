@@ -426,7 +426,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             return true
         }
         catch {
-            localLogger.error("error:\(error.localizedDescription)")
+            localLogger.error("cache read error:\(error)")
             return false
         }
     }
@@ -437,7 +437,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         guard let cacheURL = CacheURL(fileName: cacheFile, testMode: testMode) else { return false }
         
-        localLogger.log("Writing cache to JSON file")
+        localLogger.log("Writing activities cache to JSON file")
 
         do {
             let data = try JSONEncoder().encode(self)
