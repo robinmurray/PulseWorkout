@@ -34,7 +34,7 @@ struct StackedBarView: View {
                         result + dp.value }
                     
                     let rotationDegrees = Set(stackedBarData.map({$0.index})).count > 8 ? 300 : 0
-                    if dataPoint.type == stackedBarData.last!.type {
+                    if dataPoint.type == stackedBarData.filter( {$0.index == dataPoint.index} ).last!.type {
                         Text(formatter(summedValues))
                             .rotationEffect(.degrees(Double(rotationDegrees)))
                             .foregroundColor(.secondary)
