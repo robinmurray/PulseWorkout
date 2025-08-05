@@ -204,6 +204,10 @@ extension ActivityRecord {
          */
 
         startDateLocal = stravaActivity.startDateLocal ?? Date()
+        startDate = stravaActivity.startDate ?? Date()
+        timeZone = TimeZone(identifier: stravaActivity.timeZone ?? "GMT") ?? TimeZone(identifier: "GMT")!
+        GMTOffset = timeZone.secondsFromGMT()
+
         elapsedTime = stravaActivity.elapsedTime ?? 0
         pausedTime = (stravaActivity.elapsedTime ?? 0) - (stravaActivity.movingTime ?? 0)
         movingTime = stravaActivity.movingTime ?? 0
@@ -326,7 +330,7 @@ extension ActivityRecord {
             case "time":
                 timeStreamPresent = true
                 let timeStream = stream.data!.map({ $0 as? Double ?? 0 })
-                timeSeries = timeStream.map({ startDateLocal.addingTimeInterval( $0 ) })
+                timeSeries = timeStream.map({ startDate.addingTimeInterval( $0 ) })
                 let timeGaps = zip(timeStream, timeStream.dropFirst()).map({ Int($1 - $0) })
                 logger.info("Time gaps - minimum : \(timeGaps.min() ?? 0) :: maximum \(timeGaps.max() ?? 0)")
 
@@ -440,24 +444,24 @@ extension ActivityRecord {
             averagePower = 0
         }
 
-        averageSegmentSize = getAxisTimeGap(elapsedTimeSeries: trackPoints.map( { Int($0.time.timeIntervalSince(startDateLocal)) }))
+        averageSegmentSize = getAxisTimeGap(elapsedTimeSeries: trackPoints.map( { Int($0.time.timeIntervalSince(startDate)) }))
         HRSegmentAverages = segmentAverageSeries(
             segmentSize: averageSegmentSize!,
-            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDate)) }),
             inputSeries: trackPoints.map( { $0.heartRate }),
             includeZeros: true,
             returnFullSeries: false).map( { Int($0) })
 
         powerSegmentAverages = segmentAverageSeries(
             segmentSize: averageSegmentSize!,
-            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDate)) }),
             inputSeries: trackPoints.map( { Double($0.watts ?? 0) }),
             includeZeros: settingsManager.avePowerZeros,
             returnFullSeries: false).map( { Int($0) })
 
         cadenceSegmentAverages = segmentAverageSeries(
             segmentSize: averageSegmentSize!,
-            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startDate)) }),
             inputSeries: trackPoints.map( { Double($0.cadence ?? 0) }),
             includeZeros: settingsManager.aveCadenceZeros,
             returnFullSeries: false).map( { Int($0) })

@@ -24,7 +24,8 @@ func getAppVersion() -> String {
 struct SettingsResetView: View {
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     @State var buildingStatistics: Bool = false
-    
+    @StateObject var analysingActivityProgress: AsyncProgress = AsyncProgress()
+
     var body: some View {
         Form {
             Text("Version: \(getAppVersion()) (Build: \(getBuildNumber()))")
@@ -76,6 +77,40 @@ struct SettingsResetView: View {
 
             }
             #endif
+            
+            
+            #if os(iOS)
+            VStack {
+                Button(action: {
+                    if !analysingActivityProgress.inProgress {
+                        analysingActivityProgress.start(asyncProgressModel: AsyncProgressModel.indefinite, title: "Analyzing Activities...")
+                        
+                        CKProcessAllActivityRecords(
+                            recordProcessFunction: testProcessAllActivityRecords,
+                            asyncProgressNotifier: analysingActivityProgress).execute()
+                    }
+
+                })
+                {
+                    Text("Re-analyze Activities")
+                }
+                .buttonStyle(.borderedProminent)
+                    .tint(Color.blue)
+                    .disabled(analysingActivityProgress.inProgress)
+                
+                if analysingActivityProgress.displayProgressView {
+                    AsyncProgressView(asyncProgress: analysingActivityProgress)
+                }
+                
+                HStack {
+                    Text("Re-analyze and update all activity records.")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+
+            }
+            #endif
+            
             }
             .navigationTitle("Reset")
             .onDisappear(perform: settingsManager.save)

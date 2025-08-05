@@ -57,7 +57,7 @@ struct LiveMetricsView: View {
     var body: some View {
         VStack {
             TimelineView(MetricsTimelineSchedule(
-                from: liveActivityManager.liveActivityRecord?.startDateLocal ?? Date(),
+                from: liveActivityManager.liveActivityRecord?.startDate ?? Date(),
                 isPaused: false,
                 lowFrequencyTimeInterval: 10.0,
                 highFrequencyTimeInterval: 1.0 / 20.0)

@@ -60,8 +60,8 @@ extension ActivityRecord {
                                                     ])
         let activitiesNode = tcxNode.addNode(name: "Activities")
         let activityNode = activitiesNode.addNode(name: "Activity", attributes: ["Sport" : "Biking"]) // FIX!!
-        activityNode.addValue(name: "Id", value: startDateLocal.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))
-        let lapNode = activityNode.addNode(name: "Lap", attributes: ["StartTime" : startDateLocal.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash))])
+        activityNode.addValue(name: "Id", value: startDate.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))
+        let lapNode = activityNode.addNode(name: "Lap", attributes: ["StartTime" : startDate.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash))])
         lapNode.addValue(name: "TotalTimeSeconds", value: String(format: "%.1f", elapsedTime))
         lapNode.addValue(name: "DistanceMeters", value: String(format: "%.1f", distanceMeters))
 

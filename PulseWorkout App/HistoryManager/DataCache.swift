@@ -464,7 +464,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     func refreshCacheCompletion(ckRecordList: [CKRecord]) -> Void {
         
         if !self.dirty() {
-            self.activities = ckRecordList.map( {ActivityRecord(fromCKRecord: $0)})
+            self.activities = ckRecordList.map( {ActivityRecord(fromCKRecord: $0, fetchtrackData: false)})
             _ = self.write()
 
             self.updateUI()
@@ -488,7 +488,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     func addRecordsToUI(records : [CKRecord] ) -> Void {
         DispatchQueue.main.async {
-            self.UIRecordSet += records.map( {ActivityRecord(fromCKRecord: $0)})
+            self.UIRecordSet += records.map( {ActivityRecord(fromCKRecord: $0, fetchtrackData: false)})
         }
     }
     
@@ -529,7 +529,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         CKFetchRecordOperation(recordID: recordID,
                                completionFunction: { ckRecord in
-            let record = ActivityRecord(fromCKRecord: ckRecord)
+            let record = ActivityRecord(fromCKRecord: ckRecord, fetchtrackData: true)
             self.fullActivityRecordCache.add(activityRecord: record)
             completionFunction(record) },
                                completionFailureFunction: completionFailureFunction).execute()

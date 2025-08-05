@@ -54,7 +54,7 @@ class CKActivityQueryOperation: CloudKitOperation {
                                  "thesholdHR", "estimatedTSSbyHR", "HRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone",
                                  "hasLocationData", "hasHRData", "hasPowerData", "loAltitudeMeters", "hiAltitudeMeters",
                                  "averageSegmentSize", "HRSegmentAverages", "powerSegmentAverages", "cadenceSegmentAverages",
-                                 "altitudeImage"]
+                                 "altitudeImage", "tcx"]
 
         
         return operation

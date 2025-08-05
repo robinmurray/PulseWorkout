@@ -129,20 +129,20 @@ class ActivityChartTraceBuilder: NSObject {
         let backgroundDataScaleFactor = getScaleFactor(axisMarks1: primaryAxisMarks, axisMarks2: backgroundAxisMarkInts)
         
         // Note - already tested count > 0
-        let startDateLocal = timeDistanceSeries[0].time
+        let startDate = timeDistanceSeries[0].time
 
         
         let primaryValueTimeSegmentAverageSeries = segmentAverageSeries(
             segmentSize: getAxisTimeGap(
-                elapsedTimeSeries: timeDistanceSeries.map( { Int($0.time.timeIntervalSince(startDateLocal)) })),
-            xAxisSeries: timeDistanceSeries.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+                elapsedTimeSeries: timeDistanceSeries.map( { Int($0.time.timeIntervalSince(startDate)) })),
+            xAxisSeries: timeDistanceSeries.map( { Double($0.time.timeIntervalSince(startDate)) }),
             inputSeries: smoothedPrimaryDataSeries,
             includeZeros: averagesIncludeZeros)
 
         let timeSegmentMidpointSeries: [Double] = segmentAverageSeries(
             segmentSize: getAxisTimeGap(
-                elapsedTimeSeries: timeDistanceSeries.map( { Int($0.time.timeIntervalSince(startDateLocal)) })),
-            xAxisSeries: timeDistanceSeries.map( { Double($0.time.timeIntervalSince(startDateLocal)) }),
+                elapsedTimeSeries: timeDistanceSeries.map( { Int($0.time.timeIntervalSince(startDate)) })),
+            xAxisSeries: timeDistanceSeries.map( { Double($0.time.timeIntervalSince(startDate)) }),
             inputSeries: smoothedPrimaryDataSeries,
             includeZeros: averagesIncludeZeros,
             getMidpoints: true)
@@ -176,7 +176,7 @@ class ActivityChartTraceBuilder: NSObject {
 
 
         let tracePoints = nonNilSeries.map(
-            {ActivityChartTracePoint(elapsedSeconds: Int($0.0.time.timeIntervalSince(startDateLocal)),
+            {ActivityChartTracePoint(elapsedSeconds: Int($0.0.time.timeIntervalSince(startDate)),
                                      distanceMeters: $0.0.distanceMeters,
                                      primaryValue: Double($0.1!),
                                      primaryValueTimeSegmentAverage: Double($0.3),

@@ -64,7 +64,11 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
 //    var sportType = "Ride"
     let baseFileName = NSUUID().uuidString  // base of file name for tcx and json files
     
-    var startDateLocal: Date = Date()
+    var startDate: Date = Date()
+    var timeZone: TimeZone = TimeZone.current
+    var GMTOffset: Int = TimeZone.current.secondsFromGMT()
+    var startDateLocal: Date = Date() + Double(TimeZone.current.secondsFromGMT())
+
     var elapsedTime: Double = 0
     var pausedTime: Double = 0
     var movingTime: Double = 0
@@ -188,6 +192,11 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         workoutTypeId = try container.decode(UInt.self, forKey: .workoutTypeId)
         workoutLocationId = try container.decode(Int.self, forKey: .workoutLocationId)
         stravaType = try container.decode(String.self, forKey: .stravaType)
+        startDate = try container.decode(Date.self, forKey: .startDate)
+        GMTOffset = try container.decode(Int.self, forKey: .GMTOffset)
+        let timeZoneStr = try container.decode(String.self, forKey: .timeZone)
+        timeZone = TimeZone(identifier: timeZoneStr) ?? TimeZone(identifier: "GMT")!
+
         startDateLocal = try container.decode(Date.self, forKey: .startDateLocal)
         elapsedTime = try container.decode(Double.self, forKey: .elapsedTime)
         pausedTime = try container.decode(Double.self, forKey: .pausedTime)
@@ -249,6 +258,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
          try container.encode(workoutLocationId, forKey: .workoutLocationId)
          try container.encode(stravaType, forKey: .stravaType)
          try container.encode(startDateLocal, forKey: .startDateLocal)
+         try container.encode(startDate, forKey: .startDate)
+         try container.encode(GMTOffset, forKey: .GMTOffset)
+         try container.encode(timeZone.identifier, forKey: .timeZone)
+
          try container.encode(elapsedTime, forKey: .elapsedTime)
          try container.encode(pausedTime, forKey: .pausedTime)
          try container.encode(movingTime, forKey: .movingTime)
@@ -338,6 +351,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         workoutLocationId = fromActivityRecord.workoutLocationId
 //        sportType = fromActivityRecord.sportType
         startDateLocal = fromActivityRecord.startDateLocal
+        startDate = fromActivityRecord.startDate
+        GMTOffset = fromActivityRecord.GMTOffset
+        timeZone = fromActivityRecord.timeZone
+
         elapsedTime = fromActivityRecord.elapsedTime
         pausedTime = fromActivityRecord.pausedTime
         movingTime = fromActivityRecord.movingTime
@@ -417,7 +434,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
 //        type = "Ride"
 //        sportType = "Ride"
-        startDateLocal = startDate
+        self.startDate = startDate
+        self.startDateLocal = startDate + Double(GMTOffset)
         hiHRLimit = activityProfile.hiLimitAlarmActive ? activityProfile.hiLimitAlarm : nil
         loHRLimit = activityProfile.loLimitAlarmActive ? activityProfile.loLimitAlarm : nil
         workoutTypeId = activityProfile.workoutTypeId
@@ -432,12 +450,12 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         // Set status to automatically save to strava depending onc configuration options
         stravaSaveStatus = activityProfile.autoSaveToStrava() ? StravaSaveStatus.toSave.rawValue : StravaSaveStatus.notSaved.rawValue
         
-        var localStartHour = Int(startDateLocal.formatted(
+        var localStartHour = Int(startDate.formatted(
             Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
                 .hour(.defaultDigits(amPM: .omitted))
         )) ?? 0
         
-        let AMPM = startDateLocal.formatted(
+        let AMPM = startDate.formatted(
             Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
                 .hour(.defaultDigits(amPM: .wide)))
 
@@ -562,7 +580,7 @@ extension ActivityRecord {
 
     // set CodingKeys to define which variables are stored to JSON file
     private enum CodingKeys: String, CodingKey {
-        case recordName, name, workoutTypeId, workoutLocationId, stravaType, startDateLocal,
+        case recordName, name, workoutTypeId, workoutLocationId, stravaType, startDateLocal, startDate, GMTOffset, timeZone,
              elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
              averageHeartRate, averageCadence, averagePower, averageSpeed, maxHeartRate, maxCadence, maxPower, maxSpeed,
              activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,

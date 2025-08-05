@@ -12,7 +12,7 @@ import CloudKit
 /// Extension for Saving / Receiving Activity Record to / from Cloudkit
 extension ActivityRecord {
     
-    func asCKRecord() -> CKRecord {
+    func asCKRecord(addTrackData: Bool = true) -> CKRecord {
 // !!        recordID = CKRecord.ID()
         let activityRecord = CKRecord(recordType: recordType, recordID: recordID)
         activityRecord["name"] = name as CKRecordValue
@@ -22,6 +22,10 @@ extension ActivityRecord {
 
 //        activityRecord["sportType"] = sportType as CKRecordValue
         activityRecord["startDateLocal"] = startDateLocal as CKRecordValue
+        activityRecord["startDate"] = startDate as CKRecordValue
+        activityRecord["timeZone"] = timeZone.identifier as CKRecordValue
+        activityRecord["GMTOffset"] = GMTOffset as CKRecordValue
+        
         activityRecord["elapsedTime"] = (round(elapsedTime * 10) / 10) as CKRecordValue
         activityRecord["pausedTime"] = (round(pausedTime * 10) / 10) as CKRecordValue
         activityRecord["movingTime"] = (round(movingTime * 10) / 10) as CKRecordValue
@@ -78,12 +82,15 @@ extension ActivityRecord {
         activityRecord["powerSegmentAverages"] = powerSegmentAverages
         activityRecord["cadenceSegmentAverages"] = cadenceSegmentAverages
         
-        if saveTrackRecord() {
-            logger.debug("creating tcx asset!")
-            guard let tFile = tcxFileName else { return activityRecord }
-            guard let tURL = CacheURL(fileName: tFile) else { return activityRecord }
-            activityRecord["tcx"] = CKAsset(fileURL: tURL)
+        if addTrackData {
+            if saveTrackRecord() {
+                logger.debug("creating tcx asset!")
+                guard let tFile = tcxFileName else { return activityRecord }
+                guard let tURL = CacheURL(fileName: tFile) else { return activityRecord }
+                activityRecord["tcx"] = CKAsset(fileURL: tURL)
+            }
         }
+
 
         return activityRecord
 
@@ -112,6 +119,9 @@ extension ActivityRecord {
         workoutLocationId = activityRecord["workoutLocationId"] ?? 1 as Int
 //        sportType = activityRecord["sportType"] ?? "" as String
         startDateLocal = activityRecord["startDateLocal"] ?? Date() as Date
+        startDate = activityRecord["startDate"] ?? Date() as Date
+        timeZone = TimeZone(identifier: (activityRecord["timeZone"] ?? "GMT")) ?? TimeZone(identifier: "GMT")!
+        GMTOffset = activityRecord["GMTOffset"] ?? 0 as Int
         elapsedTime = activityRecord["elapsedTime"] ?? 0 as Double
         pausedTime = activityRecord["pausedTime"] ?? 0 as Double
         movingTime = activityRecord["movingTime"] ?? 0 as Double

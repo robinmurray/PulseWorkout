@@ -242,7 +242,7 @@ struct ActivityDetailView: View {
         .tabViewStyle(.verticalPage)
         .navigationTitle {
             Label( activityRecord.startDateLocal.formatted(
-                Date.FormatStyle(timeZone: TimeZone(abbreviation: TimeZone.current.abbreviation() ?? "")!)
+                Date.FormatStyle(timeZone: TimeZone(identifier: "GMT")!)
                 .day(.twoDigits)
                 .month(.abbreviated)
                 .hour(.defaultDigits(amPM: .omitted))

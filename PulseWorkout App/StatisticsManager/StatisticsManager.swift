@@ -96,7 +96,7 @@ class StatisticsManager: ObservableObject {
     /// Add list of activity CKRecords to stats buckets
     func addActivitiesToStats(ckRecordList: [CKRecord]) -> Void {
         
-        let activityList = ckRecordList.map( {ActivityRecord(fromCKRecord: $0)})
+        let activityList = ckRecordList.map( {ActivityRecord(fromCKRecord: $0, fetchtrackData: false)})
         _ = activityList.map( {statsBuckets.addActivityToTemp($0) })
         
         statsBuckets.copyTempToElements()
