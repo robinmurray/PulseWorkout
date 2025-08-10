@@ -23,10 +23,6 @@ struct ActivityHistoryHeaderView: View {
                         Spacer()
                     }
                     
-
-
-
-
                     HStack {
                         Text("Activities: \(statisticsManager.thisWeek().formattedValue(propertyName: "activities"))")
                         Spacer()

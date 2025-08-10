@@ -21,14 +21,7 @@ struct ActivityHeaderView: View {
             }
 
             HStack {
-                Text(activityRecord.startDateLocal.formatted(
-                    Date.FormatStyle(timeZone: TimeZone(identifier: "GMT")!)
-                        .day(.twoDigits)
-                        .month(.abbreviated)
-                        .hour(.defaultDigits(amPM: .omitted))
-                        .minute(.twoDigits)
-                        .hour(.conversationalDefaultDigits(amPM: .abbreviated))
-                ))
+                Text(startDateLocalFormatter(startDateLocal: activityRecord.startDateLocal))
                 
                 Spacer()
             }

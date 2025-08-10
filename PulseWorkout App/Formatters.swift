@@ -136,3 +136,14 @@ func TSSFormatter(TSS: Double) -> String {
     return String(format: "%.1f", TSS)
 }
 
+func startDateLocalFormatter(startDateLocal: Date) -> String {
+    
+    return startDateLocal.formatted(
+        Date.FormatStyle(timeZone: TimeZone(identifier: "GMT")!)
+            .day(.twoDigits)
+            .month(.abbreviated)
+            .hour(.defaultDigits(amPM: .omitted))
+            .minute(.twoDigits)
+            .hour(.conversationalDefaultDigits(amPM: .abbreviated)))
+
+}

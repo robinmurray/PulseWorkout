@@ -47,6 +47,7 @@ struct StackedBarView: View {
         .chartXAxis {
             AxisMarks(stroke: StrokeStyle(lineWidth: 0))
         }
+        .chartYAxis(.hidden)
 
     }
 }

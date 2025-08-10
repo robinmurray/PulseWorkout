@@ -241,13 +241,7 @@ struct ActivityDetailView: View {
         }
         .tabViewStyle(.verticalPage)
         .navigationTitle {
-            Label( activityRecord.startDateLocal.formatted(
-                Date.FormatStyle(timeZone: TimeZone(identifier: "GMT")!)
-                .day(.twoDigits)
-                .month(.abbreviated)
-                .hour(.defaultDigits(amPM: .omitted))
-                .minute(.twoDigits)
-                ),
+            Label(startDateLocalFormatter(startDateLocal: activityRecord.startDateLocal),
                    systemImage: HKWorkoutActivityType( rawValue: activityRecord.workoutTypeId)!.iconImage )
             .foregroundColor(.white)
         }
