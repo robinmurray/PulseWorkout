@@ -16,8 +16,6 @@ struct DetailStatisticBarDonutView: View {
     var body: some View {
         
         VStack {
-            ActivityHistoryHeaderView()
-            Spacer()
  
             ScrollView {
                 GroupBox(label: Text("This Week")

@@ -379,9 +379,14 @@ class StatisticsBucketArray: NSObject, Codable {
         
     }
     
-    func asWeekStackedBarData(propertyName: String) -> [StackedBarChartDataPoint] {
+    func asWeekStackedBarData(propertyName: String, filterList: [String] = []) -> [StackedBarChartDataPoint] {
         
-        return asStackedBarData(propertyName: propertyName, indexNames: ["-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "last", "this"])
+        let fullList = asStackedBarData(propertyName: propertyName,
+                                        indexNames: ["-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "last", "this"])
+        if filterList.count > 0 {
+            return fullList.filter( {filterList.contains($0.index)} )
+        }
+        return fullList
         
     }
 

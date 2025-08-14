@@ -58,10 +58,13 @@ struct StatisticsView: View {
     var body: some View {
         
         VStack {
-            ActivityHistoryHeaderView()
-            Spacer()
 
+            ActivityHistoryHeaderView()
+            
             ScrollView {
+
+//                Spacer()
+                
                 StatisticsSummaryView(navigationCoordinator: navigationCoordinator)
                 Spacer()
                 Button("Migrate...") {
