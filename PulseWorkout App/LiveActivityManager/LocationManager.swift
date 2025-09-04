@@ -281,6 +281,16 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
     }
 
+    func locationAccuracyOk(_ location: CLLocation?) -> Bool {
+        
+        if let validLocation = location {
+            if (validLocation.horizontalAccuracy != -1) &&
+                (validLocation.horizontalAccuracy < 50) {
+                return true
+            }
+        }
+        return false
+    }
     
     func locationManager(
         _ manager: CLLocationManager,
@@ -290,7 +300,8 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         
         // Handle location update
         location = locations.last
-        if location != nil {
+        if locationAccuracyOk(location) {
+
             latitude = location!.coordinate.latitude
             longitude = location!.coordinate.longitude
             speed = location!.speed
@@ -306,7 +317,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
                     if lastLocation == nil {
                         lastLocation = location
                     }
-                    else if horizontalAccuracy != nil && horizontalAccuracy != -1 {
+                    else {
                         if (location?.distance(from: lastLocation!) ?? 0) > horizontalAccuracy! {
                             distanceMeters += (location?.distance(from: lastLocation!) ?? 0)
                             lastLocation = location
@@ -382,6 +393,11 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
             
             // Get Geo location if running in foreground mode and has moved from last geolocation
             if foregroundActive { getCurrentGeoLocation() }
+
+
+        }
+        if location != nil {
+                
 
         }
         
