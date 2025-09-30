@@ -30,9 +30,8 @@ struct SummaryStatsHeaderView: View {
                             .font(.caption)
                             .bold()
                         
-                        StackedBarView(stackedBarData: statisticsManager.weekBuckets.asWeekStackedBarData(propertyName: "activities", filterList: ["last", "this"]),
-                                       formatter: propertyValueFormatter("activities", shortForm: true))
-                        
+                        BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "activities", filterList: ["last", "this"]))
+                                                
                     }
                 }
                 .frame(width: frameWidth)
@@ -48,10 +47,8 @@ struct SummaryStatsHeaderView: View {
                             Text("Load")
                                 .font(.caption)
                                 .bold()
-                            
-                            StackedBarView(stackedBarData: statisticsManager.weekBuckets.asWeekStackedBarData(propertyName: "TSSByZone", filterList: ["last", "this"]),
-                                           formatter: propertyValueFormatter("TSS", shortForm: true))
-                            
+ 
+                            BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "TSSByZone", filterList: ["last", "this"]))
                         }
                         
                     }
@@ -69,10 +66,8 @@ struct SummaryStatsHeaderView: View {
                         Text("Distance")
                             .font(.caption)
                             .bold()
-                        
-                        StackedBarView(stackedBarData: statisticsManager.weekBuckets.asWeekStackedBarData(propertyName: "distanceMeters", filterList: ["last", "this"]),
-                                       formatter: propertyValueFormatter("distanceMeters", shortForm: true))
-                        
+ 
+                        BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "distanceMeters", filterList: ["last", "this"]))
                     }
                 }
                 .frame(width: frameWidth)
@@ -88,10 +83,8 @@ struct SummaryStatsHeaderView: View {
                         Text("Time")
                             .font(.caption)
                             .bold()
-                        
-                        StackedBarView(stackedBarData: statisticsManager.weekBuckets.asWeekStackedBarData(propertyName: "timeByZone", filterList: ["last", "this"]),
-                                       formatter: propertyValueFormatter("timeByZone", shortForm: true))
-                        
+
+                        BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "timeByZone", filterList: ["last", "this"]))
                     }
                 }
                 .frame(width: frameWidth)
