@@ -35,17 +35,17 @@ struct StackedBarAndDonutView: View {
 
 #Preview {
     let testBarData: [StackedBarChartDataPoint] =
-    [StackedBarChartDataPoint(index: "M", type: "low aerobic", value: 10),
-     StackedBarChartDataPoint(index: "M", type: "high aerobic", value: 30),
-     StackedBarChartDataPoint(index: "M", type: "anaerobic", value: 5),
-     StackedBarChartDataPoint(index: "T", type: "low aerobic", value: 15),
-     StackedBarChartDataPoint(index: "T", type: "high aerobic", value: 20),
-     StackedBarChartDataPoint(index: "T", type: "anaerobic", value: 10)
+    [StackedBarChartDataPoint(stackIndex: "M", stackCategory: "low aerobic", value: 10, stackCategoryColor: .blue),
+     StackedBarChartDataPoint(stackIndex: "M", stackCategory: "high aerobic", value: 30, stackCategoryColor: .green),
+     StackedBarChartDataPoint(stackIndex: "M", stackCategory: "anaerobic", value: 5, stackCategoryColor: .orange),
+     StackedBarChartDataPoint(stackIndex: "T", stackCategory: "low aerobic", value: 15, stackCategoryColor: .blue),
+     StackedBarChartDataPoint(stackIndex: "T", stackCategory: "high aerobic", value: 20, stackCategoryColor: .green),
+     StackedBarChartDataPoint(stackIndex: "T", stackCategory: "anaerobic", value: 10, stackCategoryColor: .orange)
      ]
     let testDonutData: [DonutChartDataPoint] =
-    [DonutChartDataPoint(name: "Low Aerobic", value: 10, formattedValue: "10"),
-     DonutChartDataPoint(name: "High Aerobic", value: 20, formattedValue: "20"),
-     DonutChartDataPoint(name: "Anaerobic", value: 5, formattedValue: "5")]
+    [DonutChartDataPoint(name: "Low Aerobic", color: .blue, value: 10, formattedValue: "10"),
+     DonutChartDataPoint(name: "High Aerobic", color: .green, value: 20, formattedValue: "20"),
+     DonutChartDataPoint(name: "Anaerobic", color: .orange, value: 5, formattedValue: "5")]
 
     
     StackedBarAndDonutView(stackedBarData: testBarData,

@@ -7,10 +7,12 @@
 
 import Foundation
 import HealthKit
+import SwiftUI
 
 
 
 extension HKWorkoutActivityType: @retroactive Identifiable  {
+    
     public var id: UInt {
         rawValue
     }
@@ -37,6 +39,31 @@ extension HKWorkoutActivityType: @retroactive Identifiable  {
             return "Walking"
         default:
             return "Workout"
+        }
+    }
+    
+    var colorRepresentation: Color {
+        switch self {
+        case .crossTraining:
+            return Color.cyan
+        case .cycling:
+            return Color.blue
+        case .flexibility:
+            return Color.indigo
+        case .functionalStrengthTraining:
+            return Color.cyan.opacity(0.25)
+        case .mixedCardio:
+            return Color.cyan.opacity(0.5)
+        case .paddleSports:
+            return Color.purple.opacity(0.5)
+        case .rowing:
+            return Color.purple
+        case .running:
+            return Color.blue.opacity(0.5)
+        case .walking:
+            return Color.blue.opacity(0.25)
+        default:
+            return Color.teal
         }
     }
     

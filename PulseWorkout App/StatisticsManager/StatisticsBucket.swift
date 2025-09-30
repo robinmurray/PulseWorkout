@@ -7,19 +7,23 @@
 
 import Foundation
 import CloudKit
+import HealthKit
+import SwiftUI
 
 
-private func arrayAsDonutChartData(array: [Double], labels: [String], valueFormatter: @escaping (Double) -> String) -> [DonutChartDataPoint] {
+private func arrayAsDonutChartData(array: [Double], labels: [String], colors: [Color], valueFormatter: @escaping (Double) -> String) -> [DonutChartDataPoint] {
     
     var chartData: [DonutChartDataPoint] = []
    
     for (i, label) in labels.enumerated() {
         if i < array.count {
             chartData.append(DonutChartDataPoint(name: label,
+                                                 color: colors[i],
                                                  value: array[i],
                                                  formattedValue: valueFormatter(array[i])))
         } else {
             chartData.append(DonutChartDataPoint(name: label,
+                                                 color: colors[i],
                                                  value: 0,
                                                  formattedValue: valueFormatter(0)))
         }
@@ -38,8 +42,11 @@ struct StatisticsBucket: Codable {
     var startDateString: String
     var endDateString: String
     var bucketType: Int
+    var workoutTypeIds: [UInt]
     var activities: Double
+    var activitiesByType: [Double]
     var distanceMeters: Double
+    var distanceMetersByType: [Double]
     var time: Double
     var TSS: Double
     var TSSByZone: [Double]
@@ -64,14 +71,35 @@ struct StatisticsBucket: Codable {
             .month()
             .day())
         self.bucketType = bucketType.rawValue
+        self.workoutTypeIds = []
         self.activities = 0
+        self.activitiesByType = []
         self.distanceMeters = 0
+        self.distanceMetersByType = []
         self.time = 0
         self.TSS = 0
         self.TSSByZone = [0, 0, 0]
         self.timeByZone = [0, 0, 0]
     }
     
+    mutating func addTypedValues( newWorkoutTypeIds: [UInt], newActivities: [Double], newDistanceMeters: [Double]) {
+        
+        for (newIndex, id) in newWorkoutTypeIds.enumerated() {
+            if self.workoutTypeIds.firstIndex(of: id) == nil {
+                let index = self.workoutTypeIds.firstIndex(where: {$0 > id}) ?? self.workoutTypeIds.endIndex
+                self.workoutTypeIds.insert(id, at: index)
+                self.activitiesByType.insert(0, at: index)
+                self.distanceMetersByType.insert(0, at: index)
+                
+            }
+            if let index = self.workoutTypeIds.firstIndex(of: id) {
+                self.activitiesByType[index] += newActivities[newIndex]
+                self.distanceMetersByType[index] += newDistanceMeters[newIndex]
+            }
+        }
+    }
+    
+
     
     // Create a statistics bucket as 7-day average from array of buckets - which must be of the same type
     init(bucketArray: [StatisticsBucket]) {
@@ -107,9 +135,16 @@ struct StatisticsBucket: Codable {
                 self.activities = bucketArray.reduce(0) { result, bucket
                     in
                     result + (bucket.activities / divisor)}
+
                 self.distanceMeters = bucketArray.reduce(0) { result, bucket
                     in
                     result + (bucket.distanceMeters / divisor)}
+
+                
+                _ = bucketArray.map( {addTypedValues(newWorkoutTypeIds: $0.workoutTypeIds,
+                                                     newActivities: $0.activitiesByType,
+                                                     newDistanceMeters: $0.distanceMetersByType) })
+                
                 self.time = bucketArray.reduce(0) { result, bucket
                     in
                     result + (bucket.time / divisor)}
@@ -141,7 +176,9 @@ struct StatisticsBucket: Codable {
         ckRecord["endDateString"] = endDateString as CKRecordValue
         ckRecord["bucketType"] = bucketType as CKRecordValue
         ckRecord["activities"] = activities as CKRecordValue
+        ckRecord["activitiesByType"] = activitiesByType as CKRecordValue
         ckRecord["distanceMeters"] = distanceMeters as CKRecordValue
+        ckRecord["distanceMetersByType"] = distanceMetersByType as CKRecordValue
         ckRecord["time"] = time as CKRecordValue
         ckRecord["TSS"] = TSS as CKRecordValue
         ckRecord["TSSByZone"] = TSSByZone as CKRecordValue
@@ -152,7 +189,7 @@ struct StatisticsBucket: Codable {
     }
     
     
-    func asDonutChartData(propertyName: String, labels: [String] ) -> [DonutChartDataPoint] {
+    func asDonutChartData(propertyName: String, labels: [String], colors: [Color] ) -> [DonutChartDataPoint] {
         
         let formatter = propertyValueFormatter(propertyName)
         
@@ -160,17 +197,31 @@ struct StatisticsBucket: Codable {
             
             return arrayAsDonutChartData(array: array,
                                          labels: labels,
+                                         colors: colors,
                                          valueFormatter: formatter)
         }
         return arrayAsDonutChartData(array: [],
                                      labels: labels,
+                                     colors: colors,
                                      valueFormatter: formatter)
     }
     
     
     func asZoneDonutChartData(propertyName: String) -> [DonutChartDataPoint] {
+        var labels: [String]
+        var colors: [Color]
         
-        return asDonutChartData(propertyName: propertyName, labels: ["Low Aerobic", "High Aerobic", "Anaerobic"])
+        if ["TSSByZone", "timeByZone"].contains(propertyName) {
+            labels = ["Low Aerobic", "High Aerobic", "Anaerobic"]
+            colors = [.blue, .green, .orange]
+            
+        } else {
+            labels = workoutTypeIds.map( { HKWorkoutActivityType(rawValue: UInt($0))?.name ?? "Error" })
+            colors = workoutTypeIds.map( { HKWorkoutActivityType(rawValue: UInt($0))?.colorRepresentation ?? .red })
+
+        }
+        
+        return asDonutChartData(propertyName: propertyName, labels: labels, colors: colors)
         
     }
     

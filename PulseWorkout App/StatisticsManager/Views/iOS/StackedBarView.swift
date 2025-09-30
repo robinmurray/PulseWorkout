@@ -10,11 +10,23 @@ import Charts
 
 struct StackedBarChartDataPoint: Identifiable {
     let id = UUID()
-    var index: String
-    var type: String
+    var stackIndex: String
+    var stackCategory: String
     var value: Double
+    var stackCategoryColor: Color
 }
 
+
+var powerZoneColors: [String: Color] = ["Low Aerobic" : .blue,
+                                        "High Aerobic" : .green,
+                                        "Anaerobic" : .orange]
+
+func getColorForPowerZone(label: String) -> Color {
+    return powerZoneColors[label] ?? .pink
+}
+
+
+// REIMPLEMENT THIS FOR STACKEDBARCHARTDATA
 struct StackedBarView: View {
     
     var stackedBarData: [StackedBarChartDataPoint]
@@ -24,17 +36,18 @@ struct StackedBarView: View {
         Chart {
             ForEach(stackedBarData) { dataPoint in
                 BarMark(
-                    x: .value("Shape Type", dataPoint.index),
-                    y: .value("Total Count", dataPoint.value)
+                    x: .value("Index", dataPoint.stackIndex),
+                    y: .value("Value", dataPoint.value)
                 )
-                .foregroundStyle(by: .value("Shape Color", dataPoint.type))
+                .foregroundStyle(dataPoint.stackCategoryColor)
+//                .foregroundStyle(by: .value("Type", dataPoint.stackCategory))
                 .annotation(position: .top, spacing: 10) {
-                    let summedValues = stackedBarData.filter( {$0.index == dataPoint.index} ).reduce(0) { result, dp
+                    let summedValues = stackedBarData.filter( {$0.stackIndex == dataPoint.stackIndex} ).reduce(0) { result, dp
                         in
                         result + dp.value }
                     
-                    let rotationDegrees = Set(stackedBarData.map({$0.index})).count > 8 ? 300 : 0
-                    if dataPoint.type == stackedBarData.filter( {$0.index == dataPoint.index} ).last!.type {
+                    let rotationDegrees = Set(stackedBarData.map({$0.stackIndex})).count > 8 ? 300 : 0
+                    if dataPoint.stackCategory == stackedBarData.filter( {$0.stackIndex == dataPoint.stackIndex} ).last!.stackCategory {
                         Text(formatter(summedValues))
                             .rotationEffect(.degrees(Double(rotationDegrees)))
                             .foregroundColor(.secondary)
@@ -55,12 +68,12 @@ struct StackedBarView: View {
 #Preview {
     
     let testData: [StackedBarChartDataPoint] =
-    [StackedBarChartDataPoint(index: "M", type: "low aerobic", value: 10),
-     StackedBarChartDataPoint(index: "M", type: "high aerobic", value: 30),
-     StackedBarChartDataPoint(index: "M", type: "anaerobic", value: 5),
-     StackedBarChartDataPoint(index: "T", type: "low aerobic", value: 15),
-     StackedBarChartDataPoint(index: "T", type: "high aerobic", value: 20),
-     StackedBarChartDataPoint(index: "T", type: "anaerobic", value: 10)
+    [StackedBarChartDataPoint(stackIndex: "M", stackCategory: "low aerobic", value: 10, stackCategoryColor: .blue),
+     StackedBarChartDataPoint(stackIndex: "M", stackCategory: "high aerobic", value: 30, stackCategoryColor: .green),
+     StackedBarChartDataPoint(stackIndex: "M", stackCategory: "anaerobic", value: 5, stackCategoryColor: .orange),
+     StackedBarChartDataPoint(stackIndex: "T", stackCategory: "low aerobic", value: 15, stackCategoryColor: .blue),
+     StackedBarChartDataPoint(stackIndex: "T", stackCategory: "high aerobic", value: 20, stackCategoryColor: .green),
+     StackedBarChartDataPoint(stackIndex: "T", stackCategory: "anaerobic", value: 10, stackCategoryColor: .orange)
      ]
     StackedBarView(stackedBarData: testData,
                    formatter: propertyValueFormatter("TSS"))

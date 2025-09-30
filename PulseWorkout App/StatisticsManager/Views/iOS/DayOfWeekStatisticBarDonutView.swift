@@ -41,13 +41,12 @@ struct DayOfWeekStatisticBarDonutView: View {
             }
             )
             {
-                
-                StackedBarAndDonutView(
-                    stackedBarData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                    donutChartData: statisticsManager.thisWeek().asZoneDonutChartData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                    donutChartTotalName: PropertyViewParamaters[propertyName]?.totalLabel ?? "Total",
-                    donutChartTotalValue: statisticsManager.thisWeek().formattedValue(propertyName: propertyName),
-                    formatter: propertyValueFormatter(propertyName, shortForm: true))
+                VStack {
+
+                    BarAndDonutView(
+                        stackedBarChartData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarChartData(propertyName: propertyName))
+                }
+
                 
             }
         }

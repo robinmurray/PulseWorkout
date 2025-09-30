@@ -91,12 +91,15 @@ struct ActivityDetailView: View {
         }
 
         return [DonutChartDataPoint(name: "Low Aerobic",
+                                    color: .blue,
                                     value: rangeValues[0],
                                     formattedValue: String(format: "%.1f", rangeValues[0])),
                 DonutChartDataPoint(name: "High Aerobic",
+                                    color: .green,
                                     value: rangeValues[1],
                                     formattedValue: String(format: "%.1f", rangeValues[1])),
                 DonutChartDataPoint(name: "Anaerobic",
+                                    color: .orange,
                                     value: rangeValues[2],
                                     formattedValue: String(format: "%.1f", rangeValues[2]))]
 
@@ -120,12 +123,15 @@ struct ActivityDetailView: View {
         }
         
         return [DonutChartDataPoint(name: "Low Aerobic",
+                                    color: .blue,
                                     value: rangeValues[0],
                                     formattedValue: elapsedTimeFormatter(elapsedSeconds: rangeValues[0], minimizeLength: true)),
                 DonutChartDataPoint(name: "High Aerobic",
+                                    color: .green,
                                     value: rangeValues[1],
                                     formattedValue: elapsedTimeFormatter(elapsedSeconds: rangeValues[1], minimizeLength: true)),
                 DonutChartDataPoint(name: "Anaerobic",
+                                    color: .orange,
                                     value: rangeValues[2],
                                     formattedValue: elapsedTimeFormatter(elapsedSeconds: rangeValues[2], minimizeLength: true))]
         

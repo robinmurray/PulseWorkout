@@ -59,7 +59,7 @@ struct StatisticsView: View {
         
         VStack {
 
-            ActivityHistoryHeaderView()
+            StatisticsProgressHeaderView()
             
             ScrollView {
 

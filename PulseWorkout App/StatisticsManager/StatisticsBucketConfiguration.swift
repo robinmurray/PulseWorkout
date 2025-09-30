@@ -63,3 +63,11 @@ func propertyValueFormatter(_ propertyName: String, shortForm: Bool = false) -> 
     return formatter
     
 }
+
+func formattedPropertyValue(_ propertyName: String, value: Double, shortForm: Bool = false) -> String {
+    
+    let formatter = propertyValueFormatter(propertyName, shortForm: shortForm)
+    
+    return formatter(value)
+    
+}

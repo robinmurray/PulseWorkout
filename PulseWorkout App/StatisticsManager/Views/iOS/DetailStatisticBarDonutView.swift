@@ -22,13 +22,9 @@ struct DetailStatisticBarDonutView: View {
                     .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
                     .fontWeight(.bold))
                 {
-                    
-                    StackedBarAndDonutView(
-                        stackedBarData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                        donutChartData: statisticsManager.thisWeek().asZoneDonutChartData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                        donutChartTotalName: PropertyViewParamaters[propertyName]?.totalLabel ?? "Total",
-                        donutChartTotalValue: statisticsManager.thisWeek().formattedValue(propertyName: propertyName),
-                        formatter: propertyValueFormatter(propertyName, shortForm: true))
+
+                    BarAndDonutView(
+                        stackedBarChartData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarChartData(propertyName: propertyName))
 
                 }
                 
@@ -36,29 +32,18 @@ struct DetailStatisticBarDonutView: View {
                     .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
                     .fontWeight(.bold))
                 {
-
-                    StackedBarAndDonutView(
-                        stackedBarData: statisticsManager.lastWeekDayBuckets.asDayOfWeekStackedBarData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                        donutChartData: statisticsManager.lastWeek().asZoneDonutChartData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                        donutChartTotalName: PropertyViewParamaters[propertyName]?.totalLabel ?? "Total",
-                        donutChartTotalValue: statisticsManager.lastWeek().formattedValue(propertyName: propertyName),
-                        formatter: propertyValueFormatter(propertyName, shortForm: true))
-
+                    
+                    BarAndDonutView(
+                        stackedBarChartData: statisticsManager.lastWeekDayBuckets.asDayOfWeekStackedBarChartData(propertyName: propertyName))
                 }
                 
                 GroupBox(label: Text("Last 12 Weeks")
                     .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
                     .fontWeight(.bold))
                 {
-
-
-                    StackedBarAndDonutView(
-                        stackedBarData: statisticsManager.weekBuckets.asWeekStackedBarData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                        donutChartData: StatisticsBucket(bucketArray: statisticsManager.weekBuckets.elements) .asZoneDonutChartData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                        donutChartTotalName: "Weekly Average",
-                        donutChartTotalValue: StatisticsBucket(bucketArray: statisticsManager.weekBuckets.elements).formattedValue(propertyName: propertyName),
-                        formatter: propertyValueFormatter(propertyName, shortForm: true))
-     
+      
+                    BarAndDonutView(
+                        stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: propertyName))
                     
                 }
                 
@@ -67,12 +52,8 @@ struct DetailStatisticBarDonutView: View {
                     .fontWeight(.bold))
                 {
                     
-                    StackedBarAndDonutView(
-                        stackedBarData: statisticsManager.quarterBuckets.asQuarterStackedBarData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                        donutChartData: StatisticsBucket(bucketArray: statisticsManager.quarterBuckets.elements) .asZoneDonutChartData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                        donutChartTotalName: "Weekly Average",
-                        donutChartTotalValue: StatisticsBucket(bucketArray: statisticsManager.quarterBuckets.elements).formattedValue(propertyName: propertyName),
-                        formatter: propertyValueFormatter(propertyName, shortForm: true))
+                    BarAndDonutView(
+                        stackedBarChartData: statisticsManager.quarterBuckets.asQuarterStackedBarChartData(propertyName: propertyName))
                     
                 }
                 
@@ -84,6 +65,7 @@ struct DetailStatisticBarDonutView: View {
                     DonutChartView(chartData: statisticsManager.thisYear().asZoneDonutChartData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
                                    totalName: PropertyViewParamaters[propertyName]?.totalLabel ?? "Total",
                                    totalValue: statisticsManager.thisYear().formattedValue(propertyName: propertyName))
+                    
 
                 }
                 

@@ -15,8 +15,10 @@ struct ActivityHistoryHeaderView: View {
     var body: some View {
         
         VStack {
-            //            Text("Week Statistics")
+
             Divider()
+            TabView() {
+                
             GeometryReader { geometry in
                 let padWidth: CGFloat = 1
                 let frameWidth: CGFloat = max(((geometry.size.width - (8 * padWidth)) / 4 ) - 4, 10)
@@ -106,10 +108,19 @@ struct ActivityHistoryHeaderView: View {
                     .frame(height: 120)
                     
             }
-
             .frame(height: 120)
+            
+
+                Text("Tab 1")
+                Text("Tab 2")
+                Text("Tab 3")
+            }
+            .tabViewStyle(.page)
+            .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .interactive))
+
 
         }
+        .frame(height: 140)
         .padding()
         .background(.gray.opacity(0.25))
  

@@ -1,40 +1,27 @@
 //
-//  DonutChartView.swift
+//  DonutView.swift
 //  PulseWorkout Phone App
 //
-//  Created by Robin Murray on 14/02/2025.
+//  Created by Robin Murray on 24/09/2025.
 //
 
 import SwiftUI
 import Charts
 
-
-struct DonutChartDataPoint : Identifiable {
-    let id = UUID()
-    let name: String
-    let color: Color
-    let value: Double
-    let formattedValue: String
-}
-
-
-struct DonutChartView: View {
+struct DonutView: View {
     
-    var chartData: [DonutChartDataPoint]
-    var totalName: String
-    var totalValue: String
-    
-    
+    var stackedBarChartData: StackedBarChartData
+
     var body: some View {
         
         VStack {
             ZStack {
 
                 // The donut chart
-                Chart(chartData) { dataPoint in
+                Chart(stackedBarChartData.totalsBySubcategory) { dataPoint in
                     SectorMark(
                         angle: .value(
-                            Text(verbatim: dataPoint.name),
+                            Text(verbatim: stackedBarChartData.subCategoryLabel(subCategory: dataPoint.subCategory)),
                             dataPoint.value
                         ),
                         innerRadius: .ratio(0.618),
@@ -43,8 +30,8 @@ struct DonutChartView: View {
                     .foregroundStyle(
                         by: .value(
                             "Name",
-                            dataPoint.name
-                        )
+                            stackedBarChartData.subCategoryLabel(subCategory: dataPoint.subCategory))
+
                     )
 
                     .cornerRadius(6)
@@ -57,15 +44,15 @@ struct DonutChartView: View {
                 }
                 // Set color for each data in the chart
                 .chartForegroundStyleScale(
-                domain: chartData.map { $0.name },
-                range: chartData.map { $0.color }
+                domain: stackedBarChartData.allCategoryLabels(),
+                range: stackedBarChartData.allCategoryColors()
                 )
                 .frame(width: 300, height: 300)
                 
                 // The text in the centre
                 VStack(alignment:.center) {
-                    Text(totalName).bold()
-                    Text(totalValue).bold()
+                    Text(stackedBarChartData.totalName).bold()
+                    Text(stackedBarChartData.formattedTotal()).bold()
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
                 
@@ -77,9 +64,8 @@ struct DonutChartView: View {
     }
 }
 
-
+/*
 #Preview {
-    DonutChartView(chartData: [DonutChartDataPoint(name: "Low Aerobic", color: .blue, value: 10, formattedValue: "10"),
-                               DonutChartDataPoint(name: "High Aerobic", color: .green, value: 40, formattedValue: "40"),
-                               DonutChartDataPoint(name: "Anaerobic", color: .orange, value: 7, formattedValue: "7")], totalName: "Total Load", totalValue: "57.0")
+    DonutView()
 }
+*/
