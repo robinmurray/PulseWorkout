@@ -29,7 +29,6 @@ struct ActivityHistoryView: View {
     var body: some View {
 #if os(iOS)
         StatisticsProgressHeaderView()
-//        ActivityHistoryHeaderView()
 #endif
         
         List {

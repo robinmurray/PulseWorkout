@@ -17,6 +17,8 @@ extension ActivityRecord: XMLParserDelegate {
 
     func parserDidEndDocument(_ parser: XMLParser) {
         print("Ended parsing document : \(trackPoints.count) trackpoints created")
+//        trackPoints.sort(by: {$0.time < $1.time })
+//        print("Sorted trackpoints: \(trackPoints[0])")
     }
 
     func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String] = [:]) {
