@@ -133,7 +133,6 @@ class StatisticsBucketArray: NSObject, Codable {
     /// Add activity to elements
     func addActivity(_ activityRecord: ActivityRecord) {
 
-        print("Activity workoutTypeId : \(activityRecord.workoutTypeId)")
         for (index, bucket) in elements.enumerated() {
             let activityDate = stringToDate(dateString: dateAsString(date: activityRecord.startDateLocal))
             let bucketStartDate = stringToDate(dateString: bucket.startDateString)
@@ -170,8 +169,6 @@ class StatisticsBucketArray: NSObject, Codable {
     
     
     func addActivityToTemp(_ activityRecord: ActivityRecord) {
- 
-        print("Temp Activity workoutTypeId : \(activityRecord.workoutTypeId)")
 
         for (index, bucket) in tempBuckets.enumerated() {
             let activityDate = stringToDate(dateString: dateAsString(date: activityRecord.startDateLocal))
@@ -395,7 +392,6 @@ class StatisticsBucketArray: NSObject, Codable {
            }
        }
        
-        print("stackedBarChartData : property : \(propertyName) : \(stackedBarChartData)")
        return stackedBarChartData
     }
     

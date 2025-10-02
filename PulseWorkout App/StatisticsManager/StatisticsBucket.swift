@@ -11,28 +11,6 @@ import HealthKit
 import SwiftUI
 
 
-private func arrayAsDonutChartData(array: [Double], labels: [String], colors: [Color], valueFormatter: @escaping (Double) -> String) -> [DonutChartDataPoint] {
-    
-    var chartData: [DonutChartDataPoint] = []
-   
-    for (i, label) in labels.enumerated() {
-        if i < array.count {
-            chartData.append(DonutChartDataPoint(name: label,
-                                                 color: colors[i],
-                                                 value: array[i],
-                                                 formattedValue: valueFormatter(array[i])))
-        } else {
-            chartData.append(DonutChartDataPoint(name: label,
-                                                 color: colors[i],
-                                                 value: 0,
-                                                 formattedValue: valueFormatter(0)))
-        }
-    }
-   
-    return chartData
-}
-
-
 
 
 struct StatisticsBucket: Codable {
@@ -188,42 +166,6 @@ struct StatisticsBucket: Codable {
 
     }
     
-    
-    func asDonutChartData(propertyName: String, labels: [String], colors: [Color] ) -> [DonutChartDataPoint] {
-        
-        let formatter = propertyValueFormatter(propertyName)
-        
-        if let array = asCKRecord()[propertyName] as? [Double] {
-            
-            return arrayAsDonutChartData(array: array,
-                                         labels: labels,
-                                         colors: colors,
-                                         valueFormatter: formatter)
-        }
-        return arrayAsDonutChartData(array: [],
-                                     labels: labels,
-                                     colors: colors,
-                                     valueFormatter: formatter)
-    }
-    
-    
-    func asZoneDonutChartData(propertyName: String) -> [DonutChartDataPoint] {
-        var labels: [String]
-        var colors: [Color]
-        
-        if ["TSSByZone", "timeByZone"].contains(propertyName) {
-            labels = ["Low Aerobic", "High Aerobic", "Anaerobic"]
-            colors = [.blue, .green, .orange]
-            
-        } else {
-            labels = workoutTypeIds.map( { HKWorkoutActivityType(rawValue: UInt($0))?.name ?? "Error" })
-            colors = workoutTypeIds.map( { HKWorkoutActivityType(rawValue: UInt($0))?.colorRepresentation ?? .red })
-
-        }
-        
-        return asDonutChartData(propertyName: propertyName, labels: labels, colors: colors)
-        
-    }
     
     
     func formattedValue(propertyName: String) -> String {

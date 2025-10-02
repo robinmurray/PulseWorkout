@@ -37,8 +37,6 @@ class StatisticsManager: ObservableObject {
         self.weekBuckets = statsBuckets.weekBuckets()
         self.quarterBuckets = statsBuckets.quarterBuckets()
         self.yearBuckets = statsBuckets.yearBuckets()
-        
-        print("quarterbuckets: \(quarterBuckets.elements)")
 
     }
     
