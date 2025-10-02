@@ -166,17 +166,5 @@ struct StatisticsBucket: Codable {
 
     }
     
-    
-    
-    func formattedValue(propertyName: String) -> String {
- 
-        let formatter = propertyValueFormatter(propertyName)
-        
-        if let value = asCKRecord()[propertyName] as? Double {
-            return formatter(value)
-        }
-        
-        return "Error"
-    }
 }
 
