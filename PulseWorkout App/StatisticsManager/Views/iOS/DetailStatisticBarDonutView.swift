@@ -62,11 +62,8 @@ struct DetailStatisticBarDonutView: View {
                     .fontWeight(.bold))
                 {
                     
-                    DonutChartView(chartData: statisticsManager.thisYear().asZoneDonutChartData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                                   totalName: PropertyViewParamaters[propertyName]?.totalLabel ?? "Total",
-                                   totalValue: statisticsManager.thisYear().formattedValue(propertyName: propertyName))
+                    DonutView(stackedBarChartData: statisticsManager.yearBuckets.asYearStackedBarChartData(propertyName: propertyName, filterList: ["this"]))
                     
-
                 }
                 
                 GroupBox(label: Text("Last Year")
@@ -74,9 +71,9 @@ struct DetailStatisticBarDonutView: View {
                     .fontWeight(.bold))
                 {
                     
-                    DonutChartView(chartData: statisticsManager.lastYear().asZoneDonutChartData(propertyName: PropertyViewParamaters[propertyName]?.byZonePropertyName ?? ""),
-                                   totalName: PropertyViewParamaters[propertyName]?.totalLabel ?? "Total",
-                                   totalValue: statisticsManager.lastYear().formattedValue(propertyName: propertyName))
+                    DonutView(stackedBarChartData: statisticsManager.yearBuckets.asYearStackedBarChartData(propertyName: propertyName, filterList: ["last"]))
+                    
+
 
                 }
             }

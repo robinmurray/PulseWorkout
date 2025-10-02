@@ -358,10 +358,7 @@ class StatisticsBucketArray: NSObject, Codable {
         var stackedBarChartData: StackedBarChartData = StackedBarChartData(propertyName: propertyName)
         
         let byZonePropertyName = PropertyViewParamaters[propertyName]?.byZonePropertyName ?? propertyName
-        
-        print("Type : \(String(describing: PropertyViewParamaters[propertyName]?.stackedBarType))")
-        print("byZonePropertyName \(byZonePropertyName)")
-        
+                
         for (i, indexName) in indexNames.enumerated() {
             if i < elements.count {
                 /*if let value = elements[i].asCKRecord()[propertyName] as? Double {
@@ -415,6 +412,20 @@ class StatisticsBucketArray: NSObject, Codable {
         
         var fullList = asStackedBarChartData(propertyName: propertyName,
                                              indexNames: ["-11", "-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3", "-2", "last", "this"])
+        
+        // If filterList set then reduce stacked bar data just to those categories
+        if filterList.count > 0 {
+            fullList = StackedBarChartData(copyFrom: fullList, filterCategories: filterList)
+        }
+        fullList.setAsWeeklyAverage(divisorDays: divisorDaysForWeeklyAverage())
+        return fullList
+        
+    }
+    
+    func asYearStackedBarChartData(propertyName: String, filterList: [String] = []) -> StackedBarChartData {
+        
+        var fullList = asStackedBarChartData(propertyName: propertyName,
+                                             indexNames: ["last", "this"])
         
         // If filterList set then reduce stacked bar data just to those categories
         if filterList.count > 0 {
