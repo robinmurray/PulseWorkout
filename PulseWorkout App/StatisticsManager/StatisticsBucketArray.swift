@@ -36,6 +36,20 @@ class StatisticsBucketArray: NSObject, Codable {
         super.init()
         _ = read()
         
+        shuffleForwardIfNecessary()
+
+    }
+   
+    /// Shuffle current data in bukets forward to match current date IF needed
+    func shuffleForwardIfNecessary() {
+        if requireShuffling() {
+            shuffleForward()
+        }
+    }
+    
+    /// Shuffle current data in bukets forward to match current date
+    private func shuffleForward() {
+       
         tempBuckets = []
         
         let bucketStartDates = getBucketStartDates()
@@ -53,11 +67,13 @@ class StatisticsBucketArray: NSObject, Codable {
                     if let index = elements.firstIndex(where: {(formatter.string(from: $0.startDate) == formatter.string(from: bucketDate)) &&
                         ( $0.bucketType == bucketType.rawValue)} ) {
 
+                        elements[index].setId(index: count)     // Set the bucket's Id to new position
                         tempBuckets.append(elements[index])
                     }
                     else {
                         tempBuckets.append(StatisticsBucket(startDate: bucketDate,
-                                                            bucketType: bucketType))
+                                                            bucketType: bucketType,
+                                                            index: count))
                     }
                 }
                 
@@ -69,6 +85,24 @@ class StatisticsBucketArray: NSObject, Codable {
         _ = write()
     }
     
+    
+    /// returns true if the bucket array needs to be shuffled forward because curent date is after the latest day bucket
+    private func requireShuffling() -> Bool {
+
+        var todayComponents = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
+        todayComponents.timeZone = .gmt
+        let today = Calendar.current.date(from: todayComponents)!
+
+        if let _ = elements.first(where: {
+            ($0.bucketType == BucketType.day.rawValue) &&
+            ($0.startDate >= today)}) {
+            return false
+        }
+        return true
+    }
+    
+    
+
     
     func getBucketStartDates() -> [BucketType: Date] {
         
@@ -118,7 +152,8 @@ class StatisticsBucketArray: NSObject, Codable {
                                                           to: bucketStartDates[bucketType]!) {
  
                     tempBuckets.append(StatisticsBucket(startDate: bucketDate,
-                                                        bucketType: bucketType))
+                                                        bucketType: bucketType,
+                                                        index: count))
 
                 }
                 
@@ -132,6 +167,8 @@ class StatisticsBucketArray: NSObject, Codable {
     
     /// Add activity to elements
     func addActivity(_ activityRecord: ActivityRecord) {
+        
+        shuffleForwardIfNecessary()
 
         for (index, bucket) in elements.enumerated() {
             let activityDate = stringToDate(dateString: dateAsString(date: activityRecord.startDateLocal))
@@ -140,10 +177,7 @@ class StatisticsBucketArray: NSObject, Codable {
             
             if (activityDate >= bucketStartDate) && (activityDate < bucketEndDate) {
                 elements[index].activities += 1
-//                elements[index].addActivityByType(activityType: activityRecord.workoutTypeId)
                 elements[index].distanceMeters += activityRecord.distanceMeters
-//                elements[index].addDistanceByType(activityType: activityRecord.workoutTypeId,
-//                                                  distanceMeters: activityRecord.distanceMeters)
                 elements[index].addTypedValues(newWorkoutTypeIds: [activityRecord.workoutTypeId],
                                                newActivities: [1],
                                                newDistanceMeters: [activityRecord.distanceMeters])
@@ -168,6 +202,45 @@ class StatisticsBucketArray: NSObject, Codable {
     }
     
     
+    /// Remove activity from elements
+    func removeActivity(_ activityRecord: ActivityRecord) {
+
+        print("Removing activity from buckets")
+        
+        shuffleForwardIfNecessary()
+        
+        for (index, bucket) in elements.enumerated() {
+            let activityDate = stringToDate(dateString: dateAsString(date: activityRecord.startDateLocal))
+            let bucketStartDate = stringToDate(dateString: bucket.startDateString)
+            let bucketEndDate = stringToDate(dateString: bucket.endDateString)
+            
+            if (activityDate >= bucketStartDate) && (activityDate < bucketEndDate) {
+                elements[index].activities = max(0, elements[index].activities - 1)
+                elements[index].distanceMeters = max(0, elements[index].distanceMeters - activityRecord.distanceMeters)
+                elements[index].removeTypedValues(workoutTypeIds: [activityRecord.workoutTypeId],
+                                                  activities: [1],
+                                                  distanceMeters: [activityRecord.distanceMeters])
+
+                elements[index].time = max(0, elements[index].time - activityRecord.movingTime)
+                elements[index].TSS = max(0, elements[index].TSS - activityRecord.TSSorEstimate())
+
+                // Add range-ified TSS by power zone array
+                elements[index].TSSByZone = zip(elements[index].TSSByZone,
+                                                activityRecord.TSSbyRangeFromZone()).map({max(0, $0 - $1)})
+                    .map( {round($0 * 10) / 10} )
+                
+
+                
+                // Add range-ified moving time by HR zone array
+                elements[index].timeByZone = zip(elements[index].timeByZone,
+                                                 activityRecord.movingTimebyRangeFromZone()).map({max(0, $0 - $1)})
+                    .map( {round($0 * 10) / 10} )
+                                
+            }
+        }
+    }
+    
+    
     func addActivityToTemp(_ activityRecord: ActivityRecord) {
 
         for (index, bucket) in tempBuckets.enumerated() {
@@ -177,10 +250,7 @@ class StatisticsBucketArray: NSObject, Codable {
             
             if (activityDate >= bucketStartDate) && (activityDate < bucketEndDate) {
                 tempBuckets[index].activities += 1
-//                tempBuckets[index].addActivityByType(activityType: activityRecord.workoutTypeId)
                 tempBuckets[index].distanceMeters += activityRecord.distanceMeters
-//                tempBuckets[index].addDistanceByType(activityType: activityRecord.workoutTypeId,
-//                                                     distanceMeters: activityRecord.distanceMeters)
                 tempBuckets[index].addTypedValues(newWorkoutTypeIds: [activityRecord.workoutTypeId],
                                                   newActivities: [1],
                                                   newDistanceMeters: [activityRecord.distanceMeters])
@@ -299,7 +369,6 @@ class StatisticsBucketArray: NSObject, Codable {
         weekComponents.timeZone = .gmt
         let weekStart = Calendar.current.date(from: weekComponents)!
         return weekStart
-//        return dateAsString(date: weekStart)
         
     }
 

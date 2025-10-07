@@ -50,8 +50,7 @@ struct ActivityHistoryView: View {
                     .buttonStyle(BorderlessButtonStyle())
                     .swipeActions {
                         Button(role:.destructive) {
-                            dataCache.delete(recordID:
-                                activityRecord.recordID)
+                            dataCache.delete(activityRecord: activityRecord)
                         } label: {
                             Label("Delete", systemImage: "xmark.bin")
                         }
@@ -153,7 +152,7 @@ struct ActivityHistoryView: View {
                     StravaFetchLatestActivities(
                         completionHandler: {
                             refreshProgress.complete()
-                            dataCache.refreshUI()
+//                            dataCache.refreshUI()
                             fetchComplete = false
                         },
                         failureCompletionHandler: {
@@ -161,6 +160,7 @@ struct ActivityHistoryView: View {
                             dataCache.refreshUI()
                             fetchComplete = false
                         },
+                        dataCache: dataCache,
                         asyncProgressNotifier: refreshProgress
                     ).execute()
                 }

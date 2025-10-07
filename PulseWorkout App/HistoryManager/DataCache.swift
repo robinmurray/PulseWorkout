@@ -108,6 +108,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     var testMode: Bool = false
         
 
+    // List of records shown in UI
     @Published var UIRecordSet: [ActivityRecord] = []
 
 
@@ -122,6 +123,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     let cacheFile = "activityCache.act"
     let localLogger = Logger(subsystem: "com.RMurray.PulseWorkout",
                              category: "dataCache")
+    private var flushingCache: Bool = false
     private var activities: [ActivityRecord] = []
     private var refreshList: [ActivityRecord] = []
    
@@ -168,13 +170,21 @@ class DataCache: NSObject, Codable, ObservableObject {
     func flushCache(qualityOfService: QualityOfService = .utility) {
         
         if dirty() {
+            self.localLogger.info("Flushing cache with records \(self.toBeSavedCKRecords())")
+
             
-            CKSaveAndDeleteOperation(recordsToSave: toBeSavedCKRecords(),
-                                     recordIDsToDelete: toBeDeletedIDs(),
-                                     recordSaveSuccessCompletionFunction: recordSaveCompletion,
-                                     recordDeleteSuccessCompletionFunction: recordDeletionCompletion,
-                                     qualityOfService: qualityOfService).execute()
-            
+            if !flushingCache {
+                flushingCache = true
+                CKBlockSaveAndDeleteOperation(recordsToSave: toBeSavedCKRecords(),
+                                              recordIDsToDelete: toBeDeletedIDs(),
+                                              recordSaveSuccessCompletionFunction: recordSaveCompletion,
+                                              recordDeleteSuccessCompletionFunction: removeFromCache,
+                                              blockSuccessCompletion: {self.flushingCache = false
+                                                                       _ = self.write() },
+                                              blockFailureCompletion: {self.flushingCache = false},
+                                              qualityOfService: qualityOfService).execute()
+            }
+
         }
     }
     
@@ -190,17 +200,59 @@ class DataCache: NSObject, Codable, ObservableObject {
     
 
     
-    func add(activityRecord: ActivityRecord) {
+    func add(activityRecord: ActivityRecord, toBeSavedToCK: Bool = true) {
         
-        activityRecord.setToSave(true)
-        activities.insert(activityRecord, at: 0)
+        activityRecord.setToSave(toBeSavedToCK)
         
-        if cache().count > cacheSize {
-            activities.removeLast()
+        // Update if an existing record - detect by stravaId or recordId
+        if let updateIndex = activities.firstIndex(where: {
+            (($0.stravaId != nil) && ($0.stravaId == activityRecord.stravaId)) ||
+            (($0.recordID != nil) && ($0.recordID == activityRecord.recordID))}) {
+            
+            // Update the record in the cache
+            localLogger.info("Updating cache at index : \(updateIndex)")
+            activities[updateIndex] = activityRecord
+            
+        }
+        else {
+            if let insertIndex = activities.firstIndex(where: {$0.startDateLocal < activityRecord.startDateLocal}) {
+
+                localLogger.info("Inserting into cache at index : \(insertIndex)")
+                activities.insert(activityRecord, at: insertIndex)
+                
+            } else {
+                if toBeSavedToCK {
+                    activities.append(activityRecord)
+                }
+            }
+            StatisticsManager.shared.addActivityToStats(activity: activityRecord)
         }
         
-        UIRecordSet.insert(activityRecord, at: 0)
 
+        // Now see if UI record set needs to be updated / inserted
+        if let updateIndex = UIRecordSet.firstIndex(where: {
+            (($0.stravaId != nil) && ($0.stravaId == activityRecord.stravaId)) ||
+            (($0.recordID != nil) && ($0.recordID == activityRecord.recordID))}) {
+            
+            // Update the UI Record Set
+            localLogger.info("Updating UIRecordSet at index : \(updateIndex)")
+            DispatchQueue.main.async {
+                self.UIRecordSet[updateIndex] = activityRecord
+            }
+
+            
+        } else {
+            if let insertIndex = UIRecordSet.firstIndex(where: {$0.startDateLocal < activityRecord.startDateLocal}) {
+
+                localLogger.info("Inserting into UIRecordSet at index : \(insertIndex)")
+                DispatchQueue.main.async {
+                    self.UIRecordSet.insert(activityRecord, at: insertIndex)
+                }
+                
+            }
+        }
+
+        
         _ = write()
         
         flushCache()
@@ -240,26 +292,32 @@ class DataCache: NSObject, Codable, ObservableObject {
     }
     
     
-    func delete(recordID: CKRecord.ID) {
+    func delete(activityRecord: ActivityRecord) {
         
-        removeFromUI(recordID: recordID)
+        var index: Int
         
-        guard let index = cachedIndex(recordID: recordID) else {
-            // Record is not in cache, just attempt deletion
-            CKDeleteOperation(recordIDsToDelete: [recordID],
-                              recordDeleteSuccessCompletionFunction: recordDeletionCompletion).execute()
-            return
+        if let recordID = activityRecord.recordID {
+
+            removeFromUI(recordID: recordID)
+            
+            index = cachedIndex(recordID: recordID) ?? activities.endIndex
+            
+            if index == activities.endIndex {
+                // Record is not in cache, so append to cache
+                activities.append(activityRecord)
+            }
+        
+            // Record is in cache, mark to delete in cahce and then flush cache
+            activities[index].toDelete = true
+            activities[index].deleteTrackRecord()
+            StatisticsManager.shared.removeActivityFromStats(activity: activityRecord)
+            
+            localLogger.debug("DELETED OK :\(index) \(recordID.recordName)")
+            _ = write()
+            
+            flushCache()
+            
         }
-               
-        // Record is in cache, mark to delete in cahce and then flush cache
-        activities[index].toDelete = true
-        activities[index].deleteTrackRecord()
-        
-        localLogger.debug("DELETED OK :\(index) \(recordID.recordName)")
-        _ = write()
-        
-        flushCache()
-        
     }
     
     
@@ -273,7 +331,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         activities.remove(at: index)
         
         imageCache.remove(recordName: recordID.recordName)
-        _ = write()
+
         
     }
     
@@ -437,6 +495,13 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         guard let cacheURL = CacheURL(fileName: cacheFile, testMode: testMode) else { return false }
         
+        // If cache has no unsaved activities then reset size to target cache size
+        if !dirty() {
+            while activities.count > cacheSize {
+                activities.removeLast()
+            }
+        }
+        
         localLogger.log("Writing activities cache to JSON file")
 
         do {
@@ -548,13 +613,10 @@ class DataCache: NSObject, Codable, ObservableObject {
         }
 #endif
         
-        _ = self.write()
+//        _ = self.write()
     }
     
-    func recordDeletionCompletion(recordID: CKRecord.ID) -> Void {
-        removeFromCache(recordID: recordID)
-    }
-    
+
     
     
     func registerNotifications(notificationManager: CloudKitNotificationManager) {
@@ -568,6 +630,7 @@ class DataCache: NSObject, Codable, ObservableObject {
 
         localLogger.log("Processing record deletion: \(recordID)")
         removeFromCache(recordID: recordID)
+        _ = write()
         removeFromUI(recordID: recordID)
         
     }

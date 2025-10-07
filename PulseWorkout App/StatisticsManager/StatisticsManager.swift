@@ -106,10 +106,21 @@ class StatisticsManager: ObservableObject {
     }
     
     
-    /// Add single activity records to stats buckets
+    /// Add single activity record to stats buckets
     func addActivityToStats(activity: ActivityRecord) -> Void {
         
         statsBuckets.addActivity(activity)
+        
+        _ = statsBuckets.write()
+        
+        reset()
+        
+    }
+    
+    /// Remove single activity record from stats buckets
+    func removeActivityFromStats(activity: ActivityRecord) -> Void {
+        
+        statsBuckets.removeActivity(activity)
         
         _ = statsBuckets.write()
         

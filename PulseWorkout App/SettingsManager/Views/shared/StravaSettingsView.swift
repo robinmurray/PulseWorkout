@@ -20,9 +20,11 @@ struct StravaSettingsView: View {
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
 
     @State private var stravaFetchFromDate: Date
+    var dataCache: DataCache
     
-    init() {
+    init(dataCache: DataCache) {
         self.stravaFetchFromDate = getFetchDate()
+        self.dataCache = dataCache
     }
     
     var body: some View {
@@ -121,7 +123,8 @@ struct StravaSettingsView: View {
                 Spacer()
                 Button("Fetch/Refresh Strava Records", action: {
                     StravaFetchLatestActivities(after: stravaFetchFromDate,
-                                                completionHandler: { }).execute()
+                                                completionHandler: { },
+                                                dataCache: dataCache).execute()
                 })
                     .buttonStyle(.borderedProminent)
                 Spacer()
@@ -158,5 +161,5 @@ struct StravaSettingsView: View {
 
 #Preview {
 
-    StravaSettingsView()
+    StravaSettingsView(dataCache: DataCache())
 }

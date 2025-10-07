@@ -53,7 +53,8 @@ struct ContentView: View {
 
             NavigationStack(path: $navigationCoordinator.settingsPath) {
                 SettingsView(navigationCoordinator: navigationCoordinator,
-                             bluetoothManager: bluetoothManager)
+                             bluetoothManager: bluetoothManager,
+                             dataCache: dataCache)
             }
             .tabItem {
                 Label("Settings", systemImage: "gearshape")

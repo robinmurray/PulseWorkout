@@ -19,6 +19,7 @@ class StravaFetchLatestActivities: StravaOperation {
     var completionHandler: () -> Void
     var failureCompletionHandler: () -> Void
     var asyncProgressNotifier: AsyncProgress?
+    var dataCache: DataCache
     
     init(perPage: Int = 30,
          after: Date? = nil,
@@ -26,6 +27,7 @@ class StravaFetchLatestActivities: StravaOperation {
          forceRefresh: Bool = false,
          completionHandler: @escaping () -> Void,
          failureCompletionHandler: @escaping () -> Void = { },
+         dataCache: DataCache,
          asyncProgressNotifier: AsyncProgress? = nil) {
         
         self.perPage = perPage
@@ -48,6 +50,7 @@ class StravaFetchLatestActivities: StravaOperation {
         self.completionHandler = completionHandler
         self.failureCompletionHandler = failureCompletionHandler
         self.asyncProgressNotifier = asyncProgressNotifier
+        self.dataCache = dataCache
         
         super.init(forceReauth: forceReauth, forceRefresh: forceRefresh)
 
@@ -147,21 +150,14 @@ class StravaFetchLatestActivities: StravaOperation {
             completionHandler: {
                 activityRecord in
 
-// NEED TO WORK OUT WAY OF INTEGRATING CACHE!!!
-//                    activityRecord.save(dataCache: self.dataCache)
+                /// Save or update the record
+                activityRecord.save(dataCache: self.dataCache)
                 
                 if let notifier = self.asyncProgressNotifier {
                     notifier.majorIncrement(message: "Saving / Updating : \(activityRecord.name)")
                 }
-                
-                CKSaveOrUpdateActivityRecordOperation(
-                    activityRecord: activityRecord,
-                    completionFunction: {_ in
-                        self.activityIndex += 1
-                        self.processNextRecord()
-                    },
-                    asyncProgressNotifier: self.asyncProgressNotifier
-                ).execute()
+                self.activityIndex += 1
+                self.processNextRecord()
 
             },
             failureCompletionHandler: self.failureCompletionHandler

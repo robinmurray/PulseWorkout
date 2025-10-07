@@ -14,7 +14,7 @@ import SwiftUI
 
 
 struct StatisticsBucket: Codable {
-    var id: UUID
+    var id: String
     var startDate: Date
     var endDate: Date
     var startDateString: String
@@ -30,9 +30,20 @@ struct StatisticsBucket: Codable {
     var TSSByZone: [Double]
     var timeByZone: [Double]
     
-    init(startDate: Date, bucketType: BucketType) {
+    mutating func setId(index: Int)  {
+        self.id =  "statBucket-type:\(bucketType)-index:\(index)"
+    }
+    
+    
+    /// Initialiser for statisticsBucket
+    ///
+    /// startDate: Start date for bucket
+    /// bucketType: The type of bucket (day, week , etc)
+    /// index: Rolling index of buckets within the bucket type - used to create stable ids for the buckets
+    init(startDate: Date, bucketType: BucketType, index: Int) {
         
-        self.id = UUID()
+//        self.id = UUID()
+        self.id = ""
         self.startDate = startDate
         self.endDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
                                              value: StatisticsBucketDuration[bucketType]!.count,
@@ -58,7 +69,10 @@ struct StatisticsBucket: Codable {
         self.TSS = 0
         self.TSSByZone = [0, 0, 0]
         self.timeByZone = [0, 0, 0]
+        setId(index: index)       // Set stable id for the bucket
+
     }
+    
     
     mutating func addTypedValues( newWorkoutTypeIds: [UInt], newActivities: [Double], newDistanceMeters: [Double]) {
         
@@ -77,70 +91,23 @@ struct StatisticsBucket: Codable {
         }
     }
     
-
     
-    // Create a statistics bucket as 7-day average from array of buckets - which must be of the same type
-    init(bucketArray: [StatisticsBucket]) {
+    mutating func removeTypedValues(workoutTypeIds: [UInt], activities: [Double], distanceMeters: [Double]) {
         
-        // Initialise version in case of error - THIS SHOULD NOT BE RETURNED!
-        self = StatisticsBucket(startDate: Date.now, bucketType: .day)
-        
-        // Now do the job for real!
-        if let first = bucketArray.first {
-            if bucketArray.allSatisfy({ $0.bucketType == first.bucketType }) {
+        for (removalIndex, id) in workoutTypeIds.enumerated() {
+            if let index = self.workoutTypeIds.firstIndex(of: id) {
                 
-                self.id = UUID()
-                self.startDate = first.startDate
-                self.endDate = bucketArray.last!.endDate
+                self.activitiesByType[index] = max(0, self.activitiesByType[index] - activities[removalIndex])
+                self.distanceMetersByType[index] = max(0, self.distanceMetersByType[index] - distanceMeters[removalIndex])
                 
-                let dateFormatter = ISO8601DateFormatter()
-                dateFormatter.formatOptions = [.withFullDate]
-                dateFormatter.timeZone = .current
-                self.startDateString = startDate.formatted(.iso8601
-                    .year()
-                    .month()
-                    .day())
-                self.endDateString = endDate.formatted(.iso8601
-                    .year()
-                    .month()
-                    .day())
-                self.bucketType = first.bucketType
-                
-                let days: Int = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 1  // FIX TO DATE STRINGS!
-                let daysToNow = Calendar.current.dateComponents([.day], from: startDate, to: Date.now).day ?? 1  // FIX TO DATE STRINGS!
-                let divisorDays = max(min(days, daysToNow), 1)
-                let divisor: Double = Double(divisorDays) / 7
-                self.activities = bucketArray.reduce(0) { result, bucket
-                    in
-                    result + (bucket.activities / divisor)}
-
-                self.distanceMeters = bucketArray.reduce(0) { result, bucket
-                    in
-                    result + (bucket.distanceMeters / divisor)}
-
-                
-                _ = bucketArray.map( {addTypedValues(newWorkoutTypeIds: $0.workoutTypeIds,
-                                                     newActivities: $0.activitiesByType,
-                                                     newDistanceMeters: $0.distanceMetersByType) })
-                
-                self.time = bucketArray.reduce(0) { result, bucket
-                    in
-                    result + (bucket.time / divisor)}
-                self.TSS = bucketArray.reduce(0) { result, bucket
-                    in
-                    result + (bucket.TSS / divisor)}
-                self.TSSByZone = bucketArray.reduce([0, 0, 0]) { result, bucket
-                    in
-                    zip(result, bucket.TSSByZone.map( { $0 / divisor } )).map(+)
-                }
-                
-                self.timeByZone = bucketArray.reduce([0, 0, 0]) { result, bucket
-                    in
-                    zip(result, bucket.timeByZone.map( { $0 / divisor } )).map(+)
+                // If no activities of this type left, remove the type and entries...
+                if self.activitiesByType[index] == 0 {
+                    self.workoutTypeIds.remove(at: index)
+                    self.activitiesByType.remove(at: index)
+                    self.distanceMetersByType.remove(at: index)
                 }
             }
         }
-
     }
     
     

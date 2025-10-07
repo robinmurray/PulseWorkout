@@ -12,6 +12,7 @@ struct SettingsView: View {
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
+    var dataCache: DataCache
     
     var body: some View {
         
@@ -95,7 +96,7 @@ struct SettingsView: View {
                     }
                 
                 NavigationLink(
-                    destination: StravaSettingsView()) {
+                    destination: StravaSettingsView(dataCache: dataCache)) {
                         HStack {
                             HStack{
                                 Image("StravaIcon").resizable().frame(width: 30, height: 30)
@@ -128,5 +129,6 @@ struct SettingsView: View {
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     
     SettingsView(navigationCoordinator: navigationCoordinator,
-                 bluetoothManager: bluetoothManager)
+                 bluetoothManager: bluetoothManager,
+                 dataCache: DataCache())
 }
