@@ -105,6 +105,7 @@ class FullActivityRecordCache: NSObject {
 class DataCache: NSObject, Codable, ObservableObject {
     
     let settingsManager: SettingsManager = SettingsManager.shared
+    let statisticsManager: StatisticsManager = StatisticsManager.shared
     var testMode: Bool = false
         
 
@@ -166,8 +167,8 @@ class DataCache: NSObject, Codable, ObservableObject {
     }
     
     
-    /// push changes in cache to cloudkit
-    func flushCache(qualityOfService: QualityOfService = .utility) {
+    /// Push changes in cache to cloudkit - activity saves & deletes + update statistics as a single transaction
+    func flushCache(qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
         if dirty() {
             self.localLogger.info("Flushing cache with records \(self.toBeSavedCKRecords())")
@@ -175,7 +176,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             
             if !flushingCache {
                 flushingCache = true
-                CKBlockSaveAndDeleteOperation(recordsToSave: toBeSavedCKRecords(),
+                CKBlockSaveAndDeleteOperation(recordsToSave: toBeSavedCKRecords() + statisticsManager.allCKRecords(),
                                               recordIDsToDelete: toBeDeletedIDs(),
                                               recordSaveSuccessCompletionFunction: recordSaveCompletion,
                                               recordDeleteSuccessCompletionFunction: removeFromCache,
@@ -225,7 +226,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                     activities.append(activityRecord)
                 }
             }
-            StatisticsManager.shared.addActivityToStats(activity: activityRecord)
+            statisticsManager.addActivityToStats(activity: activityRecord)
         }
         
 
@@ -310,7 +311,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             // Record is in cache, mark to delete in cahce and then flush cache
             activities[index].toDelete = true
             activities[index].deleteTrackRecord()
-            StatisticsManager.shared.removeActivityFromStats(activity: activityRecord)
+            statisticsManager.removeActivityFromStats(activity: activityRecord)
             
             localLogger.debug("DELETED OK :\(index) \(recordID.recordName)")
             _ = write()
@@ -533,6 +534,8 @@ class DataCache: NSObject, Codable, ObservableObject {
             _ = self.write()
 
             self.updateUI()
+            
+            statisticsManager.refresh()
         }
     }
     
@@ -633,6 +636,8 @@ class DataCache: NSObject, Codable, ObservableObject {
         _ = write()
         removeFromUI(recordID: recordID)
         
+        statisticsManager.refresh()
+        
     }
 
 
@@ -654,6 +659,8 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         changeCache(changedActivityRecord: activityRecord)
         changeUI(changedActivityRecord: activityRecord)
+        
+        statisticsManager.refresh()
         
     }
 

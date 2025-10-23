@@ -73,6 +73,26 @@ struct StatisticsBucket: Codable {
 
     }
     
+    /// Constructor from CKRecord
+    init(fromCKRecord: CKRecord) {
+        id = fromCKRecord.recordID.recordName
+        startDate = fromCKRecord["startDate"] ?? Date.now
+        endDate = fromCKRecord["endDate"] ?? Date.now
+        startDateString = fromCKRecord["startDateString"] ?? ""
+        endDateString = fromCKRecord["endDateString"] ?? ""
+        bucketType = fromCKRecord["bucketType"] ?? 1
+        workoutTypeIds = fromCKRecord["workoutTypeIds"] ?? []
+        activities = fromCKRecord["activities"] ?? 0
+        activitiesByType = fromCKRecord["activitiesByType"] ?? []
+        distanceMeters = fromCKRecord["distanceMeters"] ?? 0
+        distanceMetersByType = fromCKRecord["distanceMetersByType"] ?? []
+        time = fromCKRecord["time"] ?? 0
+        TSS = fromCKRecord["TSS"] ?? 0
+        TSSByZone = fromCKRecord["TSSByZone"] ?? []
+        timeByZone = fromCKRecord["timeByZone"] ?? []
+        
+
+    }
     
     mutating func addTypedValues( newWorkoutTypeIds: [UInt], newActivities: [Double], newDistanceMeters: [Double]) {
         
@@ -114,12 +134,13 @@ struct StatisticsBucket: Codable {
     /// Convert bucket to CKRecord, also allow properties to be addressed as a dictionary...
     func asCKRecord() -> CKRecord {
 
-        let ckRecord = CKRecord(recordType: "StatisticBucket", recordID: CloudKitOperation().getCKRecordID())
+        let ckRecord = CKRecord(recordType: "StatisticBucket", recordID: CloudKitOperation().getCKRecordID(recordName: id))
         ckRecord["startDate"] = startDate as CKRecordValue
         ckRecord["endDate"] = endDate as CKRecordValue
         ckRecord["startDateString"] = startDateString as CKRecordValue
         ckRecord["endDateString"] = endDateString as CKRecordValue
         ckRecord["bucketType"] = bucketType as CKRecordValue
+        ckRecord["workoutTypeIds"] = workoutTypeIds as CKRecordValue
         ckRecord["activities"] = activities as CKRecordValue
         ckRecord["activitiesByType"] = activitiesByType as CKRecordValue
         ckRecord["distanceMeters"] = distanceMeters as CKRecordValue

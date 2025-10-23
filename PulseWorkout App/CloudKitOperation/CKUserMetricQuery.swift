@@ -43,7 +43,7 @@ class CKUserMetricQueryOperation: CloudKitOperation {
         
         CKFetchRecordBlockOperation(query: metricQuery(),
                                     blockCompletionFunction: completionFunction,
-                                    qualityOfService: .utility).execute()
+                                    qualityOfService: DEFAULT_CLOUDKIT_QOS).execute()
         
     }
 }

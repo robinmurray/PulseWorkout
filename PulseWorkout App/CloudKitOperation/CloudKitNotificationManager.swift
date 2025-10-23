@@ -274,7 +274,7 @@ typealias BackgroundFetchResult = WKBackgroundFetchResult
         
         // Set an appropriate QoS and add the operation to the shared
         // database's operation queue to execute it.
-        operation.qualityOfService = .utility
+        operation.qualityOfService = DEFAULT_CLOUDKIT_QOS
         database.add(operation)
     }
 

@@ -16,7 +16,7 @@ class CKBlockSaveAndDeleteOperation: CloudKitOperation {
     
     var recordsToSave: [CKRecord]
     var recordSaveSuccessCompletionFunction: (CKRecord.ID) -> Void
-    var qualityOfService: QualityOfService = .utility
+    var qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS
     var recordIDsToDelete: [CKRecord.ID]
     var recordDeleteSuccessCompletionFunction: (CKRecord.ID) -> Void
     var blockSuccessCompletion: () -> Void
@@ -28,7 +28,7 @@ class CKBlockSaveAndDeleteOperation: CloudKitOperation {
          recordDeleteSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void  = {recordID in },
          blockSuccessCompletion: @escaping () -> Void = {},
          blockFailureCompletion: @escaping () -> Void = {},
-         qualityOfService: QualityOfService = .utility) {
+         qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
         self.recordsToSave = recordsToSave
         self.recordIDsToDelete = recordIDsToDelete

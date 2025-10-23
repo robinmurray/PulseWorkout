@@ -85,11 +85,33 @@ class StatisticsManager: ObservableObject {
         CKActivityQueryOperation(startDate: nil,
                                  blockCompletionFunction: {
                                     ckRecordList in self.addActivitiesToStats(ckRecordList: ckRecordList)
+                                    self.statsBuckets.writeToCK()
                                     completionFunction() },
                                  resultsLimit: 100,
                                  qualityOfService: .userInitiated).execute()
     }
     
+    func allCKRecords() -> [CKRecord] {
+        
+        return statsBuckets.asCKRecords()
+        
+    }
+    
+    
+    /// Read statistics from cloudkit - refresh the cache
+    func refresh() {
+
+        CKStatisticBucketQueryOperation(blockCompletionFunction: refreshCompletion).execute()
+        
+    }
+    
+    func refreshCompletion(ckRecordList: [CKRecord]) -> Void {
+        
+        statsBuckets.createElementsFromCKRecords(ckRecordList: ckRecordList)
+
+        // Update the UI data
+        reset()
+    }
     
     /// Add list of activity CKRecords to stats buckets
     func addActivitiesToStats(ckRecordList: [CKRecord]) -> Void {

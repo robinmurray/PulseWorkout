@@ -14,7 +14,7 @@ class CKQueryForStravaIdOperation: CloudKitOperation {
     var completionFunction: ([CKRecord]) -> Void
     var qualityOfService: QualityOfService
     
-    init(stravaId: Int, completionFunction: @escaping ([CKRecord]) -> Void, qualityOfService: QualityOfService = .utility) {
+    init(stravaId: Int, completionFunction: @escaping ([CKRecord]) -> Void, qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
 
         self.stravaId = stravaId
         self.completionFunction = completionFunction

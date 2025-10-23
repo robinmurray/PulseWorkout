@@ -119,7 +119,7 @@ struct TopMenuView: View {
                 }
                 else if pathValue == .SettingsView {
                     
-                    SettingsView(bluetoothManager: liveActivityManager.bluetoothManager)
+                    SettingsView(bluetoothManager: liveActivityManager.bluetoothManager, dataCache: dataCache)
                 }
                 
             }

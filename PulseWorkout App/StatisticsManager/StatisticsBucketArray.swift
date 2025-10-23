@@ -7,6 +7,7 @@
 
 import Foundation
 import os
+import CloudKit
 
 
 
@@ -301,7 +302,8 @@ class StatisticsBucketArray: NSObject, Codable {
     }
     
     
-    func write() -> Bool  {
+    /// Write bucket array to cache as JSON file
+    func write(copyToCK: Bool = true) -> Bool  {
         
         guard let cacheURL = CacheURL(fileName: cacheFile) else { return false}
         
@@ -312,6 +314,11 @@ class StatisticsBucketArray: NSObject, Codable {
 
             do {
                 try data.write(to: cacheURL)
+
+                // TEST...
+                if copyToCK {
+                    writeToCK()
+                }
 
                 return true
             }
@@ -327,7 +334,31 @@ class StatisticsBucketArray: NSObject, Codable {
 
     }
     
+    func asCKRecords() -> [CKRecord] {
+        return elements.map{ $0.asCKRecord() }
+    }
     
+    /// Write bucket array to cloudkit
+    func writeToCK() {
+        
+        CKBlockSaveAndDeleteOperation(recordsToSave: asCKRecords(),
+                                      recordIDsToDelete: []).execute()
+                                      
+    }
+    
+   
+    /// On block completion copy temporary list to the main device list
+    func createElementsFromCKRecords(ckRecordList: [CKRecord]) -> Void {
+        
+        elements = ckRecordList.map( {StatisticsBucket(fromCKRecord: $0)})
+        
+        // Write to JSON file - Don't write back to CK!!
+        _ = write(copyToCK: false)
+        
+        shuffleForwardIfNecessary()
+
+    }
+  
     
     func dateAsString(date: Date) -> String {
         

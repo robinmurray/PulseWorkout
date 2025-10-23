@@ -15,7 +15,7 @@ class CKSaveAndDeleteOperation: CloudKitOperation {
     var recordsToSave: [CKRecord]
     var recordSaveSuccessCompletionFunction: (CKRecord.ID) -> Void
     var failureCompletionFunction: () -> Void = { }
-    var qualityOfService: QualityOfService = .utility
+    var qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS
     var recordIDsToDelete: [CKRecord.ID]
     var recordDeleteSuccessCompletionFunction: (CKRecord.ID) -> Void
     
@@ -24,7 +24,7 @@ class CKSaveAndDeleteOperation: CloudKitOperation {
          recordSaveSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void,
          recordDeleteSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void,
          failureCompletionFunction: @escaping () -> Void = {},
-         qualityOfService: QualityOfService = .utility) {
+         qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
         self.recordsToSave = recordsToSave
         self.recordIDsToDelete = recordIDsToDelete
@@ -135,12 +135,12 @@ class CKSaveOperation: CloudKitOperation {
     var recordsToSave: [CKRecord]
     var recordSaveSuccessCompletionFunction: (CKRecord.ID) -> Void
     var failureCompletionFunction: () -> Void = { }
-    var qualityOfService: QualityOfService = .utility
+    var qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS
     
     init(recordsToSave: [CKRecord],
          recordSaveSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void,
          failureCompletionFunction: @escaping () -> Void = {},
-         qualityOfService: QualityOfService = .utility) {
+         qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
         self.recordsToSave = recordsToSave
         self.recordSaveSuccessCompletionFunction = recordSaveSuccessCompletionFunction
@@ -166,12 +166,12 @@ class CKDeleteOperation: CloudKitOperation {
     var recordIDsToDelete: [CKRecord.ID]
     var recordDeleteSuccessCompletionFunction: (CKRecord.ID) -> Void
     var failureCompletionFunction: () -> Void = { }
-    var qualityOfService: QualityOfService = .utility
+    var qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS
    
     init(recordIDsToDelete: [CKRecord.ID],
          recordDeleteSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void,
          failureCompletionFunction: @escaping () -> Void = {},
-         qualityOfService: QualityOfService = .utility) {
+         qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
         self.recordIDsToDelete = recordIDsToDelete
         self.recordDeleteSuccessCompletionFunction = recordDeleteSuccessCompletionFunction

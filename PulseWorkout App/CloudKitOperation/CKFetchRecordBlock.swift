@@ -20,7 +20,7 @@ class CKFetchRecordBlockOperation: CloudKitOperation {
     init(query: CKQueryOperation,
          blockCompletionFunction: @escaping ([CKRecord]) -> Void,
          resultsLimit: Int = 50,
-         qualityOfService: QualityOfService = .utility) {
+         qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
         self.query = query
         self.blockCompletionFunction = blockCompletionFunction

@@ -7,7 +7,7 @@
 
 import Foundation
 import SwiftUI
-
+import CloudKit
 let speedIcon = "speedometer"
 let measureIcon = "ruler"
 let distanceIcon = "arrowshape.forward"
@@ -33,4 +33,4 @@ let timeByHRColor = Color.green
 
 // Constants
 let ACTIVITY_RECORDING_INTERVAL: Int = 2
-
+let DEFAULT_CLOUDKIT_QOS: QualityOfService = .userInitiated

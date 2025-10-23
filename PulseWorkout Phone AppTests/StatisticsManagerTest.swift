@@ -30,7 +30,7 @@ final class StatisticsManagerTest: XCTestCase {
     
     func testInitialiseStatsBuckets() throws {
      
-        statisticsManager.initialiseStatsBuckets()
+//        statisticsManager.initialiseStatsBuckets()
         
         print(statisticsManager.statsBuckets)
     }
