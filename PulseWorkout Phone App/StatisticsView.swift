@@ -74,15 +74,6 @@ struct StatisticsView: View {
                 }
 
                 Spacer()
-                
-                Button("Fetch All...") {
-                    print("Fetching All Records")
-
-                    CKProcessAllActivityRecords(recordProcessFunction: testProcessAllActivityRecords,
-                    completionFunction: { }).execute()
-                }
-
-                Spacer()
 
                 Button("Test Strava Fetch...") {
                     print("Fetch from Strava")

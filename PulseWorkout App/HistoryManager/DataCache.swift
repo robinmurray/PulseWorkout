@@ -168,24 +168,37 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     
     /// Push changes in cache to cloudkit - activity saves & deletes + update statistics as a single transaction
+    /// Before saving get a new copy of statistics from CK and play any changes in to it from dirty cache
     func flushCache(qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
         if dirty() {
-            self.localLogger.info("Flushing cache with records \(self.toBeSavedCKRecords())")
 
-            
-            if !flushingCache {
-                flushingCache = true
-                CKBlockSaveAndDeleteOperation(recordsToSave: toBeSavedCKRecords() + statisticsManager.allCKRecords(),
-                                              recordIDsToDelete: toBeDeletedIDs(),
-                                              recordSaveSuccessCompletionFunction: recordSaveCompletion,
-                                              recordDeleteSuccessCompletionFunction: removeFromCache,
-                                              blockSuccessCompletion: {self.flushingCache = false
-                                                                       _ = self.write() },
-                                              blockFailureCompletion: {self.flushingCache = false},
-                                              qualityOfService: qualityOfService).execute()
-            }
-
+            self.localLogger.info("Refreshing statistics")
+            statisticsManager.refresh(onRefreshCompletionFunc: {
+                
+                // Add changes back into refreshed statistics
+                for activityRecord in self.toBeSaved() {
+                    self.statisticsManager.addActivityToStats(activity: activityRecord)
+                }
+                for activityRecord in self.toBeDeleted() {
+                    self.statisticsManager.removeActivityFromStats(activity: activityRecord)
+                }
+                
+                self.localLogger.info("Flushing cache with records \(self.toBeSavedCKRecords())")
+                
+                
+                if !self.flushingCache {
+                    self.flushingCache = true
+                    CKBlockSaveAndDeleteOperation(recordsToSave: self.toBeSavedCKRecords() + self.statisticsManager.allCKRecords(),
+                                                  recordIDsToDelete: self.toBeDeletedIDs(),
+                                                  recordSaveSuccessCompletionFunction: self.recordSaveCompletion,
+                                                  recordDeleteSuccessCompletionFunction: self.removeFromCache,
+                                                  blockSuccessCompletion: {self.flushingCache = false
+                        _ = self.write() },
+                                                  blockFailureCompletion: {self.flushingCache = false},
+                                                  qualityOfService: qualityOfService).execute()
+                }
+            })
         }
     }
     

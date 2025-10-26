@@ -25,6 +25,7 @@ struct SettingsResetView: View {
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     @State var buildingStatistics: Bool = false
     @StateObject var analysingActivityProgress: AsyncProgress = AsyncProgress()
+    @StateObject var buildingStatisticsProgress: AsyncProgress = AsyncProgress()
 
     var body: some View {
         Form {
@@ -47,27 +48,25 @@ struct SettingsResetView: View {
             #if os(iOS)
             VStack {
                 Button(action: {
-                    if !buildingStatistics {
-                        buildingStatistics = true
-                        StatisticsManager.shared.buildStatistics(completionFunction: {buildingStatistics = false})
+                    if !buildingStatisticsProgress.inProgress {
+                        buildingStatisticsProgress.start(asyncProgressModel: AsyncProgressModel.indefinite, title: "Building Statistics...")
+                        
+                        StatisticsManager.shared.buildStatistics(asyncProgressNotifier: buildingStatisticsProgress)
+                        
+
                     }
 
-                }) {
-                    if buildingStatistics {
-                        HStack {
-                            Text("Building Statistics")
-                            ProgressView()                            
-                        }
-                    }
-                    else {
-                        Text("Rebuild Statistics")
-                    }
-                    
+                })
+                {
+                    Text("Rebuild Statistics")
                 }
                 .buttonStyle(.borderedProminent)
                     .tint(Color.blue)
-                    .disabled(buildingStatistics)
+                    .disabled(buildingStatisticsProgress.inProgress)
                 
+                if buildingStatisticsProgress.displayProgressView {
+                    AsyncProgressView(asyncProgress: buildingStatisticsProgress)
+                }
                 
                 HStack {
                     Text("Rebuild all statistics.")
@@ -76,6 +75,8 @@ struct SettingsResetView: View {
                 }
 
             }
+            
+            
             #endif
             
             
@@ -86,7 +87,7 @@ struct SettingsResetView: View {
                         analysingActivityProgress.start(asyncProgressModel: AsyncProgressModel.indefinite, title: "Analyzing Activities...")
                         
                         CKProcessAllActivityRecords(
-                            recordProcessFunction: testProcessAllActivityRecords,
+                            recordProcessFunction: analyzeActivity,
                             asyncProgressNotifier: analysingActivityProgress).execute()
                     }
 

@@ -26,6 +26,7 @@ class StatisticsManager: ObservableObject {
 
     @Published var yearBuckets: StatisticsBucketArray
 
+    var onRefreshCompletionFunc: () -> Void = {}
     
 
     var statsBuckets: StatisticsBucketArray
@@ -79,16 +80,27 @@ class StatisticsManager: ObservableObject {
     
     
     /// Build all statistic buckets from activities
-    func buildStatistics(completionFunction: @escaping () -> Void) {
+    func buildStatistics(asyncProgressNotifier: AsyncProgress/*, completionFunction: @escaping () -> Void*/) {
         statsBuckets.emptyTempBuckets()
         
-        CKActivityQueryOperation(startDate: nil,
+/*        CKActivityQueryOperation(startDate: nil,
                                  blockCompletionFunction: {
                                     ckRecordList in self.addActivitiesToStats(ckRecordList: ckRecordList)
                                     self.statsBuckets.writeToCK()
                                     completionFunction() },
                                  resultsLimit: 100,
                                  qualityOfService: .userInitiated).execute()
+  */
+  
+        CKProcessAllActivityRecords(
+            recordProcessFunction: {
+                ckRecord, recordProcessCompletionFunction
+                in self.addActivitiesToStats(ckRecordList: [ckRecord], copyToCK: false)
+                recordProcessCompletionFunction(nil)
+            },
+            completionFunction: statsBuckets.writeToCK,
+            asyncProgressNotifier: asyncProgressNotifier).execute()
+    
     }
     
     func allCKRecords() -> [CKRecord] {
@@ -99,10 +111,11 @@ class StatisticsManager: ObservableObject {
     
     
     /// Read statistics from cloudkit - refresh the cache
-    func refresh() {
+    func refresh(onRefreshCompletionFunc: @escaping () -> Void = {}) {
 
         CKStatisticBucketQueryOperation(blockCompletionFunction: refreshCompletion).execute()
         
+        self.onRefreshCompletionFunc = onRefreshCompletionFunc
     }
     
     func refreshCompletion(ckRecordList: [CKRecord]) -> Void {
@@ -111,17 +124,19 @@ class StatisticsManager: ObservableObject {
 
         // Update the UI data
         reset()
+        
+        onRefreshCompletionFunc()
     }
     
     /// Add list of activity CKRecords to stats buckets
-    func addActivitiesToStats(ckRecordList: [CKRecord]) -> Void {
+    func addActivitiesToStats(ckRecordList: [CKRecord], copyToCK: Bool = true) -> Void {
         
         let activityList = ckRecordList.map( {ActivityRecord(fromCKRecord: $0, fetchtrackData: false)})
         _ = activityList.map( {statsBuckets.addActivityToTemp($0) })
         
         statsBuckets.copyTempToElements()
         
-        _ = statsBuckets.write()
+        _ = statsBuckets.write(copyToCK: copyToCK)
         
         reset()
         
