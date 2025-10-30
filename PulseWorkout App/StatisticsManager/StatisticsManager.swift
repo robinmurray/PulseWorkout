@@ -17,20 +17,28 @@ class StatisticsManager: ObservableObject {
     ///Access StatisticsManager through StatisticsManager.shared
     public static let shared = StatisticsManager()
 
-    
+    /// Array of statistics buckets representing this week by day
     @Published var thisWeekDayBuckets: StatisticsBucketArray
+    
+    /// Array of statistics buckets representing last week by day
     @Published var lastWeekDayBuckets: StatisticsBucketArray
 
+    /// Array of statistics buckets representing the last 12 weeks by week
     @Published var weekBuckets: StatisticsBucketArray
+    
+    /// Array of statistics buckets representing the last 4 quarters by quarter
     @Published var quarterBuckets: StatisticsBucketArray
 
+    /// Array of statistics buckets representing the last 2 years by year
     @Published var yearBuckets: StatisticsBucketArray
 
-    var onRefreshCompletionFunc: () -> Void = {}
-    
-
+    /// The full set of statistics buckets
     var statsBuckets: StatisticsBucketArray
 
+    /// Internal variable to manage completion function of statistics refresh operation
+    private var onRefreshCompletionFunc: () -> Void = {}
+    
+    
     init() {
         self.statsBuckets = StatisticsBucketArray()
         self.thisWeekDayBuckets = statsBuckets.thisWeekDayBuckets()
@@ -83,15 +91,6 @@ class StatisticsManager: ObservableObject {
     func buildStatistics(asyncProgressNotifier: AsyncProgress/*, completionFunction: @escaping () -> Void*/) {
         statsBuckets.emptyTempBuckets()
         
-/*        CKActivityQueryOperation(startDate: nil,
-                                 blockCompletionFunction: {
-                                    ckRecordList in self.addActivitiesToStats(ckRecordList: ckRecordList)
-                                    self.statsBuckets.writeToCK()
-                                    completionFunction() },
-                                 resultsLimit: 100,
-                                 qualityOfService: .userInitiated).execute()
-  */
-  
         CKProcessAllActivityRecords(
             recordProcessFunction: {
                 ckRecord, recordProcessCompletionFunction
@@ -103,6 +102,7 @@ class StatisticsManager: ObservableObject {
     
     }
     
+    /// Return full set of statistics buckers as Cloudkit Records
     func allCKRecords() -> [CKRecord] {
         
         return statsBuckets.asCKRecords()
@@ -118,6 +118,7 @@ class StatisticsManager: ObservableObject {
         self.onRefreshCompletionFunc = onRefreshCompletionFunc
     }
     
+    
     func refreshCompletion(ckRecordList: [CKRecord]) -> Void {
         
         statsBuckets.createElementsFromCKRecords(ckRecordList: ckRecordList)
@@ -127,6 +128,7 @@ class StatisticsManager: ObservableObject {
         
         onRefreshCompletionFunc()
     }
+    
     
     /// Add list of activity CKRecords to stats buckets
     func addActivitiesToStats(ckRecordList: [CKRecord], copyToCK: Bool = true) -> Void {
@@ -153,6 +155,7 @@ class StatisticsManager: ObservableObject {
         reset()
         
     }
+    
     
     /// Remove single activity record from stats buckets
     func removeActivityFromStats(activity: ActivityRecord) -> Void {

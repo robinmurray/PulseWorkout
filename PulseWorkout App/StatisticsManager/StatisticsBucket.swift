@@ -14,21 +14,46 @@ import SwiftUI
 
 
 struct StatisticsBucket: Codable {
+    
+    /// The identifier for the bucket - has custom builder so as to maintain stable identifiers for buckets
     var id: String
+    
+    /// Start date for statistic bucket as a GMT-based (timezone erased) date
     var startDate: Date
+    
+    /// End date for statistic bucket as a GMT-based (timezone erased) date
     var endDate: Date
-    var startDateString: String
-    var endDateString: String
+    
+    /// The bucket type - raw value of BucketType
     var bucketType: Int
+    
+    /// The list of workout type ids that are present in this bucket - used as keys for activitiesByType and distanceMetersByType
     var workoutTypeIds: [UInt]
+    
+    /// The number of activities in this bucket
     var activities: Double
+    
+    /// List of activiites by Workout Type - in order of type list in workoutTypeIds
     var activitiesByType: [Double]
+    
+    /// Total distance in this bucket
     var distanceMeters: Double
+    
+    /// List of activiites by Workout Type - in order of type list in workoutTypeIds
     var distanceMetersByType: [Double]
+    
+    /// Total time
     var time: Double
+    
+    /// Total TSS
     var TSS: Double
+    
+    /// TSS by power zone (or HR zone if no power data)
     var TSSByZone: [Double]
+    
+    /// Time by HR Zone
     var timeByZone: [Double]
+    
     
     mutating func setId(index: Int)  {
         self.id =  "statBucket-type:\(bucketType)-index:\(index)"
@@ -40,25 +65,17 @@ struct StatisticsBucket: Codable {
     /// startDate: Start date for bucket
     /// bucketType: The type of bucket (day, week , etc)
     /// index: Rolling index of buckets within the bucket type - used to create stable ids for the buckets
-    init(startDate: Date, bucketType: BucketType, index: Int) {
+    init(startDate: Date, endDate: Date, bucketType: BucketType, index: Int) {
         
-//        self.id = UUID()
         self.id = ""
         self.startDate = startDate
-        self.endDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
-                                             value: StatisticsBucketDuration[bucketType]!.count,
-                                             to: startDate)!
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withFullDate]
-        dateFormatter.timeZone = .current
-        self.startDateString = startDate.formatted(.iso8601
-            .year()
-            .month()
-            .day())
-        self.endDateString = endDate.formatted(.iso8601
-            .year()
-            .month()
-            .day())
+        let nonGMTEndDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
+                                                             value: StatisticsBucketDuration[bucketType]!.count,
+                                                             to: startDate)!
+        self.endDate = nonGMTEndDate.addingTimeInterval(TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: nonGMTEndDate)) -
+                                                        TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: startDate)))
+        
+
         self.bucketType = bucketType.rawValue
         self.workoutTypeIds = []
         self.activities = 0
@@ -70,16 +87,15 @@ struct StatisticsBucket: Codable {
         self.TSSByZone = [0, 0, 0]
         self.timeByZone = [0, 0, 0]
         setId(index: index)       // Set stable id for the bucket
-
+        
     }
+
     
     /// Constructor from CKRecord
     init(fromCKRecord: CKRecord) {
         id = fromCKRecord.recordID.recordName
         startDate = fromCKRecord["startDate"] ?? Date.now
         endDate = fromCKRecord["endDate"] ?? Date.now
-        startDateString = fromCKRecord["startDateString"] ?? ""
-        endDateString = fromCKRecord["endDateString"] ?? ""
         bucketType = fromCKRecord["bucketType"] ?? 1
         workoutTypeIds = fromCKRecord["workoutTypeIds"] ?? []
         activities = fromCKRecord["activities"] ?? 0
@@ -137,8 +153,6 @@ struct StatisticsBucket: Codable {
         let ckRecord = CKRecord(recordType: "StatisticBucket", recordID: CloudKitOperation().getCKRecordID(recordName: id))
         ckRecord["startDate"] = startDate as CKRecordValue
         ckRecord["endDate"] = endDate as CKRecordValue
-        ckRecord["startDateString"] = startDateString as CKRecordValue
-        ckRecord["endDateString"] = endDateString as CKRecordValue
         ckRecord["bucketType"] = bucketType as CKRecordValue
         ckRecord["workoutTypeIds"] = workoutTypeIds as CKRecordValue
         ckRecord["activities"] = activities as CKRecordValue

@@ -53,31 +53,52 @@ class StatisticsBucketArray: NSObject, Codable {
        
         tempBuckets = []
         
-        let bucketStartDates = getBucketStartDates()
-        let formatter = DateFormatter()
-        formatter.dateFormat = "dd MM yyyy HH:mm:ss"
-        
+        logger.info("Shuffling stats buckets forward")
         for bucketType in BucketType.allCases {
             
             for count in 0..<StatisticsBucketCount[bucketType]! {
                 
-                if let bucketDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
-                                                          value: -1 * count * StatisticsBucketDuration[bucketType]!.count,
-                                                          to: bucketStartDates[bucketType]!) {
+                let (startDate, endDate) = getBucketStartAndEndDates(bucketType: bucketType, bucketIndex: count)
+                
+                if let index = elements.firstIndex(where: {($0.startDate == startDate) &&
+                    ( $0.bucketType == bucketType.rawValue)} ) {
 
-                    if let index = elements.firstIndex(where: {(formatter.string(from: $0.startDate) == formatter.string(from: bucketDate)) &&
+                    elements[index].setId(index: count)     // Set the bucket's Id to new position
+                    tempBuckets.append(elements[index])
+                }
+                else {
+                    tempBuckets.append(StatisticsBucket(startDate: startDate,
+                                                        endDate: endDate,
+                                                        bucketType: bucketType,
+                                                        index: count))
+                }
+
+/*
+                
+                if let bucketDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
+                                                                          value: -1 * count * StatisticsBucketDuration[bucketType]!.count,
+                                                                          to: bucketStartDates[bucketType]!) {
+                    let GMTBucketDate = bucketDate.addingTimeInterval(TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: bucketDate)))
+                    let nonGMTEndDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
+                                                                         value: StatisticsBucketDuration[bucketType]!.count,
+                                                                         to: GMTBucketDate)!
+                    let GMTEndDate = nonGMTEndDate.addingTimeInterval(TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: nonGMTEndDate)) -
+                                                                    TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: GMTBucketDate)))
+
+                    if let index = elements.firstIndex(where: {($0.startDate == GMTBucketDate) &&
                         ( $0.bucketType == bucketType.rawValue)} ) {
 
                         elements[index].setId(index: count)     // Set the bucket's Id to new position
                         tempBuckets.append(elements[index])
                     }
                     else {
-                        tempBuckets.append(StatisticsBucket(startDate: bucketDate,
+                        tempBuckets.append(StatisticsBucket(startDate: GMTBucketDate,
+                                                            endDate: GMTEndDate,
                                                             bucketType: bucketType,
                                                             index: count))
                     }
                 }
-                
+               */
             }
         }
         
@@ -103,60 +124,94 @@ class StatisticsBucketArray: NSObject, Codable {
     }
     
     
-
     
-    func getBucketStartDates() -> [BucketType: Date] {
+    /// Return current timezone version of first bucket start date for a bucket type
+    func getFirstBucketStartDate(bucketType: BucketType) -> Date {
         
-        var todayComponents = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
-        todayComponents.timeZone = .gmt
-        let today = Calendar.current.date(from: todayComponents)!
-
-        var weekComponents = Calendar.current.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: Date.now)
-        weekComponents.timeZone = .gmt
-        let weekStart = Calendar.current.date(from: weekComponents)!
-        
-        var quarterComponents = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
-        quarterComponents.timeZone = .gmt
-        quarterComponents.day = 1
-        quarterComponents.month = (((quarterComponents.month! - 1) / 3) * 3) + 1
-        let quarterStart = Calendar.current.date(from: quarterComponents)!
-        
-        var yearComponents  = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
-        yearComponents.timeZone = .gmt
-        yearComponents.day = 1
-        yearComponents.month = 1
-        let yearStart = Calendar.current.date(from: yearComponents)!
-
-        
-        let bucketStartDates: [BucketType: Date] = [.day: today,
-                                                    .week: weekStart,
-                                                    .quarter: quarterStart,
-                                                    .year: yearStart]
-        
-        return bucketStartDates
+        switch bucketType {
+        case .day:
+            var startDateComponents = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
+            startDateComponents.timeZone = .current
+            return Calendar.current.date(from: startDateComponents)!
+            
+        case .week:
+            var startDateComponents = Calendar.current.dateComponents([.calendar, .yearForWeekOfYear, .weekOfYear], from: Date.now)
+            startDateComponents.timeZone = .current
+            return Calendar.current.date(from: startDateComponents)!
+            
+        case .quarter:
+            var startDateComponents = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
+            startDateComponents.timeZone = .current
+            startDateComponents.day = 1
+            startDateComponents.month = (((startDateComponents.month! - 1) / 3) * 3) + 1
+            return Calendar.current.date(from: startDateComponents)!
+            
+        case .year:
+            var startDateComponents  = Calendar.current.dateComponents([.day, .year, .month], from: Date.now)
+            startDateComponents.timeZone = .current
+            startDateComponents.day = 1
+            startDateComponents.month = 1
+            return Calendar.current.date(from: startDateComponents)!
+        }
     }
     
+    
+    /// Return GMT versions of startDate and endDate for a bucket of a given type and index from zero
+    func getBucketStartAndEndDates(bucketType: BucketType, bucketIndex: Int) -> (Date, Date) {
+        
+        // Get non-GMT version of first bucket start date
+        let firstNonGMTBucketStartDate = getFirstBucketStartDate(bucketType: bucketType)
+        
+        let nonGMTBucketStartDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
+                                                          value: -1 * bucketIndex * StatisticsBucketDuration[bucketType]!.count,
+                                                          to: firstNonGMTBucketStartDate)!
+        
+        let nonGMTBucketEndDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
+                                                        value: StatisticsBucketDuration[bucketType]!.count,
+                                                        to: nonGMTBucketStartDate)!
+        
+        let GMTBucketStartDate = nonGMTBucketStartDate.addingTimeInterval(
+            TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: nonGMTBucketStartDate)))
+        
+        let GMTBucketEndDate = nonGMTBucketEndDate.addingTimeInterval(
+            TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: nonGMTBucketEndDate)))
+        
+        return (GMTBucketStartDate, GMTBucketEndDate)
+
+    }
     
     /// Create a set of empty buckets
     func emptyTempBuckets() {
         
         tempBuckets = []
         
-        let bucketStartDates = getBucketStartDates()
-        
         for bucketType in BucketType.allCases {
             
             for count in 0..<StatisticsBucketCount[bucketType]! {
                 
+                let (startDate, endDate) = getBucketStartAndEndDates(bucketType: bucketType, bucketIndex: count)
+                tempBuckets.append(StatisticsBucket(startDate: startDate,
+                                                    endDate: endDate,
+                                                    bucketType: bucketType,
+                                                    index: count))
+                
+                /*
                 if let bucketDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
                                                           value: -1 * count * StatisticsBucketDuration[bucketType]!.count,
                                                           to: bucketStartDates[bucketType]!) {
- 
-                    tempBuckets.append(StatisticsBucket(startDate: bucketDate,
+                    let GMTBucketDate = bucketDate.addingTimeInterval(TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: bucketDate)))
+                    let nonGMTEndDate = Calendar.current.date(byAdding: StatisticsBucketDuration[bucketType]!.unit,
+                                                                         value: StatisticsBucketDuration[bucketType]!.count,
+                                                                         to: GMTBucketDate)!
+                    let GMTEndDate = nonGMTEndDate.addingTimeInterval(TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: nonGMTEndDate)) -
+                                                                    TimeInterval(Calendar.current.timeZone.secondsFromGMT(for: GMTBucketDate)))
+                    tempBuckets.append(StatisticsBucket(startDate: GMTBucketDate,
+                                                        endDate: GMTEndDate,
                                                         bucketType: bucketType,
                                                         index: count))
 
                 }
+                 */
                 
             }
         }
@@ -172,20 +227,18 @@ class StatisticsBucketArray: NSObject, Codable {
         shuffleForwardIfNecessary()
 
         for (index, bucket) in elements.enumerated() {
-            let activityDate = stringToDate(dateString: dateAsString(date: activityRecord.startDateLocal))
-            let bucketStartDate = stringToDate(dateString: bucket.startDateString)
-            let bucketEndDate = stringToDate(dateString: bucket.endDateString)
             
-            if (activityDate >= bucketStartDate) && (activityDate < bucketEndDate) {
+            if (activityRecord.startDateLocal >= bucket.startDate) && (activityRecord.startDateLocal < bucket.endDate) {
                 elements[index].activities += 1
-                elements[index].distanceMeters += activityRecord.distanceMeters
+                elements[index].distanceMeters = round(elements[index].distanceMeters + activityRecord.distanceMeters)
                 elements[index].addTypedValues(newWorkoutTypeIds: [activityRecord.workoutTypeId],
                                                newActivities: [1],
-                                               newDistanceMeters: [activityRecord.distanceMeters])
+                                               newDistanceMeters: [round(activityRecord.distanceMeters)])
 
-                elements[index].time += activityRecord.movingTime
+                elements[index].time = round(elements[index].time + activityRecord.movingTime)
+
                 elements[index].TSS +=  activityRecord.TSSorEstimate()
-
+                elements[index].TSS = round(elements[index].TSS * 10) / 10
                 // Add range-ified TSS by power zone array
                 elements[index].TSSByZone = zip(elements[index].TSSByZone,
                                                 activityRecord.TSSbyRangeFromZone()).map(+)
@@ -211,19 +264,16 @@ class StatisticsBucketArray: NSObject, Codable {
         shuffleForwardIfNecessary()
         
         for (index, bucket) in elements.enumerated() {
-            let activityDate = stringToDate(dateString: dateAsString(date: activityRecord.startDateLocal))
-            let bucketStartDate = stringToDate(dateString: bucket.startDateString)
-            let bucketEndDate = stringToDate(dateString: bucket.endDateString)
             
-            if (activityDate >= bucketStartDate) && (activityDate < bucketEndDate) {
+            if (activityRecord.startDateLocal >= bucket.startDate) && (activityRecord.startDateLocal < bucket.endDate) {
                 elements[index].activities = max(0, elements[index].activities - 1)
-                elements[index].distanceMeters = max(0, elements[index].distanceMeters - activityRecord.distanceMeters)
+                elements[index].distanceMeters = round(max(0, elements[index].distanceMeters - activityRecord.distanceMeters))
                 elements[index].removeTypedValues(workoutTypeIds: [activityRecord.workoutTypeId],
                                                   activities: [1],
-                                                  distanceMeters: [activityRecord.distanceMeters])
+                                                  distanceMeters: [round(activityRecord.distanceMeters)])
 
-                elements[index].time = max(0, elements[index].time - activityRecord.movingTime)
-                elements[index].TSS = max(0, elements[index].TSS - activityRecord.TSSorEstimate())
+                elements[index].time = round(max(0, elements[index].time - activityRecord.movingTime))
+                elements[index].TSS = round(max(0, elements[index].TSS - activityRecord.TSSorEstimate()) * 10) / 10
 
                 // Add range-ified TSS by power zone array
                 elements[index].TSSByZone = zip(elements[index].TSSByZone,
@@ -245,20 +295,20 @@ class StatisticsBucketArray: NSObject, Codable {
     func addActivityToTemp(_ activityRecord: ActivityRecord) {
 
         for (index, bucket) in tempBuckets.enumerated() {
-            let activityDate = stringToDate(dateString: dateAsString(date: activityRecord.startDateLocal))
-            let bucketStartDate = stringToDate(dateString: bucket.startDateString)
-            let bucketEndDate = stringToDate(dateString: bucket.endDateString)
             
-            if (activityDate >= bucketStartDate) && (activityDate < bucketEndDate) {
+            if (activityRecord.startDateLocal >= bucket.startDate) && (activityRecord.startDateLocal < bucket.endDate) {
                 tempBuckets[index].activities += 1
-                tempBuckets[index].distanceMeters += activityRecord.distanceMeters
+                tempBuckets[index].distanceMeters = round(tempBuckets[index].distanceMeters + activityRecord.distanceMeters)
+
                 tempBuckets[index].addTypedValues(newWorkoutTypeIds: [activityRecord.workoutTypeId],
                                                   newActivities: [1],
-                                                  newDistanceMeters: [activityRecord.distanceMeters])
+                                                  newDistanceMeters: [round(activityRecord.distanceMeters)])
 
-                tempBuckets[index].time += activityRecord.movingTime
+                tempBuckets[index].time = round(tempBuckets[index].time + activityRecord.movingTime)
+
                 tempBuckets[index].TSS += activityRecord.TSSorEstimate()
-                
+                tempBuckets[index].TSS = round(tempBuckets[index].TSS * 10) / 10
+
                 // Add range-ified TSS by power zone array
                 tempBuckets[index].TSSByZone = zip(tempBuckets[index].TSSByZone,
                                                    activityRecord.TSSbyRangeFromZone()).map(+)
@@ -358,26 +408,6 @@ class StatisticsBucketArray: NSObject, Codable {
         shuffleForwardIfNecessary()
 
     }
-  
-    
-    func dateAsString(date: Date) -> String {
-        
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withFullDate]
-        dateFormatter.timeZone = .current
-        return date.formatted(.iso8601
-            .year()
-            .month()
-            .day())
-        
-    }
-    
-    func stringToDate(dateString: String) -> Date {
-        let dateFormatter = ISO8601DateFormatter()
-        dateFormatter.formatOptions = [.withFullDate] // Added format options
-        let date = dateFormatter.date(from: dateString) ?? Date.now
-        return date
-    }
     
     
     func thisWeekStartDate() -> Date {
@@ -386,7 +416,6 @@ class StatisticsBucketArray: NSObject, Codable {
         weekComponents.timeZone = .gmt
         let weekStart = Calendar.current.date(from: weekComponents)!
         
-        // return dateAsString(date: weekStart)
         return weekStart
         
     }
@@ -433,7 +462,7 @@ class StatisticsBucketArray: NSObject, Codable {
     func thisWeekDayBuckets() -> StatisticsBucketArray {
         
         let buckets = getBucketsByType(bucketType: .day).elements
-            .filter( {stringToDate(dateString: $0.startDateString) >= thisWeekStartDate()})
+            .filter( {$0.startDate >= thisWeekStartDate()})
         
         logger.info("thisWeekDayBuckets \(buckets)")
         return StatisticsBucketArray(elements: buckets)
@@ -443,8 +472,8 @@ class StatisticsBucketArray: NSObject, Codable {
     func lastWeekDayBuckets() -> StatisticsBucketArray {
         
         let buckets = getBucketsByType(bucketType: .day).elements
-            .filter( {stringToDate(dateString: $0.startDateString) >= lastWeekStartDate()})
-            .filter( {stringToDate(dateString: $0.startDateString) < thisWeekStartDate()})
+            .filter( {$0.startDate >= lastWeekStartDate()})
+            .filter( {$0.startDate < thisWeekStartDate()})
         
         return StatisticsBucketArray(elements: buckets)
     }
@@ -513,32 +542,37 @@ class StatisticsBucketArray: NSObject, Codable {
         if filterList.count > 0 {
             fullList = StackedBarChartData(copyFrom: fullList, filterCategories: filterList)
         }
-        fullList.setAsWeeklyAverage(divisorDays: divisorDaysForWeeklyAverage())
+        fullList.setAsWeeklyAverage(divisorDays: divisorDaysForWeeklyAverage(buckets: elements.filter({$0.bucketType == BucketType.week.rawValue})))
         return fullList
         
     }
     
     func asYearStackedBarChartData(propertyName: String, filterList: [String] = []) -> StackedBarChartData {
         
+        let indexNames = ["last", "this"]
         var fullList = asStackedBarChartData(propertyName: propertyName,
-                                             indexNames: ["last", "this"])
+                                             indexNames: indexNames)
+        var bucketList = elements.filter({$0.bucketType == BucketType.year.rawValue})
         
         // If filterList set then reduce stacked bar data just to those categories
         if filterList.count > 0 {
+            let filterIndices = filterList.map({filterListItem in indexNames.firstIndex(where: {$0 == filterListItem}) ?? 0})
+            bucketList = filterIndices.map( {bucketList[$0]} )
             fullList = StackedBarChartData(copyFrom: fullList, filterCategories: filterList)
+
         }
-        fullList.setAsWeeklyAverage(divisorDays: divisorDaysForWeeklyAverage())
+        fullList.setAsWeeklyAverage(divisorDays: divisorDaysForWeeklyAverage(buckets: bucketList))
         return fullList
         
     }
     
     
-    func divisorDaysForWeeklyAverage() -> Double {
+    func divisorDaysForWeeklyAverage(buckets: [StatisticsBucket]) -> Double {
 
         var divisor: Double = 1
         
-        if let endDate = elements.last?.endDate,
-           let startDate = elements.filter({$0.activities > 0}).first?.startDate
+        if let endDate = buckets.last?.endDate,
+           let startDate = buckets.filter({$0.activities > 0}).first?.startDate
         {
             let days: Int = Calendar.current.dateComponents([.day], from: startDate, to: endDate).day ?? 1
             let daysToNow = Calendar.current.dateComponents([.day], from: startDate, to: Date.now).day ?? 1
@@ -553,7 +587,7 @@ class StatisticsBucketArray: NSObject, Codable {
     func asQuarterStackedBarChartData(propertyName: String) -> StackedBarChartData {
         
         var chartData = asStackedBarChartData(propertyName: propertyName, indexNames: ["-3", "-2", "-1", "this"])
-        chartData.setAsWeeklyAverage(divisorDays: divisorDaysForWeeklyAverage())
+        chartData.setAsWeeklyAverage(divisorDays: divisorDaysForWeeklyAverage(buckets: elements.filter({$0.bucketType == BucketType.quarter.rawValue})))
         return chartData
         
     }
