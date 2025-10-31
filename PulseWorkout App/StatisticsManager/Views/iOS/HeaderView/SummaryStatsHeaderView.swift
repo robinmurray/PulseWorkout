@@ -10,6 +10,8 @@ import SwiftUI
 struct SummaryStatsHeaderView: View {
     
     @ObservedObject var statisticsManager = StatisticsManager.shared
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
+
     
     var body: some View {
         
@@ -30,8 +32,14 @@ struct SummaryStatsHeaderView: View {
                             .font(.caption)
                             .bold()
                         
-                        BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "activities", filterList: ["last", "this"]))
-                                                
+                        Button {
+                            navigationCoordinator.goToView(targetView: StatisticsProgressHeaderView.NavigationTarget.ActivityStatisticsView)
+                        } label: {
+                            
+                            BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "activities", filterList: ["last", "this"]))
+
+                        }
+                        
                     }
                 }
                 .frame(width: frameWidth)
@@ -48,7 +56,14 @@ struct SummaryStatsHeaderView: View {
                                 .font(.caption)
                                 .bold()
  
-                            BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "TSSByZone", filterList: ["last", "this"]))
+                            Button {
+                                navigationCoordinator.goToView(targetView: StatisticsProgressHeaderView.NavigationTarget.TSSStatisticsView)
+                            } label: {
+                                
+                                BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "TSSByZone", filterList: ["last", "this"]))
+
+                            }
+                            
                         }
                         
                     }
@@ -67,7 +82,13 @@ struct SummaryStatsHeaderView: View {
                             .font(.caption)
                             .bold()
  
-                        BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "distanceMeters", filterList: ["last", "this"]))
+                        Button {
+                            navigationCoordinator.goToView(targetView: StatisticsProgressHeaderView.NavigationTarget.DistanceStatisticsView)
+                        } label: {
+                            
+                            BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "distanceMeters", filterList: ["last", "this"]))
+                        }
+
                     }
                 }
                 .frame(width: frameWidth)
@@ -84,7 +105,12 @@ struct SummaryStatsHeaderView: View {
                             .font(.caption)
                             .bold()
 
-                        BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "timeByZone", filterList: ["last", "this"]))
+                        Button {
+                            navigationCoordinator.goToView(targetView: StatisticsProgressHeaderView.NavigationTarget.HRStatisticsView)
+                        } label: {
+                            
+                            BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "timeByZone", filterList: ["last", "this"]))
+                        }
                     }
                 }
                 .frame(width: frameWidth)
@@ -94,11 +120,14 @@ struct SummaryStatsHeaderView: View {
             }
             .frame(height: 120)
             
+        }
+        .frame(height: 120)
+
     }
-    .frame(height: 120)
-    }
+
 }
 
 #Preview {
-    SummaryStatsHeaderView()
+    let navigationCoordinator = NavigationCoordinator()
+    SummaryStatsHeaderView(navigationCoordinator: navigationCoordinator)
 }

@@ -28,7 +28,7 @@ struct ActivityHistoryView: View {
     
     var body: some View {
 #if os(iOS)
-        StatisticsProgressHeaderView()
+        StatisticsProgressHeaderView(navigationCoordinator: navigationCoordinator)
 #endif
         
         List {
