@@ -11,6 +11,7 @@ import Charts
 struct DonutView: View {
     
     var stackedBarChartData: StackedBarChartData
+    var displayPercent: Bool = false
 
     var body: some View {
         
@@ -37,7 +38,13 @@ struct DonutView: View {
                     .cornerRadius(6)
                     .annotation(position: .overlay) {
                         if dataPoint.value > 0 {
-                            Text(dataPoint.formattedValue).bold()
+                            VStack {
+                                Text(dataPoint.formattedValue).bold()
+                                if displayPercent {
+                                    Text(round(100 * dataPoint.value / stackedBarChartData.total) / 100, format: .percent)
+                                }
+                            }
+
                         }
                         
                     }

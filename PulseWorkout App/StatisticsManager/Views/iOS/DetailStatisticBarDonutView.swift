@@ -24,7 +24,8 @@ struct DetailStatisticBarDonutView: View {
                 {
 
                     BarAndDonutView(
-                        stackedBarChartData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarChartData(propertyName: propertyName))
+                        stackedBarChartData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarChartData(propertyName: propertyName),
+                        displayPercent: PropertyViewParamaters[propertyName]?.displayPercentage ?? false)
 
                 }
                 
@@ -34,7 +35,8 @@ struct DetailStatisticBarDonutView: View {
                 {
                     
                     BarAndDonutView(
-                        stackedBarChartData: statisticsManager.lastWeekDayBuckets.asDayOfWeekStackedBarChartData(propertyName: propertyName))
+                        stackedBarChartData: statisticsManager.lastWeekDayBuckets.asDayOfWeekStackedBarChartData(propertyName: propertyName),
+                        displayPercent: PropertyViewParamaters[propertyName]?.displayPercentage ?? false)
                 }
                 
                 GroupBox(label: Text("Last 12 Weeks")
@@ -43,7 +45,8 @@ struct DetailStatisticBarDonutView: View {
                 {
       
                     BarAndDonutView(
-                        stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: propertyName))
+                        stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: propertyName),
+                        displayPercent: PropertyViewParamaters[propertyName]?.displayPercentage ?? false)
                     
                 }
                 
@@ -53,7 +56,8 @@ struct DetailStatisticBarDonutView: View {
                 {
                     
                     BarAndDonutView(
-                        stackedBarChartData: statisticsManager.quarterBuckets.asQuarterStackedBarChartData(propertyName: propertyName))
+                        stackedBarChartData: statisticsManager.quarterBuckets.asQuarterStackedBarChartData(propertyName: propertyName),
+                        displayPercent: PropertyViewParamaters[propertyName]?.displayPercentage ?? false)
                     
                 }
                 
@@ -62,7 +66,8 @@ struct DetailStatisticBarDonutView: View {
                     .fontWeight(.bold))
                 {
                     
-                    DonutView(stackedBarChartData: statisticsManager.yearBuckets.asYearStackedBarChartData(propertyName: propertyName, filterList: ["this"]))
+                    DonutView(stackedBarChartData: statisticsManager.yearBuckets.asYearStackedBarChartData(propertyName: propertyName, filterList: ["this"]),
+                              displayPercent: PropertyViewParamaters[propertyName]?.displayPercentage ?? false)
                     
                 }
                 
@@ -71,7 +76,8 @@ struct DetailStatisticBarDonutView: View {
                     .fontWeight(.bold))
                 {
                     
-                    DonutView(stackedBarChartData: statisticsManager.yearBuckets.asYearStackedBarChartData(propertyName: propertyName, filterList: ["last"]))
+                    DonutView(stackedBarChartData: statisticsManager.yearBuckets.asYearStackedBarChartData(propertyName: propertyName, filterList: ["last"]),
+                              displayPercent: PropertyViewParamaters[propertyName]?.displayPercentage ?? false)
                     
 
 

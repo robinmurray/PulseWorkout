@@ -44,7 +44,8 @@ struct DayOfWeekStatisticBarDonutView: View {
                 VStack {
 
                     BarAndDonutView(
-                        stackedBarChartData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarChartData(propertyName: propertyName))
+                        stackedBarChartData: statisticsManager.thisWeekDayBuckets.asDayOfWeekStackedBarChartData(propertyName: propertyName),
+                        displayPercent: PropertyViewParamaters[propertyName]?.displayPercentage ?? false)
                 }
 
                 

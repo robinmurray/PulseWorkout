@@ -9,14 +9,16 @@ import SwiftUI
 
 struct BarAndDonutView: View {
     var stackedBarChartData: StackedBarChartData
-
+    var displayPercent: Bool = false
+    
     var body: some View {
         
         VStack {
 
             BarView(stackedBarChartData: stackedBarChartData)
             
-            DonutView(stackedBarChartData: stackedBarChartData)
+            DonutView(stackedBarChartData: stackedBarChartData,
+                      displayPercent: displayPercent)
 
         }
 
