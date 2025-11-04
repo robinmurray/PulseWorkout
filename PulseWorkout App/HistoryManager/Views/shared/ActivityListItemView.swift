@@ -18,33 +18,40 @@ struct ActivityListItemView: View {
 
             HStack {
 
-                Text(activityRecord.name)
-                    .foregroundStyle(.yellow)
-                    .multilineTextAlignment(.leading)
-                #if os(iOS)
-                    .fontWeight(.bold)
-                #endif
-                #if os(watchOS)
-                    .lineLimit(3)
-                #endif
-                Spacer()
-                HStack {
-                    if activityRecord.toSavePublished {
-                        Image(systemName: "icloud.slash.fill").foregroundColor(.red)
+                VStack {
+                    HStack {
+                        Text(activityRecord.name)
+                            .foregroundStyle(.yellow)
+                            .multilineTextAlignment(.leading)
+    #if os(iOS)
+                            .fontWeight(.bold)
+    #endif
+    #if os(watchOS)
+                            .lineLimit(3)
+    #endif
+                        Spacer()
                     }
-                    if activityRecord.stravaSaveStatus == StravaSaveStatus.saved.rawValue {
-                        Image("StravaIcon").resizable().frame(width: 30, height: 30)
+
+                    HStack {
+                        Text(startDateLocalFormatter(startDateLocal: activityRecord.startDateLocal))
+                        
+                        Spacer()
                     }
-                    
+                    Spacer()
                 }
+                Spacer()
+                if activityRecord.toSavePublished {
+                    VStack {
+                        Image(systemName: "icloud.slash.fill").foregroundColor(.red)
+                        Spacer()
+                    }
+
+                }
+
 
             }
             
-            HStack {
-                Text(startDateLocalFormatter(startDateLocal: activityRecord.startDateLocal))
-                
-                Spacer()
-            }
+
 
         }
         

@@ -1,0 +1,50 @@
+//
+//  LinkToStravaView.swift
+//  PulseWorkout
+//
+//  Created by Robin Murray on 04/11/2025.
+//
+
+import SwiftUI
+
+struct LinkToStravaView: View {
+    
+    @ObservedObject var activityRecord: ActivityRecord
+    
+    func viewOnStrava(recordId: Int) {
+
+        if let url = URL(string: "strava://activities/" + String(recordId)) {
+            if UIApplication.shared.canOpenURL(url) {
+                UIApplication.shared.open(url, options: [:])
+            }
+        }
+
+    }
+    
+    var body: some View {
+        if activityRecord.stravaSaveStatus == StravaSaveStatus.saved.rawValue {
+            VStack {
+#if os(iOS)
+                Button(action: {
+                    if let stravaId = activityRecord.stravaId {
+                        viewOnStrava(recordId: stravaId)
+                    }
+                }) {
+                    Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                }
+#endif
+#if os(watchOS)
+                Image("StravaIcon").resizable().frame(width: 30, height: 30)
+#endif
+                Spacer()
+            }
+        
+        } else {
+            EmptyView()
+        }
+    }
+}
+
+#Preview {
+    LinkToStravaView(activityRecord: ActivityRecord())
+}

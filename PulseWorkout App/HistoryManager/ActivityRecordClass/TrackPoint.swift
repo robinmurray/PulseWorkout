@@ -21,6 +21,11 @@ struct TrackPoint {
     var watts: Int?
 
 
+    func asCSV() -> String {
+        return "\(time), \(heartRate ?? 0), \(latitude ?? 0), \(longitude ?? 0), \(altitudeMeters ?? 0), \(distanceMeters ?? 0), \(cadence ?? 0), \(speed ?? 0), \(watts ?? 0)\n"
+        
+    }
+    
     func addXMLtoNode(node: XMLElement) {
         let trackPointNode = node.addNode(name: "Trackpoint")
         trackPointNode.addValue(name: "Time", value: time.formatted(Date.ISO8601FormatStyle().dateSeparator(.dash)))

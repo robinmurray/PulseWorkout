@@ -39,23 +39,28 @@ struct ActivityHistoryView: View {
             
             ForEach(dataCache.UIRecordSet) {activityRecord in
                 VStack {
-                    Button(action: {
-                        navigationCoordinator.selectedActivityRecord = activityRecord
-                        navigationCoordinator.goToView(targetView: NavigationTarget.ActivityDetailView)
-                    })
-                    {
-                        ActivityListItemView(activityRecord: activityRecord,
-                                             dataCache: dataCache)
-                    }
-                    .buttonStyle(BorderlessButtonStyle())
-                    .swipeActions {
-                        Button(role:.destructive) {
-                            dataCache.delete(activityRecord: activityRecord)
-                        } label: {
-                            Label("Delete", systemImage: "xmark.bin")
+                    HStack {
+                        Button(action: {
+                            navigationCoordinator.selectedActivityRecord = activityRecord
+                            navigationCoordinator.goToView(targetView: NavigationTarget.ActivityDetailView)
+                        })
+                        {
+                            ActivityListItemView(activityRecord: activityRecord,
+                                                 dataCache: dataCache)
                         }
-                            
+                        .buttonStyle(BorderlessButtonStyle())
+                        .swipeActions {
+                            Button(role:.destructive) {
+                                dataCache.delete(activityRecord: activityRecord)
+                            } label: {
+                                Label("Delete", systemImage: "xmark.bin")
+                            }
+                                
+                        }
+                        Spacer()
+                        LinkToStravaView(activityRecord: activityRecord)
                     }
+
 
                     #if os(iOS)
                     Button(action: {

@@ -151,7 +151,28 @@ struct ActivityDetailView: View {
     var body: some View {
 
         ScrollView {
-            GroupBox(label: ActivityHeaderView(activityRecord: activityRecord))
+            GroupBox(label:
+                HStack {
+                    ActivityHeaderView(activityRecord: activityRecord)
+                    Spacer()
+                
+                    LinkToStravaView(activityRecord: activityRecord)
+                
+                    VStack {
+                        let fileLink: csvExportFile = activityRecord.asCSVExportFile(dataCache: dataCache)
+
+                        ShareLink(item: fileLink,
+                                  subject: Text(activityRecord.name),
+                                  preview: SharePreview("Share Activity Data"))
+                        {
+                            Image(systemName: "square.and.arrow.up")
+                        }
+                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 10))
+                        Spacer()
+                    }
+                
+                }
+            )
             {
                 Button(action: {
                     navigationCoordinator.goToView(targetView: NavigationTarget.MapRouteView)

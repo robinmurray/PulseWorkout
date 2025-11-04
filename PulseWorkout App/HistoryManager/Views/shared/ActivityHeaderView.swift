@@ -26,6 +26,8 @@ struct ActivityHeaderView: View {
                 Spacer()
             }
             
+            Spacer()
+            
 
         }
     }
