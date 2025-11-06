@@ -159,9 +159,7 @@ struct ActivityDetailView: View {
                     LinkToStravaView(activityRecord: activityRecord)
                 
                     VStack {
-                        let fileLink: csvExportFile = activityRecord.asCSVExportFile(dataCache: dataCache)
-
-                        ShareLink(item: fileLink,
+                        ShareLink(item: ActivityRecordCSVFile(activityRecordID: activityRecord.recordID, dataCache: dataCache),
                                   subject: Text(activityRecord.name),
                                   preview: SharePreview("Share Activity Data"))
                         {

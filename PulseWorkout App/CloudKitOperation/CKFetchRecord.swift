@@ -18,8 +18,8 @@ class CKFetchRecordOperation: CloudKitOperation {
 
     
     init(recordID: CKRecord.ID,
-         completionFunction: @escaping (CKRecord) -> (),
-         completionFailureFunction: @escaping () -> ()) {
+         completionFunction: @escaping (CKRecord) -> () = { _ in },
+         completionFailureFunction: @escaping () -> () = { }) {
         
         self.recordID = recordID
         self.completionFunction = completionFunction
@@ -74,6 +74,33 @@ class CKFetchRecordOperation: CloudKitOperation {
 
     }
  
+    
+    // Async await version of single record fetch
+    func asyncExecute() async throws -> CKRecord {
+        
+        var ckRecord: CKRecord!
+        
+        do {
+            let matchResults = try await database.records(for: [recordID])
+            for matchResult in matchResults {
+                switch matchResult.value {
+                case .success(let record):
+                    self.logger.info( "Fetch succeeded : \(matchResult.key)")
+                    ckRecord = record
+
+                case .failure(let error):
+                    self.logger.error( "Fetch failed \(String(describing: error))")
+                    throw error
+
+                }
+            }
+        } catch let error {
+            throw error
+        }
+        
+        return ckRecord
+    }
+    
 }
 
 

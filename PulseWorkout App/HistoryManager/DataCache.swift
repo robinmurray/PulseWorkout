@@ -100,6 +100,30 @@ class FullActivityRecordCache: NSObject {
         cache.insert(activityRecord, at: 0)
         return activityRecord
     }
+    
+    
+    // Get the full record from the cache, if not there fetch and add to the case then return it...
+    func asyncGet(recordID: CKRecord.ID) async throws -> ActivityRecord {
+        
+        if let record = get(recordID: recordID) {
+            return record
+        }
+        
+        do {
+            let ckRecord = try await CKFetchRecordOperation(recordID: recordID).asyncExecute()
+
+            let fetchedActivityRecord = ActivityRecord(fromCKRecord: ckRecord, fetchtrackData: true)
+            
+            add(activityRecord: fetchedActivityRecord)
+            
+            return fetchedActivityRecord
+            
+        } catch let error {
+            throw error
+        }
+
+    }
+
 }
 
 class DataCache: NSObject, Codable, ObservableObject {
