@@ -22,7 +22,7 @@ struct ActivityRecordCSVFile: Transferable {
 
   
         FileRepresentation(
-            exportedContentType: .commaSeparatedText,
+            exportedContentType: .data,
             shouldAllowToOpenInPlace: false,
             exporting:
                 { item in
