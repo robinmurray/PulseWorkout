@@ -9,8 +9,8 @@
 /* Begin PBXBuildFile section */
 		E400AB732DF5EA1B00620569 /* StatisticsSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400AB722DF5EA1B00620569 /* StatisticsSummaryView.swift */; };
 		E400ABC02DF5EC7400620569 /* StatisticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400ABBF2DF5EC7400620569 /* StatisticsManager.swift */; };
-		E400B6ED2DFC173600620569 /* icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* icons.swift */; };
-		E400B6EE2DFC173600620569 /* icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* icons.swift */; };
+		E400B6ED2DFC173600620569 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* Constants.swift */; };
+		E400B6EE2DFC173600620569 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* Constants.swift */; };
 		E400B6EF2DFC174800620569 /* CloudKitOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B342DA5831D00BC1FC3 /* CloudKitOperation.swift */; };
 		E400B6F02DFC174800620569 /* CloudKitOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B342DA5831D00BC1FC3 /* CloudKitOperation.swift */; };
 		E400B6F12DFC175A00620569 /* StravaOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4CD4B002D8B146200BC1FC3 /* StravaOperation.swift */; };
@@ -53,7 +53,6 @@
 		E4094BCC2CD1515A00915CCB /* MapRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41281682BBD4CCF00996E1C /* MapRouteView.swift */; };
 		E40F88302A97AAF500E00F25 /* ActivitySaveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */; };
 		E40F886B2AA5D31400E00F25 /* SimpleXML.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40F886A2AA5D31400E00F25 /* SimpleXML.swift */; };
-		E4100B1A2DF4946800FB1179 /* StackedBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4100B192DF4946800FB1179 /* StackedBarView.swift */; };
 		E41281672BB33A5300996E1C /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41281662BB33A5300996E1C /* ChartView.swift */; };
 		E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E41281682BBD4CCF00996E1C /* MapRouteView.swift */; };
 		E413D41B2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */ = {isa = PBXBuildFile; fileRef = E413D41A2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift */; };
@@ -84,22 +83,22 @@
 		E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */; };
 		E421295C299D4D91001B8AA9 /* BTDeviceBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */; };
 		E421296029A21922001B8AA9 /* ActivityProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E421295F29A21922001B8AA9 /* ActivityProfile.swift */; };
+		E4216BDF2E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4216BDE2E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift */; };
+		E4216BE02E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4216BDE2E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift */; };
+		E4216BE12E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4216BDE2E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift */; };
+		E4216BE22E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4216BDE2E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift */; };
 		E423136F2CF628EE00E6F4FB /* ProfileListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E423136E2CF628EE00E6F4FB /* ProfileListItemView.swift */; };
 		E42313732CF752E100E6F4FB /* SwipeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42313722CF752E100E6F4FB /* SwipeButton.swift */; };
 		E42AD0912AE82094008E7B05 /* NewProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */; };
 		E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */; };
-		E45803DF2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45803DE2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift */; };
 		E45804172E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45804162E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift */; };
-		E45804F12E04614F00DCE79F /* DetailStatisticBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45804F02E04614F00DCE79F /* DetailStatisticBarView.swift */; };
 		E45805B02E05775200DCE79F /* DetailStatisticBarDonutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45805AF2E05775200DCE79F /* DetailStatisticBarDonutView.swift */; };
-		E45807622E05B49B00DCE79F /* StackedBarAndDonutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45807612E05B49B00DCE79F /* StackedBarAndDonutView.swift */; };
 		E45808742E07E70700DCE79F /* StatisticsBucketArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808732E07E70700DCE79F /* StatisticsBucketArray.swift */; };
 		E45808762E07E76D00DCE79F /* StatisticsBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808752E07E76D00DCE79F /* StatisticsBucket.swift */; };
 		E45808932E07E8DA00DCE79F /* ViewParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808922E07E8DA00DCE79F /* ViewParameters.swift */; };
 		E45808952E07E94800DCE79F /* StatisticsBucketConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808942E07E94800DCE79F /* StatisticsBucketConfiguration.swift */; };
 		E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */; };
 		E45E3F052CE7B91E001D58B3 /* ActivityListItemExtensionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */; };
-		E45E3F072CE8A461001D58B3 /* ActivityHistoryHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */; };
 		E45E3F082CEB944F001D58B3 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E46EF0C92955F615006FA603 /* LiveActivityManager.swift */; };
 		E45E3F142CEB9BED001D58B3 /* LiveMetricsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45E3F122CEB9BED001D58B3 /* LiveMetricsView.swift */; };
 		E45E3F1F2CEBABBA001D58B3 /* NewProfileDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */; };
@@ -143,6 +142,7 @@
 		E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */; };
 		E47A2EC72D5F290D00297952 /* SegmentBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47A2EC62D5F290D00297952 /* SegmentBarView.swift */; };
 		E47A2EC92D5FAEA100297952 /* DonutChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E47A2EC82D5FAEA100297952 /* DonutChartView.swift */; };
+		E487777A2E845795009523B6 /* DonutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48777792E845795009523B6 /* DonutView.swift */; };
 		E48C82E0296ECFE10005CB25 /* ElapsedTimeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */; };
 		E48D4D632D6325D0001104AC /* AltitudeChartImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */; };
 		E48F92CC2D4B8B8D00278003 /* StravaSwift in Frameworks */ = {isa = PBXBuildFile; productRef = E48F92CB2D4B8B8D00278003 /* StravaSwift */; };
@@ -196,6 +196,8 @@
 		E4941E832CD7F4830063421F /* ActivityDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E812CD7F4830063421F /* ActivityDetailView.swift */; };
 		E4941E862CD7FBC50063421F /* ActivityHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */; };
 		E4941E872CD7FBC50063421F /* ActivityHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */; };
+		E49612782E4F287800E3CA31 /* StatisticsProgressHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49612772E4F287800E3CA31 /* StatisticsProgressHeaderView.swift */; };
+		E496127B2E4F294600E3CA31 /* SummaryStatsHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E496127A2E4F294600E3CA31 /* SummaryStatsHeaderView.swift */; };
 		E4968AD8296D710100DE0082 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E4968AD7296D710000DE0082 /* HealthKit.framework */; };
 		E49CB5E62D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */; };
 		E49CB5E72D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */; };
@@ -210,8 +212,13 @@
 		E4A372FC2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
 		E4A372FD2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
 		E4A372FE2D12C8B8006A53F3 /* MigrationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */; };
-		E4AEC0902D1EC5CA00DC0082 /* icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* icons.swift */; };
-		E4AEC0942D1EC5CA00DC0082 /* icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* icons.swift */; };
+		E4A7D5412E8C2E650049514D /* StackedBarChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A7D5402E8C2E650049514D /* StackedBarChartData.swift */; };
+		E4AAAF392E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AAAF382E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift */; };
+		E4AAAF3A2E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AAAF382E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift */; };
+		E4AAAF3B2E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AAAF382E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift */; };
+		E4AAAF3C2E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AAAF382E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift */; };
+		E4AEC0902D1EC5CA00DC0082 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* Constants.swift */; };
+		E4AEC0942D1EC5CA00DC0082 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0872D1EC5CA00DC0082 /* Constants.swift */; };
 		E4AEC09F2D2C3B7000DC0082 /* BTDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */; };
 		E4AEC0A02D2C3B7000DC0082 /* BTDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */; };
 		E4AEC0A12D2C3B7000DC0082 /* BTDeviceList.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */; };
@@ -220,11 +227,39 @@
 		E4AEC0AA2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0A82D36443300DC0082 /* CloudKitNotificationManager.swift */; };
 		E4AEC0AB2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0A82D36443300DC0082 /* CloudKitNotificationManager.swift */; };
 		E4AEC0AC2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4AEC0A82D36443300DC0082 /* CloudKitNotificationManager.swift */; };
+		E4B3E8B92EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */; };
+		E4B3E8BA2EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */; };
+		E4B3E8BB2EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */; };
+		E4B3E8BC2EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */; };
 		E4B5CEA82D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEA92D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */; };
+		E4B8863A2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B886392EBA52A900205E27 /* ActivityRecord_CSVFile.swift */; };
+		E4B8863B2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B886392EBA52A900205E27 /* ActivityRecord_CSVFile.swift */; };
+		E4B8863C2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B886392EBA52A900205E27 /* ActivityRecord_CSVFile.swift */; };
+		E4B8863D2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B886392EBA52A900205E27 /* ActivityRecord_CSVFile.swift */; };
+		E4B886C62EBA71A600205E27 /* LinkToStravaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B886C52EBA71A600205E27 /* LinkToStravaView.swift */; };
+		E4B886C72EBA71A600205E27 /* LinkToStravaView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B886C52EBA71A600205E27 /* LinkToStravaView.swift */; };
 		E4BAA23F2B1C7D0E0053C065 /* DataCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */; };
 		E4BAA2412B1C7D560053C065 /* ActivityRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BAA2402B1C7D560053C065 /* ActivityRecord.swift */; };
+		E4BC98202E828CC7005782D5 /* BarAndDonutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BC981F2E828CC7005782D5 /* BarAndDonutView.swift */; };
+		E4BC98222E828DB1005782D5 /* BarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BC98212E828DB1005782D5 /* BarView.swift */; };
+		E4BEF4462EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BEF4452EA7E71000856924 /* CKStatisticBucketQuery.swift */; };
+		E4BEF4472EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BEF4452EA7E71000856924 /* CKStatisticBucketQuery.swift */; };
+		E4BEF4482EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BEF4452EA7E71000856924 /* CKStatisticBucketQuery.swift */; };
+		E4BEF4492EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4BEF4452EA7E71000856924 /* CKStatisticBucketQuery.swift */; };
+		E4BEF4D12EA7EED900856924 /* StatisticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400ABBF2DF5EC7400620569 /* StatisticsManager.swift */; };
+		E4BEF4D22EA7EEE300856924 /* StatisticsBucketConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808942E07E94800DCE79F /* StatisticsBucketConfiguration.swift */; };
+		E4BEF4D32EA7EEEA00856924 /* StatisticsBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808752E07E76D00DCE79F /* StatisticsBucket.swift */; };
+		E4BEF4D42EA7EEF200856924 /* StatisticsBucketArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808732E07E70700DCE79F /* StatisticsBucketArray.swift */; };
+		E4BEF4D52EA7EEFD00856924 /* StackedBarChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A7D5402E8C2E650049514D /* StackedBarChartData.swift */; };
+		E4BEF4D62EA7EF2300856924 /* StatisticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = E400ABBF2DF5EC7400620569 /* StatisticsManager.swift */; };
+		E4BEF4D72EA7EF2800856924 /* StatisticsBucketConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808942E07E94800DCE79F /* StatisticsBucketConfiguration.swift */; };
+		E4BEF4D82EA7EF2E00856924 /* StatisticsBucket.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808752E07E76D00DCE79F /* StatisticsBucket.swift */; };
+		E4BEF4D92EA7EF3300856924 /* StatisticsBucketArray.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808732E07E70700DCE79F /* StatisticsBucketArray.swift */; };
+		E4BEF4DA2EA7EF3900856924 /* StackedBarChartData.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4A7D5402E8C2E650049514D /* StackedBarChartData.swift */; };
+		E4BEF4DB2EA7EF7800856924 /* ViewParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808922E07E8DA00DCE79F /* ViewParameters.swift */; };
+		E4BEF4DC2EA7EF7800856924 /* ViewParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E45808922E07E8DA00DCE79F /* ViewParameters.swift */; };
 		E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5029C49744008DB769 /* BTContentView.swift */; };
 		E4C11F5329C632DB008DB769 /* BTDetailDeviceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */; };
 		E4C11F5529C7588E008DB769 /* BTDeviceInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */; };
@@ -358,7 +393,6 @@
 		E4094BBF2CD0CB9700915CCB /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS18.0.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		E40F882F2A97AAF500E00F25 /* ActivitySaveView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySaveView.swift; sourceTree = "<group>"; };
 		E40F886A2AA5D31400E00F25 /* SimpleXML.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SimpleXML.swift; sourceTree = "<group>"; };
-		E4100B192DF4946800FB1179 /* StackedBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackedBarView.swift; sourceTree = "<group>"; };
 		E41281662BB33A5300996E1C /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
 		E41281682BBD4CCF00996E1C /* MapRouteView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapRouteView.swift; sourceTree = "<group>"; };
 		E413D41A2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord_Cloudkit.swift; sourceTree = "<group>"; };
@@ -372,21 +406,18 @@
 		E4212959298EC383001B8AA9 /* BTStartDiscoverView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTStartDiscoverView.swift; sourceTree = "<group>"; };
 		E421295B299D4D91001B8AA9 /* BTDeviceBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceBarView.swift; sourceTree = "<group>"; };
 		E421295F29A21922001B8AA9 /* ActivityProfile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityProfile.swift; sourceTree = "<group>"; };
+		E4216BDE2E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CKProcessAllActivityRecords.swift; sourceTree = "<group>"; };
 		E423136E2CF628EE00E6F4FB /* ProfileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListItemView.swift; sourceTree = "<group>"; };
 		E42313722CF752E100E6F4FB /* SwipeButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SwipeButton.swift; sourceTree = "<group>"; };
 		E42AD0902AE82094008E7B05 /* NewProfileDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewProfileDetailView.swift; sourceTree = "<group>"; };
 		E42AD0922AEBEEC8008E7B05 /* LiveMetricsPausedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsPausedView.swift; sourceTree = "<group>"; };
-		E45803DE2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayOfWeekStatisticBarView.swift; sourceTree = "<group>"; };
 		E45804162E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DayOfWeekStatisticBarDonutView.swift; sourceTree = "<group>"; };
-		E45804F02E04614F00DCE79F /* DetailStatisticBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailStatisticBarView.swift; sourceTree = "<group>"; };
 		E45805AF2E05775200DCE79F /* DetailStatisticBarDonutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetailStatisticBarDonutView.swift; sourceTree = "<group>"; };
-		E45807612E05B49B00DCE79F /* StackedBarAndDonutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackedBarAndDonutView.swift; sourceTree = "<group>"; };
 		E45808732E07E70700DCE79F /* StatisticsBucketArray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsBucketArray.swift; sourceTree = "<group>"; };
 		E45808752E07E76D00DCE79F /* StatisticsBucket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsBucket.swift; sourceTree = "<group>"; };
 		E45808922E07E8DA00DCE79F /* ViewParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewParameters.swift; sourceTree = "<group>"; };
 		E45808942E07E94800DCE79F /* StatisticsBucketConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsBucketConfiguration.swift; sourceTree = "<group>"; };
 		E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityListItemExtensionView.swift; sourceTree = "<group>"; };
-		E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHistoryHeaderView.swift; sourceTree = "<group>"; };
 		E45E3F122CEB9BED001D58B3 /* LiveMetricsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveMetricsView.swift; sourceTree = "<group>"; };
 		E45E3F232CEC8D12001D58B3 /* ProfileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileManager.swift; sourceTree = "<group>"; };
 		E45E3F262CEC8D9D001D58B3 /* HKExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HKExtensions.swift; sourceTree = "<group>"; };
@@ -426,6 +457,7 @@
 		E474970D2982EB7F00EBB0DC /* BluetoothManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothManager.swift; sourceTree = "<group>"; };
 		E47A2EC62D5F290D00297952 /* SegmentBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SegmentBarView.swift; sourceTree = "<group>"; };
 		E47A2EC82D5FAEA100297952 /* DonutChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonutChartView.swift; sourceTree = "<group>"; };
+		E48777792E845795009523B6 /* DonutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DonutView.swift; sourceTree = "<group>"; };
 		E48C82DF296ECFE10005CB25 /* ElapsedTimeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElapsedTimeView.swift; sourceTree = "<group>"; };
 		E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AltitudeChartImage.swift; sourceTree = "<group>"; };
 		E492BFE82D1835530050B6E8 /* WatchAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchAppDelegate.swift; sourceTree = "<group>"; };
@@ -438,6 +470,8 @@
 		E4941E7E2CD7F3F60063421F /* SummaryMetricView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryMetricView.swift; sourceTree = "<group>"; };
 		E4941E812CD7F4830063421F /* ActivityDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityDetailView.swift; sourceTree = "<group>"; };
 		E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityHeaderView.swift; sourceTree = "<group>"; };
+		E49612772E4F287800E3CA31 /* StatisticsProgressHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsProgressHeaderView.swift; sourceTree = "<group>"; };
+		E496127A2E4F294600E3CA31 /* SummaryStatsHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryStatsHeaderView.swift; sourceTree = "<group>"; };
 		E4968AD7296D710000DE0082 /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS9.1.sdk/System/Library/Frameworks/HealthKit.framework; sourceTree = DEVELOPER_DIR; };
 		E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecordImage.swift; sourceTree = "<group>"; };
 		E4A0839229A9FA09007B50D3 /* BTDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceView.swift; sourceTree = "<group>"; };
@@ -446,13 +480,21 @@
 		E4A333B52CC01EE900995AC4 /* ActivityChartsController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityChartsController.swift; sourceTree = "<group>"; };
 		E4A333B72CC15DA500995AC4 /* FetchFailedView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchFailedView.swift; sourceTree = "<group>"; };
 		E4A372FA2D12C8B8006A53F3 /* MigrationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationManager.swift; sourceTree = "<group>"; };
-		E4AEC0872D1EC5CA00DC0082 /* icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = icons.swift; sourceTree = "<group>"; };
+		E4A7D5402E8C2E650049514D /* StackedBarChartData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StackedBarChartData.swift; sourceTree = "<group>"; };
+		E4AAAF382E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CKBlockSaveAndDelete.swift; sourceTree = "<group>"; };
+		E4AEC0872D1EC5CA00DC0082 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		E4AEC09E2D2C3B7000DC0082 /* BTDeviceList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceList.swift; sourceTree = "<group>"; };
 		E4AEC0A82D36443300DC0082 /* CloudKitNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitNotificationManager.swift; sourceTree = "<group>"; };
+		E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord_Analysis.swift; sourceTree = "<group>"; };
 		E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattersTest.swift; sourceTree = "<group>"; };
+		E4B886392EBA52A900205E27 /* ActivityRecord_CSVFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord_CSVFile.swift; sourceTree = "<group>"; };
+		E4B886C52EBA71A600205E27 /* LinkToStravaView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkToStravaView.swift; sourceTree = "<group>"; };
 		E4BAA23E2B1C7D0E0053C065 /* DataCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataCache.swift; sourceTree = "<group>"; };
 		E4BAA2402B1C7D560053C065 /* ActivityRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord.swift; sourceTree = "<group>"; };
+		E4BC981F2E828CC7005782D5 /* BarAndDonutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarAndDonutView.swift; sourceTree = "<group>"; };
+		E4BC98212E828DB1005782D5 /* BarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarView.swift; sourceTree = "<group>"; };
+		E4BEF4452EA7E71000856924 /* CKStatisticBucketQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CKStatisticBucketQuery.swift; sourceTree = "<group>"; };
 		E4C11F5029C49744008DB769 /* BTContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTContentView.swift; sourceTree = "<group>"; };
 		E4C11F5229C632DB008DB769 /* BTDetailDeviceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDetailDeviceView.swift; sourceTree = "<group>"; };
 		E4C11F5429C7588E008DB769 /* BTDeviceInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BTDeviceInfoView.swift; sourceTree = "<group>"; };
@@ -567,8 +609,10 @@
 			children = (
 				E4BAA2402B1C7D560053C065 /* ActivityRecord.swift */,
 				E413D41A2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift */,
+				E4B886392EBA52A900205E27 /* ActivityRecord_CSVFile.swift */,
 				E49CB5E52D69BD9A00E6B7BC /* ActivityRecordImage.swift */,
 				E413D41F2D6F48300086FBB2 /* ActivityRecord_Strava.swift */,
+				E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */,
 				E413D4242D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift */,
 				E413D4292D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift */,
 				E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */,
@@ -598,14 +642,14 @@
 		E458083C2E0717DE00DCE79F /* iOS */ = {
 			isa = PBXGroup;
 			children = (
-				E4100B192DF4946800FB1179 /* StackedBarView.swift */,
-				E45807612E05B49B00DCE79F /* StackedBarAndDonutView.swift */,
+				E4BC98212E828DB1005782D5 /* BarView.swift */,
+				E48777792E845795009523B6 /* DonutView.swift */,
+				E4BC981F2E828CC7005782D5 /* BarAndDonutView.swift */,
 				E400AB722DF5EA1B00620569 /* StatisticsSummaryView.swift */,
-				E45803DE2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift */,
-				E45804F02E04614F00DCE79F /* DetailStatisticBarView.swift */,
 				E45804162E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift */,
 				E45805AF2E05775200DCE79F /* DetailStatisticBarDonutView.swift */,
 				E45808922E07E8DA00DCE79F /* ViewParameters.swift */,
+				E49612792E4F290600E3CA31 /* HeaderView */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -695,7 +739,7 @@
 			isa = PBXGroup;
 			children = (
 				E406C7C22C667EDA0015C4F3 /* GeneralUtilities.swift */,
-				E4AEC0872D1EC5CA00DC0082 /* icons.swift */,
+				E4AEC0872D1EC5CA00DC0082 /* Constants.swift */,
 				E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */,
 				E4CD4B272D91409900BC1FC3 /* AsyncProgress.swift */,
 				E423138B2CF9D1BA00E6F4FB /* Controls */,
@@ -897,6 +941,7 @@
 				E4C25BAD2A4F55FB002F315D /* ActivityListItemView.swift */,
 				E4941E852CD7FBC50063421F /* ActivityHeaderView.swift */,
 				E4941E7E2CD7F3F60063421F /* SummaryMetricView.swift */,
+				E4B886C52EBA71A600205E27 /* LinkToStravaView.swift */,
 			);
 			path = shared;
 			sourceTree = "<group>";
@@ -916,9 +961,17 @@
 				E47A2EC82D5FAEA100297952 /* DonutChartView.swift */,
 				E47A2EC62D5F290D00297952 /* SegmentBarView.swift */,
 				E45E3F042CE7B91E001D58B3 /* ActivityListItemExtensionView.swift */,
-				E45E3F062CE8A461001D58B3 /* ActivityHistoryHeaderView.swift */,
 			);
 			path = iOS;
+			sourceTree = "<group>";
+		};
+		E49612792E4F290600E3CA31 /* HeaderView */ = {
+			isa = PBXGroup;
+			children = (
+				E49612772E4F287800E3CA31 /* StatisticsProgressHeaderView.swift */,
+				E496127A2E4F294600E3CA31 /* SummaryStatsHeaderView.swift */,
+			);
+			path = HeaderView;
 			sourceTree = "<group>";
 		};
 		E4968AD6296D710000DE0082 /* Frameworks */ = {
@@ -958,6 +1011,7 @@
 				E45808942E07E94800DCE79F /* StatisticsBucketConfiguration.swift */,
 				E45808752E07E76D00DCE79F /* StatisticsBucket.swift */,
 				E45808732E07E70700DCE79F /* StatisticsBucketArray.swift */,
+				E4A7D5402E8C2E650049514D /* StackedBarChartData.swift */,
 			);
 			path = StatisticsManager;
 			sourceTree = "<group>";
@@ -1051,10 +1105,13 @@
 			children = (
 				E4CD4B342DA5831D00BC1FC3 /* CloudKitOperation.swift */,
 				E4CD4B372DA8195700BC1FC3 /* CKSaveAndDelete.swift */,
+				E4AAAF382E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift */,
 				E4CD4B3A2DA8199D00BC1FC3 /* CKForceUpdate.swift */,
 				E4CD4B3D2DA81D7500BC1FC3 /* CKFetchRecordBlock.swift */,
 				E4CD4B402DA81F9300BC1FC3 /* CKProfileQuery.swift */,
+				E4BEF4452EA7E71000856924 /* CKStatisticBucketQuery.swift */,
 				E4CD4B432DA821B300BC1FC3 /* CKActivityQuery.swift */,
+				E4216BDE2E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift */,
 				E4CD4B462DA8249500BC1FC3 /* CKQueryForStravaId.swift */,
 				E4CD4B492DA8EB6600BC1FC3 /* CKSaveOrUpdateActivityRecord.swift */,
 				E4CD4B4C2DA8ED5000BC1FC3 /* CKFetchTcxAsset.swift */,
@@ -1375,6 +1432,8 @@
 				E4941E5F2CD4CAA90063421F /* AverageSettingsView.swift in Sources */,
 				E4941E4E2CD2A10B0063421F /* BTDiscoveredDeviceView.swift in Sources */,
 				E413D42F2D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
+				E4A7D5412E8C2E650049514D /* StackedBarChartData.swift in Sources */,
+				E49612782E4F287800E3CA31 /* StatisticsProgressHeaderView.swift in Sources */,
 				E4CD4B162D8DBAA500BC1FC3 /* FetchActivities.swift in Sources */,
 				E4941E452CD29FB30063421F /* BTContentView.swift in Sources */,
 				E45E3F142CEB9BED001D58B3 /* LiveMetricsView.swift in Sources */,
@@ -1383,6 +1442,7 @@
 				E4AEC0A12D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E4094BB52CD0C6D200915CCB /* ActivityRecord.swift in Sources */,
 				E45E3F002CE79171001D58B3 /* ActivityListItemView.swift in Sources */,
+				E4BC98222E828DB1005782D5 /* BarView.swift in Sources */,
 				E4941E532CD3EAB80063421F /* SettingsView.swift in Sources */,
 				E4CD4B5C2DB2A99A00BC1FC3 /* UserMetricsView.swift in Sources */,
 				E4941E4A2CD2A0E40063421F /* BTKnownDeviceView.swift in Sources */,
@@ -1390,7 +1450,6 @@
 				E4094BB62CD0C6D200915CCB /* SimpleXML.swift in Sources */,
 				E4941E472CD29FC30063421F /* BTPeripheralManager.swift in Sources */,
 				E4094BB82CD0C6D200915CCB /* DataCache.swift in Sources */,
-				E45E3F072CE8A461001D58B3 /* ActivityHistoryHeaderView.swift in Sources */,
 				E4094BC92CD1513400915CCB /* ActivityChartsController.swift in Sources */,
 				E45808932E07E8DA00DCE79F /* ViewParameters.swift in Sources */,
 				E42313732CF752E100E6F4FB /* SwipeButton.swift in Sources */,
@@ -1408,19 +1467,20 @@
 				E4941E462CD29FBC0063421F /* BluetoothManager.swift in Sources */,
 				E4CD4B4E2DA8ED5000BC1FC3 /* CKFetchTcxAsset.swift in Sources */,
 				E45808742E07E70700DCE79F /* StatisticsBucketArray.swift in Sources */,
+				E4216BE02E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift in Sources */,
 				E4094BB92CD0C6D200915CCB /* LocationManager.swift in Sources */,
-				E4AEC0902D1EC5CA00DC0082 /* icons.swift in Sources */,
+				E4AEC0902D1EC5CA00DC0082 /* Constants.swift in Sources */,
 				E45804172E044E4A00DCE79F /* DayOfWeekStatisticBarDonutView.swift in Sources */,
 				E4E8BAAB2D70C0900098D8E3 /* SettingsResetView.swift in Sources */,
 				E4941E482CD29FCA0063421F /* BTDevice.swift in Sources */,
 				E492C0062D19568A0050B6E8 /* ImageCache.swift in Sources */,
 				E423136F2CF628EE00E6F4FB /* ProfileListItemView.swift in Sources */,
 				E45E3F202CEBABD7001D58B3 /* ProfileDetailView.swift in Sources */,
-				E45804F12E04614F00DCE79F /* DetailStatisticBarView.swift in Sources */,
-				E4100B1A2DF4946800FB1179 /* StackedBarView.swift in Sources */,
+				E4B3E8BA2EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */,
 				E4941E4B2CD2A0F10063421F /* BTDeviceView.swift in Sources */,
 				E45E3F2E2CECE6AA001D58B3 /* ElapsedTimeView.swift in Sources */,
 				E4941E5D2CD4BC5B0063421F /* AutoPauseSettingsView.swift in Sources */,
+				E4AAAF392E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift in Sources */,
 				E45E3F082CEB944F001D58B3 /* LiveActivityManager.swift in Sources */,
 				E45E3F2C2CECD8FC001D58B3 /* StartView.swift in Sources */,
 				E45E3F2B2CECD407001D58B3 /* BTDeviceBarView.swift in Sources */,
@@ -1435,9 +1495,9 @@
 				E45E3F732CF0EF25001D58B3 /* ProfileListView.swift in Sources */,
 				E4941E4F2CD2A1120063421F /* BTDeviceInfoView.swift in Sources */,
 				E4CD4B442DA821B300BC1FC3 /* CKActivityQuery.swift in Sources */,
+				E4BEF4492EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */,
 				E4094BC82CD1512C00915CCB /* ActivityChartTraceBuilder.swift in Sources */,
 				E413D41B2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
-				E45807622E05B49B00DCE79F /* StackedBarAndDonutView.swift in Sources */,
 				E49CB5E62D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
 				E4CD4B5F2DB64A3D00BC1FC3 /* CyclePowerZonesView.swift in Sources */,
 				E4CD4B3B2DA8199D00BC1FC3 /* CKForceUpdate.swift in Sources */,
@@ -1459,12 +1519,14 @@
 				E45E3F272CEC8D9D001D58B3 /* HKExtensions.swift in Sources */,
 				E45805B02E05775200DCE79F /* DetailStatisticBarDonutView.swift in Sources */,
 				E47A2EC92D5FAEA100297952 /* DonutChartView.swift in Sources */,
+				E4B8863C2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */,
 				E4CD4B392DA8195700BC1FC3 /* CKSaveAndDelete.swift in Sources */,
 				E4CD4B082D8B146200BC1FC3 /* StravaOperation.swift in Sources */,
 				E4CD4B142D8DBA4E00BC1FC3 /* UpdateActivity.swift in Sources */,
 				E413D4252D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift in Sources */,
+				E4BC98202E828CC7005782D5 /* BarAndDonutView.swift in Sources */,
 				E4AEC0AA2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
-				E45803DF2E0445A900DCE79F /* DayOfWeekStatisticBarView.swift in Sources */,
+				E487777A2E845795009523B6 /* DonutView.swift in Sources */,
 				E45E3F252CEC8D12001D58B3 /* ProfileManager.swift in Sources */,
 				E4941E802CD7F3F60063421F /* SummaryMetricView.swift in Sources */,
 				E4941E832CD7F4830063421F /* ActivityDetailView.swift in Sources */,
@@ -1472,6 +1534,8 @@
 				E45808762E07E76D00DCE79F /* StatisticsBucket.swift in Sources */,
 				E45E3F6A2CEDE2BA001D58B3 /* ActivitySaveView.swift in Sources */,
 				E4A372FC2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
+				E496127B2E4F294600E3CA31 /* SummaryStatsHeaderView.swift in Sources */,
+				E4B886C62EBA71A600205E27 /* LinkToStravaView.swift in Sources */,
 				E400AB732DF5EA1B00620569 /* StatisticsSummaryView.swift in Sources */,
 				E4B5CEA92D02E0AC0094CA4F /* Formatters.swift in Sources */,
 				E4941E622CD4CD2E0063421F /* CyclingPowerSettingsView.swift in Sources */,
@@ -1483,6 +1547,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E400B6FA2DFC17FB00620569 /* CKProfileQuery.swift in Sources */,
+				E4BEF4462EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */,
 				E400B6F12DFC175A00620569 /* StravaOperation.swift in Sources */,
 				E492C0202D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E4CD4B252D8FFF8900BC1FC3 /* AlertView.swift in Sources */,
@@ -1493,12 +1558,14 @@
 				E4AEC0AC2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
 				E492C0102D19BDDE0050B6E8 /* SimpleXML.swift in Sources */,
 				E400B6F52DFC17B900620569 /* UserMetricsManager.swift in Sources */,
-				E400B6EE2DFC173600620569 /* icons.swift in Sources */,
+				E400B6EE2DFC173600620569 /* Constants.swift in Sources */,
 				E400B6FE2DFC188C00620569 /* CKUserMetricQuery.swift in Sources */,
 				E413D4312D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E400B6F82DFC17E100620569 /* CKSaveAndDelete.swift in Sources */,
+				E4B8863B2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */,
 				E400B6F32DFC177F00620569 /* CKForceUpdate.swift in Sources */,
 				E492C0082D19BBF90050B6E8 /* DataCache.swift in Sources */,
+				E4B3E8BB2EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */,
 				E4AEC0A22D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E400B7012DFC198000620569 /* CKFetchRecord.swift in Sources */,
 				E400B7032DFC199C00620569 /* CKActivityQuery.swift in Sources */,
@@ -1513,8 +1580,10 @@
 				E492C0162D1DC9800050B6E8 /* ProfileManager.swift in Sources */,
 				E492C0232D1DCA820050B6E8 /* SwipeButton.swift in Sources */,
 				E413D42B2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */,
+				E4216BDF2E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift in Sources */,
 				E492C0222D1DCA710050B6E8 /* GeneralUtilities.swift in Sources */,
 				E400B6F62DFC17CD00620569 /* HKExtensions.swift in Sources */,
+				E4AAAF3A2E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift in Sources */,
 				E41501182D06196500C09200 /* Formatters.swift in Sources */,
 				E400B6F02DFC174800620569 /* CloudKitOperation.swift in Sources */,
 				E49CB5E92D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
@@ -1553,6 +1622,7 @@
 				E46121F42AAF6D1600E07749 /* CloudConnectionsView.swift in Sources */,
 				E46121F62AAF6FCB00E07749 /* GeneralSettingsView.swift in Sources */,
 				E4BAA23F2B1C7D0E0053C065 /* DataCache.swift in Sources */,
+				E4B8863D2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */,
 				E46EF0CA2955F615006FA603 /* LiveActivityManager.swift in Sources */,
 				E492BFE92D1835530050B6E8 /* WatchAppDelegate.swift in Sources */,
 				E46121EE2AACCF2300E07749 /* WatchAsDeviceView.swift in Sources */,
@@ -1565,6 +1635,7 @@
 				E4A333B82CC15DA500995AC4 /* FetchFailedView.swift in Sources */,
 				E4CD4B362DA5831D00BC1FC3 /* CloudKitOperation.swift in Sources */,
 				E474970E2982EB7F00EBB0DC /* BluetoothManager.swift in Sources */,
+				E4B3E8BC2EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */,
 				E413D4302D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E40306832B22211000658A80 /* TopMenuView.swift in Sources */,
 				E4CD4B422DA81F9300BC1FC3 /* CKProfileQuery.swift in Sources */,
@@ -1574,6 +1645,8 @@
 				E4CD4B3F2DA81D7500BC1FC3 /* CKFetchRecordBlock.swift in Sources */,
 				E468DC8129E931A10002FEA9 /* ProfileListView.swift in Sources */,
 				E46EF0C229543FEA006FA603 /* StopView.swift in Sources */,
+				E4BEF4D12EA7EED900856924 /* StatisticsManager.swift in Sources */,
+				E4BEF4D32EA7EEEA00856924 /* StatisticsBucket.swift in Sources */,
 				E4CD4B4D2DA8ED5000BC1FC3 /* CKFetchTcxAsset.swift in Sources */,
 				E4CD4B2E2D915A7000BC1FC3 /* AsyncProgressView.swift in Sources */,
 				E4A333B62CC01EE900995AC4 /* ActivityChartsController.swift in Sources */,
@@ -1583,6 +1656,7 @@
 				E4D41B312C8A230F0014C1D9 /* LiveMetricsCarouselView.swift in Sources */,
 				E46EF0B429537D63006FA603 /* LiveTabView.swift in Sources */,
 				E4BAA2412B1C7D560053C065 /* ActivityRecord.swift in Sources */,
+				E4BEF4482EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */,
 				E42AD0932AEBEEC8008E7B05 /* LiveMetricsPausedView.swift in Sources */,
 				E4CD4B472DA8249500BC1FC3 /* CKQueryForStravaId.swift in Sources */,
 				E46EE68D2B067A01008F54CD /* MapPinView.swift in Sources */,
@@ -1592,6 +1666,7 @@
 				E4AEC09F2D2C3B7000DC0082 /* BTDeviceList.swift in Sources */,
 				E4CD4B452DA821B300BC1FC3 /* CKActivityQuery.swift in Sources */,
 				E4C428332CB0431B0069F61D /* ActivityChartTraceBuilder.swift in Sources */,
+				E4AAAF3B2E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift in Sources */,
 				E4B5CEA82D02E0AC0094CA4F /* Formatters.swift in Sources */,
 				E4CD4B262D8FFF8900BC1FC3 /* AlertView.swift in Sources */,
 				E4941E862CD7FBC50063421F /* ActivityHeaderView.swift in Sources */,
@@ -1605,23 +1680,29 @@
 				E4C11F5B29CCCC43008DB769 /* BTDevice.swift in Sources */,
 				E4CD4B572DB2879C00BC1FC3 /* CKUserMetricQuery.swift in Sources */,
 				E49CB5E72D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
+				E4216BE22E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift in Sources */,
+				E4BEF4D22EA7EEE300856924 /* StatisticsBucketConfiguration.swift in Sources */,
 				E413D4222D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
 				E45E3F7A2CF1F037001D58B3 /* NavigationCoordinator.swift in Sources */,
 				E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */,
 				E46121F22AAE178700E07749 /* BTPeripheralManager.swift in Sources */,
 				E46121F02AADC86F00E07749 /* SettingsManager.swift in Sources */,
+				E4BEF4DB2EA7EF7800856924 /* ViewParameters.swift in Sources */,
 				E46121EA2AAB5F9A00E07749 /* SettingsView.swift in Sources */,
-				E4AEC0942D1EC5CA00DC0082 /* icons.swift in Sources */,
+				E4AEC0942D1EC5CA00DC0082 /* Constants.swift in Sources */,
+				E4B886C72EBA71A600205E27 /* LinkToStravaView.swift in Sources */,
 				E413D42D2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */,
 				E4941E7F2CD7F3F60063421F /* SummaryMetricView.swift in Sources */,
 				E46EF0C029538811006FA603 /* LiveMetricsView.swift in Sources */,
 				E4CD4B2B2D91409900BC1FC3 /* AsyncProgress.swift in Sources */,
+				E4BEF4D52EA7EEFD00856924 /* StackedBarChartData.swift in Sources */,
 				E4E8BAB32D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */,
 				E4A0839329A9FA09007B50D3 /* BTDeviceView.swift in Sources */,
 				E421295C299D4D91001B8AA9 /* BTDeviceBarView.swift in Sources */,
 				E46EF0BA29537E24006FA603 /* StartView.swift in Sources */,
 				E4941E652CD76E100063421F /* HapticsSettingsView.swift in Sources */,
 				E4AEC0A92D36443300DC0082 /* CloudKitNotificationManager.swift in Sources */,
+				E4BEF4D42EA7EEF200856924 /* StatisticsBucketArray.swift in Sources */,
 				E4C25BB02A4F562B002F315D /* ActivityDetailView.swift in Sources */,
 				E4CC66A72CDA341100AA2F9E /* ActivityLineChartView.swift in Sources */,
 				E46121F82AB1A0AD00E07749 /* LocationManager.swift in Sources */,
@@ -1645,30 +1726,41 @@
 				E41501172D06196500C09200 /* Formatters.swift in Sources */,
 				E400B6F72DFC17E100620569 /* CKSaveAndDelete.swift in Sources */,
 				E4D28B152CC3A7A700F27626 /* DataCacheTest.swift in Sources */,
+				E4AAAF3C2E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift in Sources */,
 				E406C7C52C667F6F0015C4F3 /* GeneralUtilitiesTest.swift in Sources */,
 				E46EF09529537CA3006FA603 /* PulseWorkout_Watch_AppTests.swift in Sources */,
 				E492C0092D19BC1B0050B6E8 /* ActivityRecord.swift in Sources */,
 				E492C00B2D19BC260050B6E8 /* SettingsManager.swift in Sources */,
 				E492C01D2D1DCA600050B6E8 /* BTPeripheralManager.swift in Sources */,
 				E413D4272D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift in Sources */,
+				E4BEF4D72EA7EF2800856924 /* StatisticsBucketConfiguration.swift in Sources */,
 				E40306812B1F1D7900658A80 /* ActivityRecordTest.swift in Sources */,
 				E400B6F22DFC177F00620569 /* CKForceUpdate.swift in Sources */,
 				E413D42A2D6F4B080086FBB2 /* ActivityRecord_XMLParser.swift in Sources */,
 				E492C00D2D19BDD00050B6E8 /* ActivityProfile.swift in Sources */,
 				E4A372FE2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
+				E4BEF4472EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */,
 				E492C0172D1DC9B20050B6E8 /* HapticsSettingsView.swift in Sources */,
 				E400B6FD2DFC188C00620569 /* CKUserMetricQuery.swift in Sources */,
 				E400B7042DFC19B600620569 /* HKExtensions.swift in Sources */,
-				E400B6ED2DFC173600620569 /* icons.swift in Sources */,
+				E400B6ED2DFC173600620569 /* Constants.swift in Sources */,
 				E4E8BAB42D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */,
 				E413D4212D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
 				E4CD4B2A2D91409900BC1FC3 /* AsyncProgress.swift in Sources */,
 				E492C01F2D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E413D41E2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
+				E4B8863A2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */,
 				E413D4322D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
+				E4BEF4D92EA7EF3300856924 /* StatisticsBucketArray.swift in Sources */,
+				E4BEF4DA2EA7EF3900856924 /* StackedBarChartData.swift in Sources */,
 				E4AEC0AB2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
 				E400B7002DFC198000620569 /* CKFetchRecord.swift in Sources */,
+				E4BEF4D62EA7EF2300856924 /* StatisticsManager.swift in Sources */,
+				E4216BE12E3A3F0B0044F62F /* CKProcessAllActivityRecords.swift in Sources */,
 				E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */,
+				E4BEF4DC2EA7EF7800856924 /* ViewParameters.swift in Sources */,
+				E4B3E8B92EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */,
+				E4BEF4D82EA7EF2E00856924 /* StatisticsBucket.swift in Sources */,
 				E492C0212D1DCA710050B6E8 /* GeneralUtilities.swift in Sources */,
 				E492C0142D1DC8E20050B6E8 /* ImageCache.swift in Sources */,
 				E492C01B2D1DCA580050B6E8 /* BluetoothManager.swift in Sources */,
@@ -1725,7 +1817,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -1768,7 +1860,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -1809,7 +1901,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1834,7 +1926,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1858,7 +1950,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1886,7 +1978,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2026,7 +2118,7 @@
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -2066,7 +2158,7 @@
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -2105,7 +2197,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
 				MARKETING_VERSION = 1.0;
@@ -2123,7 +2215,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
 				MARKETING_VERSION = 1.0;
@@ -2142,7 +2234,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -2163,7 +2255,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -2184,7 +2276,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -2205,7 +2297,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 391;
+				CURRENT_PROJECT_VERSION = 914;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
