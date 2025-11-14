@@ -63,6 +63,13 @@ extension ActivityRecord {
         activityRecord["powerZoneLimits"] = powerZoneLimits as CKRecordValue
         activityRecord["TSSbyPowerZone"] = TSSbyPowerZone as CKRecordValue
         activityRecord["movingTimebyPowerZone"] = movingTimebyPowerZone as CKRecordValue
+    
+        activityRecord["TSSSummable"] = TSSSummable as CKRecordValue?
+        activityRecord["TSSSummableByPowerZone"] = TSSSummableByPowerZone as CKRecordValue
+        activityRecord["intensityFactor"] = intensityFactor as CKRecordValue?
+        activityRecord["normalisedPower"] = normalisedPower as CKRecordValue?
+        activityRecord["estimatedVO2Max"] = estimatedVO2Max as CKRecordValue?
+        
         
         activityRecord["thesholdHR"] = thesholdHR
         activityRecord["estimatedTSSbyHR"] = estimatedTSSbyHR
@@ -153,6 +160,12 @@ extension ActivityRecord {
         powerZoneLimits = (activityRecord["powerZoneLimits"] ?? []) as [Int]
         TSSbyPowerZone = (activityRecord["TSSbyPowerZone"] ?? []) as [Double]
         movingTimebyPowerZone = (activityRecord["movingTimebyPowerZone"] ?? []) as [Double]
+ 
+        TSSSummable = activityRecord["TSSSummable"] as Double?
+        TSSSummableByPowerZone = (activityRecord["TSSSummableByPowerZone"] ?? []) as [Double]
+        intensityFactor = activityRecord["intensityFactor"] as Double?
+        normalisedPower = activityRecord["normalisedPower"] as Double?
+        estimatedVO2Max = activityRecord["estimatedVO2Max"] as Double?
         
         thesholdHR = activityRecord["thesholdHR"] as Int?
         estimatedTSSbyHR = activityRecord["estimatedTSSbyHR"] as Double?

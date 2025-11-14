@@ -50,6 +50,12 @@ struct StatisticsBucket: Codable {
     
     /// TSS by power zone (or HR zone if no power data)
     var TSSByZone: [Double]
+
+    /// Total TSS - using summable calculation
+    var TSSSummable: Double
+    
+    /// TSS by power zone  - using summable calculation (or HR zone if no power data)
+    var TSSSummableByZone: [Double]
     
     /// Time by HR Zone
     var timeByZone: [Double]
@@ -85,6 +91,8 @@ struct StatisticsBucket: Codable {
         self.time = 0
         self.TSS = 0
         self.TSSByZone = [0, 0, 0]
+        self.TSSSummable = 0
+        self.TSSSummableByZone = [0, 0, 0]
         self.timeByZone = [0, 0, 0]
         setId(index: index)       // Set stable id for the bucket
         
@@ -105,6 +113,8 @@ struct StatisticsBucket: Codable {
         time = fromCKRecord["time"] ?? 0
         TSS = fromCKRecord["TSS"] ?? 0
         TSSByZone = fromCKRecord["TSSByZone"] ?? []
+        TSSSummable = fromCKRecord["TSSSummable"] ?? 0
+        TSSSummableByZone = fromCKRecord["TSSSummableByZone"] ?? []
         timeByZone = fromCKRecord["timeByZone"] ?? []
         
 
@@ -162,6 +172,8 @@ struct StatisticsBucket: Codable {
         ckRecord["time"] = time as CKRecordValue
         ckRecord["TSS"] = TSS as CKRecordValue
         ckRecord["TSSByZone"] = TSSByZone as CKRecordValue
+        ckRecord["TSSSummable"] = TSSSummable as CKRecordValue
+        ckRecord["TSSSummableByZone"] = TSSSummableByZone as CKRecordValue
         ckRecord["timeByZone"] = timeByZone as CKRecordValue
 
         return ckRecord

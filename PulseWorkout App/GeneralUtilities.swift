@@ -130,6 +130,22 @@ func rollingAverage(inputArray: [Double], rollCount: Int) -> [Double] {
     return rollingAverageSequence.sequence
 }
 
+/// Calculate median of array, removing any null values
+func median( _ valueArray: [Double?] ) -> Double {
+    
+    let nonNullArray = valueArray.filter( { $0 != nil } )
+    
+    if nonNullArray.count == 0 {
+        return 0
+    }
+    
+    let indexOfMiddle = Int(nonNullArray.count / 2)
+    
+    return nonNullArray.map( { $0! } ).sorted()[indexOfMiddle]
+    
+}
+
+
 func segmentAverageSeries( segmentSize: Int,
                            xAxisSeries: [Double],
                            inputSeries: [Double?],

@@ -107,6 +107,11 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var powerZoneLimits: [Int] = []
     var TSSbyPowerZone: [Double] = []
     var movingTimebyPowerZone: [Double] = []
+    var TSSSummable: Double?
+    var TSSSummableByPowerZone: [Double] = []
+    var intensityFactor: Double?
+    var normalisedPower: Double?
+    var estimatedVO2Max: Double?
     
     var thesholdHR: Int?
     var estimatedTSSbyHR: Double?
@@ -223,6 +228,13 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         FTP = try container.decode(Int?.self, forKey: .FTP)
         powerZoneLimits = try container.decode([Int].self, forKey: .powerZoneLimits)
         TSSbyPowerZone = try container.decode([Double].self, forKey: .TSSbyPowerZone)
+        
+        TSSSummable = try container.decode(Double?.self, forKey: .TSSSummable)
+        TSSSummableByPowerZone = try container.decode([Double].self, forKey: .TSSSummableByPowerZone)
+        intensityFactor = try container.decode(Double?.self, forKey: .intensityFactor)
+        normalisedPower = try container.decode(Double?.self, forKey: .normalisedPower)
+        estimatedVO2Max = try container.decode(Double?.self, forKey: .estimatedVO2Max)
+        
         movingTimebyPowerZone = try container.decode([Double].self, forKey: .movingTimebyPowerZone)
         thesholdHR = try container.decode(Int?.self, forKey: .thesholdHR)
         estimatedTSSbyHR = try container.decode(Double?.self, forKey: .estimatedTSSbyHR)
@@ -287,6 +299,13 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
          try container.encode(FTP, forKey: .FTP)
          try container.encode(powerZoneLimits, forKey: .powerZoneLimits)
          try container.encode(TSSbyPowerZone, forKey: .TSSbyPowerZone)
+         
+         try container.encode(TSSSummable, forKey: .TSSSummable)
+         try container.encode(TSSSummableByPowerZone, forKey: .TSSSummableByPowerZone)
+         try container.encode(intensityFactor, forKey: .intensityFactor)
+         try container.encode(normalisedPower, forKey: .normalisedPower)
+         try container.encode(estimatedVO2Max, forKey: .estimatedVO2Max)
+         
          try container.encode(movingTimebyPowerZone, forKey: .movingTimebyPowerZone)
          try container.encode(thesholdHR, forKey: .thesholdHR)
          try container.encode(estimatedTSSbyHR, forKey: .estimatedTSSbyHR)
@@ -382,6 +401,12 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         powerZoneLimits = fromActivityRecord.powerZoneLimits
         TSSbyPowerZone = fromActivityRecord.TSSbyPowerZone
         movingTimebyPowerZone = fromActivityRecord.movingTimebyPowerZone
+
+        TSSSummable = fromActivityRecord.TSSSummable
+        TSSSummableByPowerZone = fromActivityRecord.TSSSummableByPowerZone
+        intensityFactor = fromActivityRecord.intensityFactor
+        normalisedPower = fromActivityRecord.normalisedPower
+        estimatedVO2Max = fromActivityRecord.estimatedVO2Max
         
         thesholdHR = fromActivityRecord.thesholdHR
         estimatedTSSbyHR = fromActivityRecord.estimatedTSSbyHR
@@ -519,7 +544,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     /// Convert 6 power zones to 3 power ranges.
     /// If no power reading use HR estaimates
     /// If nothing return array of zeros
-    func TSSbyRangeFromZone() -> [Double] {
+    func TSSByRangeFromZone() -> [Double] {
         var TSSByRange: [Double] = [0, 0, 0]
         if TSSbyPowerZone.count == 6 {
             TSSByRange[0] = TSSbyPowerZone[0] + TSSbyPowerZone[1]
@@ -537,7 +562,25 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         return TSSByRange
     }
  
-    func TSSorEstimate() -> Double {
+    func TSSSummableByRangeFromZone() -> [Double] {
+        var TSSByRange: [Double] = [0, 0, 0]
+        if TSSSummableByPowerZone.count == 6 {
+            TSSByRange[0] = TSSSummableByPowerZone[0] + TSSSummableByPowerZone[1]
+            TSSByRange[1] = TSSSummableByPowerZone[2] + TSSSummableByPowerZone[3]
+            TSSByRange[2] = TSSSummableByPowerZone[4] + TSSSummableByPowerZone[5]
+        }
+        if TSSByRange.reduce(0, +) == 0 {
+            if TSSEstimatebyHRZone.count == 5 {
+                TSSByRange[0] = TSSEstimatebyHRZone[0] + TSSEstimatebyHRZone[1]
+                TSSByRange[1] = TSSEstimatebyHRZone[2] + TSSEstimatebyHRZone[3]
+                TSSByRange[2] = TSSEstimatebyHRZone[4]
+            }
+        }
+        TSSByRange = TSSByRange.map( {round($0 * 10) / 10} )
+        return TSSByRange
+    }
+    
+    func TSSOrEstimate() -> Double {
         let ts = TSS ?? 0
         let ets = estimatedTSSbyHR ?? 0
         if ts != 0 {
@@ -546,7 +589,16 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         return (round(ets * 10) / 10)
         
     }
- 
+
+    func TSSSummableOrEstimate() -> Double {
+        let ts = TSSSummable ?? 0
+        let ets = estimatedTSSbyHR ?? 0
+        if ts != 0 {
+            return (round(ts * 10) / 10)
+        }
+        return (round(ets * 10) / 10)
+        
+    }
     
     /// Convert5 heart rate zones to 3  ranges.
     /// If no heart rate, use power reading 
@@ -585,6 +637,7 @@ extension ActivityRecord {
              averageHeartRate, averageCadence, averagePower, averageSpeed, maxHeartRate, maxCadence, maxPower, maxSpeed,
              activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
              stravaSaveStatus, stravaId, trackPointGap, TSS, FTP, powerZoneLimits, TSSbyPowerZone, movingTimebyPowerZone,
+             TSSSummable, TSSSummableByPowerZone, intensityFactor, normalisedPower, estimatedVO2Max,
              thesholdHR, estimatedTSSbyHR, HRZoneLimits, TSSEstimatebyHRZone, movingTimebyHRZone,
              totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL,
              hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters, averageSegmentSize,

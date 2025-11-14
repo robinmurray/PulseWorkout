@@ -237,13 +237,22 @@ class StatisticsBucketArray: NSObject, Codable {
 
                 elements[index].time = round(elements[index].time + activityRecord.movingTime)
 
-                elements[index].TSS +=  activityRecord.TSSorEstimate()
+                elements[index].TSS +=  activityRecord.TSSOrEstimate()
                 elements[index].TSS = round(elements[index].TSS * 10) / 10
+                
+                elements[index].TSSSummable +=  activityRecord.TSSSummableOrEstimate()
+                elements[index].TSSSummable = round(elements[index].TSSSummable * 10) / 10
+
+                
                 // Add range-ified TSS by power zone array
                 elements[index].TSSByZone = zip(elements[index].TSSByZone,
-                                                activityRecord.TSSbyRangeFromZone()).map(+)
+                                                activityRecord.TSSByRangeFromZone()).map(+)
                     .map( {round($0 * 10) / 10} )
-                
+
+                // Add range-ified TSSSummable by power zone array
+                elements[index].TSSSummableByZone = zip(elements[index].TSSSummableByZone,
+                                                        activityRecord.TSSSummableByRangeFromZone()).map(+)
+                    .map( {round($0 * 10) / 10} )
 
                 
                 // Add range-ified moving time by HR zone array
@@ -273,13 +282,17 @@ class StatisticsBucketArray: NSObject, Codable {
                                                   distanceMeters: [round(activityRecord.distanceMeters)])
 
                 elements[index].time = round(max(0, elements[index].time - activityRecord.movingTime))
-                elements[index].TSS = round(max(0, elements[index].TSS - activityRecord.TSSorEstimate()) * 10) / 10
+                elements[index].TSS = round(max(0, elements[index].TSS - activityRecord.TSSOrEstimate()) * 10) / 10
+                elements[index].TSSSummable = round(max(0, elements[index].TSSSummable - activityRecord.TSSSummableOrEstimate()) * 10) / 10
 
-                // Add range-ified TSS by power zone array
-                elements[index].TSSByZone = zip(elements[index].TSSByZone,
-                                                activityRecord.TSSbyRangeFromZone()).map({max(0, $0 - $1)})
-                    .map( {round($0 * 10) / 10} )
                 
+                // Subtract range-ified TSS by power zone array
+                elements[index].TSSByZone = zip(elements[index].TSSByZone,
+                                                activityRecord.TSSByRangeFromZone()).map({max(0, $0 - $1)})
+                    .map( {round($0 * 10) / 10} )
+                elements[index].TSSSummableByZone = zip(elements[index].TSSSummableByZone,
+                                                activityRecord.TSSSummableByRangeFromZone()).map({max(0, $0 - $1)})
+                    .map( {round($0 * 10) / 10} )
 
                 
                 // Add range-ified moving time by HR zone array
@@ -306,14 +319,20 @@ class StatisticsBucketArray: NSObject, Codable {
 
                 tempBuckets[index].time = round(tempBuckets[index].time + activityRecord.movingTime)
 
-                tempBuckets[index].TSS += activityRecord.TSSorEstimate()
+                tempBuckets[index].TSS += activityRecord.TSSOrEstimate()
                 tempBuckets[index].TSS = round(tempBuckets[index].TSS * 10) / 10
 
+                tempBuckets[index].TSSSummable += activityRecord.TSSSummableOrEstimate()
+                tempBuckets[index].TSSSummable = round(tempBuckets[index].TSSSummable * 10) / 10
+
+                
                 // Add range-ified TSS by power zone array
                 tempBuckets[index].TSSByZone = zip(tempBuckets[index].TSSByZone,
-                                                   activityRecord.TSSbyRangeFromZone()).map(+)
+                                                   activityRecord.TSSByRangeFromZone()).map(+)
                     .map( {round($0 * 10) / 10} )
-
+                tempBuckets[index].TSSSummableByZone = zip(tempBuckets[index].TSSSummableByZone,
+                                                   activityRecord.TSSSummableByRangeFromZone()).map(+)
+                    .map( {round($0 * 10) / 10} )
                 
                 // Add range-ified moving time by HR zone array
                 tempBuckets[index].timeByZone = zip(tempBuckets[index].timeByZone,

@@ -10,7 +10,8 @@ import SwiftUI
 struct LinkToStravaView: View {
     
     @ObservedObject var activityRecord: ActivityRecord
-    
+
+#if os(iOS)
     func viewOnStrava(recordId: Int) {
 
         if let url = URL(string: "strava://activities/" + String(recordId)) {
@@ -20,6 +21,7 @@ struct LinkToStravaView: View {
         }
 
     }
+#endif
     
     var body: some View {
         if activityRecord.stravaSaveStatus == StravaSaveStatus.saved.rawValue {

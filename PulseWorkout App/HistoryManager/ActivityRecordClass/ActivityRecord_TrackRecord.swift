@@ -37,7 +37,7 @@ extension ActivityRecord {
         averageCadence = Int(cadenceAnalysis.average)
         averagePower = Int(powerAnalysis.average)
 
-        TSS = (TSS ?? 0) + incrementalTSS(watts: watts, ftp: 275, seconds: ACTIVITY_RECORDING_INTERVAL)
+        TSSSummable = (TSSSummable ?? 0) + incrementalTSSSummable(watts: watts, seconds: ACTIVITY_RECORDING_INTERVAL)
 
     }
 
