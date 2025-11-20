@@ -20,100 +20,119 @@ struct SettingsView: View {
 
             Form {
 
-                NavigationLink(
-                    destination: UserMetricsView()) {
-                        HStack {
-                            Label("My Profile", systemImage: "figure.run.circle")
-                                .foregroundStyle(.foreground)
+                ControlGroup {
+                    NavigationLink(
+                        destination: UserMetricsView()) {
+                            HStack {
+                                Label("My Profile", systemImage: "figure.run.circle")
+                                    .foregroundStyle(.foreground)
 
-                            Spacer()
-                        }
-                    }
-                
-                NavigationLink(
-                    destination: AutoPauseSettingsView()) {
-                        HStack {
-                            Label("Auto-Pause", systemImage: "pause.circle")
-                                .foregroundColor(.orange)
-                            Spacer()
-                        }
-                    }
-                
-                NavigationLink(
-                    destination: AverageSettingsView()) {
-                        HStack {
-                            Label("Average Calculations", systemImage: meanIcon)
-                                .foregroundColor(.green)
-                            Spacer()
-                        }
-                    }
-                
-                NavigationLink(
-                    destination: BTContentView(bluetoothManager: bluetoothManager)) {
-                        HStack {
-                            Label("Sensors", systemImage: "badge.plus.radiowaves.right")
-                                .foregroundColor(.blue)
-                            Spacer()
-                        }
-                    }
-                
-                NavigationLink(
-                    destination: CyclingPowerSettingsView()) {
-                        HStack {
-                            Label("Cycling Power", systemImage: "bolt.circle")
-                                .foregroundColor(.red)
-                            Spacer()
-                        }
-                    }
-                
-                NavigationLink(
-                    destination: WatchAsDeviceView()) {
-                        HStack {
-                            Label("Watch as Sensor", systemImage: "applewatch.radiowaves.left.and.right")
-                                .foregroundColor(.mint)
-                            Spacer()
-                        }
-
-                }
-                #if os(watchOS)
-                NavigationLink(
-                    destination: HapticsSettingsView()) {
-                        HStack {
-                            Label("Haptics", systemImage: "applewatch.radiowaves.left.and.right")
-                                .foregroundColor(.teal)
-                            Spacer()
-                        }
-
-                }
-                #endif
-                NavigationLink(
-                    destination: CloudConnectionsView()) {
-                        HStack {
-                            Label("Apple Health", systemImage: "heart.text.clipboard")
-                                .foregroundColor(.red)
-                            Spacer()
-                        }
-                    }
-                
-                NavigationLink(
-                    destination: StravaSettingsView(dataCache: dataCache)) {
-                        HStack {
-                            HStack{
-                                Image("StravaIcon").resizable().frame(width: 30, height: 30)
-                                Text("Strava Integration").foregroundColor(Color("StravaColor"))
+                                Spacer()
                             }
-                            Spacer()
                         }
-                    }
+                    } label: {
+                        Label("User Settings", systemImage: "person.circle")
+                }
 
-                NavigationLink(
-                    destination: SettingsResetView()) {
-                        HStack {
-                            Label("Reset", systemImage: "gearshape")
-                                .foregroundColor(.indigo)
-                            Spacer()
+                ControlGroup {
+
+                    NavigationLink(
+                        destination: AutoPauseSettingsView()) {
+                            HStack {
+                                Label("Auto-Pause", systemImage: "pause.circle")
+                                    .foregroundColor(.orange)
+                                Spacer()
+                            }
                         }
+                    
+                    NavigationLink(
+                        destination: AverageSettingsView()) {
+                            HStack {
+                                Label("Average Calculations", systemImage: meanIcon)
+                                    .foregroundColor(.green)
+                                Spacer()
+                            }
+                        }
+                    
+                    NavigationLink(
+                        destination: BTContentView(bluetoothManager: bluetoothManager)) {
+                            HStack {
+                                Label("Sensors", systemImage: "badge.plus.radiowaves.right")
+                                    .foregroundColor(.blue)
+                                Spacer()
+                            }
+                        }
+                    
+                    NavigationLink(
+                        destination: CyclingPowerSettingsView()) {
+                            HStack {
+                                Label("Cycling Power", systemImage: "bolt.circle")
+                                    .foregroundColor(.red)
+                                Spacer()
+                            }
+                        }
+                    
+                    NavigationLink(
+                        destination: WatchAsDeviceView()) {
+                            HStack {
+                                Label("Watch as Sensor", systemImage: "applewatch.radiowaves.left.and.right")
+                                    .foregroundColor(.mint)
+                                Spacer()
+                            }
+
                     }
+                    #if os(watchOS)
+                    NavigationLink(
+                        destination: HapticsSettingsView()) {
+                            HStack {
+                                Label("Haptics", systemImage: "applewatch.radiowaves.left.and.right")
+                                    .foregroundColor(.teal)
+                                Spacer()
+                            }
+
+                    }
+                    #endif
+                    NavigationLink(
+                        destination: CloudConnectionsView()) {
+                            HStack {
+                                Label("Apple Health", systemImage: "heart.text.clipboard")
+                                    .foregroundColor(.red)
+                                Spacer()
+                            }
+                        }
+                    
+                    NavigationLink(
+                        destination: StravaSettingsView(dataCache: dataCache)) {
+                            HStack {
+                                HStack{
+                                    Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                                    Text("Strava Integration").foregroundColor(Color("StravaColor"))
+                                }
+                                Spacer()
+                            }
+                        }
+                    
+                    
+                    
+                    } label: {
+                        Label("App Settings", systemImage: "iphone.gen3.circle")
+                }
+                
+
+                ControlGroup {
+                    NavigationLink(
+                        destination: SettingsResetView()) {
+                            HStack {
+                                Label("Reset", systemImage: "gearshape")
+                                    .foregroundColor(.indigo)
+                                Spacer()
+                            }
+                        }
+                    } label: {
+                        Label("App Management", systemImage: "gearshape")
+                }
+
+
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)

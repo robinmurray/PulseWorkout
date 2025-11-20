@@ -68,7 +68,11 @@ struct ActivityHistoryView: View {
                         navigationCoordinator.goToView(targetView: NavigationTarget.MapRouteView)
                     })
                     {
-                        ActivityListItemExtensionView(activityRecord: activityRecord, dataCache: dataCache)
+                        VStack {
+                            ActivityListItemExtensionView(activityRecord: activityRecord, dataCache: dataCache)
+                            Spacer()
+                        }
+
                     }
                     .buttonStyle(BorderlessButtonStyle())
                     

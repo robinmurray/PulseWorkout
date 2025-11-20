@@ -37,7 +37,7 @@ struct ActivityListItemView: View {
                         
                         Spacer()
                     }
-                    Spacer()
+
                 }
                 Spacer()
                 if activityRecord.toSavePublished {
