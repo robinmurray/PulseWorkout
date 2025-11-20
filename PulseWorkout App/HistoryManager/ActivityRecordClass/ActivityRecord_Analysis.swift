@@ -215,110 +215,174 @@ extension ActivityRecord {
     
     
     /// Calculate instantaneous VO2 usage
-    func instantaneousVO2(watts: Double, weight: Double) -> Double {
+    ///  See: https://sites.google.com/site/compendiumofphysicalactivities/help/unit-conversions
+    func instantaneousVO2(watts: Double?, weight: Double) -> Double? {
         
+        guard let wattsVal = watts else {return nil}
         if weight == 0 {
-            return 0
+            return nil
         }
         
-        return ((12.35 * watts) + 300) / weight
+        return ((1.8 * 6 * wattsVal) / weight) + 7
         
     }
     
-    func HRReservePercent(currentHR: Double?, HRRest: Double, HRMax: Double) -> Double {
+    func proportionHRMax(currentHR: Double?, HRMax: Double?) -> Double? {
 
-        let HRReserve = HRMax - HRRest
-        let workingHR: Double = max(currentHR ?? HRRest, HRRest)
+        guard let HRMaxVal = HRMax else {return nil}
+        guard let currentHRVal = currentHR else {return nil}
+        if HRMaxVal == 0 {return nil}
         
-        return (workingHR - HRRest) / HRReserve
+        return min(currentHRVal / HRMaxVal, 1)
         
     }
     
+    /// Calculate proportion of VO2Max from proportion of HR Max
+    func proportionVO2Max(proportionHRMax: Double?) -> Double? {
+        guard let proportionHRMaxVal = proportionHRMax else {return nil}
+        
+        return max((1.408 * proportionHRMaxVal) - 0.451, 0)
+        
+    }
+    
+    
+    /// Calculate estimated VO2Max from proprtion VO2Max
+    func estimatedVO2Max(VO2: Double?, proportionVO2Max: Double?) -> Double? {
+        guard let proportionVO2MaxVal = proportionVO2Max else {return nil}
+        guard let VO2Val = VO2 else {return nil}
+        if proportionVO2MaxVal == 0 {return nil}
+        
+        return VO2Val / proportionVO2MaxVal
+        
+        
+    }
+    
+    /// return true / false depending on whether passes validation tests
+    func validVO2Estimate(ave60Watts: Double?, ave10Watts: Double?, heartRate: Double?) -> Bool {
+        guard let ave60WattsVal = ave60Watts,
+              let ave10WattsVal = ave10Watts,
+              let heartRateVal = heartRate else {return false}
+        
+        let HRZone3 = Double(130)
+        let HRTHRESHOLD = Double(154)
+        let MAX_10_60_GAP = Double(10)
+        
+        if heartRateVal < HRZone3 {return false}
+        if heartRateVal > HRTHRESHOLD {return false}
+        if abs(ave60WattsVal - ave10WattsVal) > MAX_10_60_GAP {return false}
+        
+        return true
+        
+    }
     
     /// Calculate esimated VO2Max from activity
-    func calculateVO2Max() -> Double {
+    func calculateVO2Max() -> Double? {
         
         struct CalcVO2Max {
-            var aveWatts: Double?
-            var SDWatts: Double?
-            var heartRate: Double?
-            var VO2: Double?
-            var HRReservePercent: Double?
-            var VO2ReservePercent: Double?
-            var estimatedVO2Max: Double?
+            var ave60Watts: Double?         // 60 second rolling average of power
+            var ave10Watts: Double?         // 10 second rolling average of power
+            var heartRate: Double?          // Heart rate
+            var VO2: Double?                // Instantaneous VO2 ml/kg/min
+            var proportionHRMax: Double?    // Proportion of HR Max: 0 - 1
+            var proportionVO2Max: Double?   // Proportion of VO2 Max: 0 - 1
+            var estimatedVO2Max: Double?    // calculated estimate of VO2 max
+            var validEstimate: Bool?        // Whether this reading passes all validation tests
+            var validSequenceLength: Int?   // How may items have been consecutively valid
         }
         
         var calcArray: [CalcVO2Max] = []
         
-        var VO2Max: Double = 0
+        var VO2Max: Double?
 
-        // get number of points in 30 seconds
-        let rollingCount = Int(30 / trackPointGap)
-        
-        let rollingAverageWatts = rollingAverage(inputArray: trackPoints.map( {Double($0.watts ?? 0)} ), rollCount: rollingCount)
+        // get number of points in 60 seconds
+        let rolling60Count = Int(60 / trackPointGap)
+        let rolling10Count = Int(10 / trackPointGap)
 
-        if rollingAverageWatts.count == 0 {
-            return 0
+        let rolling60AverageWatts = rollingAverage(inputArray: trackPoints.map( {Double($0.watts ?? 0)} ), rollCount: rolling60Count)
+        let rolling10AverageWatts = rollingAverage(inputArray: trackPoints.map( {Double($0.watts ?? 0)} ), rollCount: rolling10Count)
+
+        if rolling60AverageWatts.count == 0 {
+            return nil
         }
 
-        let rollingSDWatts = rollingAverageWatts.map( { _ in Double(10) })
-                
-        let offsetTrackPoints = Array(trackPoints.suffix(rollingAverageWatts.count))
+        let offsetTrackPoints = Array(trackPoints.suffix(rolling60AverageWatts.count))
+        let offsetRolling10AverageWatts = Array(rolling10AverageWatts.suffix(rolling60AverageWatts.count))
+
         
-        // array of tuples ( rolling average watts, heart Rate )
-        let zip1 = Array(zip(rollingAverageWatts, offsetTrackPoints.map( {$0.heartRate })))
+        // array of tuples ( rolling 60 average watts, heart Rate )
+        let zip1 = Array(zip(rolling60AverageWatts, offsetTrackPoints.map( {$0.heartRate })))
         // move to array of partial CalcVO2Max
-        let tempCalcArray: [CalcVO2Max] = zip1.map( { CalcVO2Max(aveWatts: $0.0, heartRate: $0.1)})
+        let tempCalcArray: [CalcVO2Max] = zip1.map( { CalcVO2Max(ave60Watts: $0.0, heartRate: $0.1)})
         
-        // array of tuples ( CalcVO2Max(aveWatts: watts, heartRate: heart rate), Standard deviation of watts
-        let zip2 = Array(zip(tempCalcArray, rollingSDWatts))
+        // array of tuples ( CalcVO2Max(aveWatts: watts, heartRate: heart rate), 10-sec rolling average of watts
+        let zip2 = Array(zip(tempCalcArray, offsetRolling10AverageWatts))
         
-        calcArray = zip2.map( { CalcVO2Max(aveWatts: $0.0.aveWatts, SDWatts: $0.1, heartRate: $0.0.heartRate) } )
+        calcArray = zip2.map( { CalcVO2Max(ave60Watts: $0.0.ave60Watts, ave10Watts: $0.1, heartRate: $0.0.heartRate) } )
         
         let weight = getWeight(at: Date.now)
-        let HRMax = Double(168)
+        let HRMax = Double(164)
         let HRRest = Double(52)
         
-        // calculate estimated VO2 and HRReservePercent at each time point
-        calcArray = calcArray.map( {CalcVO2Max(aveWatts: $0.aveWatts,
-                                               SDWatts: $0.SDWatts,
+        // calculate estimated VO2 and proportion HR Max at each time point
+        calcArray = calcArray.map( {CalcVO2Max(ave60Watts: $0.ave60Watts,
+                                               ave10Watts: $0.ave10Watts,
                                                heartRate: $0.heartRate,
-                                               VO2: instantaneousVO2(watts: $0.aveWatts ?? 0,
+                                               VO2: instantaneousVO2(watts: $0.ave60Watts ?? 0,
                                                                      weight: weight),
-                                               HRReservePercent: HRReservePercent(currentHR: $0.heartRate,
-                                                                                  HRRest: HRRest,
-                                                                                  HRMax: HRMax) ) } )
+                                               proportionHRMax: proportionHRMax(currentHR: $0.heartRate, HRMax: HRMax) ) } )
             
-        // Set VO2 reserve percent to HR reserve percent
-        calcArray = calcArray.map( {CalcVO2Max(aveWatts: $0.aveWatts,
-                                               SDWatts: $0.SDWatts,
+        // Calculate VO2 MAx percent at each point
+        calcArray = calcArray.map( {CalcVO2Max(ave60Watts: $0.ave60Watts,
+                                               ave10Watts: $0.ave10Watts,
                                                heartRate: $0.heartRate,
                                                VO2: $0.VO2,
-                                               HRReservePercent: $0.HRReservePercent,
-                                               VO2ReservePercent: $0.HRReservePercent) } )
-            
-
-        // VO2 Rest estimated by formaul for VO2 from power, when power is zero!
-        let VO2Rest = instantaneousVO2(watts: 0, weight: weight)
+                                               proportionHRMax: $0.proportionHRMax,
+                                               proportionVO2Max: proportionVO2Max(proportionHRMax: $0.proportionHRMax)) } )
         
         // Calculate estaimated VO2Max for each time point as ((1/VO2ReservePercent) * VO2) + VO2Rest
-        calcArray = calcArray.map( {CalcVO2Max(aveWatts: $0.aveWatts,
-                                               SDWatts: $0.SDWatts,
+        calcArray = calcArray.map( {CalcVO2Max(ave60Watts: $0.ave60Watts,
+                                               ave10Watts: $0.ave10Watts,
                                                heartRate: $0.heartRate,
                                                VO2: $0.VO2,
-                                               HRReservePercent: $0.HRReservePercent,
-                                               VO2ReservePercent: $0.VO2ReservePercent,
-                                               estimatedVO2Max: (((1/($0.VO2ReservePercent ?? 1)) * (($0.VO2 ?? VO2Rest) - VO2Rest))) + VO2Rest  )} )
+                                               proportionHRMax: $0.proportionHRMax,
+                                               proportionVO2Max: $0.proportionVO2Max,
+                                               estimatedVO2Max: estimatedVO2Max(VO2: $0.VO2, proportionVO2Max: $0.proportionVO2Max))} )
         
-        let HRZone3 = Double(130)
-        let MAX_SD_Watts = Double(20)
+        // Now test which readings pass validation
+        calcArray = calcArray.map( {CalcVO2Max(ave60Watts: $0.ave60Watts,
+                                               ave10Watts: $0.ave10Watts,
+                                               heartRate: $0.heartRate,
+                                               VO2: $0.VO2,
+                                               proportionHRMax: $0.proportionHRMax,
+                                               proportionVO2Max: $0.proportionVO2Max,
+                                               estimatedVO2Max: $0.estimatedVO2Max,
+                                               validEstimate: validVO2Estimate(ave60Watts: $0.ave60Watts,
+                                                                               ave10Watts: $0.ave10Watts,
+                                                                               heartRate: $0.heartRate))} )
         
-        calcArray = calcArray.filter( { (($0.heartRate ?? 0) > HRZone3) &&
-                                        (($0.SDWatts ?? 0) < MAX_SD_Watts)})
+        
+        
+        var seqLength: Int = 0
+        for i in 0..<calcArray.count {
+            if calcArray[i].validEstimate ?? false {
+                seqLength += 1
+            } else {
+                seqLength = 0
+            }
+            calcArray[i].validSequenceLength = seqLength
+
+        }
+        
+        let MIN_SEQ_LENGTH = Int(60 / trackPointGap)
+        calcArray = calcArray.filter( { ($0.validSequenceLength ?? 0) >= MIN_SEQ_LENGTH })
+        
+        
+        if calcArray.count == 0 {return nil}
+        
         
         VO2Max = median( calcArray.map( { $0.estimatedVO2Max } ))
         
-        return round(VO2Max * 10) / 10
+        return round(VO2Max! * 10) / 10
     }
     
     
