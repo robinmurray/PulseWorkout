@@ -132,9 +132,25 @@ func energyFormatter( energy: Double ) -> String {
                         usage: .workout))
 }
 
+
 func TSSFormatter(TSS: Double) -> String {
     return String(format: "%.1f", TSS)
 }
+
+
+func intensityFactorFormatter(intensityFactor: Double?) -> String {
+    guard let intensityFactorVal = intensityFactor else {return "N/A"}
+
+    return String(format: "%.2f", intensityFactorVal)
+}
+
+
+func VO2MaxFormatter(VO2Max: Double?) -> String {
+    guard let VO2MaxVal = VO2Max else {return "N/A"}
+    
+    return String(format: "%.1f", VO2MaxVal) + " ml/Kg/min"
+}
+
 
 func startDateLocalFormatter(startDateLocal: Date) -> String {
     

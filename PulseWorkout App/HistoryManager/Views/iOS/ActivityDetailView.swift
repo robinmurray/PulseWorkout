@@ -215,6 +215,25 @@ struct ActivityDetailView: View {
                         DonutChartView(chartData: chartData,
                                        totalName: "Total Load",
                                        totalValue: String(format: "%.1f", totalTrainingLoad(activityRecord)))
+                        
+                        VStack {
+
+                            Spacer()
+                            
+                            if (activityRecord.intensityFactor != nil) && (activityRecord.normalisedPower != nil) {
+                                SummaryMetricView(title: "Intensity Factor",
+                                                  value: intensityFactorFormatter(intensityFactor: activityRecord.intensityFactor),
+                                                  metric2title: "Normalised Power",
+                                                  metric2value: powerFormatter(watts: activityRecord.normalisedPower!))
+                            }
+
+                            
+                            SummaryMetricView(title: "Estimated VO2Max",
+                                              value: VO2MaxFormatter(VO2Max: activityRecord.estimatedVO2Max))
+                                 
+                        }
+                        .foregroundStyle(.foreground)
+
 
                     }
                 }

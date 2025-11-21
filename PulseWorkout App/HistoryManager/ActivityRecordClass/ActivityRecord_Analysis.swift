@@ -265,11 +265,11 @@ extension ActivityRecord {
         
         let HRZone3 = Double(130)
         let HRTHRESHOLD = Double(154)
-        let MAX_10_60_GAP = Double(10)
+        let MAX_10_60_GAP_Proportion = 0.1      // only allow 10% difference between 60-sec rolling average and 10-sec average
         
         if heartRateVal < HRZone3 {return false}
         if heartRateVal > HRTHRESHOLD {return false}
-        if abs(ave60WattsVal - ave10WattsVal) > MAX_10_60_GAP {return false}
+        if abs(ave60WattsVal - ave10WattsVal) > (ave60WattsVal * MAX_10_60_GAP_Proportion) {return false}
         
         return true
         
