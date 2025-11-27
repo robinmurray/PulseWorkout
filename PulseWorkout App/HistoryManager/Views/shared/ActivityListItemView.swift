@@ -29,7 +29,10 @@ struct ActivityListItemView: View {
     #if os(watchOS)
                             .lineLimit(3)
     #endif
+
                         Spacer()
+                        LinkToStravaView(activityRecord: activityRecord)
+                        
                     }
 
                     HStack {

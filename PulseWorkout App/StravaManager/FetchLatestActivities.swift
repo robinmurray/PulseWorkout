@@ -15,7 +15,7 @@ class StravaFetchLatestActivities: StravaOperation {
     var after: Date
     var activityIndex: Int = 0
     var stravaActivityPage: [StravaActivity] = []
-    var thisFetchDate: Int
+    var nextFetchDate: Int
     var completionHandler: () -> Void
     var failureCompletionHandler: () -> Void
     var asyncProgressNotifier: AsyncProgress?
@@ -32,9 +32,9 @@ class StravaFetchLatestActivities: StravaOperation {
         
         self.perPage = perPage
         
-        thisFetchDate = Int(Date().timeIntervalSince1970)
-        let lastFetchDate = UserDefaults.standard.integer(forKey: "stravaFetchDate")
-        
+//        thisFetchDate = Int(Date().timeIntervalSince1970)
+        let lastFetchDate = UserDefaults.standard.integer(forKey: "stravaFetchDate")  - (UserDefaults.standard.integer(forKey: "stravaFetchDateOffset") * 24 * 60 * 60)
+        nextFetchDate = lastFetchDate
 
         
         if let fixedAfter = after {
@@ -84,7 +84,9 @@ class StravaFetchLatestActivities: StravaOperation {
             // has fetched last page!
             logger.info("Multi-page fetch completed")
 
-            UserDefaults.standard.set(thisFetchDate, forKey: "stravaFetchDate")
+            UserDefaults.standard.set(nextFetchDate, forKey: "stravaFetchDate")
+            UserDefaults.standard.set(0, forKey: "stravaFetchDateOffset")
+
             if let notifier = asyncProgressNotifier {
                 notifier.majorIncrement(message: "Fetch complete")
             }
@@ -113,6 +115,8 @@ class StravaFetchLatestActivities: StravaOperation {
             let stravaId = self.stravaActivityPage[activityIndex].id!
             let stravaName = self.stravaActivityPage[activityIndex].name ?? String(stravaId)
             
+            nextFetchDate = max(Int(self.stravaActivityPage[activityIndex].startDate?.timeIntervalSince1970 ?? Double(nextFetchDate)),
+                                nextFetchDate)
             
             self.logger.info("processing stravaID \(stravaId)")
             if let notifier = asyncProgressNotifier {

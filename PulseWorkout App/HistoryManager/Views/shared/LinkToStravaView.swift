@@ -36,9 +36,9 @@ struct LinkToStravaView: View {
                 }
 #endif
 #if os(watchOS)
-                Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                Image("StravaIcon").resizable().frame(width: 20, height: 20)
 #endif
-                Spacer()
+//                Spacer()
             }
         
         } else {

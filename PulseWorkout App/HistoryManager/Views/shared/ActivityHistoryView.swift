@@ -57,8 +57,8 @@ struct ActivityHistoryView: View {
                             }
                                 
                         }
-                        Spacer()
-                        LinkToStravaView(activityRecord: activityRecord)
+//                        Spacer()
+//                        LinkToStravaView(activityRecord: activityRecord)
                     }
 
 

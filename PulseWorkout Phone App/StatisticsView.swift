@@ -66,15 +66,16 @@ struct StatisticsView: View {
 //                Spacer()
                 
                 StatisticsSummaryView(navigationCoordinator: navigationCoordinator)
+                /*
                 Spacer()
                 Button("Migrate...") {
                     print("Perform migration")
                     let migrationManager = MigrationManager()
                     migrationManager.fetchAllRecordsToUpdate()
                 }
-
+*/
                 Spacer()
-
+/*
                 Button("Test Strava Fetch...") {
                     print("Fetch from Strava")
     //                let stravaManager = StravaManager()
@@ -83,16 +84,26 @@ struct StatisticsView: View {
 
                     StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion).execute()
                 }
+                */
+                
+                /*
                 Button("Fetch - force reauth...") {
 
                     StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion,
                                           forceReauth: true).execute()
                 }
+                 */
+                
+                /*
                 Button("Fetch - force refresh...") {
 
                     StravaFetchActivities(completionHandler: StravaFetchActivities.dummyCompletion,
                                           forceRefresh: true).execute()
                 }
+                 
+                 */
+                
+                
                 Button("Test Strava Fetch and save 5 days...") {
                     print("Fetch from Strava and save")
                     
@@ -117,6 +128,7 @@ struct StatisticsView: View {
                     */
                 }
                 
+                /*
                 Spacer()
                 SwipeButton(swipeText: "Swipe to go Home",
                             perform : {navigationCoordinator.goToTab(tab: .home)},
@@ -130,6 +142,7 @@ struct StatisticsView: View {
                 }
                 .buttonStyle(.bordered)
                 Spacer()
+                */
             }
             .navigationDestination(for: MyViews.self) { pathValue in
 
@@ -138,7 +151,9 @@ struct StatisticsView: View {
                     DestinationView(navigationCoordinator: navigationCoordinator, type: "Hello World")
                 }
             }
+ 
         }
+ 
         
 
     }

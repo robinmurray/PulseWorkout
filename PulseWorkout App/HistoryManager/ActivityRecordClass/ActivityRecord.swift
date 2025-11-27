@@ -433,13 +433,18 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         JSONFileName = fromActivityRecord.JSONFileName
         autoPause = fromActivityRecord.autoPause
         
-        mapSnapshotURL = fromActivityRecord.mapSnapshotURL
-        mapSnapshotImage = fromActivityRecord.mapSnapshotImage
-        mapSnapshotAsset = fromActivityRecord.mapSnapshotAsset
         
         altitudeImage = fromActivityRecord.altitudeImage
         altitudeImageURL = fromActivityRecord.altitudeImageURL
         altitudeImageAsset = fromActivityRecord.altitudeImageAsset
+        
+        // Set published values - ensure in main async thread
+        DispatchQueue.main.async {
+            self.mapSnapshotURL = fromActivityRecord.mapSnapshotURL
+            self.mapSnapshotImage = fromActivityRecord.mapSnapshotImage
+            self.mapSnapshotAsset = fromActivityRecord.mapSnapshotAsset
+
+        }
         
         // This should take a copy!
         trackPoints = fromActivityRecord.trackPoints
