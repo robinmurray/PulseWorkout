@@ -112,6 +112,10 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var intensityFactor: Double?
     var normalisedPower: Double?
     var estimatedVO2Max: Double?
+    var profileWeightKG: Double?
+    var profileMaxHR: Int?
+    var profileRestHR: Int?
+    var estimatedEPOC: Double?
     
     var thesholdHR: Int?
     var estimatedTSSbyHR: Double?
@@ -234,7 +238,12 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         intensityFactor = try container.decode(Double?.self, forKey: .intensityFactor)
         normalisedPower = try container.decode(Double?.self, forKey: .normalisedPower)
         estimatedVO2Max = try container.decode(Double?.self, forKey: .estimatedVO2Max)
-        
+
+        profileWeightKG = try container.decode(Double?.self, forKey: .profileWeightKG)
+        profileMaxHR = try container.decode(Int?.self, forKey: .profileMaxHR)
+        profileRestHR = try container.decode(Int?.self, forKey: .profileRestHR)
+        estimatedEPOC = try container.decode(Double?.self, forKey: .estimatedEPOC)
+
         movingTimebyPowerZone = try container.decode([Double].self, forKey: .movingTimebyPowerZone)
         thesholdHR = try container.decode(Int?.self, forKey: .thesholdHR)
         estimatedTSSbyHR = try container.decode(Double?.self, forKey: .estimatedTSSbyHR)
@@ -305,6 +314,11 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
          try container.encode(intensityFactor, forKey: .intensityFactor)
          try container.encode(normalisedPower, forKey: .normalisedPower)
          try container.encode(estimatedVO2Max, forKey: .estimatedVO2Max)
+
+         try container.encode(profileWeightKG, forKey: .profileWeightKG)
+         try container.encode(profileMaxHR, forKey: .profileMaxHR)
+         try container.encode(profileRestHR, forKey: .profileRestHR)
+         try container.encode(estimatedEPOC, forKey: .estimatedEPOC)
          
          try container.encode(movingTimebyPowerZone, forKey: .movingTimebyPowerZone)
          try container.encode(thesholdHR, forKey: .thesholdHR)
@@ -407,6 +421,11 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         intensityFactor = fromActivityRecord.intensityFactor
         normalisedPower = fromActivityRecord.normalisedPower
         estimatedVO2Max = fromActivityRecord.estimatedVO2Max
+        
+        profileWeightKG = fromActivityRecord.profileWeightKG
+        profileMaxHR = fromActivityRecord.profileMaxHR
+        profileRestHR = fromActivityRecord.profileRestHR
+        estimatedEPOC = fromActivityRecord.estimatedEPOC
         
         thesholdHR = fromActivityRecord.thesholdHR
         estimatedTSSbyHR = fromActivityRecord.estimatedTSSbyHR
@@ -643,6 +662,7 @@ extension ActivityRecord {
              activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
              stravaSaveStatus, stravaId, trackPointGap, TSS, FTP, powerZoneLimits, TSSbyPowerZone, movingTimebyPowerZone,
              TSSSummable, TSSSummableByPowerZone, intensityFactor, normalisedPower, estimatedVO2Max,
+             profileWeightKG, profileMaxHR, profileRestHR, estimatedEPOC,
              thesholdHR, estimatedTSSbyHR, HRZoneLimits, TSSEstimatebyHRZone, movingTimebyHRZone,
              totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL,
              hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters, averageSegmentSize,

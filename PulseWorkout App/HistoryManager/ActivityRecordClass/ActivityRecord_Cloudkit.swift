@@ -69,7 +69,11 @@ extension ActivityRecord {
         activityRecord["intensityFactor"] = intensityFactor as CKRecordValue?
         activityRecord["normalisedPower"] = normalisedPower as CKRecordValue?
         activityRecord["estimatedVO2Max"] = estimatedVO2Max as CKRecordValue?
-        
+       
+        activityRecord["profileWeightKG"] = profileWeightKG as CKRecordValue?
+        activityRecord["profileMaxHR"] = profileMaxHR as CKRecordValue?
+        activityRecord["profileRestHR"] = profileRestHR as CKRecordValue?
+        activityRecord["estimatedEPOC"] = estimatedEPOC as CKRecordValue?
         
         activityRecord["thesholdHR"] = thesholdHR
         activityRecord["estimatedTSSbyHR"] = estimatedTSSbyHR
@@ -166,6 +170,11 @@ extension ActivityRecord {
         intensityFactor = activityRecord["intensityFactor"] as Double?
         normalisedPower = activityRecord["normalisedPower"] as Double?
         estimatedVO2Max = activityRecord["estimatedVO2Max"] as Double?
+
+        profileWeightKG = activityRecord["profileWeightKG"] as Double?
+        profileMaxHR = activityRecord["profileMaxHR"] as Int?
+        profileRestHR = activityRecord["profileRestHR"] as Int?
+        estimatedEPOC = activityRecord["estimatedEPOC"] as Double?
         
         thesholdHR = activityRecord["thesholdHR"] as Int?
         estimatedTSSbyHR = activityRecord["estimatedTSSbyHR"] as Double?
