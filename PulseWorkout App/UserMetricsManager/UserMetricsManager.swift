@@ -160,7 +160,7 @@ class UserPowerMetrics: UserMetricsManager{
         // Copy values to CKRecord
         record["metricsStartDate"] = metricsStartDate as CKRecordValue
         record["currentFTP"] = currentFTP as CKRecordValue
-        record["powerZoneLimits"] = powerZoneLimits as CKRecordValue
+        record["profilePowerZoneLimits"] = powerZoneLimits as CKRecordValue
         return record
     }
     

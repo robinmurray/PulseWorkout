@@ -59,8 +59,8 @@ extension ActivityRecord {
         activityRecord["trackPointGap"] = trackPointGap as CKRecordValue
 
         activityRecord["TSS"] = TSS as CKRecordValue?
-        activityRecord["FTP"] = FTP as CKRecordValue?
-        activityRecord["powerZoneLimits"] = powerZoneLimits as CKRecordValue
+        activityRecord["profileFTP"] = profileFTP as CKRecordValue?
+        activityRecord["profilePowerZoneLimits"] = profilePowerZoneLimits as CKRecordValue
         activityRecord["TSSbyPowerZone"] = TSSbyPowerZone as CKRecordValue
         activityRecord["movingTimebyPowerZone"] = movingTimebyPowerZone as CKRecordValue
     
@@ -75,9 +75,9 @@ extension ActivityRecord {
         activityRecord["profileRestHR"] = profileRestHR as CKRecordValue?
         activityRecord["estimatedEPOC"] = estimatedEPOC as CKRecordValue?
         
-        activityRecord["thesholdHR"] = thesholdHR
+        activityRecord["profileThresholdHR"] = profileThresholdHR
         activityRecord["estimatedTSSbyHR"] = estimatedTSSbyHR
-        activityRecord["HRZoneLimits"] = HRZoneLimits
+        activityRecord["profileHRZoneLimits"] = profileHRZoneLimits
         activityRecord["TSSEstimatebyHRZone"] = TSSEstimatebyHRZone
         activityRecord["movingTimebyHRZone"] = movingTimebyHRZone
         
@@ -160,8 +160,8 @@ extension ActivityRecord {
         trackPointGap = activityRecord["trackPointGap"] ?? ACTIVITY_RECORDING_INTERVAL as Int
         
         TSS = activityRecord["TSS"] as Double?
-        FTP = activityRecord["FTP"] as Int?
-        powerZoneLimits = (activityRecord["powerZoneLimits"] ?? []) as [Int]
+        profileFTP = activityRecord["profileFTP"] as Int?
+        profilePowerZoneLimits = (activityRecord["profilePowerZoneLimits"] ?? []) as [Int]
         TSSbyPowerZone = (activityRecord["TSSbyPowerZone"] ?? []) as [Double]
         movingTimebyPowerZone = (activityRecord["movingTimebyPowerZone"] ?? []) as [Double]
  
@@ -176,9 +176,9 @@ extension ActivityRecord {
         profileRestHR = activityRecord["profileRestHR"] as Int?
         estimatedEPOC = activityRecord["estimatedEPOC"] as Double?
         
-        thesholdHR = activityRecord["thesholdHR"] as Int?
+        profileThresholdHR = activityRecord["profileThresholdHR"] as Int?
         estimatedTSSbyHR = activityRecord["estimatedTSSbyHR"] as Double?
-        HRZoneLimits = (activityRecord["HRZoneLimits"] ?? []) as [Int]
+        profileHRZoneLimits = (activityRecord["profileHRZoneLimits"] ?? []) as [Int]
         TSSEstimatebyHRZone = (activityRecord["TSSEstimatebyHRZone"] ?? []) as [Double]
         movingTimebyHRZone = (activityRecord["movingTimebyHRZone"] ?? []) as [Double]
         

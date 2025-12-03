@@ -103,8 +103,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var trackPointGap: Int = ACTIVITY_RECORDING_INTERVAL
     
     var TSS: Double?
-    var FTP: Int?
-    var powerZoneLimits: [Int] = []
+    var profileFTP: Int?
+    var profilePowerZoneLimits: [Int] = []
     var TSSbyPowerZone: [Double] = []
     var movingTimebyPowerZone: [Double] = []
     var TSSSummable: Double?
@@ -117,9 +117,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var profileRestHR: Int?
     var estimatedEPOC: Double?
     
-    var thesholdHR: Int?
+    var profileThresholdHR: Int?
     var estimatedTSSbyHR: Double?
-    var HRZoneLimits: [Int] = []
+    var profileHRZoneLimits: [Int] = []
     var TSSEstimatebyHRZone: [Double] = []
     var movingTimebyHRZone: [Double] = []
     
@@ -229,8 +229,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         stravaId = try container.decode(Int?.self, forKey: .stravaId)
         trackPointGap = try container.decode(Int.self, forKey: .trackPointGap)
         TSS = try container.decode(Double?.self, forKey: .TSS)
-        FTP = try container.decode(Int?.self, forKey: .FTP)
-        powerZoneLimits = try container.decode([Int].self, forKey: .powerZoneLimits)
+        profileFTP = try container.decode(Int?.self, forKey: .profileFTP)
+        profilePowerZoneLimits = try container.decode([Int].self, forKey: .profilePowerZoneLimits)
         TSSbyPowerZone = try container.decode([Double].self, forKey: .TSSbyPowerZone)
         
         TSSSummable = try container.decode(Double?.self, forKey: .TSSSummable)
@@ -245,9 +245,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         estimatedEPOC = try container.decode(Double?.self, forKey: .estimatedEPOC)
 
         movingTimebyPowerZone = try container.decode([Double].self, forKey: .movingTimebyPowerZone)
-        thesholdHR = try container.decode(Int?.self, forKey: .thesholdHR)
+        profileThresholdHR = try container.decode(Int?.self, forKey: .profileThresholdHR)
         estimatedTSSbyHR = try container.decode(Double?.self, forKey: .estimatedTSSbyHR)
-        HRZoneLimits = try container.decode([Int].self, forKey: .HRZoneLimits)
+        profileHRZoneLimits = try container.decode([Int].self, forKey: .profileHRZoneLimits)
         TSSEstimatebyHRZone = try container.decode([Double].self, forKey: .TSSEstimatebyHRZone)
         movingTimebyHRZone = try container.decode([Double].self, forKey: .movingTimebyHRZone)
         totalAscent = try container.decode(Double?.self, forKey: .totalAscent)
@@ -305,8 +305,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
          try container.encode(stravaId, forKey: .stravaId)
          try container.encode(trackPointGap, forKey: .trackPointGap)
          try container.encode(TSS, forKey: .TSS)
-         try container.encode(FTP, forKey: .FTP)
-         try container.encode(powerZoneLimits, forKey: .powerZoneLimits)
+         try container.encode(profileFTP, forKey: .profileFTP)
+         try container.encode(profilePowerZoneLimits, forKey: .profilePowerZoneLimits)
          try container.encode(TSSbyPowerZone, forKey: .TSSbyPowerZone)
          
          try container.encode(TSSSummable, forKey: .TSSSummable)
@@ -321,9 +321,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
          try container.encode(estimatedEPOC, forKey: .estimatedEPOC)
          
          try container.encode(movingTimebyPowerZone, forKey: .movingTimebyPowerZone)
-         try container.encode(thesholdHR, forKey: .thesholdHR)
+         try container.encode(profileThresholdHR, forKey: .profileThresholdHR)
          try container.encode(estimatedTSSbyHR, forKey: .estimatedTSSbyHR)
-         try container.encode(HRZoneLimits, forKey: .HRZoneLimits)
+         try container.encode(profileHRZoneLimits, forKey: .profileHRZoneLimits)
          try container.encode(TSSEstimatebyHRZone, forKey: .TSSEstimatebyHRZone)
          try container.encode(movingTimebyHRZone, forKey: .movingTimebyHRZone)
          try container.encode(totalAscent, forKey: .totalAscent)
@@ -411,8 +411,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         trackPointGap = fromActivityRecord.trackPointGap
         
         TSS = fromActivityRecord.TSS
-        FTP = fromActivityRecord.FTP
-        powerZoneLimits = fromActivityRecord.powerZoneLimits
+        profileFTP = fromActivityRecord.profileFTP
+        profilePowerZoneLimits = fromActivityRecord.profilePowerZoneLimits
         TSSbyPowerZone = fromActivityRecord.TSSbyPowerZone
         movingTimebyPowerZone = fromActivityRecord.movingTimebyPowerZone
 
@@ -427,9 +427,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         profileRestHR = fromActivityRecord.profileRestHR
         estimatedEPOC = fromActivityRecord.estimatedEPOC
         
-        thesholdHR = fromActivityRecord.thesholdHR
+        profileThresholdHR = fromActivityRecord.profileThresholdHR
         estimatedTSSbyHR = fromActivityRecord.estimatedTSSbyHR
-        HRZoneLimits = fromActivityRecord.HRZoneLimits
+        profileHRZoneLimits = fromActivityRecord.profileHRZoneLimits
         TSSEstimatebyHRZone = fromActivityRecord.TSSEstimatebyHRZone
         movingTimebyHRZone = fromActivityRecord.movingTimebyHRZone
         
@@ -493,8 +493,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         autoPause = activityProfile.autoPause
         
         // Get current FTP settings
-        FTP = settingsManager.userPowerMetrics.currentFTP
-        powerZoneLimits = settingsManager.userPowerMetrics.powerZoneLimits
+        profileFTP = settingsManager.userPowerMetrics.currentFTP
+        profilePowerZoneLimits = settingsManager.userPowerMetrics.powerZoneLimits
         
         // Set status to automatically save to strava depending onc configuration options
         stravaSaveStatus = activityProfile.autoSaveToStrava() ? StravaSaveStatus.toSave.rawValue : StravaSaveStatus.notSaved.rawValue
@@ -660,10 +660,10 @@ extension ActivityRecord {
              elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
              averageHeartRate, averageCadence, averagePower, averageSpeed, maxHeartRate, maxCadence, maxPower, maxSpeed,
              activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
-             stravaSaveStatus, stravaId, trackPointGap, TSS, FTP, powerZoneLimits, TSSbyPowerZone, movingTimebyPowerZone,
+             stravaSaveStatus, stravaId, trackPointGap, TSS, movingTimebyPowerZone, TSSbyPowerZone,
              TSSSummable, TSSSummableByPowerZone, intensityFactor, normalisedPower, estimatedVO2Max,
-             profileWeightKG, profileMaxHR, profileRestHR, estimatedEPOC,
-             thesholdHR, estimatedTSSbyHR, HRZoneLimits, TSSEstimatebyHRZone, movingTimebyHRZone,
+             profileWeightKG, profileMaxHR, profileRestHR, profileFTP, profilePowerZoneLimits, profileThresholdHR, profileHRZoneLimits,
+             estimatedEPOC, estimatedTSSbyHR, TSSEstimatebyHRZone, movingTimebyHRZone,
              totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL,
              hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters, averageSegmentSize,
              HRSegmentAverages, powerSegmentAverages, cadenceSegmentAverages

@@ -13,7 +13,7 @@ extension ActivityRecord {
     /// Return incremental Summable TSS score for a wattage - taking into account FTP and trackPointGap
     func incrementalTSSSummable(watts: Int?, seconds: Int) -> Double {
 
-        guard let currentFTP = FTP else {return 0}
+        guard let currentFTP = profileFTP else {return 0}
 
         return (100 * pow(((Double(watts ?? 0)) / Double(currentFTP)), 2) * (Double(seconds) / (60 * 60) ))
 
@@ -37,7 +37,7 @@ extension ActivityRecord {
     /// Return total  TSS for the entire activity
     func getTotalTSS() -> Double? {
 
-        guard let nonZeroFTP = FTP else { return 0 }
+        guard let nonZeroFTP = profileFTP else { return 0 }
         
         // First remove trackpoints that are stationary
         let movingTrackPoints = trackPoints.filter( {$0.speed ?? 0 > 0} )
@@ -91,19 +91,19 @@ extension ActivityRecord {
         var calcTSSbyHRZone: [Double] = []
         var TSSSeries: [Double]
 
-        guard let currentThesholdHR = thesholdHR,
-              let currentFTP = FTP else {return []}
+        guard let currentThesholdHR = profileThresholdHR,
+              let currentFTP = profileFTP else {return []}
 
-        for (index, lowerLimit) in HRZoneLimits.enumerated() {
-            let power = powerZoneLimits[index+1]
-            if index > HRZoneLimits.count - 2 {
+        for (index, lowerLimit) in profileHRZoneLimits.enumerated() {
+            let power = profilePowerZoneLimits[index+1]
+            if index > profileHRZoneLimits.count - 2 {
 
                 let x = trackPoints.filter({($0.heartRate ?? 0) >= Double(lowerLimit)})
                 TSSSeries =
                 x.map({ _ in incrementalTSSSummable(watts: power, seconds: trackPointGap) })
 
             } else {
-                TSSSeries = trackPoints.filter({(($0.heartRate ?? 0) >= Double(lowerLimit)) && (($0.heartRate ?? 0) < Double(HRZoneLimits[index+1]))})
+                TSSSeries = trackPoints.filter({(($0.heartRate ?? 0) >= Double(lowerLimit)) && (($0.heartRate ?? 0) < Double(profileHRZoneLimits[index+1]))})
                     .map({ _ in incrementalTSSSummable(watts: power, seconds: trackPointGap) })
             }
 
@@ -119,19 +119,19 @@ extension ActivityRecord {
 
     func getTSSSummableByPowerZone() -> [Double] {
 
-        guard let currentFTP = FTP else {return []}
+        guard let currentFTP = profileFTP else {return []}
 
         var calcTSSbyPowerZone: [Double] = []
         var TSSSeries: [Double]
 
-        for (index, lowerLimit) in powerZoneLimits.enumerated() {
+        for (index, lowerLimit) in profilePowerZoneLimits.enumerated() {
 
-            if index > powerZoneLimits.count - 2 {
+            if index > profilePowerZoneLimits.count - 2 {
                 TSSSeries = trackPoints.filter({($0.watts ?? 0) >= lowerLimit})
                     .map({ incrementalTSSSummable(watts: $0.watts, seconds: trackPointGap) })
 
             } else {
-                TSSSeries = trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < powerZoneLimits[index+1])})
+                TSSSeries = trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < profilePowerZoneLimits[index+1])})
                     .map({ incrementalTSSSummable(watts: $0.watts, seconds: trackPointGap) })
             }
             let thisTSS = TSSSeries.reduce(0, +)
@@ -145,19 +145,19 @@ extension ActivityRecord {
 
     func getMovingTimeByPowerZone() -> [Double] {
 
-        guard let currentFTP = FTP else {return []}
+        guard let currentFTP = profileFTP else {return []}
 
         var calcMovingTimebyPowerZone: [Double] = []
         var thisTime: Double
 
-        for (index, lowerLimit) in powerZoneLimits.enumerated() {
+        for (index, lowerLimit) in profilePowerZoneLimits.enumerated() {
 
             if hasPowerData {
-                if index > powerZoneLimits.count - 2 {
+                if index > profilePowerZoneLimits.count - 2 {
                     thisTime = Double(trackPoints.filter({($0.watts ?? 0) >= lowerLimit}).count * trackPointGap)
 
                 } else {
-                    thisTime = Double(trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < powerZoneLimits[index+1])}).count * trackPointGap)
+                    thisTime = Double(trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < profilePowerZoneLimits[index+1])}).count * trackPointGap)
 
                 }
             }
@@ -182,18 +182,18 @@ extension ActivityRecord {
         var calcMovingTimebyHRZone: [Double] = []
         var thisTime: Double
 
-        guard let currentThesholdHR = thesholdHR else {return []}
+        guard let currentThesholdHR = profileThresholdHR else {return []}
 
         let movingPoints = trackPoints.filter({($0.speed ?? 0) > 0 })
 
-        for (index, lowerLimit) in HRZoneLimits.enumerated() {
+        for (index, lowerLimit) in profileHRZoneLimits.enumerated() {
 
-            if index > HRZoneLimits.count - 2 {
+            if index > profileHRZoneLimits.count - 2 {
 
                 thisTime = Double(movingPoints.filter({($0.heartRate ?? 0) >= Double(lowerLimit)}).count * trackPointGap)
 
             } else {
-                thisTime = Double(movingPoints.filter({(($0.heartRate ?? 0) >= Double(lowerLimit)) && (($0.heartRate ?? 0) < Double(HRZoneLimits[index+1]))})
+                thisTime = Double(movingPoints.filter({(($0.heartRate ?? 0) >= Double(lowerLimit)) && (($0.heartRate ?? 0) < Double(profileHRZoneLimits[index+1]))})
                     .count * trackPointGap)
             }
 
@@ -388,16 +388,18 @@ extension ActivityRecord {
     
     func addActivityAnalysis() {
 
-        FTP = settingsManager.userPowerMetrics.currentFTP
-        powerZoneLimits = settingsManager.userPowerMetrics.powerZoneLimits
-        
-        thesholdHR = 154
+        profileFTP = settingsManager.userPowerMetrics.currentFTP
+        profilePowerZoneLimits = settingsManager.userPowerMetrics.powerZoneLimits
+        profileThresholdHR = 154
+        profileMaxHR = 164
+        profileRestHR = 52
+        profileWeightKG = 69
         
 //        let HRZoneRatios = [0, 0.68, 0.83, 0.94, 1.05]
         let HRZoneRatios = [0, 0.68, 0.83, 0.93, 1.00]
 
-        if let currentThesholdHR = thesholdHR {
-            HRZoneLimits = HRZoneRatios.map({ Int(round($0 * Double(currentThesholdHR))) })
+        if let currentThesholdHR = profileThresholdHR {
+            profileHRZoneLimits = HRZoneRatios.map({ Int(round($0 * Double(currentThesholdHR))) })
         }
 
         TSSSummable = getTotalTSSSummable()

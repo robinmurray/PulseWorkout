@@ -50,10 +50,10 @@ class CKActivityQueryOperation: CloudKitOperation {
                                  "maxHeartRate", "maxCadence", "maxPower", "maxSpeed",
                                  "activeEnergy", "timeOverHiAlarm", "timeUnderLoAlarm", "hiHRLimit", "loHRLimit",
                                  "mapSnapshot", "stravaId", "stravaSaveStatus", "trackPointGap",
-                                 "TSS", "FTP", "powerZoneLimits", "TSSbyPowerZone", "movingTimebyPowerZone",
+                                 "TSS", "profileFTP", "profilePowerZoneLimits", "TSSbyPowerZone", "movingTimebyPowerZone",
                                  "TSSSummable", "TSSSummableByPowerZone", "intensityFactor", "normalisedPower", "estimatedVO2Max",
                                  "profileWeightKG", "profileMaxHR", "profileRestHR", "estimatedEPOC",
-                                 "thesholdHR", "estimatedTSSbyHR", "HRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone",
+                                 "profileThresholdHR", "estimatedTSSbyHR", "profileHRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone",
                                  "hasLocationData", "hasHRData", "hasPowerData", "loAltitudeMeters", "hiAltitudeMeters",
                                  "averageSegmentSize", "HRSegmentAverages", "powerSegmentAverages", "cadenceSegmentAverages",
                                  "altitudeImage", "tcx", "workoutTypeId"]
