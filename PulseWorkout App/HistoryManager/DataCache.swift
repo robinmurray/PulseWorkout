@@ -195,32 +195,42 @@ class DataCache: NSObject, Codable, ObservableObject {
     /// Before saving get a new copy of statistics from CK and play any changes in to it from dirty cache
     func flushCache(qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
-        if dirty() {
+        // Only allow one flush operation to be in process.
+        // If a second is called, it will not do anything, but the first
+        // should notice the cache is dirty on completion so will flush again...
+        if (dirty() && !flushingCache) {
 
             self.localLogger.info("Refreshing statistics")
             statisticsManager.refresh(onRefreshCompletionFunc: {
-                
-                // Add changes back into refreshed statistics
-                for activityRecord in self.toBeSaved() {
-                    self.statisticsManager.addActivityToStats(activity: activityRecord)
-                }
-                for activityRecord in self.toBeDeleted() {
-                    self.statisticsManager.removeActivityFromStats(activity: activityRecord)
-                }
-                
-                self.localLogger.info("Flushing cache with records \(self.toBeSavedCKRecords())")
-                
-                
+
                 if !self.flushingCache {
                     self.flushingCache = true
-                    CKBlockSaveAndDeleteOperation(recordsToSave: self.toBeSavedCKRecords() + self.statisticsManager.allCKRecords(),
-                                                  recordIDsToDelete: self.toBeDeletedIDs(),
-                                                  recordSaveSuccessCompletionFunction: self.recordSaveCompletion,
-                                                  recordDeleteSuccessCompletionFunction: self.removeFromCache,
-                                                  blockSuccessCompletion: {self.flushingCache = false
-                        _ = self.write() },
-                                                  blockFailureCompletion: {self.flushingCache = false},
-                                                  qualityOfService: qualityOfService).execute()
+
+                    // Add changes back into refreshed statistics
+                    for activityRecord in self.toBeSaved() {
+                        self.statisticsManager.addActivityToStats(activity: activityRecord)
+                    }
+                    for activityRecord in self.toBeDeleted() {
+                        self.statisticsManager.removeActivityFromStats(activity: activityRecord)
+                    }
+                    
+                    self.localLogger.info("Flushing cache with records \(self.toBeSavedCKRecords())")
+                
+                    CKBlockSaveAndDeleteOperation(
+                        recordsToSave: self.toBeSavedCKRecords() + self.statisticsManager.allCKRecords(),
+                        recordIDsToDelete: self.toBeDeletedIDs(),
+                        recordSaveSuccessCompletionFunction: self.recordSaveCompletion,
+                        recordDeleteSuccessCompletionFunction: self.removeFromCache,
+                        blockSuccessCompletion: {
+                            self.flushingCache = false
+                            _ = self.write()
+                            // If new changes whilst flush then flush again!
+                            if self.dirty() {
+                                self.flushCache(qualityOfService: qualityOfService)
+                            }
+                        },
+                        blockFailureCompletion: {self.flushingCache = false},
+                        qualityOfService: qualityOfService).execute()
                 }
             })
         }
