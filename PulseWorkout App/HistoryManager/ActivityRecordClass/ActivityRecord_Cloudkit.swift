@@ -56,6 +56,7 @@ extension ActivityRecord {
         }
         activityRecord["stravaSaveStatus"] = stravaSaveStatus as CKRecordValue
         activityRecord["stravaId"] = stravaId as CKRecordValue?
+        activityRecord["stravaUploadId"] = stravaUploadId as CKRecordValue?
         activityRecord["trackPointGap"] = trackPointGap as CKRecordValue
 
         activityRecord["TSS"] = TSS as CKRecordValue?
@@ -115,6 +116,7 @@ extension ActivityRecord {
         activityRecord["activityDescription"] = activityDescription as CKRecordValue
         activityRecord["totalAscent"] = round(totalAscent ?? 0) as CKRecordValue
         activityRecord["stravaId"] = stravaId as CKRecordValue?
+        activityRecord["stravaUploadId"] = stravaUploadId as CKRecordValue?
 
         return activityRecord
 
@@ -157,6 +159,8 @@ extension ActivityRecord {
 
         stravaSaveStatus = (activityRecord["stravaSaveStatus"] ?? StravaSaveStatus.notSaved.rawValue) as Int
         stravaId = activityRecord["stravaId"] as Int?
+        stravaUploadId = activityRecord["stravaUploadId"] as Int?
+        
         trackPointGap = activityRecord["trackPointGap"] ?? ACTIVITY_RECORDING_INTERVAL as Int
         
         TSS = activityRecord["TSS"] as Double?

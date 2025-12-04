@@ -18,8 +18,10 @@ import StravaSwift
 enum StravaSaveStatus: Int {
     case notSaved = 0       // This record not to be saved to strava - offer optional save
     case toSave = 1         // This record should be saved to strava, but has not been saved yet
-    case saved = 2          // This record has been saved to Strava
-    case saving = 3         // This record is currently being saved
+    case saved = 2          // This record has been uploaded, StravaId has been obtained, record has been updated - completely saved to Strava
+    case saving = 3         // This record save process has started, but not yet uploaded...
+    case uploaded = 4       // activity has been uploaded to Strava. Got uploadId, but not StravaId
+    case gotStravaId = 5    // has been uploaded and stravaId has been retrieved. Not yet updated record
 }
 
 // Calculated averages
@@ -78,8 +80,17 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var timeUnderLoAlarm: Double = 0
     var hiHRLimit: Int?
     var loHRLimit: Int?
+    
+    /// Status of saving record to strava - see StravaSaveStatus enum
     @Published var stravaSaveStatus: Int = StravaSaveStatus.notSaved.rawValue
-    @Published var stravaId: Int?          // id of this record in Strava
+    
+    /// id of this record in Strava
+    @Published var stravaId: Int?
+    
+    /// The upload record id for loading to Strava - the upload record is used to pass pack the StravaId
+    var stravaUploadId: Int?
+    
+    
     var tcxFileName: String?    // Temporary cache file for tcx file
     var JSONFileName: String?   // Temporary cache file for JSON serialisation of activity record
     
@@ -227,6 +238,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         loHRLimit = try container.decode(Int?.self, forKey: .loHRLimit)
         stravaSaveStatus = try container.decode(Int.self, forKey: .stravaSaveStatus)
         stravaId = try container.decode(Int?.self, forKey: .stravaId)
+        stravaUploadId = try container.decode(Int?.self, forKey: .stravaUploadId)
         trackPointGap = try container.decode(Int.self, forKey: .trackPointGap)
         TSS = try container.decode(Double?.self, forKey: .TSS)
         profileFTP = try container.decode(Int?.self, forKey: .profileFTP)
@@ -303,6 +315,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
          try container.encode(loHRLimit, forKey: .loHRLimit)
          try container.encode(stravaSaveStatus, forKey: .stravaSaveStatus)
          try container.encode(stravaId, forKey: .stravaId)
+         try container.encode(stravaUploadId, forKey: .stravaUploadId)
          try container.encode(trackPointGap, forKey: .trackPointGap)
          try container.encode(TSS, forKey: .TSS)
          try container.encode(profileFTP, forKey: .profileFTP)
@@ -408,6 +421,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
 
         stravaSaveStatus = fromActivityRecord.stravaSaveStatus
         stravaId = fromActivityRecord.stravaId
+        stravaUploadId = fromActivityRecord.stravaUploadId
+        
         trackPointGap = fromActivityRecord.trackPointGap
         
         TSS = fromActivityRecord.TSS
@@ -660,7 +675,7 @@ extension ActivityRecord {
              elapsedTime, pausedTime, movingTime, activityDescription, distanceMeters,
              averageHeartRate, averageCadence, averagePower, averageSpeed, maxHeartRate, maxCadence, maxPower, maxSpeed,
              activeEnergy, timeOverHiAlarm, timeUnderLoAlarm, hiHRLimit, loHRLimit,
-             stravaSaveStatus, stravaId, trackPointGap, TSS, movingTimebyPowerZone, TSSbyPowerZone,
+             stravaSaveStatus, stravaId, stravaUploadId, trackPointGap, TSS, movingTimebyPowerZone, TSSbyPowerZone,
              TSSSummable, TSSSummableByPowerZone, intensityFactor, normalisedPower, estimatedVO2Max,
              profileWeightKG, profileMaxHR, profileRestHR, profileFTP, profilePowerZoneLimits, profileThresholdHR, profileHRZoneLimits,
              estimatedEPOC, estimatedTSSbyHR, TSSEstimatebyHRZone, movingTimebyHRZone,

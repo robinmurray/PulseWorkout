@@ -575,6 +575,19 @@ struct ActivityDetailView: View {
                         ProgressView()
                     }
 
+                case StravaSaveStatus.uploaded.rawValue:
+                    HStack {
+                        Text("Saving... Uploaded...")
+                            .foregroundStyle(Color("StravaColor"))
+                        ProgressView()
+                    }
+
+                case StravaSaveStatus.gotStravaId.rawValue:
+                    HStack {
+                        Text("Saving... Updating...")
+                            .foregroundStyle(Color("StravaColor"))
+                        ProgressView()
+                    }
                     
                 default:
                     Text("")
