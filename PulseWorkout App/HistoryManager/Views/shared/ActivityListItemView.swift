@@ -10,8 +10,6 @@ import SwiftUI
 struct ActivityListItemView: View {
     
     @ObservedObject var activityRecord: ActivityRecord
-    var dataCache: DataCache
-    
     
     var body: some View {
         VStack {
@@ -65,12 +63,10 @@ struct ActivityListItemView: View {
 
 struct ActivityListItemView_Previews: PreviewProvider {
     
-    static var dataCache = DataCache()
     static var activityRecord = ActivityRecord()
     
     static var previews: some View {
-        ActivityListItemView(activityRecord: activityRecord,
-                             dataCache: dataCache)
+        ActivityListItemView(activityRecord: activityRecord)
     }
 }
 

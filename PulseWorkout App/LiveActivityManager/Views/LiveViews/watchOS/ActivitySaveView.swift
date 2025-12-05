@@ -14,7 +14,6 @@ struct ActivitySaveView: View {
    
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var dataCache: DataCache
     
     enum NavigationTarget {
         case ActivityDetailView
@@ -52,8 +51,7 @@ struct ActivitySaveView: View {
                 ActivityDetailView(
                     navigationCoordinator: navigationCoordinator,
                     activityRecord: liveActivityManager.liveActivityRecord ??
-                                                ActivityRecord(),
-                    dataCache: dataCache)
+                                                ActivityRecord())
             }
 
         }
@@ -67,17 +65,14 @@ struct ActivitySaveView_Previews: PreviewProvider {
     static var settingsManager = SettingsManager.shared
     static var record = ActivityRecord()
     static var locationManager = LocationManager()
-    static var dataCache = DataCache()
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
     
     static var liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                         bluetoothManager: bluetoothManager,
-                                                         dataCache: dataCache)
+                                                         bluetoothManager: bluetoothManager)
     
 
     static var previews: some View {
         ActivitySaveView(navigationCoordinator: navigationCoordinator,
-                         liveActivityManager: liveActivityManager,
-                         dataCache: dataCache)
+                         liveActivityManager: liveActivityManager)
     }
 }

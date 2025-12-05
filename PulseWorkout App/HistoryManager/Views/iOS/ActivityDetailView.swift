@@ -14,7 +14,6 @@ struct ActivityDetailView: View {
     
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var activityRecord: ActivityRecord
-    @ObservedObject var dataCache: DataCache
     
     struct TrainingLoadByRange : Identifiable {
         let id = UUID()
@@ -159,7 +158,7 @@ struct ActivityDetailView: View {
                     LinkToStravaView(activityRecord: activityRecord)
                 
                     VStack {
-                        ShareLink(item: ActivityRecordCSVFile(activityRecordID: activityRecord.recordID, dataCache: dataCache),
+                        ShareLink(item: ActivityRecordCSVFile(activityRecordID: activityRecord.recordID),
                                   subject: Text(activityRecord.name),
                                   preview: SharePreview("Share Activity Data"))
                         {
@@ -597,14 +596,12 @@ struct ActivityDetailView: View {
         }
         .onAppear( perform: {
 
-            ActivityRecordSnapshotImage(activityRecord: activityRecord,
-                                        dataCache: dataCache)
+            ActivityRecordSnapshotImage(activityRecord: activityRecord)
             .get(image: &activityRecord.mapSnapshotImage,
                  url: &activityRecord.mapSnapshotURL,
                  asset: activityRecord.mapSnapshotAsset)
             
-            ActivityRecordAltitudeImage(activityRecord: activityRecord,
-                                        dataCache: dataCache)
+            ActivityRecordAltitudeImage(activityRecord: activityRecord)
             .get(image: &activityRecord.altitudeImage,
                  url: &activityRecord.altitudeImageURL,
                  asset: activityRecord.altitudeImageAsset)
@@ -613,7 +610,7 @@ struct ActivityDetailView: View {
         .refreshable {
             if activityRecord.stravaId != nil {
                 if SettingsManager.shared.fetchFromStrava() {
-                    activityRecord.fetchUpdateFromStrava(dataCache: dataCache)
+                    activityRecord.fetchUpdateFromStrava()
                 }
                 
             }
@@ -623,28 +620,23 @@ struct ActivityDetailView: View {
 
             if pathValue == .MapRouteView {
 
-                MapRouteView(activityRecord: activityRecord,
-                             dataCache: dataCache)
+                MapRouteView(activityRecord: activityRecord)
             }
             if pathValue == .ChartViewAscent {
                 
                 ChartView(activityRecord: activityRecord,
-                          dataCache: dataCache,
                           chartId: "Ascent")
             }
             else if pathValue == .ChartViewHR {
                 ChartView(activityRecord: activityRecord,
-                          dataCache: dataCache,
                           chartId: "Heart Rate")
             }
             else if pathValue == .ChartViewPower {
                 ChartView(activityRecord: activityRecord,
-                          dataCache: dataCache,
                           chartId: "Power")
             }
             else if pathValue == .ChartViewCadence {
                 ChartView(activityRecord: activityRecord,
-                          dataCache: dataCache,
                           chartId: "Cadence")
             }
             
@@ -661,13 +653,11 @@ struct ActivityDetailView_Previews: PreviewProvider {
     
     static var navigationCoordinator = NavigationCoordinator()
     static var record = ActivityRecord()
-    static var dataCache = DataCache()
     
     static var previews: some View {
         if #available(watchOS 10.0, *) {
             ActivityDetailView(navigationCoordinator: navigationCoordinator,
-                               activityRecord: record,
-                               dataCache: dataCache)
+                               activityRecord: record)
         } else {
             // Fallback on earlier versions
         }

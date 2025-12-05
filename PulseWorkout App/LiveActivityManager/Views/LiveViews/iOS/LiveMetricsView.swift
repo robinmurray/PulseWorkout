@@ -23,7 +23,6 @@ struct LiveMetricsView: View {
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @Binding var profile: ActivityProfile
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var dataCache: DataCache
     var activityData: ActivityRecord
     
     @State var viewState = CGSize(width: 0, height: 50)
@@ -34,12 +33,10 @@ struct LiveMetricsView: View {
     
     init(navigationCoordinator: NavigationCoordinator,
          profile: Binding<ActivityProfile>,
-         liveActivityManager: LiveActivityManager,
-         dataCache: DataCache) {
+         liveActivityManager: LiveActivityManager) {
         self.navigationCoordinator = navigationCoordinator
         self._profile = profile
         self.liveActivityManager = liveActivityManager
-        self.dataCache = dataCache
         self.activityData = liveActivityManager.liveActivityRecord ??
         ActivityRecord()
         
@@ -328,8 +325,7 @@ struct LiveMetricsView: View {
             if pathValue == NavigationTarget.ActivitySaveView {
 
                 ActivitySaveView(navigationCoordinator: navigationCoordinator,
-                                 liveActivityManager: liveActivityManager,
-                                 dataCache: dataCache)
+                                 liveActivityManager: liveActivityManager)
                 
             }
             
@@ -350,17 +346,14 @@ struct LiveMetricsView: View {
 
     let navigationCoordinator = NavigationCoordinator()
     let locationManager = LocationManager()
-    let dataCache = DataCache()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                  bluetoothManager: bluetoothManager,
-                                                  dataCache: dataCache)
+                                                  bluetoothManager: bluetoothManager)
 
     LiveMetricsView(navigationCoordinator: navigationCoordinator,
                     profile: $newProfile,
-                    liveActivityManager: liveActivityManager,
-                    dataCache: dataCache)
+                    liveActivityManager: liveActivityManager)
 }
 
 

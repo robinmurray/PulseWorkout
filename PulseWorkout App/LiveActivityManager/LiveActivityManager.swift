@@ -84,18 +84,15 @@ class LiveActivityManager : NSObject, ObservableObject {
     var locationManager: LocationManager
 
     let settingsManager: SettingsManager = SettingsManager.shared
-    var dataCache: DataCache
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "liveActivityManager")
 
     init(profileName: String = "",
          locationManager: LocationManager,
-         bluetoothManager: BTDevicesController,
-         dataCache: DataCache) {
+         bluetoothManager: BTDevicesController) {
 
         self.locationManager = locationManager
-        self.dataCache = dataCache
         self.bluetoothManager = bluetoothManager
         
         super.init()
@@ -291,7 +288,7 @@ class LiveActivityManager : NSObject, ObservableObject {
     func saveLiveActivityRecord() {
 
         if liveActivityRecord != nil {
-            liveActivityRecord!.save(dataCache: dataCache)
+            liveActivityRecord!.save()
 
         }
     }

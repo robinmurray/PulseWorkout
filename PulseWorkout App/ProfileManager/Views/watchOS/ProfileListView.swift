@@ -13,7 +13,6 @@ struct ProfileListView: View {
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var dataCache: DataCache
     
     enum NavigationTarget {
         case ProfileDetailView
@@ -33,8 +32,7 @@ struct ProfileListView: View {
                     navigationCoordinator: navigationCoordinator,
                     profile:  self.$profileManager.profiles[self.profileManager.profiles.firstIndex(where: { $0.id == profile.id })!],
                     profileManager: profileManager,
-                    liveActivityManager: liveActivityManager,
-                    dataCache: dataCache)
+                    liveActivityManager: liveActivityManager)
 
             }
         }
@@ -74,15 +72,13 @@ struct ProfileListView: View {
                 
                 LiveTabView(navigationCoordinator: navigationCoordinator,
                             profileName: navigationCoordinator.selectedProfile!.name,
-                            liveActivityManager: liveActivityManager,
-                            dataCache: dataCache)
+                            liveActivityManager: liveActivityManager)
             }
             else if pathValue == .TopMenuView {
 
                 TopMenuView( navigationCoordinator: navigationCoordinator,
                              profileManager: profileManager,
-                             liveActivityManager: liveActivityManager,
-                             dataCache: dataCache)
+                             liveActivityManager: liveActivityManager)
             }
             else if pathValue == .NewProfileDetailView {
                 
@@ -90,8 +86,7 @@ struct ProfileListView: View {
             } else if pathValue == .ActivitySaveView {
                 
                 ActivitySaveView(navigationCoordinator: navigationCoordinator,
-                                 liveActivityManager: liveActivityManager,
-                                 dataCache: dataCache)
+                                 liveActivityManager: liveActivityManager)
             }
             
         }
@@ -105,15 +100,12 @@ struct ProfileListView: View {
     let navigationCoordinator = NavigationCoordinator()
     let profileManager = ProfileManager()
     let locationManager = LocationManager()
-    let dataCache = DataCache()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                  bluetoothManager: bluetoothManager,
-                                                  dataCache: dataCache)
+                                                  bluetoothManager: bluetoothManager)
 
     
     ProfileListView(navigationCoordinator: navigationCoordinator,
                     profileManager: profileManager,
-                    liveActivityManager: liveActivityManager,
-                    dataCache: dataCache)
+                    liveActivityManager: liveActivityManager)
 }

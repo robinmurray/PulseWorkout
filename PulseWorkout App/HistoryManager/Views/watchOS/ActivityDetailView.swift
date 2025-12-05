@@ -19,9 +19,6 @@ struct GraphButtonView: View {
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @State var buttonColor: Color
     @State var activityRecord: ActivityRecord
-    @ObservedObject var dataCache: DataCache
-    
-
     
     var body: some View {
         
@@ -59,7 +56,7 @@ struct ActivityDetailView: View {
     
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @State var activityRecord: ActivityRecord
-    @ObservedObject var dataCache: DataCache
+    @ObservedObject var dataCache: DataCache = DataCache.shared
     
     @State private var durationFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
@@ -124,8 +121,7 @@ struct ActivityDetailView: View {
             
                 GraphButtonView(navigationCoordinator: navigationCoordinator,
                                 buttonColor: distanceColor,
-                                activityRecord: activityRecord,
-                                dataCache: dataCache)
+                                activityRecord: activityRecord)
 
             }
             
@@ -153,8 +149,7 @@ struct ActivityDetailView: View {
                 
                 GraphButtonView(navigationCoordinator: navigationCoordinator,
                                 buttonColor: timeByHRColor,
-                                activityRecord: activityRecord,
-                                dataCache: dataCache)
+                                activityRecord: activityRecord)
                 
             }
             .containerBackground(timeByHRColor.gradient, for: .tabView)
@@ -178,8 +173,7 @@ struct ActivityDetailView: View {
                 
                 GraphButtonView(navigationCoordinator: navigationCoordinator,
                                 buttonColor: .blue,
-                                activityRecord: activityRecord,
-                                dataCache: dataCache)
+                                activityRecord: activityRecord)
                 
             }
             .navigationTitle("Distance")
@@ -204,8 +198,7 @@ struct ActivityDetailView: View {
                 
                 GraphButtonView(navigationCoordinator: navigationCoordinator,
                                 buttonColor: heartRateColor,
-                                activityRecord: activityRecord,
-                                dataCache: dataCache)
+                                activityRecord: activityRecord)
                 
             }
             .navigationTitle("Heart Rate")
@@ -231,8 +224,7 @@ struct ActivityDetailView: View {
                 
                 GraphButtonView(navigationCoordinator: navigationCoordinator,
                                 buttonColor: powerColor,
-                                activityRecord: activityRecord,
-                                dataCache: dataCache)
+                                activityRecord: activityRecord)
                 
             }
             .navigationTitle("Power")
@@ -249,13 +241,11 @@ struct ActivityDetailView: View {
 
             if pathValue == .MapRouteView {
 
-                MapRouteView(activityRecord: activityRecord,
-                             dataCache: dataCache)
+                MapRouteView(activityRecord: activityRecord)
             }
             else if pathValue == .ChartView {
                 
-                ChartView(activityRecord: activityRecord,
-                          dataCache: dataCache)
+                ChartView(activityRecord: activityRecord)
             }
             
         }
@@ -275,13 +265,11 @@ struct ActivityDetailView_Previews: PreviewProvider {
     
     static var navigationCoordinator = NavigationCoordinator()
     static var record = ActivityRecord()
-    static var dataCache = DataCache()
     
     static var previews: some View {
         if #available(watchOS 10.0, *) {
             ActivityDetailView(navigationCoordinator: navigationCoordinator,
-                               activityRecord: record,
-                               dataCache: dataCache)
+                               activityRecord: record)
         } else {
             // Fallback on earlier versions
         }

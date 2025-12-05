@@ -22,7 +22,7 @@ extension ActivityRecord {
         stravaSaveStatus = StravaSaveStatus.saving.rawValue
         StravaUploadActivity(activityRecord: self,
                              completionHandler: saveStravaId,
-                             failureCompletionHandler: { self.stravaSaveStatus = StravaSaveStatus.notSaved.rawValue }).execute()
+                             failureCompletionHandler: { }).execute()
         
     }
     
@@ -32,6 +32,9 @@ extension ActivityRecord {
         self.logger.info("Record saved to Strava with Id \(newStravaId)")
         // Set strava status and strava Id
         
+        update()
+        
+        /*
         self.stravaId = newStravaId
         self.stravaSaveStatus = StravaSaveStatus.saved.rawValue
    
@@ -48,7 +51,7 @@ extension ActivityRecord {
             CKForceUpdateOperation(ckRecord: activityCKRecord, completionFunction: { _ in }).execute()
 
         }
-        
+        */
     }
     
     func fromStravaActivity(_ stravaActivity: StravaActivity) {
@@ -251,9 +254,7 @@ extension ActivityRecord {
 
     
     /// Fetch the strava record for this activityRecord and update any fields
-    func fetchUpdateFromStrava(dataCache: DataCache) {
-        
-        self.dataCache = dataCache
+    func fetchUpdateFromStrava() {
         
         if let id = stravaId {
             StravaFetchActivity(stravaActivityId: id,

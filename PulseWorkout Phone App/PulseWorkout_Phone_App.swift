@@ -14,7 +14,7 @@ struct PulseWorkout_Phone_App: App {
     @ObservedObject var locationManager: LocationManager
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
-    @ObservedObject var dataCache: DataCache
+    @ObservedObject var dataCache: DataCache = DataCache.shared
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     var cloudKitNotificationManager: CloudKitNotificationManager
@@ -24,26 +24,26 @@ struct PulseWorkout_Phone_App: App {
     
     init() {
 
+//        let myDataCache = DataCache()
         let myCloudKitNotificationManager = CloudKitNotificationManager()
         let myLocationManager = LocationManager()
-        let myDataCache = DataCache()
+//        let myDataCache = DataCache.shared
         let myBluetoothManager = BTDevicesController(requestedServices: nil)
 
         self.cloudKitNotificationManager = myCloudKitNotificationManager
 
         self.liveActivityManager = LiveActivityManager(locationManager: myLocationManager,
-                                                       bluetoothManager: myBluetoothManager,
-                                                       dataCache: myDataCache)
+                                                       bluetoothManager: myBluetoothManager)
         self.profileManager = ProfileManager()
 
         self.locationManager = myLocationManager
-        self.dataCache = myDataCache
+//        self.dataCache = myDataCache
         self.bluetoothManager = myBluetoothManager
         self.navigationCoordinator = NavigationCoordinator()
         
         
         // Register notifications
-        myDataCache.registerNotifications(notificationManager: myCloudKitNotificationManager)
+        DataCache.shared.registerNotifications(notificationManager: myCloudKitNotificationManager)
         self.profileManager.registerNotifications(notificationManager: myCloudKitNotificationManager)
         SettingsManager.shared.registerNotifications(notificationManager: myCloudKitNotificationManager)
         
@@ -56,7 +56,6 @@ struct PulseWorkout_Phone_App: App {
             ContentView(navigationCoordinator: navigationCoordinator,
                         liveActivityManager: liveActivityManager,
                         profileManager: profileManager,
-                        dataCache: dataCache,
                         locationManager: locationManager,
                         bluetoothManager: bluetoothManager)
         }

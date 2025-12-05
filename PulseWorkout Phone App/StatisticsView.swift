@@ -53,7 +53,7 @@ struct StatisticsView: View {
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var dataCache: DataCache
+    @ObservedObject var dataCache: DataCache = DataCache.shared
     
     var body: some View {
         
@@ -166,8 +166,7 @@ struct StatisticsView: View {
     let dataCache = DataCache()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                  bluetoothManager: bluetoothManager,
-                                                  dataCache: dataCache)
+                                                  bluetoothManager: bluetoothManager)
     let profileManager = ProfileManager()
     
     

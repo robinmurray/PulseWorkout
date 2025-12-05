@@ -13,17 +13,15 @@ import CloudKit
 struct MapRouteView: View {
     
     @State var activityRecord: ActivityRecord
-    var dataCache: DataCache
     @ObservedObject var activityChartsController: ActivityChartsController
 
     var route: MapPolyline?
 
     @State private var displayUserAnnotation: Bool = false
     
-    init(activityRecord: ActivityRecord, dataCache: DataCache) {
+    init(activityRecord: ActivityRecord) {
         self.activityRecord = activityRecord
-        self.dataCache = dataCache
-        self.activityChartsController = ActivityChartsController(dataCache: dataCache)
+        self.activityChartsController = ActivityChartsController()
     }
     
     
@@ -71,9 +69,8 @@ struct MapRouteView: View {
 struct MapRouteView_Previews: PreviewProvider {
     
     static var activityRecord = ActivityRecord()
-    static var dataCache = DataCache()
     
     static var previews: some View {
-        MapRouteView(activityRecord: activityRecord, dataCache: dataCache)
+        MapRouteView(activityRecord: activityRecord)
     }
 }

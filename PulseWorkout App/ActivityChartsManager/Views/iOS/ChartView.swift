@@ -10,14 +10,12 @@ import SwiftUI
 struct ChartView: View {
     
     @State var activityRecord: ActivityRecord
-    var dataCache: DataCache
     @ObservedObject var activityChartsController: ActivityChartsController
     var chartId: String
     
-    init(activityRecord: ActivityRecord, dataCache: DataCache, chartId: String) {
+    init(activityRecord: ActivityRecord, chartId: String) {
         self.activityRecord = activityRecord
-        self.dataCache = dataCache
-        self.activityChartsController = ActivityChartsController(dataCache: dataCache)
+        self.activityChartsController = ActivityChartsController()
         self.chartId = chartId
     }
     

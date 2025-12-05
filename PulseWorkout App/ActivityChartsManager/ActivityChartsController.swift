@@ -13,7 +13,7 @@ import SwiftUI
 
 class ActivityChartsController: NSObject, ObservableObject {
     
-    var dataCache: DataCache
+    var dataCache: DataCache = DataCache.shared
     @Published var buildingChartTraces: Bool = false
     @Published var recordFetchFailed: Bool = false
     @Published var chartTraces: [ActivityChartTraceData] = []
@@ -23,10 +23,6 @@ class ActivityChartsController: NSObject, ObservableObject {
     @Published var routeCoordinates: [CLLocationCoordinate2D] = []
     @Published var cameraPos: MapCameraPosition = MapCameraPosition.region( MKCoordinateRegion(center: CLLocationCoordinate2D(latitude: 0, longitude: 0), span: MKCoordinateSpan(latitudeDelta: 0.05, longitudeDelta: 0.05)) )
     
-    init(dataCache: DataCache) {
-        self.dataCache = dataCache
-
-    }
     
     func buildChartTraces(recordID: CKRecord.ID) {
         

@@ -17,7 +17,7 @@ struct PulseWorkout_Watch_App: App {
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var locationManager: LocationManager
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var dataCache: DataCache
+    @ObservedObject var dataCache: DataCache = DataCache.shared
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     
@@ -32,23 +32,22 @@ struct PulseWorkout_Watch_App: App {
     init() {
         let myCloudKitNotificationManager = CloudKitNotificationManager()
         let myLocationManager = LocationManager()
-        let myDataCache = DataCache()
+//        let myDataCache = DataCache()
         let myBluetoothManager = BTDevicesController(requestedServices: nil)
         
         self.cloudKitNotificationManager = myCloudKitNotificationManager
 
         self.liveActivityManager = LiveActivityManager(locationManager: myLocationManager,
-                                                       bluetoothManager: myBluetoothManager,
-                                                       dataCache: myDataCache)
+                                                       bluetoothManager: myBluetoothManager)
         self.locationManager = myLocationManager
         self.profileManager = ProfileManager()
-        self.dataCache = myDataCache
+//        self.dataCache = myDataCache
         self.bluetoothManager = myBluetoothManager
         self.navigationCoordinator = NavigationCoordinator()
         
         
         // Register notifications
-        myDataCache.registerNotifications(notificationManager: myCloudKitNotificationManager)
+        dataCache.registerNotifications(notificationManager: myCloudKitNotificationManager)
         self.profileManager.registerNotifications(notificationManager: myCloudKitNotificationManager)
         SettingsManager.shared.registerNotifications(notificationManager: myCloudKitNotificationManager)
         
@@ -90,7 +89,6 @@ struct PulseWorkout_Watch_App: App {
             ContentView(navigationCoordinator: navigationCoordinator,
                         liveActivityManager: liveActivityManager,
                         profileManager: profileManager,
-                        dataCache: dataCache,
                         locationManager: locationManager)
         }
         .onChange(of: scenePhase) { oldScenePhase, newScenePhase in

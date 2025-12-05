@@ -9,7 +9,6 @@ import SwiftUI
 
 struct ActivityListItemExtensionView: View {
     @ObservedObject var activityRecord: ActivityRecord
-    var dataCache: DataCache
     
     var body: some View {
         VStack {
@@ -62,8 +61,7 @@ struct ActivityListItemExtensionView: View {
 
         }
         .onAppear( perform: {
-            ActivityRecordSnapshotImage(activityRecord: activityRecord,
-                                        dataCache: dataCache)
+            ActivityRecordSnapshotImage(activityRecord: activityRecord)
             .get(image: &activityRecord.mapSnapshotImage,
                  url: &activityRecord.mapSnapshotURL,
                  asset: activityRecord.mapSnapshotAsset)
@@ -76,8 +74,7 @@ struct ActivityListItemExtensionView: View {
 
 #Preview {
 
-    let dataCache = DataCache()
     let activityRecord = ActivityRecord()
     
-    ActivityListItemExtensionView(activityRecord: activityRecord, dataCache: dataCache)
+    ActivityListItemExtensionView(activityRecord: activityRecord)
 }

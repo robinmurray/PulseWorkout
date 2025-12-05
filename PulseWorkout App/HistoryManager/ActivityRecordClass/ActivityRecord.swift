@@ -52,9 +52,6 @@ struct analysedVariable {
 
 class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     
-    /// stored reference to datacache for storage & retrieval
-    var dataCache: DataCache?
-    
     /// Apple HK workout type.
     @Published var workoutTypeId: UInt = 1
     
@@ -549,11 +546,16 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     }
     
 
-    func save(dataCache: DataCache) {
+    func save() {
         addActivityAnalysis()
         if saveTrackRecord() {
-            dataCache.add(activityRecord: self)
+            DataCache.shared.add(activityRecord: self)
         }
+    }
+    
+    
+    func update() {
+        DataCache.shared.add(activityRecord: self)
     }
     
     

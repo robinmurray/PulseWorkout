@@ -128,6 +128,9 @@ class FullActivityRecordCache: NSObject {
 
 class DataCache: NSObject, Codable, ObservableObject {
     
+    ///Access DataCache through DataCache.shared
+    public static let shared = DataCache()
+    
     let settingsManager: SettingsManager = SettingsManager.shared
     let statisticsManager: StatisticsManager = StatisticsManager.shared
     var testMode: Bool = false

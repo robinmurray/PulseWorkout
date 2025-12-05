@@ -87,11 +87,9 @@ struct BTDevicesView_Previews: PreviewProvider {
     
     static var settingsManager = SettingsManager.shared
     static var locationManager = LocationManager()
-    static var dataCache = DataCache()
     static var bluetoothManager = BTDevicesController(requestedServices: nil)
     static var liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                         bluetoothManager: bluetoothManager,
-                                                         dataCache: dataCache)
+                                                         bluetoothManager: bluetoothManager)
     
     static var previews: some View {
         BTDeviceBarView(liveActivityManager: liveActivityManager)

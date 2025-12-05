@@ -22,9 +22,9 @@ struct StravaSettingsView: View {
     @State private var stravaFetchFromDate: Date
     var dataCache: DataCache
     
-    init(dataCache: DataCache) {
+    init() {
         self.stravaFetchFromDate = getFetchDate()
-        self.dataCache = dataCache
+        self.dataCache = DataCache.shared
     }
     
     var body: some View {
@@ -161,5 +161,5 @@ struct StravaSettingsView: View {
 
 #Preview {
 
-    StravaSettingsView(dataCache: DataCache())
+    StravaSettingsView()
 }

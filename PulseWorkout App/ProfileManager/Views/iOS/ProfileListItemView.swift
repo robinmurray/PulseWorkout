@@ -15,7 +15,6 @@ struct ProfileListItemView: View {
     @Binding var profile: ActivityProfile
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var dataCache: DataCache
     
     var body: some View {
         VStack {
@@ -109,19 +108,16 @@ struct ProfileListItemView: View {
 
 #Preview {
     let navigationCoordinator = NavigationCoordinator()
-    let dataCache = DataCache()
     let locationManager = LocationManager()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                  bluetoothManager: bluetoothManager,
-                                                  dataCache: dataCache)
+                                                  bluetoothManager: bluetoothManager)
     let profileManager = ProfileManager()
     
     
     ProfileListItemView(navigationCoordinator: navigationCoordinator,
                         profile: .constant(profileManager.profiles[0]),
                        profileManager: profileManager,
-                       liveActivityManager: liveActivityManager,
-                       dataCache: dataCache)
+                       liveActivityManager: liveActivityManager)
         
 }

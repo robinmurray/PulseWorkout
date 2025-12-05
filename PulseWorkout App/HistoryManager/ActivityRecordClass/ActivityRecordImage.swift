@@ -23,16 +23,15 @@ class ActivityRecordImage: NSObject {
     
     var activityRecord: ActivityRecord
     var activityImageType: ActivityImageType
-    var dataCache: DataCache
+    var dataCache: DataCache = DataCache.shared
     var thisImage: UIImage?
     
     let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
                         category: "activityRecordImage")
     
-    init(activityRecord: ActivityRecord, activityImageType: ActivityImageType, dataCache: DataCache) {
+    init(activityRecord: ActivityRecord, activityImageType: ActivityImageType) {
         self.activityRecord = activityRecord
         self.activityImageType = activityImageType
-        self.dataCache = dataCache
     }
     
     /// Save the activity record image, to cloudkit and cache (if record is cached)
@@ -161,9 +160,9 @@ class ActivityRecordImage: NSObject {
 /// Concrete sub-class of ActivityRecordImage to manage map snapshot image
 class ActivityRecordSnapshotImage: ActivityRecordImage {
     
-    init(activityRecord: ActivityRecord, dataCache: DataCache) {
+    init(activityRecord: ActivityRecord) {
         
-        super.init(activityRecord: activityRecord, activityImageType: .mapSnapshot, dataCache: dataCache)
+        super.init(activityRecord: activityRecord, activityImageType: .mapSnapshot)
     }
     
     func get(image: inout UIImage?, url: inout URL?, asset: CKAsset?) {
@@ -242,9 +241,9 @@ class ActivityRecordSnapshotImage: ActivityRecordImage {
 /// Concrete sub-class of ActivityRecordImage to manage altitude image
 class ActivityRecordAltitudeImage: ActivityRecordImage {
     
-    init(activityRecord: ActivityRecord, dataCache: DataCache) {
+    init(activityRecord: ActivityRecord) {
         
-        super.init(activityRecord: activityRecord, activityImageType: .altitudeImage, dataCache: dataCache)
+        super.init(activityRecord: activityRecord, activityImageType: .altitudeImage)
     }
     
     func get(image: inout UIImage?, url: inout URL?, asset: CKAsset?) {

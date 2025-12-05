@@ -16,7 +16,7 @@ enum DataCacheFetchError: Error {
 
 struct ActivityRecordCSVFile: Transferable {
     let activityRecordID: CKRecord.ID
-    let dataCache: DataCache
+    let dataCache: DataCache = DataCache.shared
     
     static var transferRepresentation: some TransferRepresentation {
 

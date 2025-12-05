@@ -11,7 +11,7 @@ import SwiftUI
 struct ActivityHistoryView: View {
     
     @ObservedObject var navigationCoordinator: NavigationCoordinator
-    @ObservedObject var dataCache: DataCache
+    @ObservedObject var dataCache: DataCache = DataCache.shared
     @StateObject var refreshProgress: AsyncProgress = AsyncProgress()
     @State var fetching: Bool = false
     @State var fetchComplete: Bool = false
@@ -21,9 +21,8 @@ struct ActivityHistoryView: View {
         case MapRouteView
     }
     
-    init(navigationCoordinator: NavigationCoordinator, dataCache: DataCache) {
+    init(navigationCoordinator: NavigationCoordinator) {
         self.navigationCoordinator = navigationCoordinator
-        self.dataCache = dataCache
     }
     
     var body: some View {
@@ -45,8 +44,7 @@ struct ActivityHistoryView: View {
                             navigationCoordinator.goToView(targetView: NavigationTarget.ActivityDetailView)
                         })
                         {
-                            ActivityListItemView(activityRecord: activityRecord,
-                                                 dataCache: dataCache)
+                            ActivityListItemView(activityRecord: activityRecord)
                         }
                         .buttonStyle(BorderlessButtonStyle())
                         .swipeActions {
@@ -69,7 +67,7 @@ struct ActivityHistoryView: View {
                     })
                     {
                         VStack {
-                            ActivityListItemExtensionView(activityRecord: activityRecord, dataCache: dataCache)
+                            ActivityListItemExtensionView(activityRecord: activityRecord)
                             Spacer()
                         }
 
@@ -109,13 +107,11 @@ struct ActivityHistoryView: View {
             if pathValue == .ActivityDetailView {
 
                 ActivityDetailView(navigationCoordinator: navigationCoordinator,
-                                   activityRecord: navigationCoordinator.selectedActivityRecord!,
-                                   dataCache: dataCache)
+                                   activityRecord: navigationCoordinator.selectedActivityRecord!)
             }
             else if pathValue == .MapRouteView {
                 
-                MapRouteView(activityRecord: navigationCoordinator.selectedActivityRecord!,
-                             dataCache: dataCache)
+                MapRouteView(activityRecord: navigationCoordinator.selectedActivityRecord!)
             }
             
         }
@@ -199,7 +195,6 @@ struct ActivityHistoryView_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        ActivityHistoryView(navigationCoordinator: navigationCoordinator,
-                            dataCache: dataCache)
+        ActivityHistoryView(navigationCoordinator: navigationCoordinator)
     }
 }

@@ -15,7 +15,6 @@ struct ProfileListItemView: View {
     @Binding var profile: ActivityProfile
     @ObservedObject var profileManager: ProfileManager
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var dataCache: DataCache
 
     
     var body: some View {
@@ -81,12 +80,10 @@ struct ProfileListItemView: View {
      
          static var navigationCoordinator = NavigationCoordinator()
          static var settingsManager = SettingsManager()
-         static var dataCache = DataCache()
          static var locationManager = LocationManager()
          static var bluetoothManager = BTDevicesController(requestedServices: nil)
          static var liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                              bluetoothManager: bluetoothManager,
-                                                              dataCache: dataCache)
+                                                              bluetoothManager: bluetoothManager)
          static var profileManager = ProfileManager()
 
          
@@ -96,8 +93,7 @@ struct ProfileListItemView: View {
              ProfileListItemView(navigationCoordinator: navigationCoordinator,
                                  profile: .constant(profileManager.profiles[0]),
                                 profileManager: profileManager,
-                                liveActivityManager: liveActivityManager,
-                                dataCache: dataCache)
+                                liveActivityManager: liveActivityManager)
                  
          }
      }

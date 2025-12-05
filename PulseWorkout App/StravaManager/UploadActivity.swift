@@ -88,8 +88,9 @@ class StravaUploadActivity: StravaOperation {
                 
                 self.logger.info("Upload Status \(uploadStatus)")
 
-                let uploadId = uploadStatus.id!
-                self.pollUploadStatus(uploadId: uploadId,
+                activityRecord.stravaUploadId = uploadStatus.id
+                activityRecord.stravaSaveStatus = StravaSaveStatus.uploaded.rawValue
+                self.pollUploadStatus(uploadId: activityRecord.stravaUploadId!,
                                       retryCount: 5,
                                       currentRetry: 1)
                 
@@ -140,9 +141,14 @@ class StravaUploadActivity: StravaOperation {
                         // However, note that segment processing can continue for quite a while.
                         self.logger.info("Polling completed successfully :: retry count \(currentRetry) :: id \(stravaId)")
                         self.activityRecord.stravaId = stravaId
-                        StravaUpdateActivity(activityRecord: self.activityRecord,
-                                             completionHandler: { _ in self.completionHandler(stravaId)},
-                                             failureCompletionHandler: { self.completionHandler(stravaId)}).execute()
+                        self.activityRecord.stravaSaveStatus = StravaSaveStatus.gotStravaId.rawValue
+                        StravaUpdateActivity(
+                            activityRecord: self.activityRecord,
+                            completionHandler: { _ in
+                                self.activityRecord.stravaSaveStatus = StravaSaveStatus.saved.rawValue
+                                self.completionHandler(stravaId)
+                            },
+                            failureCompletionHandler: self.failureCompletionHandler ).execute()
                     } else {
                         // Start another timer
                         self.logger.info("Trying again...")

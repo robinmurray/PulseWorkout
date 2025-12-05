@@ -12,7 +12,6 @@ struct ContentView: View {
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var liveActivityManager: LiveActivityManager
     @ObservedObject var profileManager: ProfileManager
-    @ObservedObject var dataCache: DataCache
     @ObservedObject var locationManager: LocationManager
     @ObservedObject var bluetoothManager: BTDevicesController
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
@@ -21,8 +20,7 @@ struct ContentView: View {
         TabView(selection: $navigationCoordinator.selectedTab) {
             
             NavigationStack(path: $navigationCoordinator.homePath) {
-                ActivityHistoryView(navigationCoordinator: navigationCoordinator,
-                                    dataCache: dataCache)
+                ActivityHistoryView(navigationCoordinator: navigationCoordinator)
             }
             .tabItem {
                 Label("Home", systemImage: "house")
@@ -32,8 +30,7 @@ struct ContentView: View {
             NavigationStack(path: $navigationCoordinator.newActivityPath) {
                 StartView(navigationCoordinator: navigationCoordinator,
                           liveActivityManager: liveActivityManager,
-                          profileManager: profileManager,
-                          dataCache: dataCache)
+                          profileManager: profileManager)
             }
             .tabItem {
                 Label("New Activity", systemImage: "figure.run")
@@ -43,8 +40,7 @@ struct ContentView: View {
             NavigationStack(path: $navigationCoordinator.statsPath) {
                 StatisticsView(navigationCoordinator: navigationCoordinator,
                                profileManager: profileManager,
-                               liveActivityManager: liveActivityManager,
-                               dataCache: dataCache)
+                               liveActivityManager: liveActivityManager)
             }
             .tabItem {
                 Label("Stats", systemImage: "chart.line.text.clipboard")
@@ -53,8 +49,7 @@ struct ContentView: View {
 
             NavigationStack(path: $navigationCoordinator.settingsPath) {
                 SettingsView(navigationCoordinator: navigationCoordinator,
-                             bluetoothManager: bluetoothManager,
-                             dataCache: dataCache)
+                             bluetoothManager: bluetoothManager)
             }
             .tabItem {
                 Label("Settings", systemImage: "gearshape")
@@ -74,18 +69,15 @@ struct ContentView: View {
 #Preview {
 
     let locationManager = LocationManager()
-    let dataCache = DataCache()
     let profileManager = ProfileManager()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                  bluetoothManager: bluetoothManager,
-                                                  dataCache: dataCache)
+                                                  bluetoothManager: bluetoothManager)
     let navigationCoordinator = NavigationCoordinator()
     
     ContentView(navigationCoordinator: navigationCoordinator,
                 liveActivityManager: liveActivityManager,
                 profileManager: profileManager,
-                dataCache: dataCache,
                 locationManager: locationManager,
                 bluetoothManager: bluetoothManager)
 }

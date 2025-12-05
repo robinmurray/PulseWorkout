@@ -14,7 +14,6 @@ struct ActivitySaveView: View {
    
     @ObservedObject var navigationCoordinator: NavigationCoordinator
     @ObservedObject var liveActivityManager: LiveActivityManager
-    @ObservedObject var dataCache: DataCache
 
     
     var body: some View {
@@ -23,7 +22,7 @@ struct ActivitySaveView: View {
             ScrollView {
                 ActivityDetailView(navigationCoordinator: navigationCoordinator,
                                    activityRecord: liveActivityManager.liveActivityRecord ??
-                                   ActivityRecord(), dataCache: dataCache)
+                                   ActivityRecord())
             }
 
             Spacer()
@@ -54,14 +53,11 @@ struct ActivitySaveView: View {
 
     let navigationCoordinator = NavigationCoordinator()
     let locationManager = LocationManager()
-    let dataCache = DataCache()
     let bluetoothManager = BTDevicesController(requestedServices: nil)
     
     let liveActivityManager = LiveActivityManager(locationManager: locationManager,
-                                                  bluetoothManager: bluetoothManager,
-                                                  dataCache: dataCache)
+                                                  bluetoothManager: bluetoothManager)
     
     ActivitySaveView(navigationCoordinator: navigationCoordinator,
-                     liveActivityManager: liveActivityManager,
-                     dataCache: dataCache)
+                     liveActivityManager: liveActivityManager)
 }

@@ -155,7 +155,7 @@ class StravaFetchLatestActivities: StravaOperation {
                 activityRecord in
 
                 /// Save or update the record
-                activityRecord.save(dataCache: self.dataCache)
+                activityRecord.save()
                 
                 if let notifier = self.asyncProgressNotifier {
                     notifier.majorIncrement(message: "Saving / Updating : \(activityRecord.name)")
