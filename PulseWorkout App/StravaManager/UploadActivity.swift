@@ -38,6 +38,8 @@ class StravaUploadActivity: StravaOperation {
     /// If tcx asset alreday loaded use it, else fetch from cloudkit and call upload on completion
     func execute() {
         
+        activityRecord.setStravaSaveStatus(StravaSaveStatus.saving)
+        
         if let asset = activityRecord.tcxAsset {
 
             let fileURL = asset.fileURL!
@@ -50,12 +52,17 @@ class StravaUploadActivity: StravaOperation {
 
             } catch {
                 self.logger.error("Can't get data at url:\(fileURL)")
+                activityRecord.setStravaSaveStatus(StravaSaveStatus.notSaved)
                 self.failureCompletionHandler()
             }
         } else {
-            CKFetchTcxAssetOperation(recordID: activityRecord.recordID,
-                                     completionHandler: upload,
-                                     failureCompletionHandler: self.failureCompletionHandler
+            CKFetchTcxAssetOperation(
+                recordID: activityRecord.recordID,
+                completionHandler: upload,
+                failureCompletionHandler: {
+                self.activityRecord.setStravaSaveStatus(StravaSaveStatus.notSaved)
+                self.failureCompletionHandler()
+            }
             ).execute()
         }
 
@@ -83,17 +90,21 @@ class StravaUploadActivity: StravaOperation {
 
                 guard let uploadStatus = uploadStatus else {
                     self.logger.error("Error : No Upload status")
+                    self.activityRecord.setStravaSaveStatus(StravaSaveStatus.notSaved)
                     self.failureCompletionHandler()
                     return }
                 
                 self.logger.info("Upload Status \(uploadStatus)")
 
                 activityRecord.stravaUploadId = uploadStatus.id
-                activityRecord.stravaSaveStatus = StravaSaveStatus.uploaded.rawValue
-                self.pollUploadStatus(uploadId: activityRecord.stravaUploadId!,
-                                      retryCount: 5,
-                                      currentRetry: 1)
+                activityRecord.setStravaSaveStatus(StravaSaveStatus.uploaded)
                 
+                // Now get the stravaId and then update the Strava record if successful
+                GetStravaIdFromStravaUploadId(
+                    activityRecord: self.activityRecord,
+                    completionHandler: self.completionHandler,
+                    failureCompletionHandler: self.failureCompletionHandler).execute()
+                                
 
             }, failure: { (error: NSError) in
                 self.stravaBusyStatus(false)
@@ -101,11 +112,73 @@ class StravaUploadActivity: StravaOperation {
                 if error.code == 429 {
                     self.logger.error("Strava API limit exceeded")
                 }
+                self.activityRecord.setStravaSaveStatus(StravaSaveStatus.notSaved)
                 self.failureCompletionHandler()
             })
         }
     }
+}
+
+
+
+/// Get stravaId from UploadId...
+/// If succesful, update strava record with details from activityRecord
+class GetStravaIdFromStravaUploadId: StravaOperation {
     
+    var activityRecord: ActivityRecord
+    var completionHandler: (Int) -> Void
+    var failureCompletionHandler: () -> Void
+    
+    
+    init(activityRecord: ActivityRecord,
+         completionHandler: @escaping (Int) -> Void,
+         failureCompletionHandler: @escaping () -> Void = { },
+         forceReauth: Bool = false,
+         forceRefresh: Bool = false) {
+        
+        self.activityRecord = activityRecord
+        self.completionHandler = completionHandler
+        self.failureCompletionHandler = failureCompletionHandler
+        
+        
+        super.init(forceReauth: forceReauth, forceRefresh: forceRefresh)
+        
+        
+    }
+  
+    func execute() {
+        
+        // if no uploadId, then something's wrong!!
+        if activityRecord.stravaUploadId == nil {
+            self.logger.error("Error : No Upload Id")
+            self.failureCompletionHandler()
+            return
+        }
+        
+        // if already have a stravaId, then something wrong really, but contine as if fetched
+        if let stravaId = activityRecord.stravaId {
+            self.activityRecord.setStravaSaveStatus(StravaSaveStatus.gotStravaId)
+            StravaUpdateActivity(
+                activityRecord: self.activityRecord,
+                completionHandler: { _ in
+                    self.activityRecord.setStravaSaveStatus(StravaSaveStatus.saved)
+                    self.completionHandler(stravaId)
+                },
+                failureCompletionHandler: self.failureCompletionHandler ).execute()
+            return
+            
+        }
+        
+        // We (correctly) have an uploadId and no stravaId...
+        pollUploadStatus(uploadId: activityRecord.stravaUploadId!,
+                         retryCount: 5,
+                         currentRetry: 1)
+        
+    }
+    
+    
+    /// Poll upload status to get StravaId
+    /// If successful then attempt to update the Strava record
     func pollUploadStatus(uploadId: Int, retryCount: Int, currentRetry: Int) {
         
         let PAUSE_TIME: TimeInterval = 3 * Double(currentRetry)  // Delay between attempts as Strava processes the upload..
@@ -141,11 +214,13 @@ class StravaUploadActivity: StravaOperation {
                         // However, note that segment processing can continue for quite a while.
                         self.logger.info("Polling completed successfully :: retry count \(currentRetry) :: id \(stravaId)")
                         self.activityRecord.stravaId = stravaId
-                        self.activityRecord.stravaSaveStatus = StravaSaveStatus.gotStravaId.rawValue
+                        self.activityRecord.setStravaSaveStatus(StravaSaveStatus.gotStravaId)
+
                         StravaUpdateActivity(
                             activityRecord: self.activityRecord,
                             completionHandler: { _ in
-                                self.activityRecord.stravaSaveStatus = StravaSaveStatus.saved.rawValue
+                                self.activityRecord.setStravaSaveStatus(StravaSaveStatus.saved)
+
                                 self.completionHandler(stravaId)
                             },
                             failureCompletionHandler: self.failureCompletionHandler ).execute()
@@ -165,4 +240,3 @@ class StravaUploadActivity: StravaOperation {
     }
     
 }
-

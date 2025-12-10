@@ -17,12 +17,42 @@ extension ActivityRecord {
 
     #if os(iOS)
     
+    func setStravaSaveStatus(_ newStatus: StravaSaveStatus) {
+        DispatchQueue.main.async {
+            self.stravaSaveStatus = newStatus.rawValue
+        }
+    }
+    
     func saveToStrava() {
         
-        stravaSaveStatus = StravaSaveStatus.saving.rawValue
-        StravaUploadActivity(activityRecord: self,
-                             completionHandler: saveStravaId,
-                             failureCompletionHandler: { }).execute()
+        let stravaSaveStatusEnum = StravaSaveStatus(rawValue: stravaSaveStatus) ?? StravaSaveStatus.notSaved
+        switch stravaSaveStatusEnum {
+            
+        case .uploaded:
+            // Have uploaded record to strava and got an uploadId, but not got a StravaId
+            GetStravaIdFromStravaUploadId(
+                activityRecord: self,
+                completionHandler: saveStravaId,
+                failureCompletionHandler: { }).execute()
+            
+        case .gotStravaId:
+            // Have got a stravaId, but have updated the strava record or saved StravaId to CK
+            StravaUpdateActivity(
+                activityRecord: self,
+                completionHandler: { _ in
+                    self.setStravaSaveStatus(StravaSaveStatus.saved)
+
+                    self.saveStravaId(newStravaId: self.stravaId!)
+                },
+                failureCompletionHandler: { } ).execute()
+            
+        default:
+            // Normal situation - do full upload / fetch stravaId / update strava record / save StravaId sequence
+            StravaUploadActivity(activityRecord: self,
+                                 completionHandler: saveStravaId,
+                                 failureCompletionHandler: { }).execute()
+        }
+
         
     }
     

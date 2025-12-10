@@ -92,7 +92,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var JSONFileName: String?   // Temporary cache file for JSON serialisation of activity record
     
     var toSave: Bool = false        // cache status - record still to be saved to CK
-    var toDelete: Bool = false      // cache status - record to be deleted from CK (and removed from cache)
+    var toDelete: Bool = false          // cache status - record to be deleted from CK (and removed from cache)
+    var toUpdate: Bool = false        // cache status - record needs updating - don't change stats when saving
+
     @Published var toSavePublished: Bool = false    // published version of to be saved
     
     // Instantaneous data fields
@@ -265,6 +267,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         JSONFileName = try container.decode(String?.self, forKey: .JSONFileName)
         toSave = try container.decode(Bool.self, forKey: .toSave)
         toDelete = try container.decode(Bool.self, forKey: .toDelete)
+        toUpdate = try container.decode(Bool.self, forKey: .toUpdate)
+
         mapSnapshotURL = try container.decode(URL?.self, forKey: .mapSnapshotURL)
         hasLocationData = try container.decode(Bool.self, forKey: .hasLocationData)
         hasHRData = try container.decode(Bool.self, forKey: .hasHRData)
@@ -342,6 +346,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
          try container.encode(JSONFileName, forKey: .JSONFileName)
          try container.encode(toSave, forKey: .toSave)
          try container.encode(toDelete, forKey: .toDelete)
+         try container.encode(toUpdate, forKey: .toUpdate)
+
          try container.encode(mapSnapshotURL, forKey: .mapSnapshotURL)
          try container.encode(hasLocationData, forKey: .hasLocationData)
          try container.encode(hasHRData, forKey: .hasHRData)
@@ -460,6 +466,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         setToSave(fromActivityRecord.toSave)
 
         toDelete = fromActivityRecord.toDelete
+        toUpdate = fromActivityRecord.toUpdate
         tcxFileName = fromActivityRecord.tcxFileName
         JSONFileName = fromActivityRecord.JSONFileName
         autoPause = fromActivityRecord.autoPause
@@ -549,13 +556,13 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     func save() {
         addActivityAnalysis()
         if saveTrackRecord() {
-            DataCache.shared.add(activityRecord: self)
+            DataCache.shared.add(activityRecord: self, updateOnly: false)
         }
     }
     
     
     func update() {
-        DataCache.shared.add(activityRecord: self)
+        DataCache.shared.add(activityRecord: self, updateOnly: true)
     }
     
     
@@ -681,7 +688,7 @@ extension ActivityRecord {
              TSSSummable, TSSSummableByPowerZone, intensityFactor, normalisedPower, estimatedVO2Max,
              profileWeightKG, profileMaxHR, profileRestHR, profileFTP, profilePowerZoneLimits, profileThresholdHR, profileHRZoneLimits,
              estimatedEPOC, estimatedTSSbyHR, TSSEstimatebyHRZone, movingTimebyHRZone,
-             totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, mapSnapshotURL,
+             totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, toUpdate, mapSnapshotURL,
              hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters, averageSegmentSize,
              HRSegmentAverages, powerSegmentAverages, cadenceSegmentAverages
     }

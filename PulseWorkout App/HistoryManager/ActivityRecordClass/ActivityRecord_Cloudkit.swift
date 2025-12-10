@@ -210,6 +210,7 @@ extension ActivityRecord {
         
         setToSave(false)
         toDelete = false
+        toUpdate = false
         tcxFileName = baseFileName + ".gz"
         JSONFileName = baseFileName + ".json"
         

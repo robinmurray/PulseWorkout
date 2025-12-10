@@ -504,7 +504,7 @@ struct ActivityDetailView: View {
 
             if SettingsManager.shared.offerSaveToStrava() {
                 switch activityRecord.stravaSaveStatus {
-                case StravaSaveStatus.notSaved.rawValue:
+                case StravaSaveStatus.notSaved.rawValue, StravaSaveStatus.uploaded.rawValue, StravaSaveStatus.gotStravaId.rawValue:
                     Button(action: {
                         activityRecord.saveToStrava()
                     })

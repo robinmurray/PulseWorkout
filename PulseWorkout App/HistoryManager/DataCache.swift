@@ -220,7 +220,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                     self.localLogger.info("Flushing cache with records \(self.toBeSavedCKRecords())")
                 
                     CKBlockSaveAndDeleteOperation(
-                        recordsToSave: self.toBeSavedCKRecords() + self.statisticsManager.allCKRecords(),
+                        recordsToSave: self.toBeSavedCKRecords() + self.toBeUpdatedCKRecords() + self.statisticsManager.allCKRecords(),
                         recordIDsToDelete: self.toBeDeletedIDs(),
                         recordSaveSuccessCompletionFunction: self.recordSaveCompletion,
                         recordDeleteSuccessCompletionFunction: self.removeFromCache,
@@ -250,10 +250,12 @@ class DataCache: NSObject, Codable, ObservableObject {
     }
     
 
-    
-    func add(activityRecord: ActivityRecord, toBeSavedToCK: Bool = true) {
+    /// Add activity to cache, or mark existing activity as needing update
+    /// activityRecord: The record to be added
+    /// toBeSavedToCK: Whether the change should be saved to Cloudkit
+    /// updateOnly: Is this an update? (or new record/save)
+    func add(activityRecord: ActivityRecord, toBeSavedToCK: Bool = true, updateOnly: Bool = false) {
         
-        activityRecord.setToSave(toBeSavedToCK)
         
         // Update if an existing record - detect by stravaId or recordId
         if let updateIndex = activities.firstIndex(where: {
@@ -262,21 +264,35 @@ class DataCache: NSObject, Codable, ObservableObject {
             
             // Update the record in the cache
             localLogger.info("Updating cache at index : \(updateIndex)")
+            activityRecord.toUpdate = true
             activities[updateIndex] = activityRecord
             
         }
         else {
+
             if let insertIndex = activities.firstIndex(where: {$0.startDateLocal < activityRecord.startDateLocal}) {
 
                 localLogger.info("Inserting into cache at index : \(insertIndex)")
+                activityRecord.setToSave(toBeSavedToCK)
                 activities.insert(activityRecord, at: insertIndex)
                 
             } else {
+                // Record being saved / updated is beyond the end of the cache.
+                // If being saved to CK then add to end of cache to push the CK change through
                 if toBeSavedToCK {
+                    if updateOnly {
+                        activityRecord.toUpdate = true
+                    } else {
+                        activityRecord.setToSave(toBeSavedToCK)
+                    }
                     activities.append(activityRecord)
                 }
             }
-            statisticsManager.addActivityToStats(activity: activityRecord)
+            
+            // Only update statistics if a new record being saved...
+            if activityRecord.toSave {
+                statisticsManager.addActivityToStats(activity: activityRecord)
+            }
         }
         
 
@@ -473,6 +489,12 @@ class DataCache: NSObject, Codable, ObservableObject {
 
     }
 
+    /// Returns list of to-be-updated activity records
+    private func toBeUpdated() -> [ActivityRecord] {
+        
+        return activities.filter{ ($0.toSave == false) && ($0.toDelete == false)  && ($0.toUpdate == true) }
+
+    }
     
     /// Returns list of to-be-deleted activity records
     private func toBeDeleted() -> [ActivityRecord] {
@@ -483,14 +505,20 @@ class DataCache: NSObject, Codable, ObservableObject {
 
     private func toBeSavedCKRecords() -> [CKRecord] {
         
-        return activities.filter{ ($0.toSave == true) && ($0.toDelete == false) }.map( { $0.asCKRecord() })
+        return toBeSaved().map( { $0.asCKRecord() })
+
+    }
+    
+    private func toBeUpdatedCKRecords() -> [CKRecord] {
+        
+        return toBeUpdated().map( { $0.asCKRecord() })
 
     }
     
     /// Returns list of to-be-deleted activity records
     private func toBeDeletedIDs() -> [CKRecord.ID] {
         
-        return activities.filter{ $0.toDelete == true }.map( {$0.recordID} )
+        return toBeDeleted().map( {$0.recordID} )
 
     }
 
@@ -505,7 +533,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     /// Does the cache have outstanding additions or deletions to be written to CloudKit?
     private func dirty() -> Bool {
         
-        return (toBeSaved().count > 0) || (toBeDeleted().count > 0)
+        return (toBeSaved().count > 0) || (toBeDeleted().count > 0)  || (toBeUpdated().count > 0)
         
     }
     
@@ -659,6 +687,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
         savedActivityRecord.deleteTrackRecord()
         savedActivityRecord.setToSave(false)
+        savedActivityRecord.toUpdate = false
         
 #if os(iOS)
         if savedActivityRecord.stravaSaveStatus == StravaSaveStatus.toSave.rawValue {
@@ -700,15 +729,16 @@ class DataCache: NSObject, Codable, ObservableObject {
         
         activityRecord = ActivityRecord(fromCKRecord: record, fetchtrackData: false)
         
-        #if os(iOS)
+        // Add to, or update the local cache
+        changeCache(changedActivityRecord: activityRecord)
+        changeUI(changedActivityRecord: activityRecord)
+  
+#if os(iOS)
         if activityRecord.stravaSaveStatus == StravaSaveStatus.toSave.rawValue {
             activityRecord = ActivityRecord(fromCKRecord: record, fetchtrackData: true)
             activityRecord.saveToStrava()
         }
-        #endif
-        
-        changeCache(changedActivityRecord: activityRecord)
-        changeUI(changedActivityRecord: activityRecord)
+#endif
         
         statisticsManager.refresh()
         
