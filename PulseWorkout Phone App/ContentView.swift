@@ -38,9 +38,7 @@ struct ContentView: View {
             .tag(ContentViewTab.newActivity)
             
             NavigationStack(path: $navigationCoordinator.statsPath) {
-                StatisticsView(navigationCoordinator: navigationCoordinator,
-                               profileManager: profileManager,
-                               liveActivityManager: liveActivityManager)
+                StatisticsView(navigationCoordinator: navigationCoordinator)
             }
             .tabItem {
                 Label("Stats", systemImage: "chart.line.text.clipboard")

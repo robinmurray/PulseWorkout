@@ -26,14 +26,28 @@ struct DayOfWeekStatisticBarDonutView: View {
                     Spacer()
                     
                     
-                    Button {
-                        navigationCoordinator.goToView(targetView: detailView)
-                    } label: {
-                        HStack{
-                            Image(systemName: "calendar")
-                            Image(systemName: "chevron.forward")
+                    if #available(iOS 26.0, *) {
+                        Button {
+                            navigationCoordinator.goToView(targetView: detailView)
+                        } label: {
+                            HStack{
+                                Image(systemName: "calendar")
+                                Image(systemName: "chevron.forward")
+                            }
                         }
-                     }
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear, in: .rect(cornerRadius: 10))
+                    } else {
+                        // Fallback on earlier versions
+                        Button {
+                            navigationCoordinator.goToView(targetView: detailView)
+                        } label: {
+                            HStack{
+                                Image(systemName: "calendar")
+                                Image(systemName: "chevron.forward")
+                            }
+                        }
+                    }
 
                 }
                 .foregroundColor(PropertyViewParamaters[propertyName]?.foregroundColor ?? .red)
