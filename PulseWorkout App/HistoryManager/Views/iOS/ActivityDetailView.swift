@@ -154,20 +154,6 @@ struct ActivityDetailView: View {
                 HStack {
                     ActivityHeaderView(activityRecord: activityRecord)
                     Spacer()
-                
-                    LinkToStravaView(activityRecord: activityRecord)
-                
-                    VStack {
-                        ShareLink(item: ActivityRecordCSVFile(activityRecordID: activityRecord.recordID),
-                                  subject: Text(activityRecord.name),
-                                  preview: SharePreview("Share Activity Data"))
-                        {
-                            Image(systemName: "square.and.arrow.up")
-                        }
-                        .padding(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 10))
-                        Spacer()
-                    }
-                
                 }
             )
             {
@@ -189,19 +175,12 @@ struct ActivityDetailView: View {
             if hasTrainingLoad(activityRecord) {
                 
                 GroupBox(label:
-                            VStack {
-                    HStack {
-                        Image(systemName: "figure.strengthtraining.traditional.circle")
-                            .font(.title2)
-                            .frame(width: 40, height: 40)
-                        Text("Training Load")
-                        Spacer()
-
-                    }
-                    .foregroundColor(TSSColor)
-                    
-                    Divider()
-                }
+                    SectionHeaderView(navigationCoordinator: navigationCoordinator,
+                                                iconName: "figure.strengthtraining.traditional.circle",
+                                                sectionTitle: "Training Load",
+                                                foregroundColor: TSSColor,
+                                                navigationTarget: nil)
+                
                 )
                 {
                     VStack
@@ -241,30 +220,11 @@ struct ActivityDetailView: View {
             
             if activityRecord.hasLocationData {
                 GroupBox(label:
-                    VStack {
-                    HStack {
-                        Image(systemName: speedIcon)
-                                .font(.title2)
-                                .frame(width: 40, height: 40)
-                        Text("Speed / Distance")
-                        Spacer()
-                        
-                        Button(action: {
-                            navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewAscent)
-                        })
-                        {
-                            Image(systemName: "chart.xyaxis.line")
-                                .font(.title2)
-                                .frame(width: 40, height: 40)
-                                .foregroundStyle(distanceColor)
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                    }
-                    
-                    Divider()
-                        
-                    }
-                    .foregroundColor(distanceColor)
+                    SectionHeaderView(navigationCoordinator: navigationCoordinator,
+                                                iconName: speedIcon,
+                                                sectionTitle: "Speed / Distance",
+                                                foregroundColor: distanceColor,
+                                                navigationTarget: NavigationTarget.ChartViewAscent)
                 )
                 {
                     VStack {
@@ -299,26 +259,13 @@ struct ActivityDetailView: View {
             
             
             GroupBox(label:
-                        VStack {
-                HStack {
-                    Image(systemName: "stopwatch")
-                        .font(.title2)
-                        .frame(width: 40, height: 40)
-                    if activityRecord.hasHRData {
-                        Text("Activity Time - by Heart Rate Zone")
-                    } else if activityRecord.hasPowerData {
-                        Text("Activity Time - by Power Zone")
-                    } else {
-                        Text("Activity Time")
-                    }
-                    
-                    Spacer()
-
-                }
-                .foregroundColor(.green)
-                
-                Divider()
-            }
+                        
+                SectionHeaderView(navigationCoordinator: navigationCoordinator,
+                                  iconName: "stopwatch",
+                                  sectionTitle: activityRecord.hasHRData ? "Activity Time - by Heart Rate Zone" :
+                                    (activityRecord.hasPowerData ? "Activity Time - by Power Zone" : "Activity Time"),
+                                  foregroundColor: .green,
+                                  navigationTarget: nil)
             )
             {
                 VStack
@@ -346,34 +293,12 @@ struct ActivityDetailView: View {
 
             if activityRecord.hasHRData {
                 GroupBox(label:
-                    VStack {
-                    HStack {
-                        Image(systemName: heartRateIcon)
-                                .font(.title2)
-                                .frame(width: 40, height: 40)
-                        Text("Heart Rate")
-                        Spacer()
- 
-                        
-                        Button(action: {
-                            navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewHR)
-                        })
-                        {
-
-                            Image(systemName: "chart.xyaxis.line")
-                                .font(.title2)
-                                .frame(width: 40, height: 40)
-                                .foregroundStyle(heartRateColor)
-
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                        
-                    }
-                    
-                    Divider()
-                        
-                    }
-                    .foregroundColor(heartRateColor)
+                            
+                    SectionHeaderView(navigationCoordinator: navigationCoordinator,
+                                      iconName: heartRateIcon,
+                                      sectionTitle: "Heart Rate",
+                                      foregroundColor: heartRateColor,
+                                      navigationTarget: NavigationTarget.ChartViewHR)
                 )
                 {
                     VStack {
@@ -402,32 +327,14 @@ struct ActivityDetailView: View {
             }
 
             if activityRecord.hasPowerData {
+                
                 GroupBox(label:
-                    VStack {
-                    HStack {
-                        Image(systemName: powerIcon)
-                                .font(.title2)
-                                .frame(width: 40, height: 40)
-                        Text("Power")
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewPower)
-                        })
-                        {
-                            Image(systemName: "chart.xyaxis.line")
-                                .font(.title2)
-                                .frame(width: 40, height: 40)
-                                .foregroundStyle(powerColor)
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                    }
-                    
-                    Divider()
-                        
-                    }
-                    .foregroundColor(powerColor)
+                            
+                    SectionHeaderView(navigationCoordinator: navigationCoordinator,
+                                      iconName: powerIcon,
+                                      sectionTitle: "Power",
+                                      foregroundColor: powerColor,
+                                      navigationTarget: NavigationTarget.ChartViewPower)
                 )
                 {
                     VStack {
@@ -456,31 +363,12 @@ struct ActivityDetailView: View {
             
             if activityRecord.hasPowerData {
                 GroupBox(label:
-                    VStack {
-                    HStack {
-                        Image(systemName: cadenceIcon)
-                                .font(.title2)
-                                .frame(width: 40, height: 40)
-                        Text("Cadence")
-                        
-                        Spacer()
-                        
-                        Button(action: {
-                            navigationCoordinator.goToView(targetView: NavigationTarget.ChartViewCadence)
-                        })
-                        {
-                            Image(systemName: "chart.xyaxis.line")
-                                .font(.title2)
-                                .frame(width: 40, height: 40)
-                                .foregroundStyle(cadenceColor)
-                        }
-                        .buttonStyle(BorderlessButtonStyle())
-                    }
-                    
-                    Divider()
-                        
-                    }
-                    .foregroundColor(cadenceColor)
+                            
+                    SectionHeaderView(navigationCoordinator: navigationCoordinator,
+                                      iconName: cadenceIcon,
+                                      sectionTitle: "Cadence",
+                                      foregroundColor: cadenceColor,
+                                      navigationTarget: NavigationTarget.ChartViewCadence)
                 )
                 {
                     VStack {
@@ -592,7 +480,35 @@ struct ActivityDetailView: View {
                     Text("")
                 }
             }
-
+        }
+        .navigationTitle(activityRecord.name)
+        .toolbar {
+            
+            ToolbarItem(placement: .primaryAction) {
+                if #available(iOS 26.0, *) {
+                    ShareLink(item: ActivityRecordCSVFile(activityRecordID: activityRecord.recordID),
+                              subject: Text(activityRecord.name),
+                              preview: SharePreview("Share Activity Data"))
+                    {
+                        Image(systemName: "square.and.arrow.up").frame(width: 30, height: 30)
+                    }
+                    .buttonStyle(.glass)
+                    .glassEffect(.clear)
+                } else {
+                    // Fallback on earlier versions
+                    ShareLink(item: ActivityRecordCSVFile(activityRecordID: activityRecord.recordID),
+                              subject: Text(activityRecord.name),
+                              preview: SharePreview("Share Activity Data"))
+                    {
+                        Image(systemName: "square.and.arrow.up")
+                    }
+                }
+            }
+            
+            ToolbarItem(placement: .primaryAction) {
+                LinkToStravaView(activityRecord: activityRecord)
+            }
+            
         }
         .onAppear( perform: {
 

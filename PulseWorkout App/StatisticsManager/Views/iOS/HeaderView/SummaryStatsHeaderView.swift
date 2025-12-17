@@ -7,6 +7,75 @@
 
 import SwiftUI
 
+
+struct SingleStatHeaderView: View {
+
+    @ObservedObject var statisticsManager = StatisticsManager.shared
+    @ObservedObject var navigationCoordinator: NavigationCoordinator
+    var title: String = "Activities"
+    var propertyName: String = "activities"
+    var foregroundColor: Color = activitiesColor
+    var navigationTarget: StatisticsProgressHeaderView.NavigationTarget = StatisticsProgressHeaderView.NavigationTarget.ActivityStatisticsView
+    
+    var frameWidth: CGFloat
+    
+    var body: some View {
+
+        if #available(iOS 26.0, *) {
+            HStack {
+                
+                VStack {
+                    
+
+                        VStack {
+                            Text(title)
+                                .font(.caption)
+                                .bold()
+                            
+                            Button {
+                                navigationCoordinator.goToView(targetView: navigationTarget)
+                            } label: {
+                                BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: propertyName, filterList: ["last", "this"]))
+                                
+                            }
+                        }
+                        .glassEffect(.regular.tint(foregroundColor.opacity(0.1)), in: .rect(cornerRadius: 10)).tint(activitiesColor)
+
+                }
+                .frame(width: frameWidth, height: 100)
+                
+            }
+        } else {
+            // Fallback on earlier versions
+            ZStack {
+                
+                RoundedRectangle(cornerRadius: 10)
+                    .stroke(foregroundColor, lineWidth: 1)
+                
+                VStack {
+                        Text(title)
+                        .font(.caption)
+                        .bold()
+                    
+                    Button {
+                        navigationCoordinator.goToView(targetView: navigationTarget)
+                    } label: {
+                        
+                        BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: propertyName, filterList: ["last", "this"]))
+
+                    }
+                    
+                }
+            }
+            .frame(width: frameWidth)
+        }
+        
+
+        
+    }
+}
+
+
 struct SummaryStatsHeaderView: View {
     
     @ObservedObject var statisticsManager = StatisticsManager.shared
@@ -21,107 +90,45 @@ struct SummaryStatsHeaderView: View {
         
             HStack {
 
-                
-                ZStack {
-                    
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(activitiesColor, lineWidth: 1)
-                    
-                    VStack {
-                            Text("Activities")
-                            .font(.caption)
-                            .bold()
-                        
-                        Button {
-                            navigationCoordinator.goToView(targetView: StatisticsProgressHeaderView.NavigationTarget.ActivityStatisticsView)
-                        } label: {
-                            
-                            BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "activities", filterList: ["last", "this"]))
 
-                        }
-                        
-                    }
-                }
-                .frame(width: frameWidth)
+                SingleStatHeaderView(navigationCoordinator: navigationCoordinator,
+                                     title: "Activities",
+                                     propertyName: "activities",
+                                     foregroundColor: activitiesColor,
+                                     navigationTarget: StatisticsProgressHeaderView.NavigationTarget.ActivityStatisticsView,
+                                     frameWidth: frameWidth)
+                
+                Spacer()
+                
+                SingleStatHeaderView(navigationCoordinator: navigationCoordinator,
+                                     title: "Load",
+                                     propertyName: "TSSByZone",
+                                     foregroundColor: TSSColor,
+                                     navigationTarget: StatisticsProgressHeaderView.NavigationTarget.TSSStatisticsView,
+                                     frameWidth: frameWidth)
 
                 Spacer()
                 
-                ZStack {
-                    
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(TSSColor, lineWidth: 1)
-                    VStack {
-                        VStack {
-                            Text("Load")
-                                .font(.caption)
-                                .bold()
- 
-                            Button {
-                                navigationCoordinator.goToView(targetView: StatisticsProgressHeaderView.NavigationTarget.TSSStatisticsView)
-                            } label: {
-                                
-                                BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "TSSByZone", filterList: ["last", "this"]))
-
-                            }
-                            
-                        }
-                        
-                    }
-                }
-                .frame(width: frameWidth)
+                SingleStatHeaderView(navigationCoordinator: navigationCoordinator,
+                                     title: "Distance",
+                                     propertyName: "distanceMeters",
+                                     foregroundColor: distanceColor,
+                                     navigationTarget: StatisticsProgressHeaderView.NavigationTarget.DistanceStatisticsView,
+                                     frameWidth: frameWidth)
 
                 Spacer()
                 
-                ZStack {
-                    
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(distanceColor, lineWidth: 1)
-                    
-                    VStack {
-                        Text("Distance")
-                            .font(.caption)
-                            .bold()
- 
-                        Button {
-                            navigationCoordinator.goToView(targetView: StatisticsProgressHeaderView.NavigationTarget.DistanceStatisticsView)
-                        } label: {
-                            
-                            BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "distanceMeters", filterList: ["last", "this"]))
-                        }
-
-                    }
-                }
-                .frame(width: frameWidth)
-
-                Spacer()
-                
-                ZStack {
-                    
-                    RoundedRectangle(cornerRadius: 10)
-                        .stroke(timeByHRColor, lineWidth: 1)
-                    
-                    VStack {
-                        Text("Time")
-                            .font(.caption)
-                            .bold()
-
-                        Button {
-                            navigationCoordinator.goToView(targetView: StatisticsProgressHeaderView.NavigationTarget.HRStatisticsView)
-                        } label: {
-                            
-                            BarView(stackedBarChartData: statisticsManager.weekBuckets.asWeekStackedBarChartData(propertyName: "timeByZone", filterList: ["last", "this"]))
-                        }
-                    }
-                }
-                .frame(width: frameWidth)
+                SingleStatHeaderView(navigationCoordinator: navigationCoordinator,
+                                     title: "Time",
+                                     propertyName: "timeByZone",
+                                     foregroundColor: timeByHRColor,
+                                     navigationTarget: StatisticsProgressHeaderView.NavigationTarget.HRStatisticsView,
+                                     frameWidth: frameWidth)
 
                 Spacer()
 
             }
-            .frame(height: 120)
-            
         }
-        .frame(height: 120)
 
     }
 

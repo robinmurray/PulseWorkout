@@ -39,9 +39,9 @@ struct StatisticsProgressHeaderView: View {
 
 
         }
-        .frame(height: 140)
-        .padding()
-        .background(.gray.opacity(0.25))
+        .frame(height: 110)
+//        .padding()
+//        .background(.gray.opacity(0.25))
         .navigationDestination(for: NavigationTarget.self) { pathValue in
 
             if pathValue == .ActivityStatisticsView {

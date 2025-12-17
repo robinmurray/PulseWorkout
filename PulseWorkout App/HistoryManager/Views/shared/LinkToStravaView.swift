@@ -27,12 +27,25 @@ struct LinkToStravaView: View {
         if activityRecord.stravaSaveStatus == StravaSaveStatus.saved.rawValue {
             VStack {
 #if os(iOS)
-                Button(action: {
-                    if let stravaId = activityRecord.stravaId {
-                        viewOnStrava(recordId: stravaId)
+                if #available(iOS 26.0, *) {
+                    Button(action: {
+                        if let stravaId = activityRecord.stravaId {
+                            viewOnStrava(recordId: stravaId)
+                        }
+                    }) {
+                        Image("StravaIcon").resizable().frame(width: 30, height: 30)
                     }
-                }) {
-                    Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                    .buttonStyle(.glass)
+                    .glassEffect(.clear)
+                } else {
+                    // Fallback on earlier versions
+                    Button(action: {
+                        if let stravaId = activityRecord.stravaId {
+                            viewOnStrava(recordId: stravaId)
+                        }
+                    }) {
+                        Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                    }
                 }
 #endif
 #if os(watchOS)
