@@ -121,12 +121,28 @@ struct StravaSettingsView: View {
             GroupBox(label:
                         HStack {
                 Spacer()
-                Button("Fetch/Refresh Strava Records", action: {
-                    StravaFetchLatestActivities(after: stravaFetchFromDate,
-                                                completionHandler: { },
-                                                dataCache: dataCache).execute()
-                })
-                    .buttonStyle(.borderedProminent)
+                if #available(iOS 26.0, *) {
+                    Button("Fetch/Refresh Strava Records", action: {
+                        StravaFetchLatestActivities(after: stravaFetchFromDate,
+                                                    completionHandler: { },
+                                                    dataCache: dataCache).execute()
+                    })
+                    .buttonStyle(.glass)
+                    .glassEffect(.clear.tint(.blue))
+
+                } else {
+                    // Fallback on earlier versions
+                    Button("Fetch/Refresh Strava Records", action: {
+                        StravaFetchLatestActivities(after: stravaFetchFromDate,
+                                                    completionHandler: { },
+                                                    dataCache: dataCache).execute()
+                    })
+                        .buttonStyle(.borderedProminent)
+                }
+                
+
+                
+                
                 Spacer()
             }
                    // Label("Fetch/Refresh Strava Records", systemImage: "location.circle")
