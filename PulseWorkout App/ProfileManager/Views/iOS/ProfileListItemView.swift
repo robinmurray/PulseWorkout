@@ -17,83 +17,99 @@ struct ProfileListItemView: View {
     @ObservedObject var liveActivityManager: LiveActivityManager
     
     var body: some View {
-        VStack {
+        HStack {
             HStack {
-                VStack {
-                    HStack {
-                        Image(systemName: HKWorkoutActivityType( rawValue: profile.workoutTypeId )!.iconImage)
+                if #available(iOS 26.0, *) {
+                    Button {
+                        liveActivityManager.startWorkout(activityProfile: profile)
+                        // Set last used date on profile and save to user defaults
+                        // Do this after starting workout as may change list binding!!
+                        profileManager.update(activityProfile: profile, onlyIfChanged: false)
                         
-                        Text(profile.name)
+                        navigationCoordinator.selectedProfile = profile
+                        navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.LiveMetricsView)
                         
-                        Spacer()
+                    } label: {
+                        HStack{
+                            Image(systemName: HKWorkoutActivityType( rawValue: profile.workoutTypeId )!.iconImage)
+                            
+                            Text(profile.name)
                         
+                        }
                     }
-                    .foregroundStyle(.orange)
-                    .font(.title3)
-                    
-                    HStack {
-                        HStack {
-                            Image(systemName: "arrow.down.heart.fill")
-                            Text(profile.loLimitAlarmActive ? String(profile.loLimitAlarm) : "___")
-                        }.foregroundStyle(profile.loLimitAlarmActive ? .red : .gray)
-                        HStack {
-                            Image(systemName: "arrow.up.heart.fill")
-                            Text(profile.hiLimitAlarmActive ? String(profile.hiLimitAlarm) : "___")
-                        }.foregroundStyle(profile.hiLimitAlarmActive ? .red : .gray)
+                    .buttonStyle(.glass)
+                    .glassEffect(.regular)
+                } else {
+                    // Fallback on earlier versions
+                    Button {
+                        liveActivityManager.startWorkout(activityProfile: profile)
+                        // Set last used date on profile and save to user defaults
+                        // Do this after starting workout as may change list binding!!
+                        profileManager.update(activityProfile: profile, onlyIfChanged: false)
                         
-                        Spacer()
+                        navigationCoordinator.selectedProfile = profile
+                        navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.LiveMetricsView)
+                        
+                    } label: {
+                        HStack{
+                            Image(systemName: HKWorkoutActivityType( rawValue: profile.workoutTypeId )!.iconImage)
+                            
+                            Text(profile.name)
+                        
+                        }
                     }
-                    .foregroundStyle(heartRateColor)
-                    
+                    .buttonStyle(.bordered)
                 }
                 
-                Spacer()
-                Button {
-                    liveActivityManager.startWorkout(activityProfile: profile)
-                    // Set last used date on profile and save to user defaults
-                    // Do this after starting workout as may change list binding!!
-                    profileManager.update(activityProfile: profile, onlyIfChanged: false)
-                    
-                    navigationCoordinator.selectedProfile = profile
-                    navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.LiveMetricsView)
-
-                } label: {
-                    HStack{
-                        Text("Start").font(.title)
-                        Image(systemName: "play.circle").font(.title)
-                        
-                    }
-                    
-                }
-                .tint(Color.green)
-                .buttonStyle(.bordered)
                 
-
-            }
-
-            HStack {
-                Button {
-                    navigationCoordinator.selectedProfile = profile
-                    navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.ProfileDetailView)
-
-                } label: {
-                    HStack{
-                        Image(systemName: "square.and.pencil")
-                            .background(Color.clear)
-                            .clipShape(Circle())
-                            .buttonStyle(PlainButtonStyle())
-                        Text("Edit")
-                    }
-                    .foregroundColor(Color.blue)
-                    
-                }
-                .tint(Color.blue)
-                .buttonStyle(BorderlessButtonStyle())
-
                 Spacer()
+                
             }
-
+            .foregroundStyle(.orange)
+            .font(.title3)
             
+            Spacer()
+            
+            HStack {
+                if #available(iOS 26.0, *) {
+                    Button {
+                        navigationCoordinator.selectedProfile = profile
+                        navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.ProfileDetailView)
+                        
+                    } label: {
+                        HStack{
+                            Image(systemName: "square.and.pencil")
+                                .background(Color.clear)
+                                .clipShape(Circle())
+                                .buttonStyle(PlainButtonStyle())
+                            Text("Edit")
+                        }
+                        .foregroundColor(Color.blue)
+                        
+                    }
+                    .buttonStyle(.glass)
+                    .glassEffect(.regular)
+                } else {
+                    // Fallback on earlier versions
+                    Button {
+                        navigationCoordinator.selectedProfile = profile
+                        navigationCoordinator.goToView(targetView: ProfileListView.NavigationTarget.ProfileDetailView)
+                        
+                    } label: {
+                        HStack{
+                            Image(systemName: "square.and.pencil")
+                                .background(Color.clear)
+                                .clipShape(Circle())
+                                .buttonStyle(PlainButtonStyle())
+                            Text("Edit")
+                        }
+                        .foregroundColor(Color.blue)
+                        
+                    }
+                    .tint(Color.blue)
+                    .buttonStyle(BorderlessButtonStyle())
+                }
+            }
         }
         .swipeActions {
             Button(role:.destructive) {

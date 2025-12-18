@@ -62,7 +62,7 @@ struct ProfileListView: View {
             }
             .listStyle(.grouped)
             .toolbar {
-                ToolbarItemGroup(placement: .topBarLeading) {
+                ToolbarItemGroup(placement: .primaryAction) {
                     HStack {
                         Button {
                             navigationCoordinator.goToView(targetView: NavigationTarget.NewProfileDetailView)
@@ -76,14 +76,8 @@ struct ProfileListView: View {
 
                     }
                 }
-                ToolbarItemGroup(placement: .topBarTrailing) {
-                    HStack {
-                        Text("Activity Profiles")
-                        Spacer()
-                        Image(systemName: "figure.run")
-                    }.foregroundColor(.orange)
-                }
             }
+            .navigationTitle("New Activity")
 
             
             Spacer()
