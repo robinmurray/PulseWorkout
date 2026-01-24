@@ -19,13 +19,31 @@ struct StartView: View {
 
     
     var body: some View {
-        VStack {
-            ProfileListView(navigationCoordinator: navigationCoordinator,
-                            profileManager: profileManager,
-                            liveActivityManager: liveActivityManager)
-
-            BTDeviceBarView(liveActivityManager: liveActivityManager)
-
+        
+        if #available(iOS 26.0, watchOS 26.0, *) {
+            ZStack {
+                ProfileListView(navigationCoordinator: navigationCoordinator,
+                                profileManager: profileManager,
+                                liveActivityManager: liveActivityManager)
+                
+                VStack {
+                    Spacer()
+                    BTDeviceBarView(liveActivityManager: liveActivityManager)
+                        .glassEffect(.clear)
+                        .frame(height: 80)
+                }
+            }
+            
+            } else {
+                // Fallback on earlier versions
+                VStack {
+                    ProfileListView(navigationCoordinator: navigationCoordinator,
+                                    profileManager: profileManager,
+                                    liveActivityManager: liveActivityManager)
+                    
+                    
+                    BTDeviceBarView(liveActivityManager: liveActivityManager)
+                }
             }
 
     }

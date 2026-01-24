@@ -69,7 +69,7 @@ struct SettingsResetView: View {
             
                 VStack {
                     HStack {
-                        if #available(iOS 26.0, *) {
+                        if #available(iOS 26.0, watchOS 26.0, *) {
                             Button("Clear local cache") {
                                 clearCache()
                             }
