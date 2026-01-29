@@ -154,8 +154,10 @@ class StravaFetchLatestActivities: StravaOperation {
             completionHandler: {
                 activityRecord in
 
-                /// Save or update the record
-                activityRecord.save()
+                /// Save or update the record in main thread to avoid race conditions
+                DispatchQueue.main.async {
+                    activityRecord.save()
+                }
                 
                 if let notifier = self.asyncProgressNotifier {
                     notifier.majorIncrement(message: "Saving / Updating : \(activityRecord.name)")

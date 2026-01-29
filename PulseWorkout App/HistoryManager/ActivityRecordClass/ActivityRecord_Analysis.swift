@@ -431,35 +431,35 @@ extension ActivityRecord {
             averagePower = 0
         }
 
-        let startTime = trackPoints[0].time
-        averageSegmentSize = getAxisTimeGap(elapsedTimeSeries: trackPoints.map( { Int($0.time.timeIntervalSince(startTime)) }))
-        HRSegmentAverages = segmentAverageSeries(
-            segmentSize: averageSegmentSize!,
-            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startTime)) }),
-            inputSeries: trackPoints.map( { $0.heartRate }),
-            includeZeros: true,
-            returnFullSeries: false).map( { Int($0) })
+        if trackPoints.count > 0 {
+            let startTime = trackPoints[0].time
+            averageSegmentSize = getAxisTimeGap(elapsedTimeSeries: trackPoints.map( { Int($0.time.timeIntervalSince(startTime)) }))
+            HRSegmentAverages = segmentAverageSeries(
+                segmentSize: averageSegmentSize!,
+                xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startTime)) }),
+                inputSeries: trackPoints.map( { $0.heartRate }),
+                includeZeros: true,
+                returnFullSeries: false).map( { Int($0) })
 
-        powerSegmentAverages = segmentAverageSeries(
-            segmentSize: averageSegmentSize!,
-            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startTime)) }),
-            inputSeries: trackPoints.map( { Double($0.watts ?? 0) }),
-            includeZeros: settingsManager.avePowerZeros,
-            returnFullSeries: false).map( { Int($0) })
+            powerSegmentAverages = segmentAverageSeries(
+                segmentSize: averageSegmentSize!,
+                xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startTime)) }),
+                inputSeries: trackPoints.map( { Double($0.watts ?? 0) }),
+                includeZeros: settingsManager.avePowerZeros,
+                returnFullSeries: false).map( { Int($0) })
 
-        cadenceSegmentAverages = segmentAverageSeries(
-            segmentSize: averageSegmentSize!,
-            xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startTime)) }),
-            inputSeries: trackPoints.map( { Double($0.cadence ?? 0) }),
-            includeZeros: settingsManager.aveCadenceZeros,
-            returnFullSeries: false).map( { Int($0) })
+            cadenceSegmentAverages = segmentAverageSeries(
+                segmentSize: averageSegmentSize!,
+                xAxisSeries: trackPoints.map( { Double($0.time.timeIntervalSince(startTime)) }),
+                inputSeries: trackPoints.map( { Double($0.cadence ?? 0) }),
+                includeZeros: settingsManager.aveCadenceZeros,
+                returnFullSeries: false).map( { Int($0) })
 
-        self.logger.info("averageSegmentSize : \(self.averageSegmentSize ?? 0)")
-        self.logger.info("HRSegmentAverages : \(self.HRSegmentAverages)")
-        self.logger.info("powerSegmentAverages : \(self.powerSegmentAverages)")
-        self.logger.info("cadenceSegmentAverages : \(self.cadenceSegmentAverages)")
-
-
+            self.logger.info("averageSegmentSize : \(self.averageSegmentSize ?? 0)")
+            self.logger.info("HRSegmentAverages : \(self.HRSegmentAverages)")
+            self.logger.info("powerSegmentAverages : \(self.powerSegmentAverages)")
+            self.logger.info("cadenceSegmentAverages : \(self.cadenceSegmentAverages)")
+        }
 
     }
 
