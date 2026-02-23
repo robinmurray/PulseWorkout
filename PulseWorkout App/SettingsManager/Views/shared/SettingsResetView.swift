@@ -67,36 +67,69 @@ struct SettingsResetView: View {
         Form {
             Text("Version: \(getAppVersion()) (Build: \(getBuildNumber()))")
             
-                VStack {
-                    HStack {
-                        if #available(iOS 26.0, watchOS 26.0, *) {
-                            Button("Clear local cache") {
-                                clearCache()
-                            }
-                            .buttonStyle(.glass)
-                            .glassEffect(.clear.tint(.blue))
-                            
-                        } else {
-                            // Fallback on earlier versions
-                            Button("Clear local cache") {
-                                clearCache()
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(Color.blue)
+            VStack {
+                HStack {
+                    if #available(iOS 26.0, watchOS 26.0, *) {
+                        Button("Clear local cache") {
+                            clearCache()
                         }
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear.tint(.blue))
                         
-                        
-                        Spacer()
+                    } else {
+                        // Fallback on earlier versions
+                        Button("Clear local cache") {
+                            clearCache()
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Color.blue)
                     }
-
                     
-                    HStack {
-                        Text("Delete locally stored activities that have not been uploaded to cloud storage.")
-                            .font(.footnote).foregroundColor(.gray)
-                        Spacer()
-                    }
-
+                    
+                    Spacer()
                 }
+
+                
+                HStack {
+                    Text("Delete locally stored activities that have not been uploaded to cloud storage.")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+
+            }
+            
+            VStack {
+                HStack {
+                    if #available(iOS 26.0, watchOS 26.0, *) {
+                        Button("Refresh all caches") {
+                            DataCache.shared.refreshUI()
+                        }
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear.tint(.blue))
+                        
+                    } else {
+                        // Fallback on earlier versions
+                        Button("Refresh all caches") {
+                            DataCache.shared.refreshUI()
+                        }
+                        .buttonStyle(.bordered)
+                        .tint(Color.blue)
+                    }
+                    
+                    
+                    Spacer()
+                }
+
+                
+                HStack {
+                    Text("Refresh all device caches from iCloud.")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+
+            }
+            
+            
 
             #if os(iOS)
             VStack {
@@ -113,7 +146,7 @@ struct SettingsResetView: View {
                             
                         })
                         {
-                            Text("Rebuild Statistics")
+                            Text("Rebuild statistics")
                         }
                         .buttonStyle(.glass)
                         .glassEffect(.clear.tint(.blue))
@@ -132,7 +165,7 @@ struct SettingsResetView: View {
                             
                         })
                         {
-                            Text("Rebuild Statistics")
+                            Text("Rebuild statistics")
                         }
                         .buttonStyle(.bordered)
                         .tint(Color.blue)
@@ -174,7 +207,7 @@ struct SettingsResetView: View {
                             
                         })
                         {
-                            Text("Re-analyze Activities")
+                            Text("Re-analyze activities")
                         }
                         .buttonStyle(.glass)
                         .glassEffect(.clear.tint(.blue))
@@ -193,7 +226,7 @@ struct SettingsResetView: View {
                             
                         })
                         {
-                            Text("Re-analyze Activities")
+                            Text("Re-analyze activities")
                         }
                         .buttonStyle(.bordered)
                         .tint(Color.blue)
@@ -225,7 +258,7 @@ struct SettingsResetView: View {
                                 stravaFetchDateText = setStravaFetchDateText()
                             })
                             {
-                                Text("Set Strava Fetch Back 5 Days")
+                                Text("Set Strava fetch back 5 days")
                             }
                             .buttonStyle(.glass)
                             .glassEffect(.clear.tint(.blue))
@@ -239,7 +272,7 @@ struct SettingsResetView: View {
                                 stravaFetchDateText = setStravaFetchDateText()
                             })
                             {
-                                Text("Set Strava Fetch Back 5 Days")
+                                Text("Set Strava fetch back 5 days")
                             }
                             .buttonStyle(.bordered)
                             .tint(Color.blue)
@@ -267,6 +300,39 @@ struct SettingsResetView: View {
             }
 
             #endif
+
+            
+            VStack {
+                HStack {
+                    if #available(iOS 26.0, *) {
+
+                        ShareLink(Text("Share system logs"),
+                                  item: AppLogger.shared.fullLogURL(),
+                                  subject: Text("System Log Files"),
+                                  message: Text("Share Log Files"))
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear.tint(.blue))
+                        
+                    } else {
+                        // Fallback on earlier versions
+                        ShareLink(Text("Share system logs"),
+                                  item: AppLogger.shared.fullLogURL(),
+                                  subject: Text("System Log Files"),
+                                  message: Text("Share Log Files"))
+                    }
+                    
+                    Spacer()
+                }
+
+
+                HStack {
+                    Text("Export and share all system log files.")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
+            }
+
+            
             
             }
             .navigationTitle("Reset")

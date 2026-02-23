@@ -16,8 +16,7 @@ import CloudKit
 class StatisticsBucketArray: NSObject, Codable {
     
     let cacheFile = "statisticsCache.json"
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "statisticsBucketArray")
+    let logger = ComponentLogger(component: "StatisticsBucketArray")
     
     var elements: [StatisticsBucket] = []
     private var tempBuckets: [StatisticsBucket] = []

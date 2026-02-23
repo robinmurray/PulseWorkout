@@ -11,9 +11,8 @@ import os
 
 class MigrationManager: CloudKitOperation {
     
-    let localLogger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "migrationManager")
-
+    let localLogger = ComponentLogger(component: "MigrationManager")
+    
     var tempFileList: [CKRecord.ID : String] = [:]
 
     var processedRecordIndex = 0

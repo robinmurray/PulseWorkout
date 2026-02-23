@@ -25,8 +25,7 @@ struct BTDevice: Identifiable, Codable {
     var connectionState: DeviceConnectionState?
     var deviceInfo: [String:String]
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "BTDevice")
+    let logger = ComponentLogger(component: "BTDevice", persistent: false)
     
     // set CodingKeys to exclude connectionState from coding/decoding
     private enum CodingKeys: String, CodingKey {

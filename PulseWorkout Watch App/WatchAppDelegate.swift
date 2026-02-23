@@ -14,9 +14,8 @@ class WatchAppDelegate: NSObject, WKApplicationDelegate {
 
     var notificationManager: CloudKitNotificationManager?
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "appDelegate")
-
+    let logger = ComponentLogger(component: "WatchAppDelegate")
+    
     func applicationDidFinishLaunching() {
         WKExtension.shared().registerForRemoteNotifications()
     }
@@ -51,7 +50,9 @@ class WatchAppDelegate: NSObject, WKApplicationDelegate {
         // notification type should be query type
         if (notification?.subscriptionID == "zone-changes") {
 
-            notificationManager!.handleNotification(completionHandler: completionHandler)
+            DataCache.shared.refreshUI()
+            completionHandler(.newData)
+//            notificationManager!.handleNotification(completionHandler: completionHandler)
 
         }
     }

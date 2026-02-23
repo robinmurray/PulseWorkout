@@ -12,9 +12,8 @@ import os
 
 class BTDeviceList: NSObject, ObservableObject {
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "BTDeviceList")
-
+    let logger = ComponentLogger(component: "BTDeviceList", persistent: false)
+    
     override var description: String {
         return "Device List description <HERE>"
     }

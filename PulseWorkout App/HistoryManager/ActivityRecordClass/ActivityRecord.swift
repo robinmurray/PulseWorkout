@@ -196,9 +196,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
 
     var trackPoints: [TrackPoint] = []
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "activityRecord")
-    
+    let logger = ComponentLogger(component: "ActivityRecord")
     
     // MARK: - Initialisers
 

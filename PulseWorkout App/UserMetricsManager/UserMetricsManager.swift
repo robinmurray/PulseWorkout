@@ -13,8 +13,7 @@ import Combine
 
 class UserMetricsManager: NSObject, ObservableObject  {
         
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "UserMetricsManager")
+    let logger = ComponentLogger(component: "UserMetricsManager")
     
     /// Save settings to CloudKit
     func saveToCloudKit(ckRecord: CKRecord, completionFunction: @escaping (CKRecord.ID) -> Void) {

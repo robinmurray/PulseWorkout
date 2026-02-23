@@ -96,9 +96,8 @@ struct ActivityProfile: Codable, Identifiable, Equatable {
     /// Initialise profile from CKRecord
     init(record: CKRecord) {
         
-        let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                            category: "ActivityProfile")
-
+        let logger = ComponentLogger(component: "ActivityProfile")
+        
         if record.recordType != "ActivityProfile" {
             logger.error("Incorrect record type for Activity Profile")
 

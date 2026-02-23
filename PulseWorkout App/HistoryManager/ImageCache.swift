@@ -17,8 +17,7 @@ class ImageCache: NSObject {
     var dataCache: DataCache
     var testMode = false
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "imageCache")
+    let logger = ComponentLogger(component: "ImageCache")
     
     init(dataCache: DataCache, testMode: Bool = false) {
         self.dataCache = dataCache

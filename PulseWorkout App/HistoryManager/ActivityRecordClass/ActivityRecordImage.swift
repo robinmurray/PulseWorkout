@@ -26,8 +26,7 @@ class ActivityRecordImage: NSObject {
     var dataCache: DataCache = DataCache.shared
     var thisImage: UIImage?
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "activityRecordImage")
+    let logger = ComponentLogger(component: "ActivityRecordImage")
     
     init(activityRecord: ActivityRecord, activityImageType: ActivityImageType) {
         self.activityRecord = activityRecord

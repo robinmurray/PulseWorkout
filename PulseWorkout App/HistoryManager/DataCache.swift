@@ -149,8 +149,8 @@ class DataCache: NSObject, Codable, ObservableObject {
        
     let cacheSize = 50
     let cacheFile = "activityCache.act"
-    let localLogger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                             category: "dataCache")
+    let localLogger = ComponentLogger(component: "DataCache")
+
     private var flushingCache: Bool = false
     private var activities: [ActivityRecord] = []
     private var refreshList: [ActivityRecord] = []

@@ -76,8 +76,7 @@ class StravaFetchActivities: StravaOperation {
     
     class func dummyCompletion( fetchedActivities: [StravaActivity]) {
         
-        let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                            category: "stravaOperation")
+        let logger = ComponentLogger(component: "StravaOperation")
         
         var activities: [StravaActivity] = []
         activities = fetchedActivities

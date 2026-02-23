@@ -12,8 +12,8 @@ import os
 import StravaSwift
 
 class SceneDelegate: NSObject, UIWindowSceneDelegate {
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "sceneDelegate")
+
+    let logger = ComponentLogger(component: "SceneDelegate")
     
 //    let strava: StravaClient
     let settingsManager: SettingsManager = SettingsManager.shared
@@ -95,8 +95,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
     
     var notificationManager: CloudKitNotificationManager?
   
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "appDelegate")
+    let logger = ComponentLogger(component: "AppDelegate")
     
     let settingsManager: SettingsManager = SettingsManager.shared
 //    let strava: StravaClient

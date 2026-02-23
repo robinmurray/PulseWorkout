@@ -332,6 +332,10 @@
 		E4E8BAAF2D70C0AE0098D8E3 /* StravaSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4E8BAAD2D70C0AE0098D8E3 /* StravaSettingsView.swift */; };
 		E4E8BAB32D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */; };
 		E4E8BAB42D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = E48D4D622D6325D0001104AC /* AltitudeChartImage.swift */; };
+		E4F39EF02F46149200B90DBA /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F39EEF2F46149200B90DBA /* AppLogger.swift */; };
+		E4F39EF12F46149200B90DBA /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F39EEF2F46149200B90DBA /* AppLogger.swift */; };
+		E4F39EF22F46149200B90DBA /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F39EEF2F46149200B90DBA /* AppLogger.swift */; };
+		E4F39EF32F46149200B90DBA /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F39EEF2F46149200B90DBA /* AppLogger.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -544,6 +548,7 @@
 		E4E4DFED29E88A6200979AA2 /* ProfileListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileListItemView.swift; sourceTree = "<group>"; };
 		E4E8BAAA2D70C0900098D8E3 /* SettingsResetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsResetView.swift; sourceTree = "<group>"; };
 		E4E8BAAD2D70C0AE0098D8E3 /* StravaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StravaSettingsView.swift; sourceTree = "<group>"; };
+		E4F39EEF2F46149200B90DBA /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -751,6 +756,7 @@
 				E4AEC0872D1EC5CA00DC0082 /* Constants.swift */,
 				E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */,
 				E4CD4B272D91409900BC1FC3 /* AsyncProgress.swift */,
+				E4F39EEF2F46149200B90DBA /* AppLogger.swift */,
 				E423138B2CF9D1BA00E6F4FB /* Controls */,
 				E4C11F5629CCC91F008DB769 /* BluetoothManager */,
 				E46121EB2AAB67C900E07749 /* SettingsManager */,
@@ -1518,6 +1524,7 @@
 				E4941E4F2CD2A1120063421F /* BTDeviceInfoView.swift in Sources */,
 				E4CD4B442DA821B300BC1FC3 /* CKActivityQuery.swift in Sources */,
 				E4BEF4492EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */,
+				E4F39EF32F46149200B90DBA /* AppLogger.swift in Sources */,
 				E4094BC82CD1512C00915CCB /* ActivityChartTraceBuilder.swift in Sources */,
 				E413D41B2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
 				E49CB5E62D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
@@ -1571,6 +1578,7 @@
 			files = (
 				E400B6FA2DFC17FB00620569 /* CKProfileQuery.swift in Sources */,
 				E4BEF4462EA7E71000856924 /* CKStatisticBucketQuery.swift in Sources */,
+				E4F39EF12F46149200B90DBA /* AppLogger.swift in Sources */,
 				E400B6F12DFC175A00620569 /* StravaOperation.swift in Sources */,
 				E492C0202D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E4CD4B252D8FFF8900BC1FC3 /* AlertView.swift in Sources */,
@@ -1701,6 +1709,7 @@
 				E46EF08429537CA1006FA603 /* PulseWorkout_Watch_App.swift in Sources */,
 				E4C11F5129C49744008DB769 /* BTContentView.swift in Sources */,
 				E4CD4B5D2DB2A99A00BC1FC3 /* UserMetricsView.swift in Sources */,
+				E4F39EF02F46149200B90DBA /* AppLogger.swift in Sources */,
 				E4E8BAAC2D70C0900098D8E3 /* SettingsResetView.swift in Sources */,
 				E4C11F5B29CCCC43008DB769 /* BTDevice.swift in Sources */,
 				E4CD4B572DB2879C00BC1FC3 /* CKUserMetricQuery.swift in Sources */,
@@ -1769,6 +1778,7 @@
 				E492C0172D1DC9B20050B6E8 /* HapticsSettingsView.swift in Sources */,
 				E400B6FD2DFC188C00620569 /* CKUserMetricQuery.swift in Sources */,
 				E400B7042DFC19B600620569 /* HKExtensions.swift in Sources */,
+				E4F39EF22F46149200B90DBA /* AppLogger.swift in Sources */,
 				E400B6ED2DFC173600620569 /* Constants.swift in Sources */,
 				E4E8BAB42D76DB140098D8E3 /* AltitudeChartImage.swift in Sources */,
 				E413D4212D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
@@ -1843,7 +1853,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -1886,7 +1896,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -1927,7 +1937,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1952,7 +1962,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -1976,7 +1986,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2004,7 +2014,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
@@ -2144,7 +2154,7 @@
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -2184,7 +2194,7 @@
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				ENABLE_PREVIEWS = YES;
@@ -2223,7 +2233,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
 				MARKETING_VERSION = 1.0;
@@ -2241,7 +2251,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
 				MARKETING_VERSION = 1.0;
@@ -2260,7 +2270,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -2281,7 +2291,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -2302,7 +2312,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
@@ -2323,7 +2333,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1326;
+				CURRENT_PROJECT_VERSION = 1345;
 				DEVELOPMENT_TEAM = 4CBW377VZ7;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";

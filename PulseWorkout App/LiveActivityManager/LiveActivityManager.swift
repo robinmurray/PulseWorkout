@@ -85,8 +85,7 @@ class LiveActivityManager : NSObject, ObservableObject {
 
     let settingsManager: SettingsManager = SettingsManager.shared
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "liveActivityManager")
+    let logger = ComponentLogger(component: "LiveActivityManager")    
 
     init(profileName: String = "",
          locationManager: LocationManager,

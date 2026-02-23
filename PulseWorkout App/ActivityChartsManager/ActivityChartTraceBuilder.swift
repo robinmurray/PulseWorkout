@@ -51,9 +51,8 @@ class ActivityChartTraceBuilder: NSObject {
     var rollingAverageCount: Int = 1        // Whether to smooth readings with a rolling average over this number of values
     var averagesIncludeZeros: Bool
     
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "ActivityChartTraceBuilder")
-    
+    let logger = ComponentLogger(component: "ActivityChartTraceBuilder")
+
     let NULL_TRACE: ActivityChartTraceData = ActivityChartTraceData(
         id: "",
         colorScheme: .gray,

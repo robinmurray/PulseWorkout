@@ -23,8 +23,7 @@ class SettingsManager: NSObject, ObservableObject  {
     
     let CK_RECORD_NAME: String = "App_Settings"
     let CK_RECORD_TYPE = "Settings"
-    let logger = Logger(subsystem: "com.RMurray.PulseWorkout",
-                        category: "SettingsManager")
+    let logger = ComponentLogger(component: "SettingsManager")
     
     ///Access SettingsManager through SettingsManager.shared
     public static let shared = SettingsManager()
