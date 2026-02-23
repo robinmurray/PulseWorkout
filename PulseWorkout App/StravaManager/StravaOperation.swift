@@ -61,7 +61,7 @@ class StravaOperation: NSObject, ObservableObject {
     var forceReauth: Bool
     var forceRefresh: Bool
     
-    let logger = ComponentLogger(component: "StravaOperation")
+    let logger = ComponentLogger("StravaOperation")
     //Logger(subsystem: "com.RMurray.PulseWorkout",
     //                    category: "stravaOperation")
     

@@ -15,7 +15,7 @@ final class ComponentLogger {
     private var component: String
     private var persistent: Bool
     
-    init(component: String, persistent: Bool = true) {
+    init(_ component: String, persistent: Bool = true) {
         self.component = component
         self.persistent = persistent
     }

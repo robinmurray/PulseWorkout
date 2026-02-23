@@ -85,7 +85,7 @@ class LiveActivityManager : NSObject, ObservableObject {
 
     let settingsManager: SettingsManager = SettingsManager.shared
     
-    let logger = ComponentLogger(component: "LiveActivityManager")    
+    let logger = ComponentLogger("LiveActivityManager")    
 
     init(profileName: String = "",
          locationManager: LocationManager,

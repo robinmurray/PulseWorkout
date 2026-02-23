@@ -34,7 +34,7 @@ extension BTPeripheralManager: CBPeripheralManagerDelegate {
     
     func peripheralManagerDidUpdateState(_ peripheral: CBPeripheralManager) {
         
-        let logger = ComponentLogger(component: "BTPeripheralManager", persistent: false)
+        let logger = ComponentLogger("BTPeripheralManager", persistent: false)
 
         switch peripheral.state {
             case .unknown:

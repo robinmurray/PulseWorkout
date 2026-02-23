@@ -26,7 +26,7 @@ struct PulseWorkout_Watch_App: App {
     
     var cloudKitNotificationManager: CloudKitNotificationManager
     
-    let logger = ComponentLogger(component: "PulseWorkout_Watch_App")
+    let logger = ComponentLogger("PulseWorkout_Watch_App")
     
     init() {
         let myCloudKitNotificationManager = CloudKitNotificationManager()

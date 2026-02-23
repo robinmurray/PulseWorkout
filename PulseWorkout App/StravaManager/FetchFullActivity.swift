@@ -56,7 +56,7 @@ class StravaFetchFullActivity: StravaOperation {
     
     func onFetchActivityStreams(streams: [StravaSwift.Stream]) {
         
-        let logger = ComponentLogger(component: "StravaOperation")
+        let logger = ComponentLogger("StravaOperation")
         
         logger.info("Strava streams : \(streams)")
         
@@ -74,7 +74,7 @@ class StravaFetchFullActivity: StravaOperation {
     
     class func dummyCompletion(activityRecord: ActivityRecord) {
         
-        let logger = ComponentLogger(component: "StravaOperation")
+        let logger = ComponentLogger("StravaOperation")
         logger.info("Activity Record : \(activityRecord)")
         
     }
@@ -139,7 +139,7 @@ class StravaFetchActivityStreams: StravaOperation {
     
     class func dummyCompletion(streams: [StravaSwift.Stream]) {
         
-        let logger = ComponentLogger(component: "StravaOperation")
+        let logger = ComponentLogger("StravaOperation")
     
         logger.info("Strava streams : \(streams)")
         

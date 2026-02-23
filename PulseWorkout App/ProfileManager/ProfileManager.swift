@@ -15,7 +15,7 @@ class ProfileManager: NSObject, ObservableObject {
     @Published var profiles: [ActivityProfile] = []
     private var lastSavedProfiles: [ActivityProfile] = []
     
-    let localLogger = ComponentLogger(component: "ProfileManager")
+    let localLogger = ComponentLogger("ProfileManager")
     
     override init() {
 

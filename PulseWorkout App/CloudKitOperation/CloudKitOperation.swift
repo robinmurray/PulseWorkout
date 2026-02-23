@@ -19,7 +19,7 @@ class CloudKitOperation: NSObject {
     var zoneName: String
     var zoneID: CKRecordZone.ID
     
-    let logger = ComponentLogger(component: "CloudKitOperation")
+    let logger = ComponentLogger("CloudKitOperation")
     
     override init() {
         containerName = "iCloud.MurrayNet.Aleph"

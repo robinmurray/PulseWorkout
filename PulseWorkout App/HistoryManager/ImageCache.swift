@@ -17,7 +17,7 @@ class ImageCache: NSObject {
     var dataCache: DataCache
     var testMode = false
     
-    let logger = ComponentLogger(component: "ImageCache")
+    let logger = ComponentLogger("ImageCache")
     
     init(dataCache: DataCache, testMode: Bool = false) {
         self.dataCache = dataCache

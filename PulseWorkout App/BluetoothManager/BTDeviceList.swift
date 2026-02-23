@@ -12,7 +12,7 @@ import os
 
 class BTDeviceList: NSObject, ObservableObject {
     
-    let logger = ComponentLogger(component: "BTDeviceList", persistent: false)
+    let logger = ComponentLogger("BTDeviceList", persistent: false)
     
     override var description: String {
         return "Device List description <HERE>"

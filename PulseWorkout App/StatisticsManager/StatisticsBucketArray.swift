@@ -16,7 +16,7 @@ import CloudKit
 class StatisticsBucketArray: NSObject, Codable {
     
     let cacheFile = "statisticsCache.json"
-    let logger = ComponentLogger(component: "StatisticsBucketArray")
+    let logger = ComponentLogger("StatisticsBucketArray")
     
     var elements: [StatisticsBucket] = []
     private var tempBuckets: [StatisticsBucket] = []

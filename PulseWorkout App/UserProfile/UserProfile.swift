@@ -20,7 +20,7 @@ class UserProfile: NSObject, ObservableObject  {
     ///Access UserProfile through UserProfile.shared
     public static let shared = SettingsManager()
     
-    let logger = ComponentLogger(component: "UserProfile")
+    let logger = ComponentLogger("UserProfile")
 
     /// Return user profile FTP at the given date
     func FTP(at: Date) -> Int? {

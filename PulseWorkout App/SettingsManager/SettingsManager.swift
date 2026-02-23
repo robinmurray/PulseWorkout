@@ -23,7 +23,7 @@ class SettingsManager: NSObject, ObservableObject  {
     
     let CK_RECORD_NAME: String = "App_Settings"
     let CK_RECORD_TYPE = "Settings"
-    let logger = ComponentLogger(component: "SettingsManager")
+    let logger = ComponentLogger("SettingsManager")
     
     ///Access SettingsManager through SettingsManager.shared
     public static let shared = SettingsManager()

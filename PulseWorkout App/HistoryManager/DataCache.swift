@@ -23,6 +23,8 @@ func getCacheDirectory(testMode: Bool = false) -> URL? {
                                                 withIntermediateDirectories: true)
         try FileManager.default.createDirectory(at: cachePath.appendingPathComponent(ActivityImageType.altitudeImage.rawValue),
                                                 withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: cachePath.appendingPathComponent("Logs"),
+                                                withIntermediateDirectories: true)
     } catch {
         print("error \(error.localizedDescription)")
         return nil
@@ -149,7 +151,7 @@ class DataCache: NSObject, Codable, ObservableObject {
        
     let cacheSize = 50
     let cacheFile = "activityCache.act"
-    let localLogger = ComponentLogger(component: "DataCache")
+    let localLogger = ComponentLogger("DataCache")
 
     private var flushingCache: Bool = false
     private var activities: [ActivityRecord] = []

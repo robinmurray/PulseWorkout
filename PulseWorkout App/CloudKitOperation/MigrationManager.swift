@@ -11,7 +11,7 @@ import os
 
 class MigrationManager: CloudKitOperation {
     
-    let localLogger = ComponentLogger(component: "MigrationManager")
+    let localLogger = ComponentLogger("MigrationManager")
     
     var tempFileList: [CKRecord.ID : String] = [:]
 

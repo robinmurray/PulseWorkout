@@ -13,7 +13,7 @@ import Combine
 
 class UserMetricsManager: NSObject, ObservableObject  {
         
-    let logger = ComponentLogger(component: "UserMetricsManager")
+    let logger = ComponentLogger("UserMetricsManager")
     
     /// Save settings to CloudKit
     func saveToCloudKit(ckRecord: CKRecord, completionFunction: @escaping (CKRecord.ID) -> Void) {

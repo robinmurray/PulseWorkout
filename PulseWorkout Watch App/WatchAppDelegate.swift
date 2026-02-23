@@ -14,7 +14,7 @@ class WatchAppDelegate: NSObject, WKApplicationDelegate {
 
     var notificationManager: CloudKitNotificationManager?
     
-    let logger = ComponentLogger(component: "WatchAppDelegate")
+    let logger = ComponentLogger("WatchAppDelegate")
     
     func applicationDidFinishLaunching() {
         WKExtension.shared().registerForRemoteNotifications()

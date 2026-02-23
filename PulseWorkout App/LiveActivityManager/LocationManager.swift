@@ -54,7 +54,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     var autoPauseStart: Date?
     
     let GeoLocationAccuracy: Double = 10
-    let logger = ComponentLogger(component: "LocationManager")
+    let logger = ComponentLogger("LocationManager")
 
     
     override init() {

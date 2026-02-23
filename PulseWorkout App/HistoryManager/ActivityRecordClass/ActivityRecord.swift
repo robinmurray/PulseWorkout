@@ -196,7 +196,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
 
     var trackPoints: [TrackPoint] = []
     
-    let logger = ComponentLogger(component: "ActivityRecord")
+    let logger = ComponentLogger("ActivityRecord")
     
     // MARK: - Initialisers
 

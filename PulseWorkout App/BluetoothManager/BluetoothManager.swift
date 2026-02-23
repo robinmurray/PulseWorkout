@@ -70,7 +70,7 @@ class BTDevicesController: NSObject, ObservableObject {
     
     let cyclePower3sBuilder = TimeAverageBuilder(seconds: 3)
     
-    let logger = ComponentLogger(component: "BTDevicesController", persistent: false)
+    let logger = ComponentLogger("BTDevicesController", persistent: false)
 
     init(requestedServices: [CBUUID]?) {
         
