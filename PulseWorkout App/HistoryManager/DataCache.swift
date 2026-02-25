@@ -151,7 +151,7 @@ class DataCache: NSObject, Codable, ObservableObject {
        
     let cacheSize = 50
     let cacheFile = "activityCache.act"
-    let localLogger = ComponentLogger("DataCache")
+    let localLogger = ComponentLogger(String(describing: type(of: DataCache.self)))
 
     private var flushingCache: Bool = false
     private var activities: [ActivityRecord] = []

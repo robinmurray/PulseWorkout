@@ -126,6 +126,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var profileMaxHR: Int?
     var profileRestHR: Int?
     var estimatedEPOC: Double?
+    var TRIMP: Double?
     
     var profileThresholdHR: Int?
     var estimatedTSSbyHR: Double?
@@ -252,6 +253,7 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         profileMaxHR = try container.decode(Int?.self, forKey: .profileMaxHR)
         profileRestHR = try container.decode(Int?.self, forKey: .profileRestHR)
         estimatedEPOC = try container.decode(Double?.self, forKey: .estimatedEPOC)
+        TRIMP = try container.decode(Double?.self, forKey: .TRIMP)
 
         movingTimebyPowerZone = try container.decode([Double].self, forKey: .movingTimebyPowerZone)
         profileThresholdHR = try container.decode(Int?.self, forKey: .profileThresholdHR)
@@ -331,7 +333,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
          try container.encode(profileMaxHR, forKey: .profileMaxHR)
          try container.encode(profileRestHR, forKey: .profileRestHR)
          try container.encode(estimatedEPOC, forKey: .estimatedEPOC)
-         
+         try container.encode(TRIMP, forKey: .TRIMP)
+
          try container.encode(movingTimebyPowerZone, forKey: .movingTimebyPowerZone)
          try container.encode(profileThresholdHR, forKey: .profileThresholdHR)
          try container.encode(estimatedTSSbyHR, forKey: .estimatedTSSbyHR)
@@ -442,7 +445,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         profileMaxHR = fromActivityRecord.profileMaxHR
         profileRestHR = fromActivityRecord.profileRestHR
         estimatedEPOC = fromActivityRecord.estimatedEPOC
-        
+        TRIMP = fromActivityRecord.TRIMP
+
         profileThresholdHR = fromActivityRecord.profileThresholdHR
         estimatedTSSbyHR = fromActivityRecord.estimatedTSSbyHR
         profileHRZoneLimits = fromActivityRecord.profileHRZoneLimits
@@ -685,7 +689,7 @@ extension ActivityRecord {
              stravaSaveStatus, stravaId, stravaUploadId, trackPointGap, TSS, movingTimebyPowerZone, TSSbyPowerZone,
              TSSSummable, TSSSummableByPowerZone, intensityFactor, normalisedPower, estimatedVO2Max,
              profileWeightKG, profileMaxHR, profileRestHR, profileFTP, profilePowerZoneLimits, profileThresholdHR, profileHRZoneLimits,
-             estimatedEPOC, estimatedTSSbyHR, TSSEstimatebyHRZone, movingTimebyHRZone,
+             estimatedEPOC, TRIMP, estimatedTSSbyHR, TSSEstimatebyHRZone, movingTimebyHRZone,
              totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, toUpdate, mapSnapshotURL,
              hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters, averageSegmentSize,
              HRSegmentAverages, powerSegmentAverages, cadenceSegmentAverages
