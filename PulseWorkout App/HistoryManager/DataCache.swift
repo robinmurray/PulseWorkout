@@ -185,27 +185,42 @@ class DataCache: NSObject, Codable, ObservableObject {
     func refreshUI(qualityOfService: QualityOfService = .userInitiated) {
         
         if !dirty() {
+            // Refresh dataCache, updatesUI and refreshes statistics on completion
             refreshCache(qualityOfService: qualityOfService)
         }
         else {
-            flushCache(qualityOfService: qualityOfService)
+            flushCache(qualityOfService: qualityOfService,
+                       completionFunction: refreshUI)
 
-            updateUI()
+//            updateUI()
         }
         
     }
     
     
+    func getActivityRecordToSaveList() -> [CKRecord] {
+    
+        let activityRecordsToSave = self.toBeSavedCKRecords() + self.toBeUpdatedCKRecords()
+        
+        for record in (self.toBeSavedCKRecords() + self.toBeUpdatedCKRecords()) {
+            if let act = self.activities.filter({ $0.recordName == record.recordID.recordName }).first {
+                act.setToSave(false)
+                act.toUpdate = false
+            }
+        }
+        return activityRecordsToSave
+    }
+    
     /// Push changes in cache to cloudkit - activity saves & deletes + update statistics as a single transaction
     /// Before saving get a new copy of statistics from CK and play any changes in to it from dirty cache
-    func flushCache(qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
+    func flushCache(qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS, completionFunction: @escaping (QualityOfService) -> Void = {_ in }) {
         
         // Only allow one flush operation to be in process.
         // If a second is called, it will not do anything, but the first
         // should notice the cache is dirty on completion so will flush again...
         if (dirty() && !flushingCache) {
 
-            self.localLogger.info("Refreshing statistics")
+            self.localLogger.info("Refreshing statistics before flushCache")
             statisticsManager.refresh(onRefreshCompletionFunc: {
 
                 if !self.flushingCache {
@@ -219,18 +234,37 @@ class DataCache: NSObject, Codable, ObservableObject {
                         self.statisticsManager.removeActivityFromStats(activity: activityRecord)
                     }
                     
-                    self.localLogger.info("Flushing cache with records \(self.toBeSavedCKRecords())")
-                
+                    _ = self.toBeSaved().map({ self.localLogger.info("Flush record - SAVE \($0.name)")})
+                    _ = self.toBeUpdated().map({ self.localLogger.info("Flush record - UPDATE \($0.name)")})
+                    _ = self.toBeDeleted().map({ self.localLogger.info("Flush record - DELETE \($0.name)")})
+
                     CKBlockSaveAndDeleteOperation(
-                        recordsToSave: self.toBeSavedCKRecords() + self.toBeUpdatedCKRecords() + self.statisticsManager.allCKRecords(),
+                        recordsToSave: self.getActivityRecordToSaveList() + self.statisticsManager.allCKRecords(),
                         recordIDsToDelete: self.toBeDeletedIDs(),
-                        recordSaveSuccessCompletionFunction: self.recordSaveCompletion,
+                        recordSaveSuccessCompletionFunction: { recordID in
+                            // First make sure processing an actiity record - stats records come through here
+                            guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
+                            savedActivityRecord.deleteTrackRecord()
+                            
+                            #if os(iOS)
+                            if savedActivityRecord.stravaSaveStatus == StravaSaveStatus.toSave.rawValue {
+                                savedActivityRecord.saveToStrava()
+                            }
+                            #endif
+                        },
+                        recordSaveFailureCompletionFunction: { recordID in
+                            // First make sure processing an actiity record - stats records come through here
+                            // Set record back to save if save fails
+                            guard let unsavedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
+                            unsavedActivityRecord.setToSave(true)
+                        },
                         recordDeleteSuccessCompletionFunction: self.removeFromCache,
                         blockSuccessCompletion: {
                             self.flushingCache = false
                             _ = self.write()
                             // If new changes whilst flush then flush again!
                             if self.dirty() {
+                                self.localLogger.info("Reflush cache")
                                 self.flushCache(qualityOfService: qualityOfService)
                             }
                         },
@@ -683,24 +717,6 @@ class DataCache: NSObject, Codable, ObservableObject {
                                completionFailureFunction: completionFailureFunction).execute()
         
     }
-    
-
-    func recordSaveCompletion(recordID: CKRecord.ID) -> Void {
-        guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
-        savedActivityRecord.deleteTrackRecord()
-        savedActivityRecord.setToSave(false)
-        savedActivityRecord.toUpdate = false
-        
-#if os(iOS)
-        if savedActivityRecord.stravaSaveStatus == StravaSaveStatus.toSave.rawValue {
-            savedActivityRecord.saveToStrava()
-        }
-#endif
-        
-//        _ = self.write()
-    }
-    
-
     
     
     func registerNotifications(notificationManager: CloudKitNotificationManager) {

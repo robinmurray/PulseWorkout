@@ -16,6 +16,7 @@ class CKBlockSaveAndDeleteOperation: CloudKitOperation {
     
     var recordsToSave: [CKRecord]
     var recordSaveSuccessCompletionFunction: (CKRecord.ID) -> Void
+    var recordSaveFailureCompletionFunction: (CKRecord.ID) -> Void
     var qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS
     var recordIDsToDelete: [CKRecord.ID]
     var recordDeleteSuccessCompletionFunction: (CKRecord.ID) -> Void
@@ -25,6 +26,7 @@ class CKBlockSaveAndDeleteOperation: CloudKitOperation {
     init(recordsToSave: [CKRecord],
          recordIDsToDelete: [CKRecord.ID],
          recordSaveSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void = {recordID in },
+         recordSaveFailureCompletionFunction: @escaping (CKRecord.ID) -> Void = {recordID in },
          recordDeleteSuccessCompletionFunction: @escaping (CKRecord.ID) -> Void  = {recordID in },
          blockSuccessCompletion: @escaping () -> Void = {},
          blockFailureCompletion: @escaping () -> Void = {},
@@ -33,6 +35,7 @@ class CKBlockSaveAndDeleteOperation: CloudKitOperation {
         self.recordsToSave = recordsToSave
         self.recordIDsToDelete = recordIDsToDelete
         self.recordSaveSuccessCompletionFunction = recordSaveSuccessCompletionFunction
+        self.recordSaveFailureCompletionFunction = recordSaveFailureCompletionFunction
         self.recordDeleteSuccessCompletionFunction = recordDeleteSuccessCompletionFunction
         self.blockSuccessCompletion = blockSuccessCompletion
         self.blockFailureCompletion = blockFailureCompletion
@@ -53,7 +56,7 @@ class CKBlockSaveAndDeleteOperation: CloudKitOperation {
         modifyRecordsOperation.perRecordSaveBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
             switch result {
             case .success:
-                self.logger.info("Saved \(recordID)")
+                self.logger.info("Saved \(recordID) successfully.")
                 self.recordSaveSuccessCompletionFunction(recordID)
                 
                 break
@@ -68,19 +71,13 @@ class CKBlockSaveAndDeleteOperation: CloudKitOperation {
                     CKError.zoneBusy:
                     self.logger.error("temporary error")
                     
-                    
-                case CKError.serverRecordChanged:
-                    // Record already exists- shouldn't happen, but!
-                    self.logger.error("record already exists!")
-                    self.recordSaveSuccessCompletionFunction(recordID)
-                    
                 default:
                     self.logger.error("permanent error")
                     
                 }
                 
-                self.logger.error("Save failed with error : \(error.localizedDescription)")
-                
+                self.logger.error("Record \(recordID) save failed with error : \(error.localizedDescription)")
+                self.recordSaveFailureCompletionFunction(recordID)
                 break
             }
             

@@ -197,7 +197,7 @@ typealias BackgroundFetchResult = WKBackgroundFetchResult
         config.previousServerChangeToken = changeToken
         let configurations: [CKRecordZone.ID: CKFetchRecordZoneChangesOperation.ZoneConfiguration] = [zoneID: config]
         
-        logger.log("Handle Notification changeToken \(changeToken)")
+        logger.log("Handle Notification changeToken \(changeToken, default: "NONE")")
         // Create a fetch operation with an array of record zone IDs
         // and the zone configuration mapping dictionary.
         let operation = CKFetchRecordZoneChangesOperation(

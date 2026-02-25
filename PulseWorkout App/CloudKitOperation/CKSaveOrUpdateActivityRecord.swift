@@ -43,7 +43,7 @@ class CKSaveOrUpdateActivityRecordOperation: CloudKitOperation {
         }
         else {
             // No stravaId so save...
-            self.logger.info("No stravaID - saving \(self.activityRecord.recordName)")
+            self.logger.info("No stravaID - saving \(self.activityRecord.recordName ?? "NONE")")
             if let notifier = asyncProgressNotifier {
                 notifier.majorIncrement(message: "Saving \(self.activityRecord.recordName ?? "")")
             }
@@ -56,18 +56,18 @@ class CKSaveOrUpdateActivityRecordOperation: CloudKitOperation {
     func updateOrSave(ckRecords: [CKRecord]) {
         
         if ckRecords.count == 0 {
-            self.logger.info("stravaID NOT found - saving \(self.activityRecord.recordName)")
+            self.logger.info("stravaID NOT found - saving \(self.activityRecord.recordName ?? "NONE")")
             if let notifier = asyncProgressNotifier {
-                notifier.majorIncrement(message: "Saving \(self.activityRecord.recordName ?? "")")
+                notifier.majorIncrement(message: "Saving \(self.activityRecord.recordName ?? "NONE")")
             }
             save()
         }
         else {
             let fetchedRecordId = ckRecords.first!.recordID
             // set recordID from fetched record, and just update fields that can be changed in Strava
-            self.logger.info("stravaID found - updating \(self.activityRecord.recordName)")
+            self.logger.info("stravaID found - updating \(self.activityRecord.recordName ?? "NONE")")
             if let notifier = asyncProgressNotifier {
-                notifier.majorIncrement(message: "Updating \(self.activityRecord.recordName ?? "")")
+                notifier.majorIncrement(message: "Updating \(self.activityRecord.recordName ?? "NONE")")
             }
             activityRecord.recordID = fetchedRecordId
             CKForceUpdateOperation(ckRecord: activityRecord.asMinimalUpdateCKRecord(),
