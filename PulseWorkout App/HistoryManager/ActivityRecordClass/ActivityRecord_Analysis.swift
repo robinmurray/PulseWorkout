@@ -290,6 +290,11 @@ extension ActivityRecord {
             var validSequenceLength: Int?   // How may items have been consecutively valid
         }
         
+        // Must have valid power data and HR data
+        if !hasPowerData || !hasHRData {
+            return nil
+        }
+        
         var calcArray: [CalcVO2Max] = []
         
         var VO2Max: Double?
