@@ -8,6 +8,22 @@
 
 import Foundation
 import os
+import CoreTransferable
+import UniformTypeIdentifiers
+
+
+
+
+struct LogTextFile: Transferable {
+    let url: URL
+
+    static var transferRepresentation: some TransferRepresentation {
+        FileRepresentation(exportedContentType: .data) { item in
+            SentTransferredFile(item.url)
+        }
+    }
+}
+
 
 
 final class ComponentLogger {
@@ -115,7 +131,9 @@ final class AppLogger {
     func fullLogURL() -> URL {
         try? concatenateFiles(inputURLs:getAllLogFiles(),
                               outputURL: exportLogURL)
+//        return LogFile(url: exportLogURL)
         return exportLogURL
+
     }
     
     

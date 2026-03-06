@@ -304,21 +304,37 @@ struct SettingsResetView: View {
             
             VStack {
                 HStack {
-                    if #available(iOS 26.0, *) {
+                    if #available(iOS 26.0, watchOS 26.0, *) {
 
-                        ShareLink(Text("Share system logs"),
-                                  item: AppLogger.shared.fullLogURL(),
-                                  subject: Text("System Log Files"),
-                                  message: Text("Share Log Files"))
+
+                        
+                        ShareLink(
+                            item: LogTextFile(url: AppLogger.shared.fullLogURL()),
+                            preview: SharePreview("System Log Files",
+                                                  image: Image(systemName: "doc.text"))) {
+                                HStack {
+                                    Text("Share system logs")
+                                    Image(systemName: "square.and.arrow.up")
+                                    
+                                }
+                                
+                        }
                         .buttonStyle(.glass)
                         .glassEffect(.clear.tint(.blue))
                         
                     } else {
                         // Fallback on earlier versions
-                        ShareLink(Text("Share system logs"),
-                                  item: AppLogger.shared.fullLogURL(),
-                                  subject: Text("System Log Files"),
-                                  message: Text("Share Log Files"))
+                        ShareLink(
+                            item: LogTextFile(url: AppLogger.shared.fullLogURL()),
+                            preview: SharePreview("System Log Files",
+                                                  image: Image(systemName: "doc.text"))) {
+                                HStack {
+                                    Text("Share system logs")
+                                    Image(systemName: "square.and.arrow.up")
+                                    
+                                }
+                                
+                        }
                     }
                     
                     Spacer()
@@ -347,3 +363,4 @@ struct SettingsResetView: View {
 
     SettingsResetView()
 }
+
