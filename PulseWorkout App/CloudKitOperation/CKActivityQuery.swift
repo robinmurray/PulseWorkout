@@ -52,7 +52,7 @@ class CKActivityQueryOperation: CloudKitOperation {
                                  "mapSnapshot", "stravaId", "stravaSaveStatus", "stravaUploadId", "trackPointGap",
                                  "TSS", "profileFTP", "profilePowerZoneLimits", "TSSbyPowerZone", "movingTimebyPowerZone",
                                  "TSSSummable", "TSSSummableByPowerZone", "intensityFactor", "normalisedPower", "estimatedVO2Max",
-                                 "profileWeightKG", "profileMaxHR", "profileRestHR", "estimatedEPOC", "TRIMP",
+                                 "profileWeightKG", "profileMaxHR", "profileRestHR", "estimatedEPOC", "TRIMP", "TRIMPByHRZone",
                                  "profileThresholdHR", "estimatedTSSbyHR", "profileHRZoneLimits", "TSSEstimatebyHRZone", "movingTimebyHRZone",
                                  "hasLocationData", "hasHRData", "hasPowerData", "loAltitudeMeters", "hiAltitudeMeters",
                                  "averageSegmentSize", "HRSegmentAverages", "powerSegmentAverages", "cadenceSegmentAverages",
