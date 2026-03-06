@@ -88,8 +88,10 @@ class StravaUploadActivity: StravaOperation {
                 guard let self = self else { return }
                 self.stravaBusyStatus(false)
 
+                self.logger.info("uploadFile completion with status: \(String(describing: uploadStatus))")
+                
                 guard let uploadStatus = uploadStatus else {
-                    self.logger.error("Error : No Upload status")
+                    self.logger.error("Error : No Upload status in upload")
                     self.activityRecord.setStravaSaveStatus(StravaSaveStatus.notSaved)
                     self.failureCompletionHandler()
                     return }
@@ -200,6 +202,9 @@ class GetStravaIdFromStravaUploadId: StravaOperation {
 //                        print("No Self!")
 //                        return
 //                    }
+                    
+                    self.logger.info("upload status completion with status: \(String(describing: status))")
+                    
                     guard let status = status else {
                         self.logger.error("Error : No Upload status")
                         self.failureCompletionHandler()

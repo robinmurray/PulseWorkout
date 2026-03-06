@@ -38,6 +38,7 @@ class StatisticsManager: ObservableObject {
     /// Internal variable to manage completion function of statistics refresh operation
     private var onRefreshCompletionFunc: () -> Void = {}
     
+    let logger = ComponentLogger("StatisticsManager")
     
     init() {
         self.statsBuckets = StatisticsBucketArray()
@@ -148,6 +149,7 @@ class StatisticsManager: ObservableObject {
     /// Add single activity record to stats buckets
     func addActivityToStats(activity: ActivityRecord) -> Void {
         
+        logger.info("Adding \(activity.name) to statistics")
         statsBuckets.addActivity(activity)
         
         _ = statsBuckets.write()

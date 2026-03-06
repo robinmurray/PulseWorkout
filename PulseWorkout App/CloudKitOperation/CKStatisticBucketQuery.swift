@@ -38,6 +38,7 @@ class CKStatisticBucketQueryOperation: CloudKitOperation {
     
     func execute() {
         
+        logger.info("Fetching Statistics Buckets")
         CKFetchRecordBlockOperation(query: bucketQueryOperation(),
                                     blockCompletionFunction: self.blockCompletionFunction).execute()
         

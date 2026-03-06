@@ -151,7 +151,7 @@ class DataCache: NSObject, Codable, ObservableObject {
        
     let cacheSize = 50
     let cacheFile = "activityCache.act"
-    let localLogger = ComponentLogger(String(describing: type(of: DataCache.self)))
+    let localLogger = ComponentLogger("DataCache")
 
     private var flushingCache: Bool = false
     private var activities: [ActivityRecord] = []
@@ -228,9 +228,11 @@ class DataCache: NSObject, Codable, ObservableObject {
 
                     // Add changes back into refreshed statistics
                     for activityRecord in self.toBeSaved() {
+                        self.localLogger.info("Record being added to refreshed stats: \(activityRecord.name)")
                         self.statisticsManager.addActivityToStats(activity: activityRecord)
                     }
                     for activityRecord in self.toBeDeleted() {
+                        self.localLogger.info("Record being deleted from refreshed stats: \(activityRecord.name)")
                         self.statisticsManager.removeActivityFromStats(activity: activityRecord)
                     }
                     
@@ -243,7 +245,11 @@ class DataCache: NSObject, Codable, ObservableObject {
                         recordIDsToDelete: self.toBeDeletedIDs(),
                         recordSaveSuccessCompletionFunction: { recordID in
                             // First make sure processing an actiity record - stats records come through here
-                            guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
+                            guard let savedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {
+                                self.localLogger.info("Saved non-activity record \(recordID)")
+                                return
+                            }
+                            self.localLogger.info("Saved non-activity record \(recordID) : \(savedActivityRecord.name)")
                             savedActivityRecord.deleteTrackRecord()
                             
                             #if os(iOS)
@@ -255,11 +261,13 @@ class DataCache: NSObject, Codable, ObservableObject {
                         recordSaveFailureCompletionFunction: { recordID in
                             // First make sure processing an actiity record - stats records come through here
                             // Set record back to save if save fails
+                            self.localLogger.error("Record save failed for \(recordID)")
                             guard let unsavedActivityRecord = self.activities.filter({ $0.recordName == recordID.recordName }).first else {return}
                             unsavedActivityRecord.setToSave(true)
                         },
                         recordDeleteSuccessCompletionFunction: self.removeFromCache,
                         blockSuccessCompletion: {
+                            self.localLogger.info("Block Save Success")
                             self.flushingCache = false
                             _ = self.write()
                             // If new changes whilst flush then flush again!
@@ -299,7 +307,7 @@ class DataCache: NSObject, Codable, ObservableObject {
             (($0.recordID != nil) && ($0.recordID == activityRecord.recordID))}) {
             
             // Update the record in the cache
-            localLogger.info("Updating cache at index : \(updateIndex)")
+            localLogger.info("Updating cache at index : \(updateIndex) with record \(activityRecord.name)")
             activityRecord.toUpdate = true
             activities[updateIndex] = activityRecord
             
@@ -308,7 +316,7 @@ class DataCache: NSObject, Codable, ObservableObject {
 
             if let insertIndex = activities.firstIndex(where: {$0.startDateLocal < activityRecord.startDateLocal}) {
 
-                localLogger.info("Inserting into cache at index : \(insertIndex)")
+                localLogger.info("Inserting record \(activityRecord.name) into cache at index : \(insertIndex)")
                 activityRecord.setToSave(toBeSavedToCK)
                 activities.insert(activityRecord, at: insertIndex)
                 
@@ -321,6 +329,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                     } else {
                         activityRecord.setToSave(toBeSavedToCK)
                     }
+                    localLogger.info("Appending record \(activityRecord.name) to end of cache")
                     activities.append(activityRecord)
                 }
             }
@@ -613,6 +622,7 @@ class DataCache: NSObject, Codable, ObservableObject {
         // If cache has no unsaved activities then reset size to target cache size
         if !dirty() {
             while activities.count > cacheSize {
+                localLogger.info("Removing \(activities.last!.name) from cache")
                 activities.removeLast()
             }
         }

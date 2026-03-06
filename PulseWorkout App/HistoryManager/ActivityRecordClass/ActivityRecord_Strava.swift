@@ -26,7 +26,17 @@ extension ActivityRecord {
     func saveToStrava() {
         
         let stravaSaveStatusEnum = StravaSaveStatus(rawValue: stravaSaveStatus) ?? StravaSaveStatus.notSaved
+        logger.info("saveToStrava: case \(stravaSaveStatusEnum)")
+        
         switch stravaSaveStatusEnum {
+
+        case .saved:
+            // Already saved to strava, shouldn't happen!
+            logger.error("Already saved to strava!")
+            
+        case .saving:
+            // Currently saving to strava, so don't overload
+            logger.info("Already saving to strava - don't initiate save again...")
             
         case .uploaded:
             // Have uploaded record to strava and got an uploadId, but not got a StravaId
@@ -36,7 +46,7 @@ extension ActivityRecord {
                 failureCompletionHandler: { }).execute()
             
         case .gotStravaId:
-            // Have got a stravaId, but have updated the strava record or saved StravaId to CK
+            // Have got a stravaId, but have not updated the strava record or saved StravaId to CK
             StravaUpdateActivity(
                 activityRecord: self,
                 completionHandler: { _ in
