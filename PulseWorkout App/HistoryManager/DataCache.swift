@@ -335,7 +335,8 @@ class DataCache: NSObject, Codable, ObservableObject {
             }
             
             // Only update statistics if a new record being saved...
-            if activityRecord.toSave {
+            if activityRecord.toSave && !updateOnly {
+                localLogger.info("New record being added to stats: \(activityRecord.name)")
                 statisticsManager.addActivityToStats(activity: activityRecord)
             }
         }
@@ -472,7 +473,8 @@ class DataCache: NSObject, Codable, ObservableObject {
             if let index = activities.firstIndex(where: {$0.startDateLocal < changedActivityRecord.startDateLocal}) {
                 activities.insert(changedActivityRecord, at: index)
                 
-                if activities.count > cacheSize {
+                if (activities.count > cacheSize) && !dirty() {
+                    
                     activities.removeLast()
                 }
                 

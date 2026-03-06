@@ -40,6 +40,7 @@ class StravaUpdateActivity: StravaOperation {
             ]
             
             self.stravaActivityRecord = StravaActivity(json)
+
         }
 
         super.init(forceReauth: forceReauth, forceRefresh: forceRefresh)
@@ -50,6 +51,8 @@ class StravaUpdateActivity: StravaOperation {
     
     /// If tcx asset alreday loaded use it, else fetch from cloudkit and call upload on completion
     func execute() {
+        
+        self.logger.info("Strava Update Record = \(String(describing: self.stravaActivityRecord))")
         
         guard let updatableActivity = stravaActivityRecord else {
             self.logger.error("Error : Activity Record is not saved to strava, so cannot be updated")

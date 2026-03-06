@@ -95,7 +95,7 @@ class StatisticsManager: ObservableObject {
         CKProcessAllActivityRecords(
             recordProcessFunction: {
                 ckRecord, recordProcessCompletionFunction
-                in self.addActivitiesToStats(ckRecordList: [ckRecord], copyToCK: false)
+                in self.addActivitiesToStats(ckRecordList: [ckRecord])
                 recordProcessCompletionFunction(nil)
             },
             completionFunction: statsBuckets.writeToCK,
@@ -132,14 +132,15 @@ class StatisticsManager: ObservableObject {
     
     
     /// Add list of activity CKRecords to stats buckets
-    func addActivitiesToStats(ckRecordList: [CKRecord], copyToCK: Bool = true) -> Void {
+    func addActivitiesToStats(ckRecordList: [CKRecord]) -> Void {
         
         let activityList = ckRecordList.map( {ActivityRecord(fromCKRecord: $0, fetchtrackData: false)})
         _ = activityList.map( {statsBuckets.addActivityToTemp($0) })
         
         statsBuckets.copyTempToElements()
         
-        _ = statsBuckets.write(copyToCK: copyToCK)
+        // Do NOT write to CloudKit - the caller is responsible for this
+        _ = statsBuckets.write(copyToCK: false)
         
         reset()
         
@@ -152,7 +153,8 @@ class StatisticsManager: ObservableObject {
         logger.info("Adding \(activity.name) to statistics")
         statsBuckets.addActivity(activity)
         
-        _ = statsBuckets.write()
+        // Do NOT write to CloudKit - the caller is responsible for this
+        _ = statsBuckets.write(copyToCK: false)
         
         reset()
         
@@ -163,8 +165,9 @@ class StatisticsManager: ObservableObject {
     func removeActivityFromStats(activity: ActivityRecord) -> Void {
         
         statsBuckets.removeActivity(activity)
-        
-        _ = statsBuckets.write()
+  
+        // Do NOT write to CloudKit - the caller is responsible for this
+        _ = statsBuckets.write(copyToCK: false)
         
         reset()
         

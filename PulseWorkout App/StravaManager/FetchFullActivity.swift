@@ -58,7 +58,7 @@ class StravaFetchFullActivity: StravaOperation {
         
         let logger = ComponentLogger("StravaOperation")
         
-        logger.info("Strava streams : \(streams)")
+        _ = streams.map( {logger.info("Strava stream : \($0.type, default: "UNKNOWN")") })
         
         if let stravaActivity = fetchedStravaActivity {
             let activityRecord = ActivityRecord(fromStravaActivity: stravaActivity)

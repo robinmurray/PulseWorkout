@@ -206,13 +206,13 @@ class GetStravaIdFromStravaUploadId: StravaOperation {
                     self.logger.info("upload status completion with status: \(String(describing: status))")
                     
                     guard let status = status else {
-                        self.logger.error("Error : No Upload status")
-                        self.failureCompletionHandler()
+                        self.logger.error("Error : No Upload status in poll for upload")
+                        self.pollUploadStatus(uploadId: uploadId, retryCount: retryCount, currentRetry: currentRetry + 1)
                         return
                     }
                     if let error = status.error {
                         self.logger.error("Upload failed with error : \(error)")
-                        self.failureCompletionHandler()
+                        self.pollUploadStatus(uploadId: uploadId, retryCount: retryCount, currentRetry: currentRetry + 1)
                         return
                     } else if let stravaId = status.activityId {
                         // We have a valid activityID so the upload is considered complete.

@@ -72,26 +72,9 @@ extension ActivityRecord {
         self.logger.info("Record saved to Strava with Id \(newStravaId)")
         // Set strava status and strava Id
         
+        // DO WE WANT TO DO THIS NOW??
         update()
-        
-        /*
-        self.stravaId = newStravaId
-        self.stravaSaveStatus = StravaSaveStatus.saved.rawValue
-   
-        let activityCKRecord = CKRecord(recordType: recordType,
-                                        recordID: recordID)
-        activityCKRecord["stravaSaveStatus"] = stravaSaveStatus
-        activityCKRecord["stravaId"] = stravaId
 
-        // Only update if already saved! - should get picked up by record save
-        // if not then will update saved record on next display...
-        if !toSave {
-            self.logger.info("Updating activity record :: \(self.name) :: saved to Strava with Id \(newStravaId)")
-            
-            CKForceUpdateOperation(ckRecord: activityCKRecord, completionFunction: { _ in }).execute()
-
-        }
-        */
     }
     
     func fromStravaActivity(_ stravaActivity: StravaActivity) {
@@ -316,9 +299,11 @@ extension ActivityRecord {
             self.workoutLocationId = getHKWorkoutSessionLocationType(self.stravaType).rawValue
             self.activityDescription = stravaActivity.activityDescription ?? ""
             self.totalAscent = stravaActivity.totalElevationGain
+            
+            self.update()
         }
 
-
+/*
         let activityCKRecord = CKRecord(recordType: recordType,
                                         recordID: recordID)
         activityCKRecord["name"] = (stravaActivity.name ?? "") as CKRecordValue
@@ -330,11 +315,13 @@ extension ActivityRecord {
 
         // Only update if already saved! - should get picked up by record save
         // if not then will update saved record on next display...
+
         if !toSave {
             CKForceUpdateOperation(ckRecord: activityCKRecord,
                                    completionFunction: { _ in }).execute()
         }
-
+*/
+        
     }
 
     
