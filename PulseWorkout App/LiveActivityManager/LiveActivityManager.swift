@@ -467,7 +467,8 @@ class LiveActivityManager : NSObject, ObservableObject {
             HKObjectType.quantityType(forIdentifier: .distanceCycling)!,
             HKObjectType.quantityType(forIdentifier: .distanceWalkingRunning)!,
             HKObjectType.quantityType(forIdentifier: .heartRate)!,
-            HKObjectType.quantityType(forIdentifier: .heartRateRecoveryOneMinute)!
+            HKObjectType.quantityType(forIdentifier: .heartRateRecoveryOneMinute)!,
+            HKObjectType.characteristicType(forIdentifier: .biologicalSex)!
         ]
 
         

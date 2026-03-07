@@ -84,6 +84,11 @@ extension ActivityRecord {
         // get files for gzipped tcx file
         guard let gzFile = tcxFileName else { return false }
         guard let gzURL = CacheURL(fileName: gzFile) else { return false }
+        
+        if trackPoints.count == 0 {
+            logger.info("No trackpoints to save for record \(name)")
+            return false
+        }
 
         logger.debug("testing file at \(gzURL.path)")
         if FileManager.default.fileExists(atPath: gzURL.path) {

@@ -96,7 +96,8 @@ extension ActivityRecord {
         activityRecord["powerSegmentAverages"] = powerSegmentAverages
         activityRecord["cadenceSegmentAverages"] = cadenceSegmentAverages
         
-        if addTrackData {
+        // Only add track data if there are some track points - avoids nulling out existing tcx files when updating!
+        if addTrackData && (trackPoints.count > 0){
             if saveTrackRecord() {
                 logger.debug("creating tcx asset!")
                 guard let tFile = tcxFileName else { return activityRecord }
