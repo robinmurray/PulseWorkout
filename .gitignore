@@ -1,3 +1,4 @@
 # files to be ignored by GIT
 
 PulseWorkout.xcodeproj/project.xcworkspace/xcuserdata/robinmurray.xcuserdatad/UserInterfaceState.xcuserstate
+.DS_Store
