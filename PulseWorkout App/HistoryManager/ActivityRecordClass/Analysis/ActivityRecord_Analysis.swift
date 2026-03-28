@@ -110,6 +110,7 @@ extension ActivityRecord {
         estimatedVO2Max = calculateVO2Max()
         TRIMP = getTRIMP()
         TRIMPByHRZone = getTRIMPByHRZone()
+        estimatedEPOC = getEPOC()
 
         loAltitudeMeters = trackPoints.filter({ $0.altitudeMeters != nil }).map({ $0.altitudeMeters! }).min()
         hiAltitudeMeters = trackPoints.filter({ $0.altitudeMeters != nil }).map({ $0.altitudeMeters! }).max()

@@ -18,7 +18,7 @@ struct UserProfileRecord {
 class UserProfile: NSObject, ObservableObject  {
         
     ///Access UserProfile through UserProfile.shared
-    public static let shared = SettingsManager()
+    public static let shared = UserProfile()
     
     let logger = ComponentLogger("UserProfile")
 
