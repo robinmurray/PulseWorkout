@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import ActivityKit
 
 func getBuildNumber() -> String {
     if let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
@@ -50,6 +51,7 @@ private func atMaximumOffset() -> Bool {
 
 struct SettingsResetView: View {
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
+    @ObservedObject var statisticsManager: StatisticsManager = StatisticsManager.shared
     @State var buildingStatistics: Bool = false
     @StateObject var analysingActivityProgress: AsyncProgress = AsyncProgress()
     @StateObject var buildingStatisticsProgress: AsyncProgress = AsyncProgress()
@@ -130,56 +132,25 @@ struct SettingsResetView: View {
             }
             
             
-
             #if os(iOS)
             VStack {
                 HStack {
-                    if #available(iOS 26.0, *) {
-                        Button(action: {
-                            if !buildingStatisticsProgress.inProgress {
-                                buildingStatisticsProgress.start(asyncProgressModel: AsyncProgressModel.indefinite, title: "Building Statistics...")
-                                
-                                StatisticsManager.shared.buildStatistics(asyncProgressNotifier: buildingStatisticsProgress)
-                                
-                                
-                            }
-                            
-                        })
-                        {
-                            Text("Rebuild statistics")
-                        }
-                        .buttonStyle(.glass)
-                        .glassEffect(.clear.tint(.blue))
-                        .disabled(buildingStatisticsProgress.inProgress)
+
+                    Button(action: {
                         
-                    } else {
-                        // Fallback on earlier versions
-                        Button(action: {
-                            if !buildingStatisticsProgress.inProgress {
-                                buildingStatisticsProgress.start(asyncProgressModel: AsyncProgressModel.indefinite, title: "Building Statistics...")
-                                
-                                StatisticsManager.shared.buildStatistics(asyncProgressNotifier: buildingStatisticsProgress)
-                                
-                                
-                            }
-                            
-                        })
-                        {
-                            Text("Rebuild statistics")
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(Color.blue)
-                        .disabled(buildingStatisticsProgress.inProgress)
+                        StatisticsManager.shared.submitBuildStatisticsTask()
+
+                    })
+                    {
+                        Text("Rebuild statistics")
                     }
-                    
+                    .buttonStyle(.glass)
+                    .glassEffect(.clear.tint(.blue))
+                    .disabled(statisticsManager.refreshInProgress)
+
                     Spacer()
                 }
 
-                
-                if buildingStatisticsProgress.displayProgressView {
-                    AsyncProgressView(asyncProgress: buildingStatisticsProgress)
-                }
-                
                 HStack {
                     Text("Rebuild all statistics.")
                         .font(.footnote).foregroundColor(.gray)
@@ -187,51 +158,32 @@ struct SettingsResetView: View {
                 }
 
             }
-            
-            
             #endif
+            
             
             
             #if os(iOS)
             VStack {
                 HStack {
-                    if #available(iOS 26.0, *) {
-                        Button(action: {
-                            if !analysingActivityProgress.inProgress {
-                                analysingActivityProgress.start(asyncProgressModel: AsyncProgressModel.indefinite, title: "Analyzing Activities...")
-                                
-                                CKProcessAllActivityRecords(
-                                    recordProcessFunction: analyzeActivity,
-                                    asyncProgressNotifier: analysingActivityProgress).execute()
-                            }
-                            
-                        })
-                        {
-                            Text("Re-analyze activities")
-                        }
-                        .buttonStyle(.glass)
-                        .glassEffect(.clear.tint(.blue))
-                        .disabled(analysingActivityProgress.inProgress)
 
-                    } else {
-                        // Fallback on earlier versions
-                        Button(action: {
-                            if !analysingActivityProgress.inProgress {
-                                analysingActivityProgress.start(asyncProgressModel: AsyncProgressModel.indefinite, title: "Analyzing Activities...")
-                                
-                                CKProcessAllActivityRecords(
-                                    recordProcessFunction: analyzeActivity,
-                                    asyncProgressNotifier: analysingActivityProgress).execute()
-                            }
+                    Button(action: {
+                        if !analysingActivityProgress.inProgress {
+                            analysingActivityProgress.start(asyncProgressModel: AsyncProgressModel.indefinite, title: "Analyzing Activities...")
                             
-                        })
-                        {
-                            Text("Re-analyze activities")
+                            CKProcessAllActivityRecords(
+                                recordProcessFunction: analyzeActivity,
+                                asyncProgressNotifier: analysingActivityProgress).execute()
                         }
-                        .buttonStyle(.bordered)
-                        .tint(Color.blue)
-                        .disabled(analysingActivityProgress.inProgress)
+                        
+                    })
+                    {
+                        Text("Re-analyze activities")
                     }
+                    .buttonStyle(.glass)
+                    .glassEffect(.clear.tint(.blue))
+                    .disabled(analysingActivityProgress.inProgress ||
+                              statisticsManager.refreshInProgress)
+
                     Spacer()
                 }
 
@@ -252,33 +204,17 @@ struct SettingsResetView: View {
             if savedStravaFetchDate != 0 {
                 VStack {
                     HStack {
-                        if #available(iOS 26.0, *) {
-                            Button(action: {
-                                incrementFetchDateOffset()
-                                stravaFetchDateText = setStravaFetchDateText()
-                            })
-                            {
-                                Text("Set Strava fetch back 5 days")
-                            }
-                            .buttonStyle(.glass)
-                            .glassEffect(.clear.tint(.blue))
-                            .disabled(atMaximumOffset())
-                            
-
-                        } else {
-                            // Fallback on earlier versions
-                            Button(action: {
-                                incrementFetchDateOffset()
-                                stravaFetchDateText = setStravaFetchDateText()
-                            })
-                            {
-                                Text("Set Strava fetch back 5 days")
-                            }
-                            .buttonStyle(.bordered)
-                            .tint(Color.blue)
-                            .disabled(atMaximumOffset())
+                        Button(action: {
+                            incrementFetchDateOffset()
+                            stravaFetchDateText = setStravaFetchDateText()
+                        })
+                        {
+                            Text("Set Strava fetch back 5 days")
                         }
-                        
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear.tint(.blue))
+                        .disabled(atMaximumOffset())
+
                         Spacer()
                         Image("StravaIcon").resizable().frame(width: 30, height: 30)
                     }

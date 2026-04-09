@@ -8,6 +8,7 @@
 import Foundation
 import os
 import CloudKit
+import BackgroundTasks
 
 
 
@@ -32,6 +33,9 @@ class StatisticsManager: ObservableObject {
     /// Array of statistics buckets representing the last 2 years by year
     @Published var yearBuckets: StatisticsBucketArray
 
+    /// Flag to show if statistics being rebuilt
+    @Published var refreshInProgress: Bool = false
+    
     /// The full set of statistics buckets
     var statsBuckets: StatisticsBucketArray
 
@@ -87,8 +91,119 @@ class StatisticsManager: ObservableObject {
         return yearBuckets.elements.first!
     }
     
+
+    @available(iOS 26.0, *)
+    func registerBackgroundBuild() {
+        
+        logger.info("Registering background statistics rebuild task")
+        // register background tasks that may be called.
+        let continuationTaskresult =
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "MurrayNet.PulseWorkout-Phone-App.statsRebuild",
+                                        using: nil) { task in
+            
+            self.buildStatisticsTask(completion: task.setTaskCompleted, task: task)
+
+        }
+        logger.info("BG Continuation Task registration status \(continuationTaskresult)")
+
+    }
+    
+    
+    func buildStatisticsTask(completion: @escaping (Bool) -> Void = {_ in}, task: BGTask? = nil) {
+    
+        var progress: Progress?
+        var wasExpired: Bool = false
+        var cloudKitOperation: CKProcessAllActivityRecords?
+        
+        logger.info("Running stats rebuild")
+
+        if let task = task as? BGContinuedProcessingTask {
+            // Check the expiration handler to confirm job completion.
+            task.expirationHandler = {
+                self.logger.info("Task expired")
+                wasExpired = true
+                
+                DispatchQueue.main.async {
+                    self.refreshInProgress = false
+                }
+                
+                // Cancel the cloudkit operation if the task was expired
+                if let operation = cloudKitOperation {
+                    operation.cancel()
+                }
+            }
+            progress = task.progress
+        }
+        
+        // Clear out the current buckets
+        statsBuckets.emptyTempBuckets()
+        
+        // Refill from cloudkit
+        cloudKitOperation = CKProcessAllActivityRecords(
+            recordProcessFunction: {
+                ckRecord, recordProcessCompletionFunction
+                in
+
+                self.addActivitiesToStats(ckRecordList: [ckRecord])
+                recordProcessCompletionFunction(nil)
+                
+                // update the live activity widget
+                if let task = task as? BGContinuedProcessingTask {
+                    task.updateTitle("Rebuilding all statistics",
+                                     subtitle: "Completed \(progress!.completedUnitCount)")
+ 
+                }
+            },
+            completionFunction: {
+                DispatchQueue.main.async {
+                    self.refreshInProgress = false
+                }
+                if wasExpired {
+                    completion(false)
+                } else {
+                    
+                    self.statsBuckets.writeToCK(successCompletion: {completion(true)},
+                                                failureCompleation: {completion(false)})
+                }
+            },
+            progress: progress)
+        
+        cloudKitOperation!.execute()
+
+    }
+        
+    
+    @available(iOS 26.0, *)
+    // Submit a background continued processing task to rebuild all statistics
+    func submitBuildStatisticsTask() {
+        
+        if refreshInProgress {
+            logger.info("Can't submit request, background processing already active.")
+            return
+        }
+        refreshInProgress = true
+        
+        let request = BGContinuedProcessingTaskRequest(
+            identifier: "MurrayNet.PulseWorkout-Phone-App.statsRebuild",
+            title: "Rebuilding statistics", subtitle: "Starting...")
+
+        logger.info("Submitting background task request")
+        
+        do {
+            try BGTaskScheduler.shared.submit(request)
+            logger.info("Successfully submitted background task request")
+
+        } catch {
+            logger.error("Failed to submit background task: \(error.localizedDescription)")
+        }
+        
+    }
+    
     
     /// Build all statistic buckets from activities
+    /// Simple (long-lasting) function to rebuild all statistics
+    /// NOT-USED - see buildStatisticsTask
+    
     func buildStatistics(asyncProgressNotifier: AsyncProgress/*, completionFunction: @escaping () -> Void*/) {
         statsBuckets.emptyTempBuckets()
         
@@ -98,10 +213,11 @@ class StatisticsManager: ObservableObject {
                 in self.addActivitiesToStats(ckRecordList: [ckRecord])
                 recordProcessCompletionFunction(nil)
             },
-            completionFunction: statsBuckets.writeToCK,
+            completionFunction: { self.statsBuckets.writeToCK() },
             asyncProgressNotifier: asyncProgressNotifier).execute()
     
     }
+    
     
     /// Return full set of statistics buckers as Cloudkit Records
     func allCKRecords() -> [CKRecord] {

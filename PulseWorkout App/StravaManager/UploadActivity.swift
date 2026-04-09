@@ -219,8 +219,7 @@ class GetStravaIdFromStravaUploadId: StravaOperation {
             self.logger.info("Scheduling polling upload status : Count :: \(currentRetry)")
             
             // Poll for upload status...
-            DispatchQueue.main.asyncAfter(deadline: .now() + PAUSE_TIME,
-                                          qos: .userInitiated) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + PAUSE_TIME) {
                 
                 self.logger.info("Polling upload status : Count :: \(currentRetry)")
                 

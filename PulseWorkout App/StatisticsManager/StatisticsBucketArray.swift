@@ -407,10 +407,13 @@ class StatisticsBucketArray: NSObject, Codable {
     }
     
     /// Write bucket array to cloudkit
-    func writeToCK() {
+    func writeToCK(successCompletion: @escaping () -> Void = {},
+                   failureCompleation: @escaping () -> Void = {}) {
         
         CKBlockSaveAndDeleteOperation(recordsToSave: asCKRecords(),
-                                      recordIDsToDelete: []).execute()
+                                      recordIDsToDelete: [],
+                                      blockSuccessCompletion: successCompletion,
+                                      blockFailureCompletion: failureCompleation).execute()
                                       
     }
     

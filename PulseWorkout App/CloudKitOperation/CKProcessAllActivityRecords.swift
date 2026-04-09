@@ -61,21 +61,32 @@ class CKProcessAllActivityRecords: CloudKitOperation {
     var resultsLimit: Int = 50
     var fetchedCKRecords: [CKRecord] = []
     var processedCount = 0
+    var progress: Progress?
+    private var cancelled: Bool = false
     
     
     init(recordProcessFunction : @escaping (CKRecord, @escaping (CKRecord.ID?) -> Void) -> Void,
          completionFunction: @escaping () -> Void = { },
-         asyncProgressNotifier: AsyncProgress? = nil) {
+         asyncProgressNotifier: AsyncProgress? = nil,
+         progress: Progress? = nil) {
         
         self.recordProcessFunction = recordProcessFunction
         self.asyncProgressNotifier = asyncProgressNotifier
         self.completionFunction = completionFunction
+        self.progress = progress
+        if let progressObject = self.progress {
+            progressObject.totalUnitCount = 1000
+            progressObject.completedUnitCount = 0
+        }
         super.init()
 
     }
     
     
-
+    // Cancel the operation cleanly
+    func cancel() {
+        cancelled = true
+    }
     
 
     
@@ -87,6 +98,7 @@ class CKProcessAllActivityRecords: CloudKitOperation {
             if let notifier = asyncProgressNotifier {
                 notifier.complete()
             }
+
             completionFunction()
         }
         else {
@@ -96,6 +108,12 @@ class CKProcessAllActivityRecords: CloudKitOperation {
     }
     
     func processNextRecord() {
+        
+        // Operation has been cancelled - stop processing gracefully.
+        // Don't call completion function
+        if cancelled {
+            return
+        }
         
         if processedCount == fetchedCKRecords.count {
             // If fetched full set of records then fetch next block
@@ -112,6 +130,14 @@ class CKProcessAllActivityRecords: CloudKitOperation {
             
         } else {
             processedCount += 1
+            
+            if let progress = progress {
+                progress.completedUnitCount += 1
+                if progress.completedUnitCount > (progress.totalUnitCount - 100) {
+                    progress.totalUnitCount += 500
+                }
+            }
+            
             if let notifier = asyncProgressNotifier {
                 let dateFormatter = DateFormatter()
                 var formattedDate: String = "None"

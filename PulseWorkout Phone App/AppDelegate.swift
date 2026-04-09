@@ -136,6 +136,11 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
  //       application.registerForRemoteNotifications()
         UIApplication.shared.registerForRemoteNotifications()
         
+        // Register background execution functions
+        if #available(iOS 26.0, *) {
+            StatisticsManager.shared.registerBackgroundBuild()
+        }
+        
         return true
     }
     
