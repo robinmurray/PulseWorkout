@@ -521,6 +521,10 @@ struct ActivityDetailView: View {
             .get(image: &activityRecord.altitudeImage,
                  url: &activityRecord.altitudeImageURL,
                  asset: activityRecord.altitudeImageAsset)
+            
+            if activityRecord.stravaSaveStatus == StravaSaveStatus.toSave.rawValue {
+                activityRecord.saveToStrava()
+            }
         })
         
         .refreshable {

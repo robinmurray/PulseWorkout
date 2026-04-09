@@ -96,8 +96,6 @@ class StravaUploadActivity: StravaOperation {
                     self.failureCompletionHandler()
                     return }
                 
-                self.logger.info("Upload Status \(uploadStatus)")
-
                 activityRecord.stravaUploadId = uploadStatus.id
                 activityRecord.setStravaSaveStatus(StravaSaveStatus.uploaded)
                 
@@ -212,8 +210,27 @@ class GetStravaIdFromStravaUploadId: StravaOperation {
                     }
                     if let error = status.error {
                         self.logger.error("Upload failed with error : \(error)")
+                        
+                        if let activityID = self.parseDuplicateUpload(error) {
+                            self.logger.info("Polling completed successfully :: retry count \(currentRetry) :: id \(activityID)")
+                            self.activityRecord.stravaId = activityID
+                            self.activityRecord.setStravaSaveStatus(StravaSaveStatus.gotStravaId)
+
+                            StravaUpdateActivity(
+                                activityRecord: self.activityRecord,
+                                completionHandler: { _ in
+                                    self.activityRecord.setStravaSaveStatus(StravaSaveStatus.saved)
+
+                                    self.completionHandler(activityID)
+                                },
+                                failureCompletionHandler: self.failureCompletionHandler ).execute()
+     
+                            return
+                        }
+                        
                         self.pollUploadStatus(uploadId: uploadId, retryCount: retryCount, currentRetry: currentRetry + 1)
                         return
+                        
                     } else if let stravaId = status.activityId {
                         // We have a valid activityID so the upload is considered complete.
                         // However, note that segment processing can continue for quite a while.

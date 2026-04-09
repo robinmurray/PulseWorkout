@@ -20,6 +20,7 @@ extension ActivityRecord {
     func setStravaSaveStatus(_ newStatus: StravaSaveStatus) {
         DispatchQueue.main.async {
             self.stravaSaveStatus = newStatus.rawValue
+            self.update()
         }
     }
     
