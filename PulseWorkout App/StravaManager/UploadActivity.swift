@@ -177,6 +177,32 @@ class GetStravaIdFromStravaUploadId: StravaOperation {
     }
     
     
+    func parseDuplicateUpload(_ text: String) -> Int? {
+        
+        self.logger.info("Parsing \(text) for duplicate error message")
+        // Split at " duplicate of "
+        let parts = text.components(separatedBy: " duplicate of ")
+        guard parts.count == 2 else { return nil }
+        let filename = parts[0].trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let tail = parts[1]
+        // Extract activity ID between "/activities/" and the next "'"
+        guard let idRange = tail.range(of: "/activities/") else { return nil }
+        let afterID = tail[idRange.upperBound...]
+        guard let endID = afterID.firstIndex(of: "'") else { return nil }
+        let activityIDString = String(afterID[..<endID])
+        let activityID = Int(activityIDString)
+
+        // Extract title between '>' and '</a>'
+        guard let startTitle = tail.firstIndex(of: ">"),
+              let endTitle = tail.range(of: "</a>")?.lowerBound else { return nil }
+        let title = String(tail[tail.index(after: startTitle)..<endTitle])
+
+        self.logger.info("Duplicate activityID : \(String(describing: activityID))")
+        return activityID
+    }
+    
+    
     /// Poll upload status to get StravaId
     /// If successful then attempt to update the Strava record
     func pollUploadStatus(uploadId: Int, retryCount: Int, currentRetry: Int) {
@@ -190,8 +216,11 @@ class GetStravaIdFromStravaUploadId: StravaOperation {
         
         else {
 
+            self.logger.info("Scheduling polling upload status : Count :: \(currentRetry)")
+            
             // Poll for upload status...
-            DispatchQueue.main.asyncAfter(deadline: .now() + PAUSE_TIME) {
+            DispatchQueue.main.asyncAfter(deadline: .now() + PAUSE_TIME,
+                                          qos: .userInitiated) {
                 
                 self.logger.info("Polling upload status : Count :: \(currentRetry)")
                 
