@@ -249,7 +249,7 @@ class DataCache: NSObject, Codable, ObservableObject {
                                 self.localLogger.info("Saved non-activity record \(recordID)")
                                 return
                             }
-                            self.localLogger.info("Saved non-activity record \(recordID) : \(savedActivityRecord.name)")
+                            self.localLogger.info("Saved activity record \(recordID) : \(savedActivityRecord.name)")
                             savedActivityRecord.deleteTrackRecord()
                             
                             #if os(iOS)

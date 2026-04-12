@@ -52,9 +52,6 @@ private func atMaximumOffset() -> Bool {
 struct SettingsResetView: View {
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     @ObservedObject var statisticsManager: StatisticsManager = StatisticsManager.shared
-    @State var buildingStatistics: Bool = false
-    @StateObject var analysingActivityProgress: AsyncProgress = AsyncProgress()
-    @StateObject var buildingStatisticsProgress: AsyncProgress = AsyncProgress()
     @State var stravaFetchDateText: String
     @State var savedStravaFetchDate: Int
     
@@ -161,37 +158,25 @@ struct SettingsResetView: View {
             #endif
             
             
-            
             #if os(iOS)
             VStack {
                 HStack {
 
                     Button(action: {
-                        if !analysingActivityProgress.inProgress {
-                            analysingActivityProgress.start(asyncProgressModel: AsyncProgressModel.indefinite, title: "Analyzing Activities...")
-                            
-                            CKProcessAllActivityRecords(
-                                recordProcessFunction: analyzeActivity,
-                                asyncProgressNotifier: analysingActivityProgress).execute()
-                        }
                         
+                        settingsManager.submitAnalyzeActivitiesTask()
+
                     })
                     {
                         Text("Re-analyze activities")
                     }
                     .buttonStyle(.glass)
                     .glassEffect(.clear.tint(.blue))
-                    .disabled(analysingActivityProgress.inProgress ||
-                              statisticsManager.refreshInProgress)
+                    .disabled(settingsManager.analysisInProgress)
 
                     Spacer()
                 }
 
-                
-                if analysingActivityProgress.displayProgressView {
-                    AsyncProgressView(asyncProgress: analysingActivityProgress)
-                }
-                
                 HStack {
                     Text("Re-analyze and update all activity records.")
                         .font(.footnote).foregroundColor(.gray)
@@ -199,7 +184,10 @@ struct SettingsResetView: View {
                 }
 
             }
-            
+            #endif
+   
+            #if os(iOS)
+
             // Reset / change strava fetch date to re-fetch activities from Strava
             if savedStravaFetchDate != 0 {
                 VStack {

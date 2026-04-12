@@ -5,6 +5,7 @@
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>MurrayNet.PulseWorkout-Phone-App.statsRebuild</string>
+		<string>MurrayNet.PulseWorkout-Phone-App.activityAnalysis</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>

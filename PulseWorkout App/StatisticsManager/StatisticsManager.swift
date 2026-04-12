@@ -115,6 +115,19 @@ class StatisticsManager: ObservableObject {
         var wasExpired: Bool = false
         var cloudKitOperation: CKProcessAllActivityRecords?
         
+        let taskCompletionFunction: () -> Void = {
+            DispatchQueue.main.async {
+                self.refreshInProgress = false
+            }
+            if wasExpired {
+                completion(false)
+            } else {
+                self.statsBuckets.writeToCK(successCompletion: {completion(true)},
+                                            failureCompleation: {completion(false)})
+
+            }
+        }
+        
         logger.info("Running stats rebuild")
 
         if let task = task as? BGContinuedProcessingTask {
@@ -123,13 +136,10 @@ class StatisticsManager: ObservableObject {
                 self.logger.info("Task expired")
                 wasExpired = true
                 
-                DispatchQueue.main.async {
-                    self.refreshInProgress = false
-                }
-                
                 // Cancel the cloudkit operation if the task was expired
                 if let operation = cloudKitOperation {
                     operation.cancel()
+                    taskCompletionFunction()
                 }
             }
             progress = task.progress
@@ -154,18 +164,7 @@ class StatisticsManager: ObservableObject {
  
                 }
             },
-            completionFunction: {
-                DispatchQueue.main.async {
-                    self.refreshInProgress = false
-                }
-                if wasExpired {
-                    completion(false)
-                } else {
-                    
-                    self.statsBuckets.writeToCK(successCompletion: {completion(true)},
-                                                failureCompleation: {completion(false)})
-                }
-            },
+            completionFunction: taskCompletionFunction,
             progress: progress)
         
         cloudKitOperation!.execute()
