@@ -158,7 +158,7 @@ struct ActivityHistoryView: View {
                         StravaFetchLatestActivities(
                             completionHandler: {
                                 refreshProgress.complete()
-                                //                            dataCache.refreshUI()
+//                            dataCache.refreshUI()
                                 fetchComplete = false
                             },
                             failureCompletionHandler: {

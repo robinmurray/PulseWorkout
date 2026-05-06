@@ -84,6 +84,7 @@ class CKFetchRecordBlockOperation: CloudKitOperation {
 
         }
         
+        self.logger.info("Executing Fetch Record Block with operation: \(operation)")
         database.add(operation)
 
     }

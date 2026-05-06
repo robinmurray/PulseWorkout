@@ -153,7 +153,15 @@ class DataCache: NSObject, Codable, ObservableObject {
     let cacheFile = "activityCache.act"
     let localLogger = ComponentLogger("DataCache")
 
+    /// If cache is currently being flushed
     private var flushingCache: Bool = false
+    
+    /// If cache is currently being refreshed
+    private var refreshingCache: Bool = false
+    
+    /// If a active cache refersh should be cancelled
+    private var cancelCacheRefresh: Bool = false
+    
     private var activities: [ActivityRecord] = []
     private var refreshList: [ActivityRecord] = []
    
@@ -184,16 +192,19 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     func refreshUI(qualityOfService: QualityOfService = .userInitiated) {
         
-        if !dirty() {
-            // Refresh dataCache, updatesUI and refreshes statistics on completion
-            refreshCache(qualityOfService: qualityOfService)
-        }
-        else {
-            flushCache(qualityOfService: qualityOfService,
-                       completionFunction: refreshUI)
+        if !flushingCache {
+            if !dirty() {
+                // Refresh dataCache, updatesUI and refreshes statistics on completion
+                refreshCache(qualityOfService: qualityOfService)
+            }
+            else {
+                flushCache(qualityOfService: qualityOfService,
+                           completionFunction: refreshUI)
 
-//            updateUI()
+    //            updateUI()
+            }
         }
+
         
     }
     
@@ -211,6 +222,15 @@ class DataCache: NSObject, Codable, ObservableObject {
         return activityRecordsToSave
     }
     
+    
+    /// Check if an active cache refresh needs to be cancelled
+    /// Call to make sure cache changes don't get discarded due to active refresh
+    func cancelActiveCacheRefresh() {
+        if refreshingCache {
+            cancelCacheRefresh = true
+        }
+    }
+    
     /// Push changes in cache to cloudkit - activity saves & deletes + update statistics as a single transaction
     /// Before saving get a new copy of statistics from CK and play any changes in to it from dirty cache
     func flushCache(qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS, completionFunction: @escaping (QualityOfService) -> Void = {_ in }) {
@@ -219,6 +239,9 @@ class DataCache: NSObject, Codable, ObservableObject {
         // If a second is called, it will not do anything, but the first
         // should notice the cache is dirty on completion so will flush again...
         if (dirty() && !flushingCache) {
+            
+            // Cancel any active cache refresh
+            cancelActiveCacheRefresh()
 
             self.localLogger.info("Refreshing statistics before flushCache")
             statisticsManager.refresh(onRefreshCompletionFunc: {
@@ -288,6 +311,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     private func updateUI() {
         
         DispatchQueue.main.async { [self] in
+            self.localLogger.info("Updating UI. Top record = \(cache().first!.name)")
             self.UIRecordSet = self.cache()
         }
         
@@ -300,6 +324,8 @@ class DataCache: NSObject, Codable, ObservableObject {
     /// updateOnly: Is this an update? (or new record/save)
     func add(activityRecord: ActivityRecord, toBeSavedToCK: Bool = true, updateOnly: Bool = false) {
         
+        // Cancel any active cache refresh
+        cancelActiveCacheRefresh()
         
         // Update if an existing record - detect by stravaId or recordId
         if let updateIndex = activities.firstIndex(where: {
@@ -410,6 +436,9 @@ class DataCache: NSObject, Codable, ObservableObject {
         var index: Int
         
         if let recordID = activityRecord.recordID {
+            
+            // Cancel any active cache refresh
+            cancelActiveCacheRefresh()
 
             removeFromUI(recordID: recordID)
             
@@ -453,6 +482,9 @@ class DataCache: NSObject, Codable, ObservableObject {
     /// If changedActivityRecord in cache, the replace with the new record.
     /// If changedActivityRecord not in cache, then add to cache if it is the date range.
     func changeCache(changedActivityRecord: ActivityRecord) {
+        
+        // Cancel any active cache refresh
+        cancelActiveCacheRefresh()
         
         if let index = cachedIndex(recordID: changedActivityRecord.recordID) {
             // changedActivityRecord exists in cache
@@ -654,9 +686,15 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     /// On block completion copy temporary list to the main device list
     func refreshCacheCompletion(ckRecordList: [CKRecord]) -> Void {
-        
-        if !self.dirty() {
+
+        localLogger.info("Refresh Cache Completion (dirty = \(dirty()))")
+        refreshingCache = false
+
+        if !self.dirty() && !cancelCacheRefresh {
+            localLogger.info("Top Record Before Refresh = \(self.activities.first!.name)")
+
             self.activities = ckRecordList.map( {ActivityRecord(fromCKRecord: $0, fetchtrackData: false)})
+            localLogger.info("Top Record After Refresh = \(self.activities.first!.name)")
             _ = self.write()
 
             self.updateUI()
@@ -668,10 +706,16 @@ class DataCache: NSObject, Codable, ObservableObject {
     
     private func refreshCache(qualityOfService: QualityOfService = .userInitiated) {
         
-        CKActivityQueryOperation(startDate: nil,
-                                 blockCompletionFunction: refreshCacheCompletion,
-                                 resultsLimit: cacheSize,
-                                 qualityOfService: qualityOfService).execute()
+        localLogger.info("Refreshing Cache (flushing = \(flushingCache))")
+        if !flushingCache {
+            refreshingCache = true
+            cancelCacheRefresh = false
+            CKActivityQueryOperation(startDate: nil,
+                                     blockCompletionFunction: refreshCacheCompletion,
+                                     resultsLimit: cacheSize,
+                                     qualityOfService: qualityOfService).execute()
+        }
+
     }
   
     
