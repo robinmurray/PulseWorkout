@@ -78,6 +78,7 @@ extension ActivityRecord {
         
     }
     
+    
     /// Calculate Training Impulse - TRIMP
     /// See https://www.firstbeat.com/en/blog/what-is-trimp/
     func getTRIMP() -> Double? {
@@ -91,10 +92,14 @@ extension ActivityRecord {
     /// Calculate Training Impulse - TRIMP by HR Zone
     func getTRIMPByHRZone() -> [Double] {
 
-        var calcTRIMPbyHRZone: [Double] = []
-        var trackPointsInZone: [TrackPoint]
+//        var calcTRIMPbyHRZone: [Double] = []
+//        var trackPointsInZone: [TrackPoint]
 
         logger.info("Calculating TRIMP by zone for record: \(name)")
+        
+        return getStressByHRZone(stressFunction: getTRIMPForTrackPoints)
+        
+        /*
         if !hasHRData {return []}
         
         for (index, lowerLimit) in profileHRZoneLimits.enumerated() {
@@ -113,7 +118,7 @@ extension ActivityRecord {
         }
 
         return calcTRIMPbyHRZone
-
+*/
     }
     
 }

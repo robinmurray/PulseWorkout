@@ -311,7 +311,7 @@ class DataCache: NSObject, Codable, ObservableObject {
     private func updateUI() {
         
         DispatchQueue.main.async { [self] in
-            self.localLogger.info("Updating UI. Top record = \(cache().first!.name)")
+            self.localLogger.info("Updating UI. Top record = \(cache().first?.name ?? "None")")
             self.UIRecordSet = self.cache()
         }
         
@@ -691,10 +691,10 @@ class DataCache: NSObject, Codable, ObservableObject {
         refreshingCache = false
 
         if !self.dirty() && !cancelCacheRefresh {
-            localLogger.info("Top Record Before Refresh = \(self.activities.first!.name)")
+            localLogger.info("Top Record Before Refresh = \(self.activities.first?.name ?? "None")")
 
             self.activities = ckRecordList.map( {ActivityRecord(fromCKRecord: $0, fetchtrackData: false)})
-            localLogger.info("Top Record After Refresh = \(self.activities.first!.name)")
+            localLogger.info("Top Record After Refresh = \(self.activities.first?.name ?? "None")")
             _ = self.write()
 
             self.updateUI()

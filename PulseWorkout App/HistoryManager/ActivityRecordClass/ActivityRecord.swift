@@ -126,6 +126,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
     var profileMaxHR: Int?
     var profileRestHR: Int?
     var estimatedEPOC: Double?
+    var estimatedEPOCByHRZone: [Double] = []
+    var estimatedEPOCByPowerZone: [Double] = []
     var TRIMP: Double?
     var TRIMPByHRZone: [Double] = []
     
@@ -254,6 +256,8 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         profileMaxHR = try container.decode(Int?.self, forKey: .profileMaxHR)
         profileRestHR = try container.decode(Int?.self, forKey: .profileRestHR)
         estimatedEPOC = try container.decode(Double?.self, forKey: .estimatedEPOC)
+        estimatedEPOCByHRZone = try container.decode([Double].self, forKey: .estimatedEPOCByHRZone)
+        estimatedEPOCByPowerZone = try container.decode([Double].self, forKey: .estimatedEPOCByPowerZone)
         TRIMP = try container.decode(Double?.self, forKey: .TRIMP)
         TRIMPByHRZone = try container.decode([Double].self, forKey: .TRIMPByHRZone)
         
@@ -335,6 +339,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
          try container.encode(profileMaxHR, forKey: .profileMaxHR)
          try container.encode(profileRestHR, forKey: .profileRestHR)
          try container.encode(estimatedEPOC, forKey: .estimatedEPOC)
+         try container.encode(estimatedEPOCByHRZone, forKey: .estimatedEPOCByHRZone)
+         try container.encode(estimatedEPOCByPowerZone, forKey: .estimatedEPOCByPowerZone)
+         
          try container.encode(TRIMP, forKey: .TRIMP)
          try container.encode(TRIMPByHRZone, forKey: .TRIMPByHRZone)
 
@@ -448,6 +455,9 @@ class ActivityRecord: NSObject, Identifiable, Codable, ObservableObject {
         profileMaxHR = fromActivityRecord.profileMaxHR
         profileRestHR = fromActivityRecord.profileRestHR
         estimatedEPOC = fromActivityRecord.estimatedEPOC
+        estimatedEPOCByHRZone = fromActivityRecord.estimatedEPOCByHRZone
+        estimatedEPOCByPowerZone = fromActivityRecord.estimatedEPOCByPowerZone
+        
         TRIMP = fromActivityRecord.TRIMP
         TRIMPByHRZone = fromActivityRecord.TRIMPByHRZone
         
@@ -693,12 +703,14 @@ extension ActivityRecord {
              stravaSaveStatus, stravaId, stravaUploadId, trackPointGap, TSS, movingTimebyPowerZone, TSSbyPowerZone,
              TSSSummable, TSSSummableByPowerZone, intensityFactor, normalisedPower, estimatedVO2Max,
              profileWeightKG, profileMaxHR, profileRestHR, profileFTP, profilePowerZoneLimits, profileThresholdHR, profileHRZoneLimits,
-             estimatedEPOC, TRIMP, TRIMPByHRZone, estimatedTSSbyHR, TSSEstimatebyHRZone, movingTimebyHRZone,
+             estimatedEPOC, estimatedEPOCByHRZone, estimatedEPOCByPowerZone, TRIMP, TRIMPByHRZone,
+             estimatedTSSbyHR, TSSEstimatebyHRZone, movingTimebyHRZone,
              totalAscent, totalDescent, tcxFileName, JSONFileName, toSave, toDelete, toUpdate, mapSnapshotURL,
              hasLocationData, hasHRData, hasPowerData, loAltitudeMeters, hiAltitudeMeters, averageSegmentSize,
              HRSegmentAverages, powerSegmentAverages, cadenceSegmentAverages
     }
     
+     
 }
 
 

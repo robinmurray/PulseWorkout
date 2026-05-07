@@ -111,6 +111,8 @@ extension ActivityRecord {
         TRIMP = getTRIMP()
         TRIMPByHRZone = getTRIMPByHRZone()
         estimatedEPOC = getEPOC()
+        estimatedEPOCByHRZone = getEPOCByHRZone()
+        estimatedEPOCByPowerZone = getEPOCByPowerZone()
 
         loAltitudeMeters = trackPoints.filter({ $0.altitudeMeters != nil }).map({ $0.altitudeMeters! }).min()
         hiAltitudeMeters = trackPoints.filter({ $0.altitudeMeters != nil }).map({ $0.altitudeMeters! }).max()
@@ -185,4 +187,65 @@ extension ActivityRecord {
                 {CLLocationCoordinate2D(latitude: $0.latitude!, longitude: $0.longitude!)})
 
     }
+    
+    
+    /// Split trackPoints into HR zones (1-5)
+    /// then apply stressFunction each set of trackpoints
+    /// return array of stress values
+    func getStressByHRZone(stressFunction: ([TrackPoint]) -> Double?) -> [Double] {
+    
+        var stressByHRZone: [Double] = []
+        var trackPointsInZone: [TrackPoint]
+
+        if !hasHRData {return []}
+
+        for (index, lowerLimit) in profileHRZoneLimits.enumerated() {
+
+            if index > profileHRZoneLimits.count - 2 {
+
+                trackPointsInZone = trackPoints.filter({($0.heartRate ?? 0) >= Double(lowerLimit)})
+
+
+            } else {
+                trackPointsInZone = trackPoints.filter({(($0.heartRate ?? 0) >= Double(lowerLimit)) && (($0.heartRate ?? 0) < Double(profileHRZoneLimits[index+1]))})
+
+            }
+
+            stressByHRZone.append(stressFunction(trackPointsInZone) ?? 0)
+        }
+
+        return stressByHRZone
+    }
+    
+    
+    
+    /// Split trackPoints into Power zones (1-6)
+    /// then apply stressFunction each set of trackpoints
+    /// return array of stress values
+    func getStressByPowerZone(stressFunction: ([TrackPoint]) -> Double?) -> [Double] {
+    
+        var stressByZone: [Double] = []
+        var trackPointsInZone: [TrackPoint]
+
+        if !hasPowerData {return []}
+
+        for (index, lowerLimit) in profilePowerZoneLimits.enumerated() {
+
+            if index > profilePowerZoneLimits.count - 2 {
+
+                trackPointsInZone = trackPoints.filter({($0.watts ?? 0) >= lowerLimit})
+
+
+            } else {
+                trackPointsInZone = trackPoints.filter({(($0.watts ?? 0) >= lowerLimit) && (($0.watts ?? 0) < profilePowerZoneLimits[index+1])})
+
+            }
+
+            stressByZone.append(stressFunction(trackPointsInZone) ?? 0)
+        }
+
+        return stressByZone
+    }
+
+    
 }

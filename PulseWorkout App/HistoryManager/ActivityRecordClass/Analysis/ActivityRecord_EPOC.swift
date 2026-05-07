@@ -12,56 +12,91 @@ import Foundation
 extension ActivityRecord {
     
 
+    func getEPOCForTrackPoints(tpSeries: [TrackPoint]) -> Double? {
+        
+        if !hasHRData && !hasPowerData {
+            logger.info("Cannot calculate EPOC for record: \(name)")
+            return nil
+        }
+        
+        let EPOCSeries = tpSeries.map({ incrementalEPOC(watts: $0.watts, HR: $0.heartRate, seconds: trackPointGap) })
+        
+        let EPOC = EPOCSeries.reduce(0, +)
+        
+        let roundedEPOC = round(EPOC * 10) / 10
+        
+        return roundedEPOC
+        
+    }
+        
+    /// Calculate EPOC in ml / Kg
+    /// Use model
+    /// EPOC Rate  = 0.02*EXP(5*(HRr + Power Intensity)/2)   ml/Kg/ min
+    /// HRr = relative heart rate (proportioon between HRrest and HRmax
+    /// Power Intensity = Power / FTP
     func getEPOC() -> Double? {
         
-        if !hasHRData || !hasPowerData {
+        // Must have at least one of HR or Power data - ideally both
+        if !hasHRData && !hasPowerData {
             logger.info("Cannot calculate EPOC for record: \(name)")
             return nil
         }
         
         logger.info("Calculating EPOC for record: \(name)")
 
-        var vo2_aer: Double = 3.5
-        var epoc: Double = 0
-        let mass = UserProfile.shared.weightKG() ?? 70
-        let ftp = UserProfile.shared.FTP(at: self.startDate) ?? 250
-        let hr_rest: Double = Double(UserProfile.shared.restHR(at: self.startDate) ?? 50)
-        let hr_lt: Double = Double(UserProfile.shared.thresholdHR(at: self.startDate) ?? 154)
-        let vo2max: Double = 60
-        var epoc_rate: Double
+        // Pass all trackpoints to the calculation
+        return getEPOCForTrackPoints(tpSeries: trackPoints)
         
-        for trackPoint in self.trackPoints {
+    }
 
-            let power: Double = Double(trackPoint.watts ?? 0)
-//            let vo2_power = power / (4.8 * mass)
-            let vo2_power = 60 * power / (4.8 * mass)
+    
+    /// Return incremental EPOC  - taking into account FTP and trackPointGap
+    /// EPOC Rate  = 0.02*EXP(5*(HRr + Power Intensity)/2)   ml/Kg/ min
+    /// HRr = relative heart rate (proportioon between HRrest and HRmax
+    /// Power Intensity = Power / FTP
+    func incrementalEPOC(watts: Int?, HR: Double?, seconds: Int) -> Double {
 
-            // Note in VO2Max calc we smooth the power...
-//            let vo2_power = instantaneousVO2(watts: power, weight: mass)!
-            
-            let r = power / Double(ftp)
-            let hr_expected = hr_rest + (hr_lt - hr_rest) * r
-            let hr_factor = min(max((Double(trackPoint.heartRate ?? 0) / hr_expected), 0.9), 1.2)     // clamp(hr / hr_expected, 0.9, 1.2)
+        guard let FTP = profileFTP,
+              let restHR = profileRestHR,
+              let maxHR = profileMaxHR else {return 0}
+        
+        let MAX_POWER_INTENSITY: Double = 4             // Assume any power reading over 4* FTP is bogus
+        let power: Double = Double(watts ?? 0)
+        let powerIntensity: Double = min(power/Double(FTP), MAX_POWER_INTENSITY)
 
-            let vo2_true = vo2_power * hr_factor
+        let restHRD = Double(restHR)
+        let maxHRD = Double(maxHR)
+        let HR = min(HR ?? 0, 1.1 * maxHRD)               // Don't allow HR more than 10% over max HR
 
-            vo2_aer += (Double(trackPointGap)/40) * (vo2_true - vo2_aer)
-
-            let delta = max(0, vo2_true - vo2_aer)
-
-            epoc_rate = 0.25 * pow((delta / vo2max), 2) * vo2max
-
-            if power > Double(ftp) {
-                epoc_rate = epoc_rate * (1 + (2 * ((power / Double(ftp)) - 1)))
-            }
-            
-            epoc = epoc + (epoc_rate * Double(trackPointGap) / 60)
-        }
-
-        return epoc
+        let HRrel = min(max(HR - restHRD, 0), (maxHRD - restHRD))/(maxHRD - restHRD)
+        
+        let intensity = (hasHRData && hasPowerData) ? (powerIntensity + HRrel) / 2 : (hasHRData ? HRrel : powerIntensity)
+        
+        let epoc_rate = 0.02 * exp(5 * intensity)
+        
+        return epoc_rate * Double(seconds) / 60
 
     }
 
+    
+    /// Calculate EPOC by HR Zone
+    func getEPOCByHRZone() -> [Double] {
+        
+        logger.info("Calculating EPOC by HR zone for record: \(name)")
+            
+        return getStressByHRZone(stressFunction: getEPOCForTrackPoints)
+
+    }
+
+    
+    /// Calculate EPOC by Power Zone
+    func getEPOCByPowerZone() -> [Double] {
+        
+        logger.info("Calculating EPOC by Power zone for record: \(name)")
+            
+        return getStressByPowerZone(stressFunction: getEPOCForTrackPoints)
+
+    }
     
 }
 

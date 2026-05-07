@@ -75,6 +75,8 @@ extension ActivityRecord {
         activityRecord["profileMaxHR"] = profileMaxHR as CKRecordValue?
         activityRecord["profileRestHR"] = profileRestHR as CKRecordValue?
         activityRecord["estimatedEPOC"] = estimatedEPOC as CKRecordValue?
+        activityRecord["estimatedEPOCByHRZone"] = estimatedEPOCByHRZone
+        activityRecord["estimatedEPOCByPowerZone"] = estimatedEPOCByPowerZone
         activityRecord["TRIMP"] = TRIMP as CKRecordValue?
         activityRecord["TRIMPByHRZone"] = TRIMPByHRZone
 
@@ -182,6 +184,8 @@ extension ActivityRecord {
         profileMaxHR = activityRecord["profileMaxHR"] as Int?
         profileRestHR = activityRecord["profileRestHR"] as Int?
         estimatedEPOC = activityRecord["estimatedEPOC"] as Double?
+        estimatedEPOCByHRZone = (activityRecord["estimatedEPOCByHRZone"] ?? []) as [Double]
+        estimatedEPOCByPowerZone = (activityRecord["estimatedEPOCByPowerZone"] ?? []) as [Double]
         TRIMP = activityRecord["TRIMP"] as Double?
         TRIMPByHRZone = (activityRecord["TRIMPByHRZone"] ?? []) as [Double]
         
