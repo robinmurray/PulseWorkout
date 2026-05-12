@@ -76,19 +76,55 @@ struct ActivityDetailView: View {
     
     func trainingLoadByRange(_ activityRecord: ActivityRecord) -> [DonutChartDataPoint] {
         
-        var rangeValues: [Double] = []
-        
         if trainingLoadEstimated(activityRecord) {
-            rangeValues.append(activityRecord.TSSEstimatebyHRZone[0] + activityRecord.TSSEstimatebyHRZone[1])
-            rangeValues.append(activityRecord.TSSEstimatebyHRZone[2] + activityRecord.TSSEstimatebyHRZone[3])
-            rangeValues.append(activityRecord.TSSEstimatebyHRZone[4])
+            return trainingLoadByHRRange(activityRecord.TSSEstimatebyHRZone)
         }
         else {
-            rangeValues.append(activityRecord.TSSbyPowerZone[0] + activityRecord.TSSbyPowerZone[1])
-            rangeValues.append(activityRecord.TSSbyPowerZone[2] + activityRecord.TSSbyPowerZone[3])
-            rangeValues.append(activityRecord.TSSbyPowerZone[4] + activityRecord.TSSbyPowerZone[5])
+            return trainingLoadByPowerRange(activityRecord.TSSbyPowerZone)
         }
+    }
+    
+ 
+    func trainingLoadByPowerRange(_ zoneValues: [Double]) -> [DonutChartDataPoint] {
+        
+        if zoneValues.count != 6 {
+            return []
+        }
+        var rangeValues: [Double] = []
+        
+        rangeValues.append(zoneValues[0] + zoneValues[1])
+        rangeValues.append(zoneValues[2] + zoneValues[3])
+        rangeValues.append(zoneValues[4] + zoneValues[5])
+        
+        return trainingLoadDonutChartData(rangeValues)
 
+    }
+    
+
+    
+    func trainingLoadByHRRange(_ zoneValues: [Double]) -> [DonutChartDataPoint] {
+        
+        if zoneValues.count != 5 {
+            return []
+        }
+        var rangeValues: [Double] = []
+        
+        rangeValues.append(zoneValues[0] + zoneValues[1])
+        rangeValues.append(zoneValues[2] + zoneValues[3])
+        rangeValues.append(zoneValues[4])
+        
+        return trainingLoadDonutChartData(rangeValues)
+
+    }
+    
+    
+    func trainingLoadDonutChartData(_ rangeValues: [Double]) -> [DonutChartDataPoint] {
+        
+        if rangeValues.count != 3 {
+            ComponentLogger("ActivityDetailView").error("Invalid call to trainingLoadDonutChartData \(rangeValues)")
+            return []
+        }
+       
         return [DonutChartDataPoint(name: "Low Aerobic",
                                     color: .blue,
                                     value: rangeValues[0],
@@ -101,8 +137,8 @@ struct ActivityDetailView: View {
                                     color: .orange,
                                     value: rangeValues[2],
                                     formattedValue: String(format: "%.1f", rangeValues[2]))]
-
     }
+    
     
     func movingTimeByRange(_ activityRecord: ActivityRecord) -> [DonutChartDataPoint] {
     
@@ -185,14 +221,45 @@ struct ActivityDetailView: View {
                 {
                     VStack
                     {
-                        if trainingLoadEstimated(activityRecord) {
-                            Text("Estimated from Heart Rate").bold()
-                        }
                         
-                        let chartData = trainingLoadByRange(activityRecord)
-                        DonutChartView(chartData: chartData,
-                                       totalName: "Total Load",
-                                       totalValue: String(format: "%.1f", totalTrainingLoad(activityRecord)))
+                        TabView() {
+                            
+                            VStack {
+                                Text("TSS by Power Zones")
+                                if trainingLoadEstimated(activityRecord) {
+                                    Text("(Estimated from Heart Rate)").bold()
+                                }
+                                DonutChartView(chartData: trainingLoadByRange(activityRecord),
+                                               totalName: "Total Load",
+                                               totalValue: String(format: "%.1f", totalTrainingLoad(activityRecord)))
+                            }
+
+ 
+                            if activityRecord.TRIMP ?? 0 > 0 {
+                                VStack {
+                                    Text("TRIMP by Heart Rate Zones")
+                                    DonutChartView(chartData: trainingLoadByHRRange(activityRecord.TRIMPByHRZone),
+                                                   totalName: "Total Load",
+                                                   totalValue: String(format: "%.1f", activityRecord.TRIMP ?? 0))
+                                }
+                            }
+                            
+                            if activityRecord.estimatedEPOC ?? 0 > 0 {
+                                VStack {
+                                    Text("EPOC by Power Zones")
+                                    DonutChartView(chartData: trainingLoadByPowerRange(activityRecord.estimatedEPOCByPowerZone),
+                                                   totalName: "Total Load",
+                                                   totalValue: String(format: "%.1f", activityRecord.estimatedEPOC ?? 0))
+                                }
+
+                            }
+
+
+                        }
+                        .tabViewStyle(.page)
+                        .indexViewStyle(PageIndexViewStyle(backgroundDisplayMode: .interactive))
+                        .frame(height: 400)
+                        
                         
                         VStack {
 
