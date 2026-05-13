@@ -91,7 +91,7 @@ class StatisticsManager: ObservableObject {
         return yearBuckets.elements.first!
     }
     
-
+    #if os(iOS)
     @available(iOS 26.0, *)
     func registerBackgroundBuild() {
         
@@ -197,7 +197,7 @@ class StatisticsManager: ObservableObject {
         }
         
     }
-    
+    #endif
     
     /// Build all statistic buckets from activities
     /// Simple (long-lasting) function to rebuild all statistics

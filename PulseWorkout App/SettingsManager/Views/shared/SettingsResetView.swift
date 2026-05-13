@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import ActivityKit
 
 func getBuildNumber() -> String {
     if let buildNumber = Bundle.main.infoDictionary?["CFBundleVersion"] as? String {
