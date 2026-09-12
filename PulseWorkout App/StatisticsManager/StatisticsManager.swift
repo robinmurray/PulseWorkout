@@ -35,6 +35,8 @@ class StatisticsManager: ObservableObject {
 
     /// Flag to show if statistics being rebuilt
     @Published var refreshInProgress: Bool = false
+    @Published var refreshCompleteDate: Date? = nil
+    @Published var BGTaskTestStatus: String = "None"
     
     /// The full set of statistics buckets
     var statsBuckets: StatisticsBucketArray
@@ -106,6 +108,17 @@ class StatisticsManager: ObservableObject {
         }
         logger.info("BG Continuation Task registration status \(continuationTaskresult)")
 
+        
+        logger.info("Registering BGTask")
+        // register background tasks that may be called.
+        let registrationResult =
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "MurrayNet.PulseWorkout-Phone-App.BGTaskTest",
+                                        using: nil) { task in
+            
+            self.buildStatisticsTask(completion: task.setTaskCompleted, task: task)
+
+        }
+        logger.info("BGTask registration status \(registrationResult)")
     }
     
     
@@ -113,7 +126,7 @@ class StatisticsManager: ObservableObject {
     
         var progress: Progress?
         var wasExpired: Bool = false
-        var cloudKitOperation: CKProcessAllActivityRecords?
+        var cloudKitOperation: CKBlockProcessAllActivityRecords?
         
         let taskCompletionFunction: () -> Void = {
             DispatchQueue.main.async {
@@ -122,8 +135,14 @@ class StatisticsManager: ObservableObject {
             if wasExpired {
                 completion(false)
             } else {
-                self.statsBuckets.writeToCK(successCompletion: {completion(true)},
-                                            failureCompleation: {completion(false)})
+                self.copyTempStatsToLive()
+                self.statsBuckets.writeToCK(successCompletion: {
+                    completion(true)
+                    DispatchQueue.main.async {
+                        self.refreshCompleteDate = Date.now
+                    }
+                    },
+                    failureCompleation: {completion(false)})
 
             }
         }
@@ -131,6 +150,7 @@ class StatisticsManager: ObservableObject {
         logger.info("Running stats rebuild")
 
         if let task = task as? BGContinuedProcessingTask {
+            logger.info("Task is BGContinuedProcessingTask")
             // Check the expiration handler to confirm job completion.
             task.expirationHandler = {
                 self.logger.info("Task expired")
@@ -149,13 +169,10 @@ class StatisticsManager: ObservableObject {
         statsBuckets.emptyTempBuckets()
         
         // Refill from cloudkit
-        cloudKitOperation = CKProcessAllActivityRecords(
-            recordProcessFunction: {
-                ckRecord, recordProcessCompletionFunction
-                in
+        cloudKitOperation = CKBlockProcessAllActivityRecords(
+            blockProcessFunction: {ckRecords in
 
-                self.addActivitiesToStats(ckRecordList: [ckRecord])
-                recordProcessCompletionFunction(nil)
+                self.addActivitiesToTempStats(ckRecordList: ckRecords)
                 
                 // update the live activity widget
                 if let task = task as? BGContinuedProcessingTask {
@@ -163,6 +180,7 @@ class StatisticsManager: ObservableObject {
                                      subtitle: "Completed \(progress!.completedUnitCount)")
  
                 }
+
             },
             completionFunction: taskCompletionFunction,
             progress: progress)
@@ -199,24 +217,6 @@ class StatisticsManager: ObservableObject {
     }
     #endif
     
-    /// Build all statistic buckets from activities
-    /// Simple (long-lasting) function to rebuild all statistics
-    /// NOT-USED - see buildStatisticsTask
-    
-    func buildStatistics(asyncProgressNotifier: AsyncProgress/*, completionFunction: @escaping () -> Void*/) {
-        statsBuckets.emptyTempBuckets()
-        
-        CKProcessAllActivityRecords(
-            recordProcessFunction: {
-                ckRecord, recordProcessCompletionFunction
-                in self.addActivitiesToStats(ckRecordList: [ckRecord])
-                recordProcessCompletionFunction(nil)
-            },
-            completionFunction: { self.statsBuckets.writeToCK() },
-            asyncProgressNotifier: asyncProgressNotifier).execute()
-    
-    }
-    
     
     /// Return full set of statistics buckers as Cloudkit Records
     func allCKRecords() -> [CKRecord] {
@@ -246,19 +246,23 @@ class StatisticsManager: ObservableObject {
     }
     
     
-    /// Add list of activity CKRecords to stats buckets
-    func addActivitiesToStats(ckRecordList: [CKRecord]) -> Void {
-        
+    /// Add list of activity CKRecords to temp stats buckets
+    func addActivitiesToTempStats(ckRecordList: [CKRecord]) -> Void {
+
         let activityList = ckRecordList.map( {ActivityRecord(fromCKRecord: $0, fetchtrackData: false)})
         _ = activityList.map( {statsBuckets.addActivityToTemp($0) })
         
+    }
+    
+    
+    func copyTempStatsToLive() {
+
         statsBuckets.copyTempToElements()
         
         // Do NOT write to CloudKit - the caller is responsible for this
         _ = statsBuckets.write(copyToCK: false)
         
         reset()
-        
     }
     
     

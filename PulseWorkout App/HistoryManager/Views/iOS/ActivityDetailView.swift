@@ -523,11 +523,24 @@ struct ActivityDetailView: View {
                         .foregroundStyle(Color("StravaColor"))
 
                 case StravaSaveStatus.saving.rawValue:
-                    HStack {
-                        Text("Saving...")
-                            .foregroundStyle(Color("StravaColor"))
-                        ProgressView()
+                    VStack {
+                        HStack {
+                            Text("Saving...")
+                                .foregroundStyle(Color("StravaColor"))
+                            ProgressView()
+                        }
+                        Button(action: {
+                            activityRecord.setStravaSaveStatus(StravaSaveStatus.toSave)
+                            activityRecord.saveToStrava()
+                            })
+                        {
+                            Text("Retry")
+
+                        }
+                        .tint(Color.orange)
+                        .buttonStyle(.bordered)
                     }
+
 
                 case StravaSaveStatus.uploaded.rawValue:
                     HStack {

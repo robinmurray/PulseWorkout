@@ -152,8 +152,35 @@ struct SettingsResetView: View {
                         .font(.footnote).foregroundColor(.gray)
                     Spacer()
                 }
+                
+                HStack {
+                    Text("Last background rebuild completion \(statisticsManager.refreshCompleteDate ?? Date(timeIntervalSince1970: 0)).")
+                        .font(.footnote).foregroundColor(.gray)
+                    Spacer()
+                }
 
             }
+            
+            
+            VStack {
+                HStack {
+
+                    Button(action: {
+                        
+                        StatisticsManager.shared.submitBuildStatisticsTask()
+
+                    })
+                    {
+                        Text("Test App refresh task")
+                    }
+                    .buttonStyle(.glass)
+                    .glassEffect(.clear.tint(.blue))
+
+                    Spacer()
+                }
+
+            }
+            
             #endif
             
             

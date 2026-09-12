@@ -16,7 +16,7 @@ class CKActivityQueryOperation: CloudKitOperation {
     var blockCompletionFunction: ([CKRecord]) -> Void
     var resultsLimit: Int
     var qualityOfService: QualityOfService
-    
+    var fetchRecordBlockOperation: CKFetchRecordBlockOperation?
     
     init(startDate: Date?,
          blockCompletionFunction : @escaping ([CKRecord]) -> Void,
@@ -66,10 +66,13 @@ class CKActivityQueryOperation: CloudKitOperation {
     
     func execute() {
         
-        CKFetchRecordBlockOperation(query: activityQuery(startDate: self.startDate),
-                                    blockCompletionFunction: self.blockCompletionFunction,
-                                    resultsLimit: self.resultsLimit,
-                                    qualityOfService: self.qualityOfService).execute()
+        fetchRecordBlockOperation = fetchRecordBlockOperation ??
+            CKFetchRecordBlockOperation(query: activityQuery(startDate: self.startDate),
+                                        blockCompletionFunction: self.blockCompletionFunction,
+                                        resultsLimit: self.resultsLimit,
+                                        qualityOfService: self.qualityOfService)
+        
+        fetchRecordBlockOperation!.execute()
         
     }
 }

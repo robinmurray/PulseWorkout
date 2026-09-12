@@ -16,13 +16,16 @@ class CKFetchRecordBlockOperation: CloudKitOperation {
     var blockCompletionFunction: ([CKRecord]) -> Void
     var resultsLimit: Int
     var qualityOfService: QualityOfService
+    var nextCursor: CKQueryOperation.Cursor?
     
     init(query: CKQueryOperation,
+         nextCursor: CKQueryOperation.Cursor? = nil,
          blockCompletionFunction: @escaping ([CKRecord]) -> Void,
          resultsLimit: Int = 50,
          qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
         self.query = query
+        self.nextCursor = nextCursor
         self.blockCompletionFunction = blockCompletionFunction
         self.resultsLimit = resultsLimit
         self.qualityOfService = qualityOfService
@@ -34,7 +37,14 @@ class CKFetchRecordBlockOperation: CloudKitOperation {
         
         var ckRecordList: [CKRecord] = []
         
-        let operation = query
+        let operation: CKQueryOperation
+        
+        if let cursor = nextCursor {
+            operation = CKQueryOperation(cursor: cursor)
+        } else {
+            operation = query
+        }
+
         operation.resultsLimit = resultsLimit
         operation.qualityOfService = qualityOfService
 
@@ -55,8 +65,12 @@ class CKFetchRecordBlockOperation: CloudKitOperation {
         operation.queryResultBlock = { result in
             
             switch result {
-            case .success:
+            case .success(let cursor):
 
+                // Store cursor for if caller wants to continue the query
+                // Caller can reference nextCursor
+                self.nextCursor = cursor
+                
                 self.logger.info("Fetch completion")
                 self.blockCompletionFunction(ckRecordList)
                 

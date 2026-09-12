@@ -58,11 +58,12 @@ class CKProcessAllActivityRecords: CloudKitOperation {
     var recordProcessFunction: (CKRecord, @escaping (CKRecord.ID?) -> Void) -> Void
     var completionFunction: () -> Void
     var asyncProgressNotifier: AsyncProgress?
-    var resultsLimit: Int = 50
+    var resultsLimit: Int = 100
     var fetchedCKRecords: [CKRecord] = []
     var processedCount = 0
     var progress: Progress?
     private var cancelled: Bool = false
+    var queryOperation: CKActivityQueryOperation?
     
     
     init(recordProcessFunction : @escaping (CKRecord, @escaping (CKRecord.ID?) -> Void) -> Void,
@@ -131,13 +132,6 @@ class CKProcessAllActivityRecords: CloudKitOperation {
         } else {
             processedCount += 1
             
-            if let progress = progress {
-                progress.completedUnitCount += 1
-                if progress.completedUnitCount > (progress.totalUnitCount - 100) {
-                    progress.totalUnitCount += 500
-                }
-            }
-            
             if let notifier = asyncProgressNotifier {
                 let dateFormatter = DateFormatter()
                 var formattedDate: String = "None"
@@ -155,6 +149,15 @@ class CKProcessAllActivityRecords: CloudKitOperation {
     
     func fetchBlockCompletion(ckRecords: [CKRecord]) -> Void {
 
+        let resultsLimit = Int64(resultsLimit)
+        
+        if let progress = progress {
+            progress.completedUnitCount += resultsLimit
+            if progress.completedUnitCount > (progress.totalUnitCount - (2 * resultsLimit)) {
+                progress.totalUnitCount += (10 * resultsLimit)
+            }
+        }
+
         fetchedCKRecords = ckRecords
         processedCount = 0
         processNextRecord()
@@ -165,12 +168,92 @@ class CKProcessAllActivityRecords: CloudKitOperation {
     func execute() {
         
         logger.info("Fetching block with startDate \(String(describing: self.startDate))")
-        CKActivityQueryOperation(startDate: startDate,
-                                 blockCompletionFunction : fetchBlockCompletion,
-                                 resultsLimit: resultsLimit,
-                                 qualityOfService: .userInitiated).execute()
         
+        queryOperation = queryOperation ??
+            CKActivityQueryOperation(startDate: startDate,
+                                     blockCompletionFunction : fetchBlockCompletion,
+                                     resultsLimit: resultsLimit,
+                                     qualityOfService: .userInitiated)
+
+        queryOperation!.execute()
         
     }
 }
 
+
+
+class CKBlockProcessAllActivityRecords: CloudKitOperation {
+ 
+    var blockProcessFunction: ([CKRecord]) -> Void
+    var completionFunction: () -> Void
+    var resultsLimit: Int = 100
+    var progress: Progress?
+    private var cancelled: Bool = false
+    var queryOperation: CKActivityQueryOperation?
+    
+    
+    init(blockProcessFunction: @escaping ([CKRecord]) -> Void = {ckRecords in },
+         completionFunction: @escaping () -> Void = { },
+         progress: Progress? = nil) {
+        
+        self.blockProcessFunction = blockProcessFunction
+        self.completionFunction = completionFunction
+        self.progress = progress
+        if let progressObject = self.progress {
+            progressObject.totalUnitCount = 1000
+            progressObject.completedUnitCount = 0
+        }
+        super.init()
+
+    }
+    
+    
+    // Cancel the operation cleanly
+    func cancel() {
+        cancelled = true
+    }
+    
+
+    func fetchBlockCompletion(ckRecords: [CKRecord]) -> Void {
+
+        // Operation has been cancelled - stop processing gracefully.
+        // Don't call completion function
+        if cancelled {
+            return
+        }
+        
+        blockProcessFunction(ckRecords)
+        
+        let resultsLimit = Int64(resultsLimit)
+        
+        if let progress = progress {
+            progress.completedUnitCount += resultsLimit
+            if progress.completedUnitCount > (progress.totalUnitCount - (2 * resultsLimit)) {
+                progress.totalUnitCount += (10 * resultsLimit)
+            }
+        }
+
+        if ckRecords.count < resultsLimit {
+            completionFunction()
+        }
+        else {
+            execute()
+        }
+
+    }
+
+
+    func execute() {
+        
+        logger.info("Fetching next block")
+        
+        queryOperation = queryOperation ??
+            CKActivityQueryOperation(startDate: nil,
+                                     blockCompletionFunction : fetchBlockCompletion,
+                                     resultsLimit: resultsLimit,
+                                     qualityOfService: .userInitiated)
+
+        queryOperation!.execute()
+        
+    }
+}

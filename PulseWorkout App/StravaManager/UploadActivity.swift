@@ -219,8 +219,9 @@ class GetStravaIdFromStravaUploadId: StravaOperation {
             self.logger.info("Scheduling polling upload status : Count :: \(currentRetry)")
             
             // Poll for upload status...
-            DispatchQueue.main.asyncAfter(deadline: .now() + PAUSE_TIME) {
-                
+// * REMOVED WAIT            DispatchQueue.main.asyncAfter(deadline: .now() + PAUSE_TIME) {
+            Thread.sleep(forTimeInterval: PAUSE_TIME)
+            
                 self.logger.info("Polling upload status : Count :: \(currentRetry)")
                 
                 StravaClient.sharedInstance.request(Router.uploads(id: uploadId), result: { /*[weak self]*/ (status: UploadStatus?) in
@@ -284,7 +285,7 @@ class GetStravaIdFromStravaUploadId: StravaOperation {
                 })
                 
                 
-            }
+// * REMOVED WAIT            }
         }
 
     }
