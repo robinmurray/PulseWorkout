@@ -103,7 +103,13 @@ class StatisticsBucketArray: NSObject, Codable {
         
         elements = tempBuckets
 
-        _ = write()
+        logger.info("Shuffle forward write to CK...")
+        #if os(watchOS)
+        _ = write(copyToCK: false)
+        #endif
+        #if os(iOS)
+        _ = write(copyToCK: true)
+        #endif
     }
     
     
