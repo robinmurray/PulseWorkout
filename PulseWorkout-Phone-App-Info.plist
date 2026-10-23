@@ -6,6 +6,8 @@
 	<array>
 		<string>MurrayNet.PulseWorkout-Phone-App.statsRebuild</string>
 		<string>MurrayNet.PulseWorkout-Phone-App.activityAnalysis</string>
+		<string>MurrayNet.PulseWorkout-Phone-App.stravaSave</string>
+		<string>MurrayNet.PulseWorkout-Phone-App.fullStravaRefresh</string>
 	</array>
 	<key>CFBundleURLTypes</key>
 	<array>

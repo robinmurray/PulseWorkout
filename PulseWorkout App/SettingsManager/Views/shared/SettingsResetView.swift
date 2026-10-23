@@ -167,7 +167,7 @@ struct SettingsResetView: View {
 
                     Button(action: {
                         
-                        StatisticsManager.shared.submitBuildStatisticsTask()
+                        StatisticsManager.shared.submitStravaSaveTask()
 
                     })
                     {
@@ -175,12 +175,63 @@ struct SettingsResetView: View {
                     }
                     .buttonStyle(.glass)
                     .glassEffect(.clear.tint(.blue))
+                    .disabled(statisticsManager.stravaSaveInProgress)
 
                     Spacer()
                 }
+                
+                VStack {
+                    HStack {
+                        Text("Last app refresh submit \(statisticsManager.stravaSaveSubmitDate ?? Date(timeIntervalSince1970: 0)).")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        Text("Last app refresh completion \(statisticsManager.stravaSaveCompleteDate ?? Date(timeIntervalSince1970: 0)).")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+                }
+
 
             }
             
+            
+            VStack {
+                HStack {
+
+                    Button(action: {
+                        
+                        StatisticsManager.shared.submitActivityAnalysisTask()
+
+                    })
+                    {
+                        Text("Test BG Processing task")
+                    }
+                    .buttonStyle(.glass)
+                    .glassEffect(.clear.tint(.blue))
+                    .disabled(statisticsManager.activityAnalysisInProgress)
+
+                    Spacer()
+                }
+                
+                VStack {
+                    HStack {
+                        Text("Last activity analysis submit \(statisticsManager.activityAnalysisSubmitDate ?? Date(timeIntervalSince1970: 0)).")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+                    
+                    HStack {
+                        Text("Last activity analysis completion \(statisticsManager.activityAnalysisCompleteDate ?? Date(timeIntervalSince1970: 0)).")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+                }
+
+
+            }
             #endif
             
             

@@ -18,8 +18,12 @@ private func getFetchDate() -> Date {
 
 struct StravaSettingsView: View {
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
+    @ObservedObject var stravaRefreshParameters = SettingsManager.shared.stravaRefreshParameters
 
     @State private var stravaFetchFromDate: Date
+    @State private var showingLastFetchDetailsPopup = false
+    @State private var showingFetchDetailsPopup = false
+
     var dataCache: DataCache
     
     init() {
@@ -28,149 +32,182 @@ struct StravaSettingsView: View {
     }
     
     var body: some View {
+
+        GeometryReader { geometry in
+
+
         Form {
-            
-            VStack {
-                Toggle(isOn: $settingsManager.stravaEnabled) {
-                    Text("Enable Strava Integration").bold()
-                }
-                Divider()
-                
-                HStack {
-                    Text("Authentication Details")
-                    Spacer()
-                }
                 VStack {
+                    Toggle(isOn: $settingsManager.stravaEnabled) {
+                        Text("Enable Strava Integration").bold()
+                    }
+                    Divider()
+                    
                     HStack {
-                        Text("ClientId: ")
-                        TextField(
+                        Text("Authentication Details")
+                        Spacer()
+                    }
+                    VStack {
+                        HStack {
+                            Text("ClientId: ")
+                            TextField(
                                 "ClientId",
                                 value: $settingsManager.stravaClientId,
                                 format: .number.grouping(.never)
-                        ) // .textFieldStyle(.roundedBorder)
-                    }
-                    HStack {
-                        
-                        Text("Client Secret: ")
-                        TextField(
+                            ) // .textFieldStyle(.roundedBorder)
+                        }
+                        HStack {
+                            
+                            Text("Client Secret: ")
+                            TextField(
                                 "Client Secret",
                                 text: $settingsManager.stravaClientSecret
-                        ) // .textFieldStyle(.roundedBorder)
+                            ) // .textFieldStyle(.roundedBorder)
+                        }
                     }
-                }
-                .disabled(!settingsManager.stravaEnabled)
-
-                HStack {
-                    Text("Strava authentication detials to connect to your Strava profile.")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                    Spacer()
-                }
-
-            }
-            
-            VStack {
-                Toggle(isOn: $settingsManager.stravaFetch) {
-                    Text("Enable fetch from Strava")
-                }
-                .disabled(!settingsManager.stravaEnabled)
-                HStack {
-                    Text("New activities will be fetched from Strava when activity history list is refreshed.")
-                        .font(.footnote).foregroundColor(.gray)
-                    Spacer()
-                }
-            }
-
-            VStack {
-                Toggle(isOn: $settingsManager.stravaSave) {
-                    Text("Enable save to Strava")
-                }
-                .disabled(!settingsManager.stravaEnabled)
-                HStack {
-                    Text("Enable saving activities to Strava - options configured below.")
-                        .font(.footnote).foregroundColor(.gray)
-                    Spacer()
-                }
-               
-            }
-            VStack {
-                VStack {
-                    Toggle(isOn: $settingsManager.stravaSaveByProfile) {
-                        Text("Set save options by activity profile")
-                    }
+                    .disabled(!settingsManager.stravaEnabled)
+                    
                     HStack {
-                        Text("If enabled, then save options are configured within activity profiles. If not enabled, then save options are the same for all activity profiles and configured in the option below.")
-                            .font(.footnote).foregroundColor(.gray)
+                        Text("Strava authentication detials to connect to your Strava profile.")
+                            .font(.footnote)
+                            .foregroundColor(.gray)
                         Spacer()
                     }
                     
-                    Toggle(isOn: $settingsManager.stravaSaveAll) {
-                        Text("Auto-save all activities to Strava")
-                    }.disabled(settingsManager.stravaSaveByProfile)
-                    HStack {
-                        Text("If enabled, then all new activities will be automatically saved to Strava. If not enabled, then a button is provided on each activity detail screen to optionally save to Strava")
-                            .font(.footnote).foregroundColor(.gray)
-                        Spacer()
-                    }
-                    
-                }.disabled((!settingsManager.stravaSave) || (!settingsManager.stravaEnabled))
+                }
                 
-            }
-            
-            #if os(iOS)
-            GroupBox(label:
+                VStack {
+                    Toggle(isOn: $settingsManager.stravaFetch) {
+                        Text("Enable fetch from Strava")
+                    }
+                    .disabled(!settingsManager.stravaEnabled)
+                    HStack {
+                        Text("New activities will be fetched from Strava when activity history list is refreshed.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+                }
+                
+                VStack {
+                    Toggle(isOn: $settingsManager.stravaSave) {
+                        Text("Enable save to Strava")
+                    }
+                    .disabled(!settingsManager.stravaEnabled)
+                    HStack {
+                        Text("Enable saving activities to Strava - options configured below.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+                    
+                }
+                VStack {
+                    VStack {
+                        Toggle(isOn: $settingsManager.stravaSaveByProfile) {
+                            Text("Set save options by activity profile")
+                        }
                         HStack {
-                Spacer()
-                if #available(iOS 26.0, *) {
-                    Button("Fetch/Refresh Strava Records", action: {
-                        StravaFetchLatestActivities(after: stravaFetchFromDate,
-                                                    completionHandler: { },
-                                                    dataCache: dataCache).execute()
-                    })
+                            Text("If enabled, then save options are configured within activity profiles. If not enabled, then save options are the same for all activity profiles and configured in the option below.")
+                                .font(.footnote).foregroundColor(.gray)
+                            Spacer()
+                        }
+                        
+                        Toggle(isOn: $settingsManager.stravaSaveAll) {
+                            Text("Auto-save all activities to Strava")
+                        }.disabled(settingsManager.stravaSaveByProfile)
+                        HStack {
+                            Text("If enabled, then all new activities will be automatically saved to Strava. If not enabled, then a button is provided on each activity detail screen to optionally save to Strava")
+                                .font(.footnote).foregroundColor(.gray)
+                            Spacer()
+                        }
+                        
+                    }.disabled((!settingsManager.stravaSave) || (!settingsManager.stravaEnabled))
+                    
+                }
+                
+                
+                
+#if os(iOS)
+                GroupBox(label:
+                            HStack {
+                    
+                    Button(action: {
+                        if !stravaRefreshParameters.inProgress {
+                            settingsManager.submitNewFullStravaRefreshTask(from: stravaFetchFromDate)
+                        }
+                        showingFetchDetailsPopup = true
+                    }) {
+                        if stravaRefreshParameters.inProgress {
+                            HStack {
+                                Text("Strava fetch in progress")
+                                ProgressView()
+                            }
+                            
+                        } else {
+                            Text("Fetch/Refresh Strava Records")
+                        }
+                    }
                     .buttonStyle(.glass)
                     .glassEffect(.clear.tint(.blue))
-
-                } else {
-                    // Fallback on earlier versions
-                    Button("Fetch/Refresh Strava Records", action: {
-                        StravaFetchLatestActivities(after: stravaFetchFromDate,
-                                                    completionHandler: { },
-                                                    dataCache: dataCache).execute()
-                    })
-                        .buttonStyle(.borderedProminent)
+                    .popover(isPresented: $showingFetchDetailsPopup,
+                             attachmentAnchor: .point(.top),
+                             arrowEdge: .bottom) {
+                        BGFetchProgressView(refreshParameters: stravaRefreshParameters)
+                            .presentationCompactAdaptation(.popover)
+                            .presentationBackground(.regularMaterial)
+                            .frame(width: geometry.size.width)
+                    }
+                    
+                    Spacer()
+                    
                 }
-                
-
-                
-                
-                Spacer()
-            }
-                   // Label("Fetch/Refresh Strava Records", systemImage: "location.circle")
-              //  .foregroundColor(.orange)
-            ) {
-                VStack {
-
-                    DatePicker(
+                )
+                {
+                    VStack {
+                        
+                        DatePicker(
                             "From",
                             selection: $stravaFetchFromDate,
                             displayedComponents: [.date]
                         )
+                        
+                        HStack {
+                            Text("Perform initial fetch of Strava data - pulling all records from this date. Or, perform a refresh of Strava data, overwriting all records from this date.")
+                                .font(.footnote).foregroundColor(.gray)
+                            Spacer()
+                        }
+                        
+                        if !stravaRefreshParameters.inProgress {
+                            HStack {
+                                Button("View last fetch results") {
+                                    showingLastFetchDetailsPopup = true
+                                }
+                                .buttonStyle(.automatic)
+                                .popover(isPresented: $showingLastFetchDetailsPopup,
+                                         attachmentAnchor: .point(.top),
+                                         arrowEdge: .bottom) {
+                                    
+                                    BGFetchProgressView(refreshParameters: stravaRefreshParameters)
+                                        .presentationCompactAdaptation(.popover)
+                                        .presentationBackground(.regularMaterial)
+                                        .frame(width: geometry.size.width)
 
-                    HStack {
-                        Text("Perform initial fetch of Strava data - pulling all records from this date. Or, perform a refresh of Strava data, overwriting all records from this date.")
-                            .font(.footnote).foregroundColor(.gray)
-                        Spacer()
+                                }
+                                Spacer()
+                            }
+                        }
+                        
+                        
                     }
+                    
                 }
+                .disabled((!settingsManager.stravaEnabled) || (!settingsManager.stravaFetch))
                 
+#endif
             }
-            .disabled((!settingsManager.stravaEnabled) || (!settingsManager.stravaFetch))
+            .navigationTitle("Strava Integration")
+            .onDisappear(perform: settingsManager.save)
             
-            #endif
         }
-        .navigationTitle("Strava Integration")
-        .onDisappear(perform: settingsManager.save)
-        
     }
 
 }

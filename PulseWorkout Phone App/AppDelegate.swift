@@ -139,7 +139,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         // Register background execution functions
         if #available(iOS 26.0, *) {
             StatisticsManager.shared.registerBackgroundBuild()
-            SettingsManager.shared.registerBackgroundBuild()
+            SettingsManager.shared.registerBackgroundTasks()
         }
         
         return true

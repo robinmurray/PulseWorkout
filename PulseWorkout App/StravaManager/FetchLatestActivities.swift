@@ -13,6 +13,7 @@ class StravaFetchLatestActivities: StravaOperation {
     var page: Int = 1
     var perPage: Int
     var after: Date
+    var before: Date?
     var activityIndex: Int = 0
     var stravaActivityPage: [StravaActivity] = []
     var nextFetchDate: Int
@@ -23,6 +24,7 @@ class StravaFetchLatestActivities: StravaOperation {
     
     init(perPage: Int = 30,
          after: Date? = nil,
+         before: Date? = nil,
          forceReauth: Bool = false,
          forceRefresh: Bool = false,
          completionHandler: @escaping () -> Void,
@@ -46,6 +48,8 @@ class StravaFetchLatestActivities: StravaOperation {
             // If no date set then will set to now and not fetch anything!
             self.after = Date()
         }
+        
+        self.before = before
 
         self.completionHandler = completionHandler
         self.failureCompletionHandler = failureCompletionHandler
@@ -68,7 +72,7 @@ class StravaFetchLatestActivities: StravaOperation {
 
         StravaFetchActivities(page: page,
                               perPage: perPage,
-                              before: nil,
+                              before: before,
                               after: after,
                               completionHandler: self.gotPage,
                               failureCompletionHandler: self.failureCompletionHandler,

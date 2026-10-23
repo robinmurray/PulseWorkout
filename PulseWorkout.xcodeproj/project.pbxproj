@@ -241,6 +241,14 @@
 		E4B3E8BA2EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */; };
 		E4B3E8BB2EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */; };
 		E4B3E8BC2EBE05EF009AF231 /* ActivityRecord_Analysis.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */; };
+		E4B58F6C3077DDD600CD158A /* BGStravaRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B58F6B3077DDD600CD158A /* BGStravaRefresh.swift */; };
+		E4B58F6D3077DDD600CD158A /* BGStravaRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B58F6B3077DDD600CD158A /* BGStravaRefresh.swift */; };
+		E4B58F6E3077DDD600CD158A /* BGStravaRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B58F6B3077DDD600CD158A /* BGStravaRefresh.swift */; };
+		E4B58F6F3077DDD600CD158A /* BGStravaRefresh.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B58F6B3077DDD600CD158A /* BGStravaRefresh.swift */; };
+		E4B58FBC30782A3300CD158A /* BGAnalyzeAllActivities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B58FBB30782A3300CD158A /* BGAnalyzeAllActivities.swift */; };
+		E4B58FBD30782A3300CD158A /* BGAnalyzeAllActivities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B58FBB30782A3300CD158A /* BGAnalyzeAllActivities.swift */; };
+		E4B58FBE30782A3300CD158A /* BGAnalyzeAllActivities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B58FBB30782A3300CD158A /* BGAnalyzeAllActivities.swift */; };
+		E4B58FBF30782A3300CD158A /* BGAnalyzeAllActivities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B58FBB30782A3300CD158A /* BGAnalyzeAllActivities.swift */; };
 		E4B5CEA82D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEA92D02E0AC0094CA4F /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */; };
 		E4B5CEAB2D02E1220094CA4F /* FormattersTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */; };
@@ -352,6 +360,11 @@
 		E4F39EF12F46149200B90DBA /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F39EEF2F46149200B90DBA /* AppLogger.swift */; };
 		E4F39EF22F46149200B90DBA /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F39EEF2F46149200B90DBA /* AppLogger.swift */; };
 		E4F39EF32F46149200B90DBA /* AppLogger.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4F39EEF2F46149200B90DBA /* AppLogger.swift */; };
+		E4FE8AB93075379F003B3F8B /* BGFetchProgressView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4FE8AB83075379F003B3F8B /* BGFetchProgressView.swift */; };
+		E4FE8AD430753960003B3F8B /* BGFetchParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4FE8AD330753960003B3F8B /* BGFetchParameters.swift */; };
+		E4FE8AD530753960003B3F8B /* BGFetchParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4FE8AD330753960003B3F8B /* BGFetchParameters.swift */; };
+		E4FE8AD630753960003B3F8B /* BGFetchParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4FE8AD330753960003B3F8B /* BGFetchParameters.swift */; };
+		E4FE8AD730753960003B3F8B /* BGFetchParameters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E4FE8AD330753960003B3F8B /* BGFetchParameters.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -526,6 +539,8 @@
 		E4AEC0A82D36443300DC0082 /* CloudKitNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CloudKitNotificationManager.swift; sourceTree = "<group>"; };
 		E4B23ED02F5DDFE500539FA4 /* ActivityRecord_EPOC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord_EPOC.swift; sourceTree = "<group>"; };
 		E4B3E8B82EBE05EE009AF231 /* ActivityRecord_Analysis.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord_Analysis.swift; sourceTree = "<group>"; };
+		E4B58F6B3077DDD600CD158A /* BGStravaRefresh.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGStravaRefresh.swift; sourceTree = "<group>"; };
+		E4B58FBB30782A3300CD158A /* BGAnalyzeAllActivities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGAnalyzeAllActivities.swift; sourceTree = "<group>"; };
 		E4B5CEA72D02E0AC0094CA4F /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		E4B5CEAA2D02E1220094CA4F /* FormattersTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FormattersTest.swift; sourceTree = "<group>"; };
 		E4B886392EBA52A900205E27 /* ActivityRecord_CSVFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivityRecord_CSVFile.swift; sourceTree = "<group>"; };
@@ -579,6 +594,8 @@
 		E4E8BAAA2D70C0900098D8E3 /* SettingsResetView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsResetView.swift; sourceTree = "<group>"; };
 		E4E8BAAD2D70C0AE0098D8E3 /* StravaSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StravaSettingsView.swift; sourceTree = "<group>"; };
 		E4F39EEF2F46149200B90DBA /* AppLogger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogger.swift; sourceTree = "<group>"; };
+		E4FE8AB83075379F003B3F8B /* BGFetchProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGFetchProgressView.swift; sourceTree = "<group>"; };
+		E4FE8AD330753960003B3F8B /* BGFetchParameters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BGFetchParameters.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -808,6 +825,9 @@
 			children = (
 				E46121EC2AAB67DC00E07749 /* Views */,
 				E46121EF2AADC86F00E07749 /* SettingsManager.swift */,
+				E4B58FBB30782A3300CD158A /* BGAnalyzeAllActivities.swift */,
+				E4B58F6B3077DDD600CD158A /* BGStravaRefresh.swift */,
+				E4FE8AD330753960003B3F8B /* BGFetchParameters.swift */,
 			);
 			path = SettingsManager;
 			sourceTree = "<group>";
@@ -903,6 +923,7 @@
 				E4941E5C2CD4BC5B0063421F /* AutoPauseSettingsView.swift */,
 				E4941E5E2CD4CAA90063421F /* AverageSettingsView.swift */,
 				E4941E612CD4CD2E0063421F /* CyclingPowerSettingsView.swift */,
+				E4FE8AB83075379F003B3F8B /* BGFetchProgressView.swift */,
 			);
 			path = iOS;
 			sourceTree = "<group>";
@@ -1382,7 +1403,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 2640;
-				LastUpgradeCheck = 2630;
+				LastUpgradeCheck = 2650;
 				TargetAttributes = {
 					E4094B8A2CD0C22800915CCB = {
 						CreatedOnToolsVersion = 16.0;
@@ -1503,6 +1524,7 @@
 				E413D42F2D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E4A7D5412E8C2E650049514D /* StackedBarChartData.swift in Sources */,
 				E4E892C22F5B058A00C584EA /* ActivityRecord_VO2Max.swift in Sources */,
+				E4B58F6D3077DDD600CD158A /* BGStravaRefresh.swift in Sources */,
 				E49612782E4F287800E3CA31 /* StatisticsProgressHeaderView.swift in Sources */,
 				E4CD4B162D8DBAA500BC1FC3 /* FetchActivities.swift in Sources */,
 				E4941E452CD29FB30063421F /* BTContentView.swift in Sources */,
@@ -1596,10 +1618,12 @@
 				E45805B02E05775200DCE79F /* DetailStatisticBarDonutView.swift in Sources */,
 				E47A2EC92D5FAEA100297952 /* DonutChartView.swift in Sources */,
 				E4B8863C2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */,
+				E4FE8AB93075379F003B3F8B /* BGFetchProgressView.swift in Sources */,
 				E4CD4B392DA8195700BC1FC3 /* CKSaveAndDelete.swift in Sources */,
 				E4CD4B082D8B146200BC1FC3 /* StravaOperation.swift in Sources */,
 				E4CD4B142D8DBA4E00BC1FC3 /* UpdateActivity.swift in Sources */,
 				E413D4252D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift in Sources */,
+				E4FE8AD630753960003B3F8B /* BGFetchParameters.swift in Sources */,
 				E4BC98202E828CC7005782D5 /* BarAndDonutView.swift in Sources */,
 				E4AEC0AA2D36443400DC0082 /* CloudKitNotificationManager.swift in Sources */,
 				E487777A2E845795009523B6 /* DonutView.swift in Sources */,
@@ -1611,6 +1635,7 @@
 				E45808762E07E76D00DCE79F /* StatisticsBucket.swift in Sources */,
 				E45E3F6A2CEDE2BA001D58B3 /* ActivitySaveView.swift in Sources */,
 				E4A372FC2D12C8B8006A53F3 /* MigrationManager.swift in Sources */,
+				E4B58FBC30782A3300CD158A /* BGAnalyzeAllActivities.swift in Sources */,
 				E496127B2E4F294600E3CA31 /* SummaryStatsHeaderView.swift in Sources */,
 				E4B886C62EBA71A600205E27 /* LinkToStravaView.swift in Sources */,
 				E400AB732DF5EA1B00620569 /* StatisticsSummaryView.swift in Sources */,
@@ -1638,9 +1663,11 @@
 				E400B6F52DFC17B900620569 /* UserMetricsManager.swift in Sources */,
 				E400B6EE2DFC173600620569 /* Constants.swift in Sources */,
 				E400B6FE2DFC188C00620569 /* CKUserMetricQuery.swift in Sources */,
+				E4FE8AD430753960003B3F8B /* BGFetchParameters.swift in Sources */,
 				E413D4312D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E4E892CC2F5B071600C584EA /* ActivityRecord_TRIMP.swift in Sources */,
 				E400B6F82DFC17E100620569 /* CKSaveAndDelete.swift in Sources */,
+				E4B58F6C3077DDD600CD158A /* BGStravaRefresh.swift in Sources */,
 				E4B8863B2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */,
 				E400B6F32DFC177F00620569 /* CKForceUpdate.swift in Sources */,
 				E492C0082D19BBF90050B6E8 /* DataCache.swift in Sources */,
@@ -1670,6 +1697,7 @@
 				E4A4552B2EDB2B37006CA090 /* UserProfile.swift in Sources */,
 				E49CB5E92D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
 				E4B23ED12F5DDFE500539FA4 /* ActivityRecord_EPOC.swift in Sources */,
+				E4B58FBF30782A3300CD158A /* BGAnalyzeAllActivities.swift in Sources */,
 				E492C00E2D19BDD00050B6E8 /* ActivityProfile.swift in Sources */,
 				E492C00A2D19BC1B0050B6E8 /* ActivityRecord.swift in Sources */,
 			);
@@ -1692,6 +1720,7 @@
 				E45E3F242CEC8D12001D58B3 /* ProfileManager.swift in Sources */,
 				E46EF0C82955C8E9006FA603 /* PausedView.swift in Sources */,
 				E4C25BAC2A4F5554002F315D /* ActivityHistoryView.swift in Sources */,
+				E4B58FBD30782A3300CD158A /* BGAnalyzeAllActivities.swift in Sources */,
 				E413D4282D6F49F40086FBB2 /* ActivityRecord_TrackRecord.swift in Sources */,
 				E413D41D2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
 				E46EF08629537CA1006FA603 /* ContentView.swift in Sources */,
@@ -1757,6 +1786,7 @@
 				E4AAAF3B2E8FC4B900CBDC71 /* CKBlockSaveAndDelete.swift in Sources */,
 				E4B5CEA82D02E0AC0094CA4F /* Formatters.swift in Sources */,
 				E4CD4B262D8FFF8900BC1FC3 /* AlertView.swift in Sources */,
+				E4B58F6E3077DDD600CD158A /* BGStravaRefresh.swift in Sources */,
 				E4941E862CD7FBC50063421F /* ActivityHeaderView.swift in Sources */,
 				E4212958298D79D3001B8AA9 /* BTDeviceDiscoverView.swift in Sources */,
 				E421295A298EC383001B8AA9 /* BTStartDiscoverView.swift in Sources */,
@@ -1773,6 +1803,7 @@
 				E4BEF4D22EA7EEE300856924 /* StatisticsBucketConfiguration.swift in Sources */,
 				E413D4222D6F48300086FBB2 /* ActivityRecord_Strava.swift in Sources */,
 				E45E3F7A2CF1F037001D58B3 /* NavigationCoordinator.swift in Sources */,
+				E4FE8AD530753960003B3F8B /* BGFetchParameters.swift in Sources */,
 				E41281692BBD4CCF00996E1C /* MapRouteView.swift in Sources */,
 				E46121F22AAE178700E07749 /* BTPeripheralManager.swift in Sources */,
 				E46121F02AADC86F00E07749 /* SettingsManager.swift in Sources */,
@@ -1810,7 +1841,9 @@
 				E492C0152D1DC9800050B6E8 /* ProfileManager.swift in Sources */,
 				E492C00F2D19BDDE0050B6E8 /* SimpleXML.swift in Sources */,
 				E400B6FF2DFC195300620569 /* UserMetricsManager.swift in Sources */,
+				E4B58FBE30782A3300CD158A /* BGAnalyzeAllActivities.swift in Sources */,
 				E49CB5E82D69BD9B00E6B7BC /* ActivityRecordImage.swift in Sources */,
+				E4FE8AD730753960003B3F8B /* BGFetchParameters.swift in Sources */,
 				E400B6FB2DFC181600620569 /* CKFetchRecordBlock.swift in Sources */,
 				E41501172D06196500C09200 /* Formatters.swift in Sources */,
 				E400B6F72DFC17E100620569 /* CKSaveAndDelete.swift in Sources */,
@@ -1842,6 +1875,7 @@
 				E4CD4B2A2D91409900BC1FC3 /* AsyncProgress.swift in Sources */,
 				E492C01F2D1DCA680050B6E8 /* BTDevice.swift in Sources */,
 				E413D41E2D6F476B0086FBB2 /* ActivityRecord_Cloudkit.swift in Sources */,
+				E4B58F6F3077DDD600CD158A /* BGStravaRefresh.swift in Sources */,
 				E4B8863A2EBA52A900205E27 /* ActivityRecord_CSVFile.swift in Sources */,
 				E413D4322D6F4EA80086FBB2 /* TrackPoint.swift in Sources */,
 				E4BEF4D92EA7EF3300856924 /* StatisticsBucketArray.swift in Sources */,
@@ -1912,7 +1946,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1957,7 +1991,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Phone App/PulseWorkout Phone App.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Phone App/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2000,7 +2034,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2024,7 +2058,7 @@
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2047,7 +2081,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2074,7 +2108,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu17;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2100,6 +2134,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -2161,6 +2196,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -2219,7 +2255,7 @@
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2258,7 +2294,7 @@
 				CODE_SIGN_ENTITLEMENTS = "PulseWorkout Watch App/PulseWorkout Watch App.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				DEVELOPMENT_ASSET_PATHS = "\"PulseWorkout Watch App/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -2295,7 +2331,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = MurrayNet.PulseWorkout;
@@ -2311,7 +2347,7 @@
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				INFOPLIST_KEY_CFBundleDisplayName = PulseWorkout;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = MurrayNet.PulseWorkout;
@@ -2328,7 +2364,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Watch-AppTests";
@@ -2347,7 +2383,7 @@
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "MurrayNet.PulseWorkout-Watch-AppTests";
@@ -2366,7 +2402,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				MARKETING_VERSION = 1.0;
@@ -2385,7 +2421,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 178;
+				CURRENT_PROJECT_VERSION = 358;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				MARKETING_VERSION = 1.0;
