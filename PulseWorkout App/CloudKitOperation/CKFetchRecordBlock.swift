@@ -14,6 +14,7 @@ class CKFetchRecordBlockOperation: CloudKitOperation {
    
     var query: CKQueryOperation
     var blockCompletionFunction: ([CKRecord]) -> Void
+    var failureCompletionFunction: () -> Void
     var resultsLimit: Int
     var qualityOfService: QualityOfService
     var nextCursor: CKQueryOperation.Cursor?
@@ -21,12 +22,14 @@ class CKFetchRecordBlockOperation: CloudKitOperation {
     init(query: CKQueryOperation,
          nextCursor: CKQueryOperation.Cursor? = nil,
          blockCompletionFunction: @escaping ([CKRecord]) -> Void,
+         failureCompletionFunction: @escaping () -> Void = {},
          resultsLimit: Int = 50,
          qualityOfService: QualityOfService = DEFAULT_CLOUDKIT_QOS) {
         
         self.query = query
         self.nextCursor = nextCursor
         self.blockCompletionFunction = blockCompletionFunction
+        self.failureCompletionFunction = failureCompletionFunction
         self.resultsLimit = resultsLimit
         self.qualityOfService = qualityOfService
         
@@ -93,6 +96,7 @@ class CKFetchRecordBlockOperation: CloudKitOperation {
                     self.logger.error("permanent device fetch error")
                 }
                 self.logger.error( "Fetch failed \(String(describing: error))")
+                self.failureCompletionFunction()
                 break
             }
 
