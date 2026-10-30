@@ -45,7 +45,10 @@ class StatisticsManager: ObservableObject {
     @Published var activityAnalysisSubmitDate: Date? = nil
     @Published var activityAnalysisCompleteDate: Date? = nil
     
-    @Published var BGTaskTestStatus: String = "None"
+//    @Published var BGTaskTestStatus: String = "None"
+    /// Persistent parameters to manage background statistics rebuild task
+    @Published var statisticsRebuildParameters = BGFetchParameters(userDefaultsKey: "statisticsRebuildParameters")
+
     
     /// The full set of statistics buckets
     var statsBuckets: StatisticsBucketArray
@@ -68,6 +71,10 @@ class StatisticsManager: ObservableObject {
 
         self.activityAnalysisSubmitDate = UserDefaults.standard.object(forKey: "activityAnalysisSubmitDate") as? Date ?? nil
         self.activityAnalysisCompleteDate = UserDefaults.standard.object(forKey: "activityAnalysisCompleteDate") as? Date ?? nil
+        
+        // Get the persisted BG Statistics Rebuild Parameters
+        self.statisticsRebuildParameters.read()
+
     }
     
     
@@ -110,17 +117,6 @@ class StatisticsManager: ObservableObject {
 #if os(iOS)
     @available(iOS 26.0, *)
     func registerBackgroundBuild() {
-        
-        logger.info("Registering background statistics rebuild task")
-        // register background tasks that may be called.
-        let continuationTaskresult =
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "MurrayNet.PulseWorkout-Phone-App.statsRebuild",
-                                        using: nil) { task in
-            
-            self.buildStatisticsTask(completion: task.setTaskCompleted, task: task)
-            
-        }
-        logger.info("BG Continuation Task registration status \(continuationTaskresult)")
         
         
         logger.info("Registering App Refresh Task for Strava Save")
@@ -227,6 +223,7 @@ class StatisticsManager: ObservableObject {
     }
     
     
+    /*
     func buildStatisticsTask(completion: @escaping (Bool) -> Void = {_ in}, task: BGTask? = nil) {
     
         var progress: Progress?
@@ -294,11 +291,11 @@ class StatisticsManager: ObservableObject {
         cloudKitOperation!.execute()
 
     }
-        
+        */
     
     @available(iOS 26.0, *)
     // Submit a background continued processing task to rebuild all statistics
-    func submitBuildStatisticsTask() {
+/*    func submitBuildStatisticsTask() {
         
         if refreshInProgress {
             logger.info("Can't submit request, background processing already active.")
@@ -321,7 +318,7 @@ class StatisticsManager: ObservableObject {
         }
         
     }
-    
+    */
     
     // Submit a BGAppRefresh task to save to Strava
     func submitStravaSaveTask() {
@@ -421,15 +418,25 @@ class StatisticsManager: ObservableObject {
         _ = activityList.map( {statsBuckets.addActivityToTemp($0) })
         
     }
+
     
+    /// Add list of activity CKRecords to stats buckets
+    /// Store locally and to cloudkit
+    /// Refresh UI
+    func addActivitiesToStats(ckRecordList: [CKRecord]) -> Void {
+
+        let activityList = ckRecordList.map( {ActivityRecord(fromCKRecord: $0, fetchtrackData: false)})
+        _ = activityList.map( {statsBuckets.addActivity($0) })
+        
+        _ = statsBuckets.write(copyToCK: true)
+
+        reset()
+        
+    }
     
     func copyTempStatsToLive() {
 
         statsBuckets.copyTempToElements()
-        
-        // Do NOT write to CloudKit - the caller is responsible for this
-        _ = statsBuckets.write(copyToCK: false)
-        
         reset()
     }
     

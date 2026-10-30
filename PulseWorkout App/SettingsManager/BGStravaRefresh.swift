@@ -30,7 +30,7 @@ extension SettingsManager {
     
     
 
-    /// Background task registered to complete full refersh of records from Strava.
+    /// Background task registered to complete full refresh of records from Strava.
     /// Each task run fetches a page and then submits a continuation task to do next page
     /// Ongoing status managed in stravaRefreshParameters
     func fullStravaRefreshTask(completion: @escaping (Bool) -> Void = {_ in}, task: BGTask? = nil) {
@@ -91,18 +91,6 @@ extension SettingsManager {
             dataCache: DataCache.shared).execute()
         
     }
-
-    
-    
-    /// Function to cancel background task
-    /// Cancel the task on the task scheduler and set cancelled parameters in parameter set.
-    func cancelFullStravaRefreshTask() {
-        
-        BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: "MurrayNet.PulseWorkout-Phone-App.fullStravaRefresh")
-        
-        stravaRefreshParameters.cancelRequest()
-        
-    }
     
     
     /// Submit a new Strava refresh task
@@ -115,7 +103,7 @@ extension SettingsManager {
                 return
             }
 
-            self.stravaRefreshParameters.new(earliestFetchDate: from)
+            self.stravaRefreshParameters.new(pageStartDate: Date.now, earliestFetchDate: from)
             
             if self.submitStravaPageRefreshTask() {
                 self.stravaRefreshParameters.submitted()

@@ -151,7 +151,7 @@ struct StravaSettingsView: View {
                     .popover(isPresented: $showingFetchDetailsPopup,
                              attachmentAnchor: .point(.top),
                              arrowEdge: .bottom) {
-                        BGFetchProgressView(refreshParameters: stravaRefreshParameters)
+                        BGStravaFetchProgresssView(refreshParameters: stravaRefreshParameters)
                             .presentationCompactAdaptation(.popover)
                             .presentationBackground(.regularMaterial)
                             .frame(width: geometry.size.width)
@@ -186,7 +186,7 @@ struct StravaSettingsView: View {
                                          attachmentAnchor: .point(.top),
                                          arrowEdge: .bottom) {
                                     
-                                    BGFetchProgressView(refreshParameters: stravaRefreshParameters)
+                                    BGStravaFetchProgresssView(refreshParameters: stravaRefreshParameters)
                                         .presentationCompactAdaptation(.popover)
                                         .presentationBackground(.regularMaterial)
                                         .frame(width: geometry.size.width)

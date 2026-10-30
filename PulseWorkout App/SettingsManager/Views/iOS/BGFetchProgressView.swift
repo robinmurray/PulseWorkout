@@ -7,8 +7,87 @@
 
 import SwiftUI
 
-struct BGFetchProgressView: View {
+
+struct BGStatsRebuildProgresssView: View {
     @Environment(\.dismiss) private var dismiss
+
+    @ObservedObject var refreshParameters: BGFetchParameters
+    
+    init(refreshParameters: BGFetchParameters) {
+        self.refreshParameters = refreshParameters
+    }
+    
+    
+    var body: some View {
+        VStack{
+            HStack{
+                Image(systemName: "chart.line.text.clipboard.fill")
+                if refreshParameters.inProgress {
+                    Text("Statistics rebuild status")
+                } else {
+                    Text("Last rebuild details")
+                }
+                Spacer()
+
+            }
+            
+            Divider()
+            
+            BGFetchProgressView(refreshParameters: refreshParameters)
+            
+            if refreshParameters.inProgress {
+                
+                Button("Cancel") {
+                    refreshParameters.cancelRequest()
+                    dismiss()
+                }
+            }
+
+        }.padding()
+    }
+}
+
+
+struct BGStravaFetchProgresssView: View {
+    @Environment(\.dismiss) private var dismiss
+
+    @ObservedObject var refreshParameters: BGFetchParameters
+    
+    init(refreshParameters: BGFetchParameters) {
+        self.refreshParameters = refreshParameters
+    }
+    
+    
+    var body: some View {
+        VStack{
+            HStack{
+                Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                if refreshParameters.inProgress {
+                    Text("Strava fetch status").foregroundColor(Color("StravaColor"))
+                } else {
+                    Text("Last Fetch Details")
+                }
+                Spacer()
+
+            }
+            
+            Divider()
+            
+            BGFetchProgressView(refreshParameters: refreshParameters)
+
+            if refreshParameters.inProgress {
+
+                Button("Cancel") {
+                    refreshParameters.cancelRequest()
+                    dismiss()
+                }
+            }
+        }.padding()
+    }
+}
+
+
+struct BGFetchProgressView: View {
 
     @ObservedObject var refreshParameters: BGFetchParameters
     let dateStyle = Date.FormatStyle
@@ -27,18 +106,7 @@ struct BGFetchProgressView: View {
     var body: some View {
         
         VStack {
-            HStack{
-                Image("StravaIcon").resizable().frame(width: 30, height: 30)
-                if refreshParameters.inProgress {
-                    Text("Strava fetch status").foregroundColor(Color("StravaColor"))
-                } else {
-                    Text("Last Fetch Details")
-                }
-                Spacer()
 
-            }
-
-            
             HStack {
                 if let submitDate = refreshParameters.submitDate {
                     Text("Submitted: ")
@@ -61,9 +129,9 @@ struct BGFetchProgressView: View {
 
             
             HStack {
-                Text("Pages Completed :")
+                Text("Records Completed:")
                 Spacer()
-                Text("\(refreshParameters.pagesCompleted)")
+                Text("\(refreshParameters.recordsCompleted)")
                     
             }
             .font(.footnote).foregroundColor(.gray)
@@ -84,30 +152,32 @@ struct BGFetchProgressView: View {
             }
             .font(.footnote).foregroundColor(.gray)
             
-            if refreshParameters.inProgress {
+            if refreshParameters.totalRetries > 0 {
+                if refreshParameters.inProgress {
+                    HStack {
+                        Text("Retries on current page:")
+                        Spacer()
+                        Text("\(refreshParameters.retryCount)")
+                    }
+                    .font(.footnote).foregroundColor(.gray)
+     
+                }
+
                 HStack {
-                    Text("Retries on current page:")
+                    Text("Total retries:")
                     Spacer()
-                    Text("\(refreshParameters.retryCount)")
+                    Text("\(refreshParameters.totalRetries)")
                 }
                 .font(.footnote).foregroundColor(.gray)
- 
-            }
-                
 
-            HStack {
-                Text("Total retries:")
-                Spacer()
-                Text("\(refreshParameters.totalRetries)")
-            }
-            .font(.footnote).foregroundColor(.gray)
+                HStack {
+                    Text("Highest retries on a page:")
+                    Spacer()
+                    Text("\(refreshParameters.highestRetryCount)")
+                }
+                .font(.footnote).foregroundColor(.gray)
 
-            HStack {
-                Text("Highest retries on a page:")
-                Spacer()
-                Text("\(refreshParameters.highestRetryCount)")
             }
-            .font(.footnote).foregroundColor(.gray)
 
             HStack {
                 if let completeDate = refreshParameters.completeDate {
@@ -131,19 +201,7 @@ struct BGFetchProgressView: View {
                     }
                 }
             }
-
-
-            if refreshParameters.inProgress {
-                Button("Cancel Fetch") {
-                    refreshParameters.cancelRequest()
-                    dismiss()
-                }
-            }
-
         }
-        .padding()
-
-
     }
 }
 

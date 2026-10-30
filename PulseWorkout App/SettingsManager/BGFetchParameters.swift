@@ -31,6 +31,12 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
     /// Total number of pages fetched so far
     @Published var pagesCompleted: Int
     
+    /// page size for record fetch
+    @Published var pageSize: Int
+    
+    /// Total number of records processed so far
+    @Published var recordsCompleted: Int
+    
     /// Number of retries on this page
     @Published var retryCount: Int
     
@@ -62,7 +68,7 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
     var userDefaultsKey: String
     
     enum CodingKeys: String, CodingKey {
-        case inProgress, submitDate, earliestFetchDate, pageStartDate, pageEndDate, pagesCompleted, retryCount, highestRetryCount,
+        case inProgress, submitDate, earliestFetchDate, pageStartDate, pageEndDate, pagesCompleted, pageSize, recordsCompleted, retryCount, highestRetryCount,
         totalRetries, maxRetries, completeDate, failedDate, cancelled, cancelledDate, delay, userDefaultsKey
     }
     
@@ -74,6 +80,8 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
         let pageStartDate = try container.decodeIfPresent(Date.self, forKey: .pageStartDate)
         let pageEndDate = try container.decodeIfPresent(Date.self, forKey: .pageEndDate)
         let pagesCompleted = try container.decode(Int.self, forKey: .pagesCompleted)
+        let pageSize = try container.decode(Int.self, forKey: .pageSize)
+        let recordsCompleted = try container.decode(Int.self, forKey: .recordsCompleted)
         let retryCount = try container.decode(Int.self, forKey: .retryCount)
         let highestRetryCount = try container.decode(Int.self, forKey: .highestRetryCount)
         let totalRetries = try container.decode(Int.self, forKey: .totalRetries)
@@ -93,6 +101,8 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
         self.pageStartDate = pageStartDate
         self.pageEndDate = pageEndDate
         self.pagesCompleted = pagesCompleted
+        self.pageSize = pageSize
+        self.recordsCompleted = recordsCompleted
         self.retryCount = retryCount
         self.highestRetryCount = highestRetryCount
         self.totalRetries = totalRetries
@@ -112,6 +122,8 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
         try container.encodeIfPresent(pageStartDate, forKey: .pageStartDate)
         try container.encodeIfPresent(pageEndDate, forKey: .pageEndDate)
         try container.encode(pagesCompleted, forKey: .pagesCompleted)
+        try container.encode(pageSize, forKey: .pageSize)
+        try container.encode(recordsCompleted, forKey: .recordsCompleted )
         try container.encode(retryCount, forKey: .retryCount)
         try container.encode(highestRetryCount, forKey: .highestRetryCount)
         try container.encode(totalRetries, forKey: .totalRetries)
@@ -131,6 +143,8 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
         pageStartDate = nil
         pageEndDate = nil
         pagesCompleted = 0
+        pageSize = 1
+        recordsCompleted = 0
         retryCount = 0
         highestRetryCount = 0
         totalRetries = 0
@@ -167,6 +181,8 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
                 pageStartDate = params.pageStartDate
                 pageEndDate = params.pageEndDate
                 pagesCompleted = params.pagesCompleted
+                pageSize = params.pageSize
+                recordsCompleted = params.recordsCompleted
                 retryCount = params.retryCount
                 highestRetryCount = params.highestRetryCount
                 totalRetries = params.totalRetries
@@ -186,14 +202,22 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
     
     
     /// Initialise parameters for a new fetch task
-    func new(earliestFetchDate: Date, maxRetries: Int = 5) {
+    func new(pageStartDate: Date?,
+             earliestFetchDate: Date?,
+             maxRetries: Int = 5,
+             delay: Double = 15 * 60,
+             pageSize: Int = 1) {
 
         inProgress = false
         submitDate = nil
         self.earliestFetchDate = earliestFetchDate
-        pageStartDate = Date.now
-        pageEndDate = Calendar.current.date(byAdding: .day, value: -10, to: pageStartDate!)!
+        self.pageStartDate = pageStartDate
+        if let psd = pageStartDate {
+            pageEndDate = Calendar.current.date(byAdding: .day, value: -10, to: psd)
+        }
         pagesCompleted = 0
+        self.pageSize = pageSize
+        recordsCompleted = 0
         retryCount = 0
         totalRetries = 0
         highestRetryCount = 0
@@ -201,7 +225,7 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
         completeDate = nil
         cancelled = false
         cancelledDate = nil
-        delay = 15 * 60
+        self.delay = delay
         
         save()
     }
@@ -219,19 +243,35 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
     /// To be called when a page has been read successfully
     /// Returns false if full refresh is complete
     /// Returns true if should continue
-    func pageReadSuccess() -> Bool {
+    func pageReadSuccess(recordCount: Int? = nil, earliestRecord: Date? = nil) -> Bool {
 
         read()
+        
         if cancelled {
             return false
         }
         
+        pagesCompleted += 1
+        recordsCompleted = pagesCompleted * pageSize
+        retryCount = 0
+        
+        // Uses this if reading till gets no records - not using end date / earliestFetchDate
+        if let readCount = recordCount {
+            if readCount == 0 {
+                // Finished!
+                completeDate = Date.now
+                inProgress = false
+                save()
+                return false
+            }
+            pageStartDate = earliestRecord!
+            save()
+            return true
+        }
 
         pageStartDate = pageEndDate
         pageEndDate = Calendar.current.date(byAdding: .day, value: -10, to: pageStartDate!)!
 
-        pagesCompleted += 1
-        retryCount = 0
 
         if pageStartDate! < earliestFetchDate! {
             completeDate = Date.now

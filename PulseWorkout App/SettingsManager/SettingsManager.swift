@@ -86,7 +86,7 @@ class SettingsManager: NSObject, ObservableObject  {
     @Published var analysisInProgress: Bool = false
     
 
-    /// Persisten parameters to manage strava refresh task
+    /// Persistent parameters to manage strava refresh task
     @Published var stravaRefreshParameters = BGFetchParameters(userDefaultsKey: "stravaRefreshParameters")
 
     var userPowerMetrics: UserPowerMetrics

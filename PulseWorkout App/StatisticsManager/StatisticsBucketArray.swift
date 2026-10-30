@@ -353,6 +353,9 @@ class StatisticsBucketArray: NSObject, Codable {
     func copyTempToElements() {
         elements = tempBuckets
         logger.info("Buckets = \(self.elements)")
+        
+        // write to CloudKit
+        _ = write(copyToCK: true)
     }
     
     /// Read cache from JSON file in cache folder

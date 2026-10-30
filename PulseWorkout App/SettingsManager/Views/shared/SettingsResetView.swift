@@ -51,9 +51,10 @@ private func atMaximumOffset() -> Bool {
 struct SettingsResetView: View {
     @ObservedObject var settingsManager: SettingsManager = SettingsManager.shared
     @ObservedObject var statisticsManager: StatisticsManager = StatisticsManager.shared
+    @ObservedObject var statisticsRebuildParameters: BGFetchParameters = StatisticsManager.shared.statisticsRebuildParameters
     @State var stravaFetchDateText: String
     @State var savedStravaFetchDate: Int
-    
+    @State private var showingStatsRebuildDetailsPopup = false
 
     
     init() {
@@ -62,300 +63,336 @@ struct SettingsResetView: View {
     }
     
     var body: some View {
-        Form {
-            Text("Version: \(getAppVersion()) (Build: \(getBuildNumber()))")
-            
-            VStack {
-                HStack {
-                    if #available(iOS 26.0, watchOS 26.0, *) {
-                        Button("Clear local cache") {
-                            clearCache()
-                        }
-                        .buttonStyle(.glass)
-                        .glassEffect(.clear.tint(.blue))
-                        
-                    } else {
-                        // Fallback on earlier versions
-                        Button("Clear local cache") {
-                            clearCache()
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(Color.blue)
-                    }
-                    
-                    
-                    Spacer()
-                }
+        GeometryReader { geometry in
 
+            Form {
+                Text("Version: \(getAppVersion()) (Build: \(getBuildNumber()))")
                 
-                HStack {
-                    Text("Delete locally stored activities that have not been uploaded to cloud storage.")
-                        .font(.footnote).foregroundColor(.gray)
-                    Spacer()
-                }
-
-            }
-            
-            VStack {
-                HStack {
-                    if #available(iOS 26.0, watchOS 26.0, *) {
-                        Button("Refresh all caches") {
-                            DataCache.shared.refreshUI()
+                VStack {
+                    HStack {
+                        if #available(iOS 26.0, watchOS 26.0, *) {
+                            Button("Clear local cache") {
+                                clearCache()
+                            }
+                            .buttonStyle(.glass)
+                            .glassEffect(.clear.tint(.blue))
+                            
+                        } else {
+                            // Fallback on earlier versions
+                            Button("Clear local cache") {
+                                clearCache()
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(Color.blue)
                         }
-                        .buttonStyle(.glass)
-                        .glassEffect(.clear.tint(.blue))
                         
-                    } else {
-                        // Fallback on earlier versions
-                        Button("Refresh all caches") {
-                            DataCache.shared.refreshUI()
-                        }
-                        .buttonStyle(.bordered)
-                        .tint(Color.blue)
+                        
+                        Spacer()
                     }
+
                     
-                    
-                    Spacer()
-                }
-
-                
-                HStack {
-                    Text("Refresh all device caches from iCloud.")
-                        .font(.footnote).foregroundColor(.gray)
-                    Spacer()
-                }
-
-            }
-            
-            
-            #if os(iOS)
-            VStack {
-                HStack {
-
-                    Button(action: {
-                        
-                        StatisticsManager.shared.submitBuildStatisticsTask()
-
-                    })
-                    {
-                        Text("Rebuild statistics")
+                    HStack {
+                        Text("Delete locally stored activities that have not been uploaded to cloud storage.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
                     }
-                    .buttonStyle(.glass)
-                    .glassEffect(.clear.tint(.blue))
-                    .disabled(statisticsManager.refreshInProgress)
 
-                    Spacer()
-                }
-
-                HStack {
-                    Text("Rebuild all statistics.")
-                        .font(.footnote).foregroundColor(.gray)
-                    Spacer()
-                }
-                
-                HStack {
-                    Text("Last background rebuild completion \(statisticsManager.refreshCompleteDate ?? Date(timeIntervalSince1970: 0)).")
-                        .font(.footnote).foregroundColor(.gray)
-                    Spacer()
-                }
-
-            }
-            
-            
-            VStack {
-                HStack {
-
-                    Button(action: {
-                        
-                        StatisticsManager.shared.submitStravaSaveTask()
-
-                    })
-                    {
-                        Text("Test App refresh task")
-                    }
-                    .buttonStyle(.glass)
-                    .glassEffect(.clear.tint(.blue))
-                    .disabled(statisticsManager.stravaSaveInProgress)
-
-                    Spacer()
                 }
                 
                 VStack {
                     HStack {
-                        Text("Last app refresh submit \(statisticsManager.stravaSaveSubmitDate ?? Date(timeIntervalSince1970: 0)).")
-                            .font(.footnote).foregroundColor(.gray)
+                        if #available(iOS 26.0, watchOS 26.0, *) {
+                            Button("Refresh all caches") {
+                                DataCache.shared.refreshUI()
+                            }
+                            .buttonStyle(.glass)
+                            .glassEffect(.clear.tint(.blue))
+                            
+                        } else {
+                            // Fallback on earlier versions
+                            Button("Refresh all caches") {
+                                DataCache.shared.refreshUI()
+                            }
+                            .buttonStyle(.bordered)
+                            .tint(Color.blue)
+                        }
+                        
+                        
                         Spacer()
                     }
+
                     
                     HStack {
-                        Text("Last app refresh completion \(statisticsManager.stravaSaveCompleteDate ?? Date(timeIntervalSince1970: 0)).")
+                        Text("Refresh all device caches from iCloud.")
                             .font(.footnote).foregroundColor(.gray)
                         Spacer()
                     }
-                }
 
-
-            }
-            
-            
-            VStack {
-                HStack {
-
-                    Button(action: {
-                        
-                        StatisticsManager.shared.submitActivityAnalysisTask()
-
-                    })
-                    {
-                        Text("Test BG Processing task")
-                    }
-                    .buttonStyle(.glass)
-                    .glassEffect(.clear.tint(.blue))
-                    .disabled(statisticsManager.activityAnalysisInProgress)
-
-                    Spacer()
                 }
                 
+                
+                #if os(iOS)
+                
                 VStack {
-                    HStack {
-                        Text("Last activity analysis submit \(statisticsManager.activityAnalysisSubmitDate ?? Date(timeIntervalSince1970: 0)).")
-                            .font(.footnote).foregroundColor(.gray)
-                        Spacer()
-                    }
-                    
-                    HStack {
-                        Text("Last activity analysis completion \(statisticsManager.activityAnalysisCompleteDate ?? Date(timeIntervalSince1970: 0)).")
-                            .font(.footnote).foregroundColor(.gray)
-                        Spacer()
-                    }
-                }
-
-
-            }
-            #endif
-            
-            
-            #if os(iOS)
-            VStack {
-                HStack {
-
                     Button(action: {
-                        
-                        settingsManager.submitAnalyzeActivitiesTask()
-
-                    })
-                    {
-                        Text("Re-analyze activities")
+                        if !statisticsRebuildParameters.inProgress {
+                            statisticsManager.submitBuildStatisticsTask()
+                        }
+                        showingStatsRebuildDetailsPopup = true
+                    }) {
+                        if statisticsRebuildParameters.inProgress {
+                            HStack {
+                                Text("Statistics rebuild in progress")
+                                ProgressView()
+                            }
+                            
+                        } else {
+                            Text("Rebuild statistics")
+                        }
                     }
                     .buttonStyle(.glass)
                     .glassEffect(.clear.tint(.blue))
-                    .disabled(settingsManager.analysisInProgress)
+                    .popover(isPresented: $showingStatsRebuildDetailsPopup,
+                             attachmentAnchor: .point(.top),
+                             arrowEdge: .bottom) {
+                        BGStatsRebuildProgresssView(refreshParameters: statisticsRebuildParameters)
+                            .presentationCompactAdaptation(.popover)
+                            .presentationBackground(.regularMaterial)
+                            .frame(width: geometry.size.width)
+                    }
 
-                    Spacer()
                 }
-
-                HStack {
-                    Text("Re-analyze and update all activity records.")
-                        .font(.footnote).foregroundColor(.gray)
-                    Spacer()
-                }
-
-            }
-            #endif
-   
-            #if os(iOS)
-
-            // Reset / change strava fetch date to re-fetch activities from Strava
-            if savedStravaFetchDate != 0 {
+                /*
                 VStack {
                     HStack {
+
                         Button(action: {
-                            incrementFetchDateOffset()
-                            stravaFetchDateText = setStravaFetchDateText()
+                            
+                            StatisticsManager.shared.submitBuildStatisticsTask()
+
                         })
                         {
-                            Text("Set Strava fetch back 5 days")
+                            Text("Rebuild statistics")
                         }
                         .buttonStyle(.glass)
                         .glassEffect(.clear.tint(.blue))
-                        .disabled(atMaximumOffset())
+                        .disabled(statisticsManager.refreshInProgress)
 
                         Spacer()
-                        Image("StravaIcon").resizable().frame(width: 30, height: 30)
                     }
 
-                    
                     HStack {
-                        Text("Current Date: \(stravaFetchDateText)")
+                        Text("Rebuild all statistics.")
+                            .font(.footnote).foregroundColor(.gray)
                         Spacer()
-
                     }
-
                     
                     HStack {
-                        Text("Force re-fetch of records from Strava on next pull from Strava - Set to the number of days to go back.")
+                        Text("Last background rebuild completion \(statisticsManager.refreshCompleteDate ?? Date(timeIntervalSince1970: 0)).")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+
+                }
+                */
+                
+                VStack {
+                    HStack {
+
+                        Button(action: {
+                            
+                            StatisticsManager.shared.submitStravaSaveTask()
+
+                        })
+                        {
+                            Text("Test App refresh task")
+                        }
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear.tint(.blue))
+                        .disabled(statisticsManager.stravaSaveInProgress)
+
+                        Spacer()
+                    }
+                    
+                    VStack {
+                        HStack {
+                            Text("Last app refresh submit \(statisticsManager.stravaSaveSubmitDate ?? Date(timeIntervalSince1970: 0)).")
+                                .font(.footnote).foregroundColor(.gray)
+                            Spacer()
+                        }
+                        
+                        HStack {
+                            Text("Last app refresh completion \(statisticsManager.stravaSaveCompleteDate ?? Date(timeIntervalSince1970: 0)).")
+                                .font(.footnote).foregroundColor(.gray)
+                            Spacer()
+                        }
+                    }
+
+
+                }
+                
+                
+                VStack {
+                    HStack {
+
+                        Button(action: {
+                            
+                            StatisticsManager.shared.submitActivityAnalysisTask()
+
+                        })
+                        {
+                            Text("Test BG Processing task")
+                        }
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear.tint(.blue))
+                        .disabled(statisticsManager.activityAnalysisInProgress)
+
+                        Spacer()
+                    }
+                    
+                    VStack {
+                        HStack {
+                            Text("Last activity analysis submit \(statisticsManager.activityAnalysisSubmitDate ?? Date(timeIntervalSince1970: 0)).")
+                                .font(.footnote).foregroundColor(.gray)
+                            Spacer()
+                        }
+                        
+                        HStack {
+                            Text("Last activity analysis completion \(statisticsManager.activityAnalysisCompleteDate ?? Date(timeIntervalSince1970: 0)).")
+                                .font(.footnote).foregroundColor(.gray)
+                            Spacer()
+                        }
+                    }
+
+
+                }
+                #endif
+                
+                
+                #if os(iOS)
+                VStack {
+                    HStack {
+
+                        Button(action: {
+                            
+                            settingsManager.submitAnalyzeActivitiesTask()
+
+                        })
+                        {
+                            Text("Re-analyze activities")
+                        }
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear.tint(.blue))
+                        .disabled(settingsManager.analysisInProgress)
+
+                        Spacer()
+                    }
+
+                    HStack {
+                        Text("Re-analyze and update all activity records.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+
+                }
+                #endif
+       
+                #if os(iOS)
+
+                // Reset / change strava fetch date to re-fetch activities from Strava
+                if savedStravaFetchDate != 0 {
+                    VStack {
+                        HStack {
+                            Button(action: {
+                                incrementFetchDateOffset()
+                                stravaFetchDateText = setStravaFetchDateText()
+                            })
+                            {
+                                Text("Set Strava fetch back 5 days")
+                            }
+                            .buttonStyle(.glass)
+                            .glassEffect(.clear.tint(.blue))
+                            .disabled(atMaximumOffset())
+
+                            Spacer()
+                            Image("StravaIcon").resizable().frame(width: 30, height: 30)
+                        }
+
+                        
+                        HStack {
+                            Text("Current Date: \(stravaFetchDateText)")
+                            Spacer()
+
+                        }
+
+                        
+                        HStack {
+                            Text("Force re-fetch of records from Strava on next pull from Strava - Set to the number of days to go back.")
+                                .font(.footnote).foregroundColor(.gray)
+                            Spacer()
+                        }
+                    }
+                }
+
+                #endif
+
+                
+                VStack {
+                    HStack {
+                        if #available(iOS 26.0, watchOS 26.0, *) {
+
+
+                            
+                            ShareLink(
+                                item: LogTextFile(url: AppLogger.shared.fullLogURL()),
+                                preview: SharePreview("System Log Files",
+                                                      image: Image(systemName: "doc.text"))) {
+                                    HStack {
+                                        Text("Share system logs")
+                                        Image(systemName: "square.and.arrow.up")
+                                        
+                                    }
+                                    
+                            }
+                            .buttonStyle(.glass)
+                            .glassEffect(.clear.tint(.blue))
+                            
+                        } else {
+                            // Fallback on earlier versions
+                            ShareLink(
+                                item: LogTextFile(url: AppLogger.shared.fullLogURL()),
+                                preview: SharePreview("System Log Files",
+                                                      image: Image(systemName: "doc.text"))) {
+                                    HStack {
+                                        Text("Share system logs")
+                                        Image(systemName: "square.and.arrow.up")
+                                        
+                                    }
+                                    
+                            }
+                        }
+                        
+                        Spacer()
+                    }
+
+
+                    HStack {
+                        Text("Export and share all system log files.")
                             .font(.footnote).foregroundColor(.gray)
                         Spacer()
                     }
                 }
-            }
 
-            #endif
-
-            
-            VStack {
-                HStack {
-                    if #available(iOS 26.0, watchOS 26.0, *) {
-
-
-                        
-                        ShareLink(
-                            item: LogTextFile(url: AppLogger.shared.fullLogURL()),
-                            preview: SharePreview("System Log Files",
-                                                  image: Image(systemName: "doc.text"))) {
-                                HStack {
-                                    Text("Share system logs")
-                                    Image(systemName: "square.and.arrow.up")
-                                    
-                                }
-                                
-                        }
-                        .buttonStyle(.glass)
-                        .glassEffect(.clear.tint(.blue))
-                        
-                    } else {
-                        // Fallback on earlier versions
-                        ShareLink(
-                            item: LogTextFile(url: AppLogger.shared.fullLogURL()),
-                            preview: SharePreview("System Log Files",
-                                                  image: Image(systemName: "doc.text"))) {
-                                HStack {
-                                    Text("Share system logs")
-                                    Image(systemName: "square.and.arrow.up")
-                                    
-                                }
-                                
-                        }
-                    }
-                    
-                    Spacer()
+                
+                
                 }
-
-
-                HStack {
-                    Text("Export and share all system log files.")
-                        .font(.footnote).foregroundColor(.gray)
-                    Spacer()
-                }
-            }
-
-            
-            
-            }
-            .navigationTitle("Reset")
-            .onDisappear(perform: settingsManager.save)
-            .onAppear(perform: {stravaFetchDateText = setStravaFetchDateText()})
+                .navigationTitle("Reset")
+                .onDisappear(perform: settingsManager.save)
+                .onAppear(perform: {stravaFetchDateText = setStravaFetchDateText()})
         }
+        
+
+    }
         
 
 }
