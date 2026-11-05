@@ -55,6 +55,7 @@ struct SettingsResetView: View {
     @State var stravaFetchDateText: String
     @State var savedStravaFetchDate: Int
     @State private var showingStatsRebuildDetailsPopup = false
+    @State private var showingLastStatsRebuildDetailsPopup = false
 
     
     init() {
@@ -134,31 +135,62 @@ struct SettingsResetView: View {
                 #if os(iOS)
                 
                 VStack {
-                    Button(action: {
-                        if !statisticsRebuildParameters.inProgress {
-                            statisticsManager.submitBuildStatisticsTask()
-                        }
-                        showingStatsRebuildDetailsPopup = true
-                    }) {
-                        if statisticsRebuildParameters.inProgress {
-                            HStack {
-                                Text("Statistics rebuild in progress")
-                                ProgressView()
+                    HStack {
+                        Button(action: {
+                            if !statisticsRebuildParameters.inProgress {
+                                statisticsManager.submitBuildStatisticsTask()
                             }
-                            
-                        } else {
-                            Text("Rebuild statistics")
+                            showingStatsRebuildDetailsPopup = true
+                        }) {
+                            if statisticsRebuildParameters.inProgress {
+                                HStack {
+                                    Text("Recalculating statistics...")
+                                    ProgressView()
+                                }
+                                
+                            } else {
+                                Text("Recalulate statistics")
+                            }
                         }
+                        .buttonStyle(.glass)
+                        .glassEffect(.clear.tint(statisticsRebuildParameters.inProgress ? .secondary : .blue))
+                        .popover(isPresented: $showingStatsRebuildDetailsPopup,
+                                 attachmentAnchor: .point(.top),
+                                 arrowEdge: .bottom) {
+                            BGStatsRebuildProgresssView(refreshParameters: statisticsRebuildParameters)
+                                .presentationCompactAdaptation(.popover)
+                                .presentationBackground(.regularMaterial)
+                                .frame(width: geometry.size.width * 0.8)
+                        }
+
+                        Spacer()
+                        
                     }
-                    .buttonStyle(.glass)
-                    .glassEffect(.clear.tint(.blue))
-                    .popover(isPresented: $showingStatsRebuildDetailsPopup,
-                             attachmentAnchor: .point(.top),
-                             arrowEdge: .bottom) {
-                        BGStatsRebuildProgresssView(refreshParameters: statisticsRebuildParameters)
-                            .presentationCompactAdaptation(.popover)
-                            .presentationBackground(.regularMaterial)
-                            .frame(width: geometry.size.width)
+                    
+                    HStack {
+                        Text("Recalculate all statistics.")
+                            .font(.footnote).foregroundColor(.gray)
+                        Spacer()
+                    }
+                    
+                    if !statisticsRebuildParameters.inProgress {
+                        HStack {
+                            Button("View last recalculation results") {
+                                showingLastStatsRebuildDetailsPopup = true
+                            }
+                            .buttonStyle(.automatic)
+                            .popover(isPresented: $showingLastStatsRebuildDetailsPopup,
+                                     attachmentAnchor: .point(.top),
+                                     arrowEdge: .bottom) {
+                                
+                                BGStatsRebuildProgresssView(refreshParameters: statisticsRebuildParameters)
+                                    .presentationCompactAdaptation(.popover)
+                                    .presentationBackground(.regularMaterial)
+                                    .frame(width: geometry.size.width * 0.8)
+                                
+                            }
+                            Spacer()
+                        }
                     }
 
                 }

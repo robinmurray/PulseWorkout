@@ -56,7 +56,6 @@ class CKBlockSaveAndDeleteOperation: CloudKitOperation {
         modifyRecordsOperation.perRecordSaveBlock = { (recordID: CKRecord.ID, result: Result<CKRecord, any Error>) in
             switch result {
             case .success:
-                self.logger.info("Saved \(recordID) successfully.")
                 self.recordSaveSuccessCompletionFunction(recordID)
                 
                 break
@@ -111,7 +110,7 @@ class CKBlockSaveAndDeleteOperation: CloudKitOperation {
             
             switch operationResult {
             case .success:
-                self.logger.info("Block record modify completed")
+                self.logger.info("Block record modify completed successfully")
                 self.blockSuccessCompletion()
                 break
                 

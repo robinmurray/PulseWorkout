@@ -61,7 +61,11 @@ extension StatisticsManager {
                 if readNext {
                     self.submitContinuationBuildStatisticsTask()
                 } else {
-                    self.logger.info("BG Build Statistics Task fully completed: \(self.statisticsRebuildParameters)")
+                    if self.statisticsRebuildParameters.cancelled {
+                        self.logger.info("BG Build Statistics Task cancelled: \(self.statisticsRebuildParameters)")
+                    } else {
+                        self.logger.info("BG Build Statistics Task fully completed: \(self.statisticsRebuildParameters)")
+                    }
 
                 }
             }
@@ -80,7 +84,7 @@ extension StatisticsManager {
         }
 
         
-        
+        logger.info("Fetching records for statistics with start Date \(statisticsRebuildParameters.pageStartDate, default: "None")")
         CKActivityQueryOperation(startDate: statisticsRebuildParameters.pageStartDate,
                                  blockCompletionFunction :
                                     {ckRecords in

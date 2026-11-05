@@ -23,9 +23,9 @@ struct BGStatsRebuildProgresssView: View {
             HStack{
                 Image(systemName: "chart.line.text.clipboard.fill")
                 if refreshParameters.inProgress {
-                    Text("Statistics rebuild status")
+                    Text("Status")
                 } else {
-                    Text("Last rebuild details")
+                    Text("Last recalculation results")
                 }
                 Spacer()
 
@@ -63,9 +63,9 @@ struct BGStravaFetchProgresssView: View {
             HStack{
                 Image("StravaIcon").resizable().frame(width: 30, height: 30)
                 if refreshParameters.inProgress {
-                    Text("Strava fetch status").foregroundColor(Color("StravaColor"))
+                    Text("Status").foregroundColor(Color("StravaColor"))
                 } else {
-                    Text("Last Fetch Details")
+                    Text("Last fetch results")
                 }
                 Spacer()
 
@@ -82,7 +82,7 @@ struct BGStravaFetchProgresssView: View {
                     dismiss()
                 }
             }
-        }.padding()
+        }.padding(.horizontal)
     }
 }
 
@@ -147,6 +147,8 @@ struct BGFetchProgressView: View {
                 
                 if let pageStartDate = refreshParameters.pageStartDate {
                     Text(pageStartDate.formatted(dateStyle))
+                } else {
+                    Image(systemName: "nosign")
                 }
 
             }
@@ -181,9 +183,10 @@ struct BGFetchProgressView: View {
 
             HStack {
                 if let completeDate = refreshParameters.completeDate {
-                    Text("Completion \(completeDate.formatted(dateStyle)).")
-                        .font(.footnote).foregroundColor(.gray)
+                    Text("Completion")
                     Spacer()
+                    Text("\(completeDate.formatted(dateStyle)).")
+                        .font(.footnote).foregroundColor(.gray)
                 }
 
             }

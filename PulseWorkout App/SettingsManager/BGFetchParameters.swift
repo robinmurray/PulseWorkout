@@ -155,8 +155,13 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
         cancelledDate = nil
         delay = 15 * 60
         self.userDefaultsKey = userDefaultsKey
+
     }
     
+    
+    override var description: String {
+        return "submitDate: \(submitDate, default: "None"), pageStartDate: \(pageStartDate, default: "None"), pagesCompleted: \(pagesCompleted)"
+    }
     
     /// Persist parameters to UserDefaults
     func save() {
@@ -164,7 +169,7 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
             let data = try JSONEncoder().encode(self)
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
         } catch {
-            print("Failed to encode Strava refresh parameters: \(error.localizedDescription)")
+            print("Failed to encode BG processing parameters: \(error.localizedDescription)")
         }
     }
     
@@ -194,7 +199,7 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
                 delay = params.delay
                 userDefaultsKey = params.userDefaultsKey
             } catch {
-                print("Failed to decode Strava refresh parameters: \(error.localizedDescription)")
+                print("Failed to decode BG processing parameters: \(error.localizedDescription)")
             }
         }
         
@@ -233,7 +238,7 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
     
     /// Record task as submitted
     func submitted() {
-        read()
+
         inProgress = true
         submitDate = Date.now
         save()
@@ -244,8 +249,6 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
     /// Returns false if full refresh is complete
     /// Returns true if should continue
     func pageReadSuccess(recordCount: Int? = nil, earliestRecord: Date? = nil) -> Bool {
-
-        read()
         
         if cancelled {
             return false
@@ -290,7 +293,6 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
     /// Returns true if should continue
     func pageReadFailed() -> Bool {
 
-        read()
         if cancelled {
             return false
         }
@@ -320,7 +322,6 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
     /// Returns true if should continue
     func failed() {
         
-        read()
         inProgress = false
         failedDate = Date.now
         save()
@@ -334,7 +335,6 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
 
         BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: "MurrayNet.PulseWorkout-Phone-App.fullStravaRefresh")
 
-        read()
         cancelled = true
         cancelledDate = Date.now
         inProgress = false
@@ -345,7 +345,7 @@ class BGFetchParameters: NSObject, Codable, ObservableObject {
     
     /// Return true if task is currently in progress
     func isInProgress() -> Bool {
-        read()
+
         return inProgress
     }
 }

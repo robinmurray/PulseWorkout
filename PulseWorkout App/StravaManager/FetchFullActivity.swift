@@ -129,7 +129,7 @@ class StravaFetchActivityStreams: StravaOperation {
             }, failure: { (error: NSError) in
                 self.stravaBusyStatus(false)
                 // Note this happens when no streams, so not really an error!
-                self.logger.error("Error in streams - none returned : \(error.localizedDescription)")
+                self.logger.info("No Streams returned : \(error.localizedDescription)")
                 self.completionHandler([])
 //                self.failureCompletionHandler()
             })

@@ -234,6 +234,7 @@ class StatisticsBucketArray: NSObject, Codable {
         for (index, bucket) in elements.enumerated() {
             
             if (activityRecord.startDateLocal >= bucket.startDate) && (activityRecord.startDateLocal < bucket.endDate) {
+                logger.info("Adding activity with startDate \(activityRecord.startDateLocal) to bucket type \(bucket.bucketType) with start Date \(bucket.startDate)")
                 elements[index].activities += 1
                 elements[index].distanceMeters = round(elements[index].distanceMeters + activityRecord.distanceMeters)
                 elements[index].addTypedValues(newWorkoutTypeIds: [activityRecord.workoutTypeId],
