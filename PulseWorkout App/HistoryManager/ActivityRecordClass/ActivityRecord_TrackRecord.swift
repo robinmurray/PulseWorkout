@@ -86,8 +86,9 @@ extension ActivityRecord {
         guard let gzURL = CacheURL(fileName: gzFile) else { return false }
         
         if trackPoints.count == 0 {
+            // Manually created Strava activities will have no track points
             logger.info("No trackpoints to save for record \(name)")
-            return false
+//            return false
         }
 
         logger.debug("testing file at \(gzURL.path)")
